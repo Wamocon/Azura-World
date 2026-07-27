@@ -24,7 +24,7 @@ Window: pre-wave setup (not a numbered task)
 
 | Fact | Value |
 |---|---|
-| Project ref | `mwpswwnfbmelvgjwlojx` |
+| Project ref | *(redacted — see `.env.local`)* |
 | Region | eu-central-1 (Frankfurt) |
 | **PostgreSQL** | **17.6** |
 | Connected as | `postgres`, `CREATE` privilege = true |
@@ -49,7 +49,7 @@ runner has no IPv6, migrations will fail with a DNS-shaped error that looks like
 outage. The IPv4 fallback is:
 
 ```
-postgresql://postgres.mwpswwnfbmelvgjwlojx:<PASSWORD>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres
 ```
 
 Never port **6543** — that is the transaction pooler and migrations fail on it.
