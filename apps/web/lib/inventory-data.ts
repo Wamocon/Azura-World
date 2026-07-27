@@ -805,6 +805,17 @@ export function seedFloorRows(): SeedFloorRow[] {
   return rows
 }
 
+/**
+ * The three units `supabase/seed.sql` assigns to seeded residents and then
+ * withholds from the public catalogue (seed.sql:4284). Declared once so seed mode
+ * and the database cannot drift about which units a guest may see.
+ */
+const RESIDENT_HELD_UNIT_IDS = new Set([
+  "AZW-B01-0001",
+  "AZW-B01-0002",
+  "AZW-B01-0003",
+])
+
 export function seedUnitRows(): SeedUnitRow[] {
   const blockNames = new Map(
     seedBlockRows().map((block) => [block.code, block.name])
@@ -837,16 +848,37 @@ export function seedUnitRows(): SeedUnitRow[] {
     // "NEVER presented as a real listing", and `is_publicly_listed` is what anon
     // and guest are filtered by.
     //
-    // DO NOT additionally withhold the units held by seeded residents. That
-    // change was proposed once, on the claim that `supabase/seed.sql` withholds
-    // AZW-B01-0001/0002/0003 — it does not. All 25 `portal_listing` rows in
-    // `seed.sql` carry `is_publicly_listed = true`, verified 2026-07-27, and
-    // adding the exclusion here is what would make seed mode and the database
-    // disagree about what a guest sees. Ownership is not privacy: migration 02
-    // says "anon and guest can read only rows where this is true; owner/tenant
-    // reach their own units regardless", so a listed unit that somebody owns is
-    // still in the sales catalogue.
-    is_publicly_listed: unit.dataQuality === "portal_listing",
+    // The three units held by seeded residents ARE additionally withheld, and
+    // this was checked against the database rather than argued from the INSERT.
+    //
+    // An earlier revision asserted the opposite — "all 25 portal_listing rows in
+    // seed.sql carry is_publicly_listed = true" — by reading only the INSERT. It
+    // missed the UPDATE further down the same file:
+    //
+    //     supabase/seed.sql:4284
+    //       update public.units
+    //          set is_publicly_listed = false
+    //        where id in ('AZW-B01-0001', 'AZW-B01-0002', 'AZW-B01-0003');
+    //
+    // Queried against the live seeded database on 2026-07-27:
+    //     AZW-B01-0001  portal_listing  is_publicly_listed = false
+    //     AZW-B01-0002  portal_listing  is_publicly_listed = false
+    //     AZW-B01-0003  portal_listing  is_publicly_listed = false
+    //     AZW-B01-0004  portal_listing  is_publicly_listed = true
+    //     select count(*) where is_publicly_listed  ->  22
+    //
+    // Ownership is indeed not privacy in general — migration 02 says exactly
+    // that, and it is why AZW-B01-0004 stays public. These three are withheld
+    // because 04-rls-negative.sql needs units that are BOTH privately held and
+    // outside the public catalogue; otherwise "an owner cannot read another
+    // owner's unit" is vacuous, since the public policy would admit everyone.
+    //
+    // Without this clause a guest reaches an owner's private unit in seed mode
+    // but not in Supabase mode — the exact seed/database divergence the W2-A
+    // brief forbids. `repository-contract.test.ts` asserts it.
+    is_publicly_listed:
+      unit.dataQuality === "portal_listing" &&
+      !RESIDENT_HELD_UNIT_IDS.has(unit.id),
     version: 1,
     created_at: seedIso(-30),
     updated_at: seedIso(0),
