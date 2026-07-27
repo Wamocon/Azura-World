@@ -157,3 +157,22 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ---------------------------------------------------------------------------
+-- Grants
+--
+-- Supabase's default privileges grant `anon` and `authenticated` full DML on every new
+-- table in `public`. RLS restricts WHICH ROWS a role reaches; it does nothing about a role
+-- holding INSERT on a table it should never write. Both have to be closed, and the revoke
+-- must name each role — `revoke … from public` does not undo a grant made to a role by
+-- name. Migration 13 sweeps for exactly this and fails the chain if it finds it.
+--
+-- UPDATE is granted per column. The privilege-escalation trigger in migration 01 already
+-- rejects a role change, but a column grant is the stronger boundary: it makes the
+-- privileged columns unwritable rather than merely guarded.
+-- ---------------------------------------------------------------------------
+
+revoke all on public.profiles from anon;
+revoke insert, update, delete on public.profiles from authenticated;
+grant select on public.profiles to authenticated;
+grant update (full_name, phone, locale, avatar_url) on public.profiles to authenticated;
