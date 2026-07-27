@@ -11,13 +11,18 @@ node_modules/
 
 # --- build output ---
 .next/
+.next-*/
 out/
 dist/
 build/
 *.tsbuildinfo
+next-env.d.ts
 
 # --- harvested competitor snapshots (large, regenerable, and not ours to redistribute) ---
-sources/raw/
+# Exclude the CONTENTS, not the directory: git cannot re-include a file inside an
+# excluded directory, so `sources/raw/` + `!sources/raw/.gitkeep` silently keeps
+# the .gitkeep untracked and the directory vanishes on a fresh clone.
+sources/raw/*
 !sources/raw/.gitkeep
 
 # --- generated QA artefacts (repo policy: never keep these) ---
