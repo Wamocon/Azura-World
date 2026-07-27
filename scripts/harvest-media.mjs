@@ -37,6 +37,7 @@
  *   node scripts/harvest-media.mjs --download-only  # re-run download from discovery/
  *   node scripts/harvest-media.mjs --only=alanya-home.com,housearch.com
  *   node scripts/harvest-media.mjs --selftest       # prove the byte validator rejects
+ *   node scripts/harvest-media.mjs --finalize       # reports from attempts.jsonl, no network
  *
  * Outputs (all under sources/media/, git-ignored — see HANDOFF request to W0-A):
  *   discovery/<host>.json      per-host discovery result
@@ -1367,8 +1368,11 @@ async function run() {
   // touching the network. Cheap way to check the scope filters before paying
   // ~1000 requests to find out they were wrong.
   const planOnly = flag('plan')
+  // --finalize implies "use what is on disk": it performs no network I/O at all,
+  // so it must load discovery from disk exactly as --download-only does.
+  const finalizeOnly = flag('finalize')
   let discoveries = []
-  if (!flag('download-only') && !planOnly) {
+  if (!flag('download-only') && !planOnly && !finalizeOnly) {
     const byHost = new Map()
     for (const s of SOURCES) {
       if (only.length && !only.includes(s.host)) continue
@@ -1712,8 +1716,27 @@ async function run() {
     return stored
   }
 
-  console.log(`\nDownload + byte validation (${MIN_BYTES / 1024}KB floor · ${MIN_LONG_EDGE}px long-edge floor)`)
   const results = []
+
+  // ── --finalize: report from the resume log, request nothing ──────────────
+  //
+  // assets.json and harvest-report.json are only written after the download
+  // pass, so a long run (cebecigroup.com alone plans ~1000 candidates, and
+  // seaside-alanya.com declares Crawl-delay 30) leaves every downstream stage —
+  // encode-images.mjs, media-manifest.mjs — with nothing to consume for hours,
+  // even though attempts.jsonl already holds hundreds of byte-validated assets.
+  //
+  // --finalize runs dedupe + report + assets.json over whatever attempts.jsonl
+  // already contains and performs NO network I/O. It is not a shortcut around
+  // the harvest: the numbers it produces are exactly the numbers a completed run
+  // would produce for the candidates attempted so far, because attempts.jsonl is
+  // already the single source of truth for the report (see the collector below).
+  // Re-run it after the download pass finishes to pick up the remainder.
+  if (finalizeOnly) {
+    console.log(`\n--finalize: no network I/O. Rebuilding dedupe + reports from attempts.jsonl as it stands.`)
+  } else {
+
+  console.log(`\nDownload + byte validation (${MIN_BYTES / 1024}KB floor · ${MIN_LONG_EDGE}px long-edge floor)`)
   const byHostQueue = new Map()
   for (const c of all) {
     if (!byHostQueue.has(c.sourceHost)) byHostQueue.set(c.sourceHost, [])
@@ -1785,6 +1808,8 @@ async function run() {
     }
   })
   await Promise.all(dlWorkers)
+
+  } // end of the download pass (skipped entirely by --finalize)
 
   // ── collect results from the resume log ──────────────────────────────────
   // Bytes and capped originals were already written per candidate inside the
