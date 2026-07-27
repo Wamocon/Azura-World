@@ -225,7 +225,8 @@
       "group": "portal-de",
       "expectMode": "any",
       "expect": ["azura world"],
-      "notes": "14 buildings × 6 floors, EUR ladder — but the listing is stale (F-006), so every price harvested from this host inherits isStale: true."
+      "isStale": true,
+      "notes": "14 buildings × 6 floors, EUR ladder — but the listing is stale (F-006), so every price harvested from this host inherits isStale: true. isStale was set here as well as on hasporealty-units after the parser pass found the German and English captures of the SAME page disagreeing about their own staleness — the flag belongs to the publisher, not to one locale of it."
     },
     {
       "id": "seaside-alanya",

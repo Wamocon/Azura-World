@@ -60,7 +60,7 @@ Read `[GAP]` as "no source published this", not as "small" or "none".
 | 8 | **Cebeci Towers** *(Cebeci)* | Mahmutlar `[V]` | Cebeci Group `[V]` C-04 | `[GAP]` official (337 `[V-s]`) | **10,000** `[V]` C-04 (green 7,500 / building 2,500 / social 1,200) | `[GAP]` official (3 blocks `[V-s]`) | **0 m** — beachfront + beach underpass `[V]` C-04 | No — "5-star hotel concept" marketing only `[V-s]` | **2020–2022** `[V]` C-04 (index still says "Ongoing" — conflict) | `[GAP]` — **developer publishes no price** | `[GAP]` | C-01, C-04 |
 | 9 | **Cebeci Vista** *(Cebeci)* | Kestel `[V]` | Cebeci Group `[V]` C-05 | `[GAP]` | **35,106** `[V]` C-05 | `[GAP]` | `[GAP]` | `[GAP]` | **2023–2025** `[V]` C-05 | `[GAP]` | `[GAP]` | C-01, C-05 |
 | 10 | **Arnelya Beach Residence** *(Cebeci)* | **Mahmutlar** `[V]` C-01, C-03 **vs Kestel** `[V]` C-26 — conflict | Cebeci Group `[V]` | **31** `[V]` C-03, C-26 | **1,902** `[V]` C-03, C-26 | 1 block · **5 fl** C-03 vs **6 fl** C-26 — conflict | **0 m** — beach underpass `[V]` C-03 | No `[V]` | **July 2019** C-03 **vs December 2019** C-26 — conflict | **€1,000–€1,300 / m²** `[V]` C-03 · **from $1,000/m², from $76,000** `[V]` C-26, 76–285 m². **Completed** | `[GAP]` | C-01, C-03, C-26 |
-| 11 | **Azura Deluxe Resort & SPA** *(Cebeci)* | Avsallar `[V]` | Cebeci Group `[V]` C-07 | **330 hotel rooms**, no residences `[V]` C-07 | **12,000** `[V]` C-07 | `[GAP]` | beachfront · 70 m private Blue Flag beach `[V]` C-07 | **it is the hotel** — **star rating `[GAP]` on the official page** | `[GAP]` | n/a — hotel, not for sale | n/a | C-01, C-07 |
+| 11 | **Azura Deluxe Resort & SPA** *(Cebeci)* | Avsallar `[V]` C-07 + **S-043 official register** | Cebeci Group `[V]` C-07 | **374 rooms / 818 beds** `[V]` **official register S-043** · developer claims **330 rooms** C-07 and **1,200 beds** M-15 — **contradicted** | **12,000** `[V]` C-07 | `[GAP]` | beachfront · 70 m private Blue Flag beach `[V]` C-07 | **it is the hotel** — **5★ confirmed by the official register** `[V]` S-043; **star rating `[GAP]` on the developer's own page** | opened **May 2015** `[V]` M-18 | n/a — hotel, not for sale | n/a | C-01, C-07, **S-043** |
 | 12 | **Emerald Park** | Avsallar `[V]` | `[GAP]` | **238** `[V]` C-27 | `[GAP]` fetched (9,665 `[V-s]`) | `[GAP]` fetched (5 × 9 fl `[V-s]`) | `[GAP]` | No `[V]` | `[GAP]` | **prices withdrawn** — listing marked "Sold", upd. 2023-02-24 `[V]` C-27 | `[GAP]` | C-27 |
 | 13 | **ART LIFE Residence** | Avsallar `[V]` | `[GAP]` | `[GAP]` | `[GAP]` | `[GAP]` | **1,000 m** `[V]` C-28 | No `[V]` | **01.10.2022** `[V]` C-28 | "from €35,000"; 1+1 51–54 m², 2+1 64–90 m², duplex 151–185 m². **Page states prices include 15 % commission** `[V]` C-28 | `[GAP]` | C-28 |
 
@@ -176,6 +176,48 @@ Premium 52,000 m² › Cebeci Vista 35,106 m² › Yekta Kingdom 30,000 m² › 
 25,000 m². Azura World is the **second-largest plot** in the set and the largest among currently
 marketed residence projects. This is arithmetic-free ranking of verified figures, so it is as solid
 as the underlying cells — which for Goldcity is tier-1 and for the rest tier-2/4.
+
+### 3.7 The official register changes two cells in this table — `[V]`
+
+After this document was first compiled, W0-C downloaded and parsed the **ALTSO *Alanya Ekonomik Rapor
+2024*** (S-043), which republishes the **Antalya Provincial Directorate of Culture and Tourism's**
+establishment register with the mahalle, class, address, room and bed count of every certified
+property in Alanya. Two entries bear directly on this set.
+
+**(a) Azura Deluxe — the developer's own figures are contradicted by the register** `[V]`
+
+> `Avsallar | Azura Deluxe Res.&Spa Hot.(Şıhlı) | 5* | Avsallar Mah. İncekum Cad. No:76 | 374 rooms | 818 beds | İBT`
+
+The address matches the developer's page exactly, so it is the same property. The developer publishes
+**330 rooms** (C-07) and, on its Turkish about page, **1,200 beds** (M-15). `[I]` The official register
+contradicts both. It does, however, **confirm the five-star classification independently** — which
+neither the developer's page nor the hotel's own site (M-32) states.
+
+**(b) Azura World's own hotel is in the register — but not where one would expect** `[V]`
+
+> ALTSO **Table 7, "Alanya'da Basit Konaklama Tesisleri (BKT) (2024)"**, row 296:
+> `Türkler | Wyndham Alanya Otel | Otel | Türkler Mah. Kargı Çayı Cad. 10 | 188 rooms | 376 beds`
+
+`[I]` It sits in the **municipality-licensed simple-accommodation table**, not in Table 6 where
+Alanya's 99 ministry-certified five-star hotels are listed. **As at 31.12.2024 the property held a BKT
+record, not a ministry five-star certificate.** `[V]` But the register date **precedes the June 2025
+opening**, so this cannot be read as "not five-star" — only as "official star classification not
+evidenced at that date". `[GAP]` Whether certification followed during 2025 is unestablished; no 2025
+register exists.
+
+**Why this matters to the competitive set:** Goldcity's five-star status is tier-1 confirmed (C-25),
+Azura Deluxe's is now register-confirmed, and **New Level Premium's 5★ hotel — the direct comparator —
+rests entirely on portal copy for a building that has not been delivered.** `[I]` The three "five-star"
+claims in this table therefore rest on three quite different qualities of evidence, and should not be
+displayed as if they were equivalent.
+
+### 3.8 District context for the "hotel cluster" claim — `[V]`
+
+From the same register (full analysis in the Marktanalyse §2.3): **Türkler holds 20 of Alanya's 99
+certified five-star hotels (20.2 %), second only to Okurcalar's 28**, and **27,775 bed-places — 15.7 %
+of Alanya's total — from only 32 establishments.** `[I]` The comparator's district, Avsallar, holds
+9 five-star hotels and 12,421 beds (7.1 %). **Azura World sits in a denser five-star cluster than New
+Level Premium does**, which is a sourced locational difference rather than a marketing claim.
 
 ---
 
@@ -363,3 +405,13 @@ Three findings here belong to **W0-B**, which owns `SOURCES.md`. W0-C does not w
    distance figures need to be displayed together or the page will read as a contradiction.
 4. **Two new Azura price observations** (C-32: €200,000 / 81 m²; C-33: from €260,000 / 72 m²) widen
    F-002 from 2.1× to **2.3×**. Both should enter the dataset with their sources.
+5. **The 188-room hotel figure now has official corroboration** — ALTSO Table 7 (S-043), sourced to
+   the Antalya Provincial Directorate: 188 rooms **and 376 beds**, at Türkler Mah. Kargı Çayı Cad. 10.
+   `SOURCES.md` currently grades 188 rooms from a search chain; it can be upgraded, and the bed count
+   is new.
+6. **The hotel's 2024 register status is BKT (municipality-licensed), not ministry-certified** (§3.7b).
+   This is material to how the "5★ all-inclusive" claim is displayed in the CATI — the honest rendering
+   is "operator/portal classification; official star classification not evidenced at 31.12.2024",
+   **not** a denial of the five-star status.
+7. **Two source hosts absent from `SOURCES.md`**: `vikingen.net` (Norwegian channel, operated by
+   Tyrkialeiligheter AS) and `firstalanya.ru`, both carrying Azura World sales listings.

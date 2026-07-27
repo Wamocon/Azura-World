@@ -25,6 +25,14 @@ next-env.d.ts
 sources/raw/*
 !sources/raw/.gitkeep
 
+# --- harvested competitor media: renders, floor plans, photography, PDFs ---
+# Third-party copyright. MEDIA-LICENSE.md classifies these internal_only by
+# default, and this repository is PUBLIC — committing them would redistribute a
+# competitor's marketing assets. Keep originals local; commit only encoded
+# derivatives that carry an explicit attributed_display rights decision.
+sources/media/*
+!sources/media/.gitkeep
+
 # --- generated QA artefacts (repo policy: never keep these) ---
 quality/results/
 quality/layout/

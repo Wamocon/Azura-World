@@ -1,0 +1,1678 @@
+{
+  "hotel.aquaparkSlides": [
+    {
+      "value": 13,
+      "raw": "Indoor Pool, Oasis Pool, and Aquapark with 13 different slides offer both relaxation and entertainment options together.",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": 16,
+      "raw": "club vibes with 125m of golden sands and a sizzling sunbed lineup Mahoosive aquapark with 16 slides – yes, SIXTEEN – plus kids’ splash zones Round-the-clock grub with buffets, snacks, ice c",
+      "note": null,
+      "tier": 5,
+      "sourceId": "onthebeach",
+      "host": "onthebeach.co.uk"
+    },
+    {
+      "value": 16,
+      "raw": "Offering guests 16 water-slides, the 5-star newly built Azura World Hotel Alanya sits 3.1 km from Old Well. Located in a",
+      "note": "Read from wyndham.antalyacoast.com — the SUPERSEDED Wyndham-brand URL for this property (F-007). Historical evidence, not the current identity.",
+      "tier": 5,
+      "sourceId": "wyndham-antalyacoast",
+      "host": "wyndham.antalyacoast.com"
+    }
+  ],
+  "hotel.board": [
+    {
+      "value": "All-Inclusive",
+      "raw": "Welcome to Azura World Hotel Alanya – All-Inclusive Concept",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    }
+  ],
+  "hotel.brandAffiliation": [
+    {
+      "value": "Wyndham Hotels & Resorts",
+      "raw": "Dünyada 9 bin 800, Türkiye'de ise 102 otel ile dünyanın en büyük otel franchise zincir markası olan Wyndham Hotels & Resorts ile Alanya'da yapılan ilk lisans sözleşmesi olduğunu belirten Cebeci İnşaat Yönetim Kurulu Başkanı Ahmet Cebe",
+      "note": "licence agreement signed by Cebeci İnşaat for the hotel part of Azura World Residence & Hotel; the article presents it as the first Wyndham licence in Alanya; article published 11 Mart 2023 (2023-03)",
+      "tier": 6,
+      "sourceId": "turizmguncel",
+      "host": "turizmguncel.com"
+    }
+  ],
+  "hotel.checkIn": [
+    {
+      "value": "14:00",
+      "raw": "Check-in is at 14:00, check-out is at 12:00.",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "14:00",
+      "raw": "\"checkinTime\": \"14:00-23:59\"",
+      "note": "Read from wyndham.antalyacoast.com — the SUPERSEDED Wyndham-brand URL for this property (F-007). Historical evidence, not the current identity.",
+      "tier": 5,
+      "sourceId": "wyndham-antalyacoast",
+      "host": "wyndham.antalyacoast.com"
+    }
+  ],
+  "hotel.checkOut": [
+    {
+      "value": "12:00",
+      "raw": "Check-in is at 14:00, check-out is at 12:00.",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "12:00",
+      "raw": "\"checkoutTime\": \"12:00\"",
+      "note": "Read from wyndham.antalyacoast.com — the SUPERSEDED Wyndham-brand URL for this property (F-007). Historical evidence, not the current identity.",
+      "tier": 5,
+      "sourceId": "wyndham-antalyacoast",
+      "host": "wyndham.antalyacoast.com"
+    }
+  ],
+  "hotel.distanceToBeachM": [
+    {
+      "value": 1000,
+      "raw": "The beach is 1 km away;",
+      "note": "page states \"beach is 1 km\"",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    }
+  ],
+  "hotel.floors": [
+    {
+      "value": 6,
+      "raw": "There are a total of 188 rooms, 6 floors, and 2 elevators.",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    }
+  ],
+  "hotel.formerName": [
+    {
+      "value": "Wyndham Alanya",
+      "raw": "Azura World Hotel (ex. Wyndham Alanya)",
+      "note": "Published by the reseller as an explicit rebrand marker '(ex. …)' in the listing title itself — F-007.",
+      "tier": 5,
+      "sourceId": "onthebeach",
+      "host": "onthebeach.co.uk"
+    },
+    {
+      "value": "Wyndham Alanya",
+      "raw": "Located on the dazzling coast of Alanya, Wyndham Alanya Hotel offers an unforgettable holiday experience by combining comfort, elegance, and impeccable service. With its modern architecture, spacious rooms, and breathtaking v",
+      "note": "From the property's own About description, which still reads 'Wyndham Alanya Hotel' while the listing title reads 'Azura World Hotel'. The brand token is normalised off the '… Hotel' suffix so it matches the '(ex. Wyndham Alanya)' marker other hosts publish; the full sentence is in raw. Stale operator copy (F-007) — historical, not current.",
+      "tier": 5,
+      "sourceId": "tripadvisor",
+      "host": "tripadvisor.com"
+    }
+  ],
+  "hotel.name": [
+    {
+      "value": "Azura World Hotel",
+      "raw": "<title>Azura World Hotel</title>",
+      "note": "document <title>; body heading reads \"Welcome to Azura World Hotel Alanya\"",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "Azura World Hotel",
+      "raw": "<meta property=\"og:title\" content=\"Azura World Hotel (@azuraworldhotel) • Instagram photos and videos\">",
+      "note": "Instagram account display name (og:title); the account's own capitalisation, no legal-form suffix",
+      "tier": 3,
+      "sourceId": "instagram-azuraworldhotel",
+      "host": "instagram.com"
+    },
+    {
+      "value": "Azura World Hotel",
+      "raw": "Azura World Hotel (ex. Wyndham Alanya)",
+      "note": null,
+      "tier": 5,
+      "sourceId": "onthebeach",
+      "host": "onthebeach.co.uk"
+    },
+    {
+      "value": "Azura World Hotel",
+      "raw": "\"@type\":\"LodgingBusiness\",\"name\":\"Azura World Hotel\"",
+      "note": null,
+      "tier": 5,
+      "sourceId": "tripadvisor",
+      "host": "tripadvisor.com"
+    }
+  ],
+  "hotel.openedYear": [
+    {
+      "value": 2025,
+      "raw": "Located in Turkler, Alanya/Antalya, Azura World Hotel is a 5-star, All-Inclusive resort opening in 2025.",
+      "note": "stated as a future opening on this snapshot",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    }
+  ],
+  "hotel.roomCount": [
+    {
+      "value": 188,
+      "raw": "There are a total of 188 rooms, 6 floors, and 2 elevators.",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": 188,
+      "raw": "a Standard Room) LOCATION TürkiyeTurkish Mediterranean CoastAntalya ProvinceAlanyaTurkler NUMBER OF ROOMS 188 Prices are provided by our partners, and reflect nightly room rates, including any mandat",
+      "note": null,
+      "tier": 5,
+      "sourceId": "tripadvisor",
+      "host": "tripadvisor.com"
+    },
+    {
+      "value": 112,
+      "raw": "Old Well. Located in a beach area, the elegant hotel features an indoor swimming pool and 112 rooms with mountain views.",
+      "note": "Read from wyndham.antalyacoast.com — the SUPERSEDED Wyndham-brand URL for this property (F-007). Historical evidence, not the current identity.",
+      "tier": 5,
+      "sourceId": "wyndham-antalyacoast",
+      "host": "wyndham.antalyacoast.com"
+    }
+  ],
+  "hotel.stars": [
+    {
+      "value": 5,
+      "raw": "5-star hotel",
+      "note": null,
+      "tier": 6,
+      "sourceId": "altoprealestate-rental",
+      "host": "altoprealestate.com"
+    },
+    {
+      "value": 5,
+      "raw": "5-Star Comfort, All-Inclusive Experience",
+      "note": null,
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": 5,
+      "raw": "5* A La Carte hotel",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 5,
+      "raw": "a 5-star Hotel",
+      "note": null,
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 5,
+      "raw": "5-star hotel",
+      "note": null,
+      "tier": 6,
+      "sourceId": "kalinka-realty",
+      "host": "kalinka-realty.com"
+    },
+    {
+      "value": 5,
+      "raw": "\"starRating\":{\"@type\":\"Rating\",\"ratingValue\":5}",
+      "note": null,
+      "tier": 5,
+      "sourceId": "onthebeach",
+      "host": "onthebeach.co.uk"
+    },
+    {
+      "value": 5,
+      "raw": "a 5-star hotel",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    },
+    {
+      "value": 5,
+      "raw": "tures, amenities, and services to expect. This property is classified according to Giata. 5 of 5 stars HOTEL STYLE Quaint Mid-range Languages Spoken English, Russian, Arabic, Danish and 2 more",
+      "note": "Tripadvisor states this class is assigned by Giata, not by Tripadvisor.",
+      "tier": 5,
+      "sourceId": "tripadvisor",
+      "host": "tripadvisor.com"
+    },
+    {
+      "value": 5,
+      "raw": "5 yıldızlı Azura World Residence & Hotel",
+      "note": null,
+      "tier": 6,
+      "sourceId": "turizmguncel",
+      "host": "turizmguncel.com"
+    },
+    {
+      "value": 5,
+      "raw": "\"starRating\": { \"@type\": \"Rating\", \"ratingValue\": \"5\" }",
+      "note": "Read from wyndham.antalyacoast.com — the SUPERSEDED Wyndham-brand URL for this property (F-007). Historical evidence, not the current identity.",
+      "tier": 5,
+      "sourceId": "wyndham-antalyacoast",
+      "host": "wyndham.antalyacoast.com"
+    }
+  ],
+  "project.buildStatus": [
+    {
+      "value": "completed",
+      "raw": "<div class=\"col-md-4 single-item bitmis\"> ... <h5>Azura World Residence & Hotel</h5>",
+      "note": "project card filed under the page's own \"Finished Projects\" filter | also: Azura World Alanya · Completed",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "Readiness 90%",
+      "note": "page's status widget shows a readiness percentage below 100; mapped to the frozen buildStatus vocabulary, percentage kept verbatim in raw",
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": "under_construction",
+      "raw": "Die Entwicklung wird im Mai 2024 abgeschlossen sein.",
+      "note": "Haspo publishes no build-status field. The page describes the project in the future tense ('will be completed' / 'abgeschlossen sein', 'the complex will have…'), which is the whole of its claim to being unbuilt. Read at capture time 2026-07-27, ~2 years after the stated completion — F-006. Parser reports the tense; builder resolves.",
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "The development will be completed in May 2024.",
+      "note": "Haspo publishes no build-status field. The page describes the project in the future tense ('will be completed' / 'abgeschlossen sein', 'the complex will have…'), which is the whole of its claim to being unbuilt. Read at capture time 2026-07-27, ~2 years after the stated completion — F-006. Parser reports the tense; builder resolves.",
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Fertigstellungstermin: Fertig",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World befindet sich noch im Bau. Das Gebiet bietet",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Completion date: Ready",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World is still under construction. The territory has",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Срок сдачи: Сдан",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World ещё строится. На территории",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Fertigstellungstermin: Fertig",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World befindet sich noch im Bau. Das Gebiet bietet",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Date d’achèvement: Prêt",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World est encore en construction. Le territoire dispose",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Fecha de finalización: Terminado",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": "under_construction",
+      "raw": "World Azura World aún está en construcción. La zona tiene todo lo",
+      "note": "the same page's completion field reads 'ready'",
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": "completed",
+      "raw": "Teslimat süresi: Teslim edildi",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-05",
+      "host": "housearch.com"
+    }
+  ],
+  "project.buildingCount": [
+    {
+      "value": 14,
+      "raw": "14 Gebäude Anzahl der Gebäude",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 14,
+      "raw": "14 buildings Number of buildings",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    }
+  ],
+  "project.buildingFootprintSqm": [
+    {
+      "value": 15000,
+      "raw": "15.000 m2 GESAMTBAUFL",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 15000,
+      "raw": "Building area: 15,000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 15000,
+      "raw": "15.000 m² total building area",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.completionDate": [
+    {
+      "value": "2024-05-30",
+      "raw": "BAUENDE: 30.05.2024",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": "2024-05",
+      "raw": "will be completed in May 2024",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": "2024-05",
+      "raw": "Die Entwicklung wird im Mai 2024 abgeschlossen sein.",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "2024-05",
+      "raw": "The development will be completed in May 2024.",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "2024-05-30",
+      "raw": "Construction completion date: 30.05.2024",
+      "note": null,
+      "tier": 6,
+      "sourceId": "kalinka-realty",
+      "host": "kalinka-realty.com"
+    },
+    {
+      "value": "2024-05-30",
+      "raw": "Liefertermin wird als 30.05.2024",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": "2024-05-30",
+      "raw": "delivery date is determined as 30.05.2024.",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    }
+  ],
+  "project.constructionStart": [
+    {
+      "value": "2022-01-30",
+      "raw": "BAUBEGINN: 30.01.2022",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": "2022-01-30",
+      "raw": "Baubeginn: 30.01.2022",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": "2022-01-30",
+      "raw": "Construction start date: 30.01.2022",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    }
+  ],
+  "project.contact.address": [
+    {
+      "value": "Şekerhane Mah. Yayla Yolu Cad. Cebeci İs Merkezi No:22/1 07400 Alanya / Turkey",
+      "raw": "Şekerhane Mah. Yayla Yolu Cad. Cebeci İs Merkezi No:22/1\n07400 Alanya / Turkey",
+      "note": "Alanya Office",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "Mahmutlar mahallesi Barbaros caddesi Atlantis sitesi no:54/A 07450 Mahmutlar / Turkey",
+      "raw": "Mahmutlar mahallesi Barbaros caddesi Atlantis sitesi no:54/A\n07450 Mahmutlar / Turkey",
+      "note": "Mahmutlar Office",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "Şekerhane Mah. Yayla Yolu Cad. Cebeci İs Merkezi No:22/1 07400 Alanya / Turkey",
+      "raw": "Şekerhane Mah. Yayla Yolu Cad. Cebeci İs Merkezi No:22/1 07400 Alanya / Turkey",
+      "note": "Alanya Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "Mahmutlar mahallesi Barbaros caddesi Atlantis sitesi no:54/A 07450 Mahmutlar / Turkey",
+      "raw": "Mahmutlar mahallesi Barbaros caddesi Atlantis sitesi no:54/A 07450 Mahmutlar / Turkey",
+      "note": "Mahmutlar Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "raw": "Antalya, Alanya District, Turkler Neighborhood, Kargi Stream Avenue, 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Antalya, Alanya, Türkler Mah., Kargı Çayı Cad., 10H",
+      "raw": "Antalya, Alanya, Türkler Mah., Kargı Çayı Cad., 10H",
+      "note": "the project's own street address as printed on the listing card; the corporate address in Housearch's footer is a different thing",
+      "tier": 4,
+      "sourceId": "housearch-units-05",
+      "host": "housearch.com"
+    }
+  ],
+  "project.contact.email": [
+    {
+      "value": "info@cebecigroup.com",
+      "raw": "href=\"mailto:info@cebecigroup.com\"",
+      "note": "mailto link | also: info@cebecigroup.com",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "info@cebecigroup.com",
+      "raw": "info@cebecigroup.com",
+      "note": "contact block",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    }
+  ],
+  "project.contact.phone": [
+    {
+      "value": "+90 242 528 70 70",
+      "raw": "Phone: +90 242 528 70 70",
+      "note": "Alanya Office",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "+90 242 528 68 87",
+      "raw": "Phone: +90 242 528 68 87",
+      "note": "Mahmutlar Office",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "+90 242 528 70 70",
+      "raw": "Phone : +90 242 528 70 70",
+      "note": "Alanya Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+90 530 288 05 90",
+      "raw": "Phone : +90 530 288 05 90",
+      "note": "Alanya Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+90 242 528 68 87",
+      "raw": "Phone : +90 242 528 68 87",
+      "note": "Mahmutlar Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+90 533 494 44 01",
+      "raw": "Phone : +90 533 494 44 01",
+      "note": "Mahmutlar Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+90 532 662 25 16",
+      "raw": "Phone : +90 532 662 25 16",
+      "note": "Mahmutlar Office",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+88003501716",
+      "raw": "Russia : +88003501716",
+      "note": "Our International Numbers - Russia",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+74993501716",
+      "raw": "Russia : +74993501716",
+      "note": "Our International Numbers - Russia",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+77172696121",
+      "raw": "Kazakhistan : +77172696121",
+      "note": "Our International Numbers - Kazakhistan",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+380947112111",
+      "raw": "Ukraine : +380947112111",
+      "note": "Our International Numbers - Ukraine",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "+7 800 350 17 16",
+      "raw": "🇷🇺 +7 800 350 17 16",
+      "note": "Cebeci Group Instagram bio",
+      "tier": 2,
+      "sourceId": "instagram-cebecigroup",
+      "host": "instagram.com"
+    },
+    {
+      "value": "+90 533 494 44 01",
+      "raw": "🇹🇷 +90 533 494 44 01",
+      "note": "Cebeci Group Instagram bio",
+      "tier": 2,
+      "sourceId": "instagram-cebecigroup",
+      "host": "instagram.com"
+    }
+  ],
+  "project.developer": [
+    {
+      "value": "Cebeci Group A.Ş.",
+      "raw": "Ergebnis der 40-jährigen Erfahrung der Cebeci Group A.Ş. An einem der",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": "Cebeci Group A.Ş.",
+      "raw": "Azura World, Turkey's largest Residence & Hotel & Entertainment concept project, in the most beautiful location of Alanya, on its own land and with its own resources becomes the symbolic project as a result of the 40 years of experience of Cebeci Group A.Ş.",
+      "note": "body copy | also: <meta property=\"og:title\" content=\"Cebeci Group A.Ş.\">",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "Cebeci Group LLC",
+      "raw": "<meta name=\"author\" content=\"Cebeci Group LLC\">",
+      "note": "meta[name=author]",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "Cebeci Group A.Ş.",
+      "raw": "© 2024 Cebeci Group A.Ş.",
+      "note": "body copy | also: <meta property=\"og:title\" content=\"Cebeci Group A.Ş.\">",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "Cebeci-Gruppe",
+      "raw": "Cebeci-Gruppe",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": "Cebeci Group",
+      "raw": "Cebeci Group",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-05",
+      "host": "housearch.com"
+    },
+    {
+      "value": "CEBECİ GROUP",
+      "raw": "<meta property=\"og:title\" content=\"CEBECİ GROUP (@cebeci.group) • Instagram photos and videos\">",
+      "note": "Instagram account display name (og:title); the account's own capitalisation, no legal-form suffix",
+      "tier": 2,
+      "sourceId": "instagram-cebecigroup",
+      "host": "instagram.com"
+    },
+    {
+      "value": "Cebeci İnşaat",
+      "raw": "Cebeci İnşaat; Azura World Residence & Hotel projesinin otel kısmı için Wyndham Grubu ile lisans sözleşmesi imzaladı.",
+      "note": "named as the signatory of the Wyndham licence agreement for the hotel component",
+      "tier": 6,
+      "sourceId": "turizmguncel",
+      "host": "turizmguncel.com"
+    }
+  ],
+  "project.developerFoundedYear": [
+    {
+      "value": 1982,
+      "raw": "SINCE1982",
+      "note": "logo lockup",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Die Cebeci-Gruppe wurde 1982 in Alanya gegründet. Das",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Cebeci Group was founded in 1982 in Alanya. The company",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Cebeci Group основана в 1982 году в Аланьи. Компания",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Die Cebeci-Gruppe wurde 1982 in Alanya gegründet. Das",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Le groupe Cebeci a été fondé en 1982 à Alanya. L'entreprise",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "Cebeci Group se fundó en 1982 en Alanya. La empresa",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": 1982,
+      "raw": "📈 На рынке с 1982 года",
+      "note": "Instagram bio",
+      "tier": 2,
+      "sourceId": "instagram-cebecigroup",
+      "host": "instagram.com"
+    }
+  ],
+  "project.distanceToAlanyaCentreKm": [
+    {
+      "value": 15,
+      "raw": "INNENSTADT VON ALANYA – 15 KM",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 10,
+      "raw": "Von der Mitte: ab 10 km",
+      "note": "overview sidebar value; the body prose on the same page may state a different figure",
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 15,
+      "raw": "Alanya city center – 15 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 10,
+      "raw": "From Center: from 10 km",
+      "note": "overview sidebar value; the body prose on the same page may state a different figure",
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 15,
+      "raw": "15 kilometers from Alanya",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 18.0,
+      "raw": "Center Alanya: 18 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 18.0,
+      "raw": "Center Alanya: 18 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 17,
+      "raw": "Standort Azura World Azura World liegt 17 km vom Zentrum von Alanya entfernt. 550 m von",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch",
+      "host": "housearch.com"
+    },
+    {
+      "value": 17,
+      "raw": "Location Azura World Azura World is located 17 km from the center of Alanya. At 550 meters",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units",
+      "host": "housearch.com"
+    },
+    {
+      "value": 17,
+      "raw": "Azura World Azura World расположен в 17 км от центра Аланьи. В 550 м от комплекса —",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-01",
+      "host": "housearch.com"
+    },
+    {
+      "value": 17,
+      "raw": "Standort Azura World Azura World liegt 17 km vom Zentrum von Alanya entfernt. 550 m von",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-02",
+      "host": "housearch.com"
+    },
+    {
+      "value": 17,
+      "raw": "Azura World Azura World est situé à 17 km du centre d'Alanya. À 550 m du complexe se",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-03",
+      "host": "housearch.com"
+    },
+    {
+      "value": 17,
+      "raw": "Azura World Azura World se encuentra a 17 km del centro de Alanya. A 550 m del complejo",
+      "note": null,
+      "tier": 4,
+      "sourceId": "housearch-units-04",
+      "host": "housearch.com"
+    },
+    {
+      "value": 15,
+      "raw": "15 km westlich von Alanya",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 15,
+      "raw": "15 km west part of Alanya",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 17,
+      "raw": "Alanya Town Center: 17 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.distanceToAntalyaAirportKm": [
+    {
+      "value": 110,
+      "raw": "FLUGHAFEN ANTALYA – 110 KM",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 110,
+      "raw": "Antalya Airport – 110 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 130,
+      "raw": "To the airport ANTALYA: 130 km",
+      "note": null,
+      "tier": 6,
+      "sourceId": "altoprealestate-rental",
+      "host": "altoprealestate.com"
+    },
+    {
+      "value": 100.0,
+      "raw": "Flughafen Antalya: 100 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 100.0,
+      "raw": "Antalya Airport: 100 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 100,
+      "raw": "100 km vom Flughafen Antalya",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 100,
+      "raw": "100 km from Antalya Airport",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 94,
+      "raw": "Antalya International Airport: 94 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.distanceToGazipasaAirportKm": [
+    {
+      "value": 60,
+      "raw": "FLUGHAFEN GAZİPAŞA – 60 KM",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 60,
+      "raw": "Gazipaşa Airport – 60 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 30,
+      "raw": "To the airport GAZIPASHA: 30 km",
+      "note": null,
+      "tier": 6,
+      "sourceId": "altoprealestate-rental",
+      "host": "altoprealestate.com"
+    },
+    {
+      "value": 60.0,
+      "raw": "Gazipasa: 60 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 60.0,
+      "raw": "Gazipasa: 60 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 60,
+      "raw": "60 km vom Flughafen Gazipasa",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 60,
+      "raw": "60 km from Gazipasa Airport",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 54,
+      "raw": "Alanya-Gazipaşa Airport: 54 km",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.distanceToSeaM": [
+    {
+      "value": 300,
+      "raw": "ENTFERNUNG ZUM MEER - 300 M",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 300,
+      "raw": "only 300 meters from a private beach",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 350,
+      "raw": "350 meters from the Mediterranean Sea",
+      "note": null,
+      "tier": 6,
+      "sourceId": "altoprealestate-rental",
+      "host": "altoprealestate.com"
+    },
+    {
+      "value": 500,
+      "raw": "500 metres to private beach",
+      "note": "page states two different distances to the beach; both are reported",
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 300,
+      "raw": "300 meters from the private beach",
+      "note": "page states two different distances to the beach; both are reported",
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 300,
+      "raw": "300 meters from its own private beach",
+      "note": null,
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 300.0,
+      "raw": "Meer und Strand: 300 m",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 300.0,
+      "raw": "Sea and beach: 300 m",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 300,
+      "raw": "300 m. to the sea",
+      "note": null,
+      "tier": 6,
+      "sourceId": "kalinka-realty",
+      "host": "kalinka-realty.com"
+    },
+    {
+      "value": 200,
+      "raw": "200 Meter vom Meer",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 200,
+      "raw": "200 meters from the sea",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 300,
+      "raw": "Distance To The Sea (M) 300 m",
+      "note": "property-details table; the description on the same page states a different distance",
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 300,
+      "raw": "private beach 300 meters away",
+      "note": "page states two different distances to the beach; both are reported",
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    },
+    {
+      "value": 500,
+      "raw": "The Beach: 500 m",
+      "note": "page states two different distances to the beach; both are reported",
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.downPaymentPercent": [
+    {
+      "value": 30,
+      "raw": "Rate ab, %: 30",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    }
+  ],
+  "project.floorsPerBuilding": [
+    {
+      "value": 5,
+      "raw": "Total Floors: 5",
+      "note": "listing overview; describes the block this listing sits in, which need not be every block in the complex",
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 6,
+      "raw": "6-Böden Anzahl der Stockwerke des Gebäudes",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty",
+      "host": "hasporealty.com"
+    },
+    {
+      "value": 6,
+      "raw": "6 floors Number of floors of the building",
+      "note": null,
+      "tier": 4,
+      "sourceId": "hasporealty-units",
+      "host": "hasporealty.com"
+    }
+  ],
+  "project.greenAreaSqm": [
+    {
+      "value": 20000,
+      "raw": "20000 m2 GESAMTE",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 20000,
+      "raw": "Green area: 20,000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 41000,
+      "raw": "Over 41,000 m² of landscaped green areas",
+      "note": "page attributes this figure to landscaped green areas",
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 20000,
+      "raw": "Green Field (Garten): 20.000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 20000,
+      "raw": "Green Field (Garden): 20.000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 20000,
+      "raw": "20.000 m² total green area",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.outdoorFacilityAreaSqm": [
+    {
+      "value": 41000,
+      "raw": "41000 m2 Freiluft",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 41000,
+      "raw": "Infrastructure area: 41,000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 41000,
+      "raw": "41.000 m² total facility area",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.plotAreaSqm": [
+    {
+      "value": 76000,
+      "raw": "GESAMTFLÄCHE 76000 m2",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-466",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 76000,
+      "raw": "Total land area: 76,000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 76000,
+      "raw": "covers an area of 76,000 square meters",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 76000,
+      "raw": "Built over 76,000 m²",
+      "note": null,
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 76000,
+      "raw": "covers 76,000 m2",
+      "note": null,
+      "tier": 6,
+      "sourceId": "kalinka-realty",
+      "host": "kalinka-realty.com"
+    },
+    {
+      "value": 76000,
+      "raw": "Gesamtgrundstücksfläche: 76.000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 76000,
+      "raw": "Total land area: 76,000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 76000,
+      "raw": "Built on 76.000 m²",
+      "note": null,
+      "tier": 4,
+      "sourceId": "terrarealestate",
+      "host": "terrarealestate.com"
+    }
+  ],
+  "project.residenceBlockCount": [
+    {
+      "value": 7,
+      "raw": "seven residential blocks",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 7,
+      "raw": "656 apartments in 7 residence blocks",
+      "note": null,
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 7,
+      "raw": "7 Blöcken",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 7,
+      "raw": "7 blocks",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    }
+  ],
+  "project.social": [
+    {
+      "value": "https://www.instagram.com/cebeci.group/",
+      "raw": "href=\"https://www.instagram.com/cebeci.group/\"",
+      "note": "instagram",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "https://www.facebook.com/cebecigroup",
+      "raw": "href=\"https://www.facebook.com/cebecigroup\"",
+      "note": "facebook",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "https://www.linkedin.com/company/cebeci-group-i%CC%87n%C5%9Faat-ve-turizm-a%C5%9F/about/",
+      "raw": "href=\"https://www.linkedin.com/company/cebeci-group-i%CC%87n%C5%9Faat-ve-turizm-a%C5%9F/about/\"",
+      "note": "linkedin",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "https://www.youtube.com/c/CebeciGroupAlanya",
+      "raw": "href=\"https://www.youtube.com/c/CebeciGroupAlanya\"",
+      "note": "youtube",
+      "tier": 1,
+      "sourceId": "azuraworld-official",
+      "host": "azuraworld.com"
+    },
+    {
+      "value": "https://www.facebook.com/azuraworldhotel/",
+      "raw": "href=\"https://www.facebook.com/azuraworldhotel/\"",
+      "note": "facebook",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "https://www.instagram.com/azuraworldhotel/",
+      "raw": "href=\"https://www.instagram.com/azuraworldhotel/\"",
+      "note": "instagram",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "https://www.youtube.com/channel/UC3Z23WuWOhmpFnbw9fLI1-g",
+      "raw": "href=\"https://www.youtube.com/channel/UC3Z23WuWOhmpFnbw9fLI1-g\"",
+      "note": "youtube",
+      "tier": 3,
+      "sourceId": "azuraworldhotel",
+      "host": "azuraworldhotel.com"
+    },
+    {
+      "value": "https://www.instagram.com/cebeci.group/",
+      "raw": "href=\"https://www.instagram.com/cebeci.group/\"",
+      "note": "instagram",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "https://www.facebook.com/cebecigroup",
+      "raw": "href=\"https://www.facebook.com/cebecigroup\"",
+      "note": "facebook",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "https://www.linkedin.com/company/cebeci-group-i%CC%87n%C5%9Faat-ve-turizm-a%C5%9F/about/",
+      "raw": "href=\"https://www.linkedin.com/company/cebeci-group-i%CC%87n%C5%9Faat-ve-turizm-a%C5%9F/about/\"",
+      "note": "linkedin",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "https://www.youtube.com/c/CebeciGroupAlanya",
+      "raw": "href=\"https://www.youtube.com/c/CebeciGroupAlanya\"",
+      "note": "youtube",
+      "tier": 2,
+      "sourceId": "cebecigroup-index",
+      "host": "cebecigroup.com"
+    },
+    {
+      "value": "https://www.instagram.com/azuraworldhotel/",
+      "raw": "<meta property=\"og:url\" content=\"https://www.instagram.com/azuraworldhotel/\">",
+      "note": "instagram",
+      "tier": 3,
+      "sourceId": "instagram-azuraworldhotel",
+      "host": "instagram.com"
+    },
+    {
+      "value": "https://www.instagram.com/cebeci.group/",
+      "raw": "<meta property=\"og:url\" content=\"https://www.instagram.com/cebeci.group/\">",
+      "note": "instagram",
+      "tier": 2,
+      "sourceId": "instagram-cebecigroup",
+      "host": "instagram.com"
+    }
+  ],
+  "project.totalUnits": [
+    {
+      "value": 656,
+      "raw": "residential section features 656 spacious apartments with large balconies",
+      "note": null,
+      "tier": 4,
+      "sourceId": "alanya-home-891",
+      "host": "alanya-home.com"
+    },
+    {
+      "value": 656,
+      "raw": "656 apartments",
+      "note": null,
+      "tier": 6,
+      "sourceId": "cestate",
+      "host": "cestate.net"
+    },
+    {
+      "value": 656,
+      "raw": "656 apartments in 7 residence blocks",
+      "note": null,
+      "tier": 6,
+      "sourceId": "enspride",
+      "host": "enspride.com"
+    },
+    {
+      "value": 656,
+      "raw": "656 Immobilien",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya",
+      "host": "seaside-alanya.com"
+    },
+    {
+      "value": 656,
+      "raw": "656 properties",
+      "note": null,
+      "tier": 4,
+      "sourceId": "seaside-alanya-units",
+      "host": "seaside-alanya.com"
+    }
+  ]
+}

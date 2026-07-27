@@ -102,7 +102,40 @@ export const CFG = {
     .filter(Boolean),
   navTimeoutMs: Number(env('MEDIA_NAV_TIMEOUT_MS', '45000')),
   maxPagesPerHost: Number(env('MEDIA_MAX_PAGES_PER_HOST', '12')),
+  /** Wall-clock budget for discovering ONE source, so a slow host cannot stall the pass. */
+  sourceBudgetMs: Number(env('MEDIA_SOURCE_BUDGET_MS', '300000')),
+  /**
+   * Ceiling on a single download. The hotel's own site serves 7360x4912 originals
+   * up to 40MB (575MB across 229 assets). We cap the STORED original at 2400px
+   * anyway, so pulling a 40MB source buys nothing but bandwidth on someone else's
+   * server. Over-ceiling assets are recorded as a rejection with their real size,
+   * never silently skipped.
+   */
+  maxDownloadBytes: Number(env('MEDIA_MAX_DOWNLOAD_BYTES', String(24 * 1024 * 1024))),
 }
+
+/**
+ * W0-B owns scripts/sources.config.json and harvests the same 23 hosts. Sharing
+ * "the politeness settings" means sharing the actual numbers, not the same env
+ * var names — W0-B's config sets perHostDelayMs 2500 where .env.example says
+ * 2000. Read its defaults when present and take the STRICTER of the two on every
+ * axis, so W0-D can never be the more aggressive of the two windows.
+ */
+function adoptW0BDefaults() {
+  const f = path.join(REPO, 'scripts', 'sources.config.json')
+  if (!existsSync(f)) return { adopted: false, from: null }
+  try {
+    const d = JSON.parse(readFileSync(f, 'utf8')).defaults ?? {}
+    const before = { delay: CFG.minDelayMs, conc: CFG.maxConcurrency }
+    if (Number.isFinite(d.perHostDelayMs)) CFG.minDelayMs = Math.max(CFG.minDelayMs, d.perHostDelayMs)
+    if (Number.isFinite(d.maxGlobalConcurrency)) CFG.maxConcurrency = Math.min(CFG.maxConcurrency, d.maxGlobalConcurrency)
+    if (Number.isFinite(d.navTimeoutMs)) CFG.navTimeoutMs = Math.max(CFG.navTimeoutMs, d.navTimeoutMs)
+    return { adopted: true, from: 'scripts/sources.config.json (W0-B)', before, after: { delay: CFG.minDelayMs, conc: CFG.maxConcurrency } }
+  } catch {
+    return { adopted: false, from: null }
+  }
+}
+export const W0B_POLITENESS = adoptW0BDefaults()
 
 // Validation floors — from the brief.
 export const MIN_BYTES = 10 * 1024
@@ -149,16 +182,44 @@ export function loadDep(name) {
 export const SOURCES = [
   { id: 1, host: 'www.azuraworld.com', publisher: 'Azura World (official)', tier: 1,
     pages: ['https://www.azuraworld.com/'] },
+  // SOURCES.md's HTTP 500 is a wrong URL, not a broken site: this app answers
+  // unrouted paths with 500 rather than 404 (control: /en/about-us 500s while
+  // /en/about works). The canonical page has no "project/" segment and returns
+  // 200. This recovers the tier-2 developer source that SOURCES.md F-010 lists
+  // as unrecovered — and it is the richest media source in the whole project.
+  //
+  // assetScope: Cebeci Group is a 26-project developer, so its pages and nav
+  // carry other developments. Azura World assets live under /obj/emlaklar/Cbc-AW
+  // ("Cbc-AW" = Cebeci Azura World) and the seven /obj/ornek_daire/134-140
+  // showroom albums (örnek daire = show flat), which recon matched to the unit
+  // types AW E-33 … AW E-39. Everything else on this host is another project's
+  // media and must not enter a manifest that claims to describe Azura World.
   { id: 2, host: 'www.cebecigroup.com', publisher: 'Cebeci Group', tier: 2,
-    pages: ['https://www.cebecigroup.com/en/project/azura-world-residence-hotel'] },
+    assetScope: /(Cbc-AW|ornek_daire\/(13[4-9]|140)\b|azura)/i,
+    pages: ['https://www.cebecigroup.com/en/azura-world-residence-hotel'] },
   { id: 3, host: 'www.cebecigroup.com', publisher: 'Cebeci Group (index)', tier: 2,
+    assetScope: /(Cbc-AW|ornek_daire\/(13[4-9]|140)\b|azura)/i,
     pages: ['https://www.cebecigroup.com/en/projects'] },
   { id: 4, host: 'www.alanyacebeci.com', publisher: 'Cebeci Alanya', tier: 2,
     pages: ['https://www.alanyacebeci.com/en/azura-world-residence-hotel'] },
+  // Recon measured the TLS failure precisely: the server sends the leaf only
+  // (UNABLE_TO_VERIFY_LEAF_SIGNATURE, chainLength 1, ZeroSSL, expiring
+  // 2026-07-29) — a missing-intermediate misconfiguration, not a hostile cert.
+  // The plain http:// origin returns 200 cleanly, so we fetch over http rather
+  // than disable certificate verification. Nothing here is authenticated and no
+  // credential is sent; assets carry tlsInvalid so the provenance is visible.
   { id: 5, host: 'azuraworldhotel.com', publisher: 'Azura World Hotel', tier: 3,
-    pages: ['https://azuraworldhotel.com/en'], tlsSuspect: true },
+    pages: ['http://azuraworldhotel.com/en'], tlsSuspect: true },
+  // The ticket's TERRA URL is wrong (SOURCES.md §5.3) and the reported 403 is a
+  // Cloudflare JS interstitial that a real browser clears without a challenge.
+  // The /property/2062 villas listing is NOT in SOURCES.md — recon found it via
+  // schema.org hasOfferCatalog. It carries 3 of the 7 floor plans.
   { id: 6, host: 'terrarealestate.com', publisher: 'TERRA Real Estate', tier: 4,
-    pages: ['https://terrarealestate.com/project/azura-world-residence-and-villas'] },
+    pages: [
+      'https://terrarealestate.com/project/azura-world-residence-and-villas',
+      'https://terrarealestate.com/property/2059-exclusive-alanya-apartments-in-a-complex-with-5-star-hotel-facilities',
+      'https://terrarealestate.com/property/2062-azura-world-villas-in-alanya-turkler-with-private-beach',
+    ] },
   { id: 7, host: 'alanya-home.com', publisher: 'Alanya-Home', tier: 4,
     pages: ['https://alanya-home.com/property/466/de/azura-world-residence'] },
   { id: 8, host: 'housearch.com', publisher: 'Housearch', tier: 4,
@@ -169,10 +230,17 @@ export const SOURCES = [
     pages: ['https://www.seaside-alanya.com/de/antalya-alanya/residence/azura-world-residence'] },
   { id: 11, host: 'www.realtygroup.com.tr', publisher: 'Realty Group', tier: 4,
     pages: ['https://www.realtygroup.com.tr/property/alanya/turkler/azura-world-rg-6005'] },
+  // SOURCES.md #12 is wrong twice: the ticket URL returns HTTP 200 (this host
+  // soft-404s everything, so its status codes carry no information), and the
+  // listing was re-slugged rather than removed. The live path is below.
+  // Hotlink-protected: 403 without a Referer, 200 with the source page.
   { id: 12, host: 'ivm-turkey.com', publisher: 'IVM Turkey', tier: 4,
-    pages: ['https://ivm-turkey.com/en/azura-world-residence-a-2767-1.html'] },
+    pages: ['https://ivm-turkey.com/en/azura-world-alanya-a-2767-1.html'] },
+  // Geo/property ids corrected by recon (SOURCES.md carried a placeholder).
+  // Traveller photos here belong to the individual travellers who uploaded them,
+  // not to Tripadvisor, so they can never be more than internal_only.
   { id: 13, host: 'www.tripadvisor.com', publisher: 'Tripadvisor', tier: 5,
-    pages: ['https://www.tripadvisor.com/Hotel_Review-g8752132-d33176030-Reviews-Azura_World_Hotel-Turkler_Alanya_Antalya_Province_Turkish_Mediterranean_Coast.html'],
+    pages: ['https://www.tripadvisor.com/Hotel_Review-g1069655-d33144231-Reviews-Azura_World_Hotel-Turkler_Alanya_Antalya_Province_Turkish_Mediterranean_Coast.html'],
     userGeneratedContent: true },
   { id: 14, host: 'wyndham.antalyacoast.com', publisher: 'Wyndham Alanya (superseded brand)', tier: 5,
     pages: ['https://wyndham.antalyacoast.com/en/'] },
@@ -197,8 +265,63 @@ export const SOURCES = [
     pages: ['https://www.turizmguncel.com/haber/ahmet-cebeci-wyndham-markasini-alanyaya-getiriyor'] },
 ]
 
+/**
+ * URLs that live on an in-scope page but are NOT this project.
+ *
+ * A plan-shaped filename on the right host is the most dangerous false positive
+ * in this task: floor plans and site plans are the headline deliverable, so a
+ * wrong one is worse than a missing one. Recon verified each of these by
+ * following the link that contains it.
+ */
+export const EXCLUDED = [
+  {
+    // Site furniture, not project media. Some of it clears the 10KB/200px floors
+    // — map tiles especially — so the size gate alone will not remove it.
+    test: (u) =>
+      /\/(favicon|apple-touch|sprite|placeholder|flags?)[-/.]/i.test(u) ||
+      /\/(tiles?|maptiles)\//i.test(u) ||
+      /\/\d{1,2}\/\d{1,6}\/\d{1,6}\.(png|jpg|webp)(\?|$)/i.test(u) ||
+      /(whatsapp|telegram|instagram|facebook|youtube|twitter|tiktok)[-_.]?(icon|logo)?\.(svg|png)(\?|$)/i.test(u),
+    reason: 'Site chrome (favicon, flag, social icon, sprite) or a slippy-map tile — not media of this project.',
+  },
+  {
+    test: (u) => /hasporealty\.com/.test(u) && /(project-plan|masterplan)/i.test(u),
+    reason:
+      'hasporealty.com serves project-plan / masterplan thumbnails for OTHER complexes ' +
+      '(referans-besiktas, the-house-residence-azure-zanzibar — "Azure Zanzibar" is not "Azura World"). ' +
+      'Verified by A4 recon following the containing anchor.',
+  },
+  {
+    test: (u) => /housearch\.com/.test(u) && /(elegant-lavinia|vip-beach-villas|the-maris-premiere)/i.test(u),
+    reason: 'housearch.com related-complex carousel — a different development on the same page.',
+  },
+]
+
+export function exclusionFor(url) {
+  return EXCLUDED.find((e) => e.test(url)) ?? null
+}
+
+/**
+ * Assets that page discovery cannot reach — endpoints rather than markup.
+ * Each one was measured by the recon pass; the evidence is in sources/media/recon/.
+ */
+export const EXTRA_CANDIDATES = [
+  {
+    url: 'https://alanya-home.com/api/pdf_export/466/de',
+    foundOn: 'https://alanya-home.com/property/466/de/azura-world-residence',
+    host: 'alanya-home.com',
+    discovery: 'recon:api-endpoint',
+    category: 'document',
+    subject: 'project',
+    caption: 'Alanya-Home listing export, German (listing_466_de.pdf, %PDF-1.4)',
+  },
+]
+
 // ── politeness: cross-process host lease + min delay + robots ────────────────
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+/** Hosts where W0-B was still writing when we wanted them. Reported, not hidden. */
+export const HOST_COLLISIONS = []
 
 /**
  * Atomic cross-process lease on a host. mkdir is atomic on NTFS, so whichever
@@ -206,7 +329,44 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
  * takes the same lease, which is what stops both windows hammering one host.
  * A lease older than staleMs is reclaimed — a crashed harvest must not wedge a host.
  */
-export async function withHostLease(host, fn, { staleMs = 120_000 } = {}) {
+/**
+ * W0-B does not take our lease — it predates it, and we do not own its file.
+ * But it writes snapshots into sources/raw/<host>/ as it goes, so its directory
+ * mtime is a usable liveness signal. If W0-B touched this host in the last
+ * `quietMs`, wait for it to move on rather than interleaving requests with it.
+ *
+ * Best-effort and one-directional: it stops W0-D piling onto a host W0-B is
+ * already working, which is the collision recon actually observed on
+ * kalinka-realty.com. The reciprocal request is in HANDOFF/W0-D.md.
+ */
+async function waitOutW0B(host, { quietMs = 45_000, maxWaitMs = 240_000 } = {}) {
+  const bare = host.replace(/^www\./, '')
+  const dirs = [path.join(REPO, 'sources', 'raw', bare), path.join(REPO, 'sources', 'raw', host)]
+  const started = Date.now()
+  let announced = false
+  for (;;) {
+    let newest = 0
+    for (const d of dirs) {
+      try {
+        newest = Math.max(newest, (await stat(d)).mtimeMs)
+      } catch {}
+    }
+    const quietFor = Date.now() - newest
+    if (!newest || quietFor > quietMs) return { waitedMs: Date.now() - started, collided: announced }
+    if (Date.now() - started > maxWaitMs) {
+      console.log(`   ! ${host}: W0-B still active after ${(maxWaitMs / 1000) | 0}s, proceeding at ${CFG.minDelayMs}ms spacing`)
+      return { waitedMs: Date.now() - started, collided: true, gaveUp: true }
+    }
+    if (!announced) {
+      console.log(`   yielding ${host} to W0-B (its sources/raw/${bare} was written ${(quietFor / 1000) | 0}s ago)`)
+      announced = true
+    }
+    await sleep(5000)
+  }
+}
+
+export async function withHostLease(host, fn, { staleMs = 120_000, minDelayMs = null } = {}) {
+  const delayMs = Math.max(CFG.minDelayMs, minDelayMs ?? 0)
   mkdirSync(CFG.lockDir, { recursive: true })
   const lock = path.join(CFG.lockDir, `${host.replace(/[^a-z0-9.-]/gi, '_')}.lock`)
   const hitFile = path.join(CFG.lockDir, `${host.replace(/[^a-z0-9.-]/gi, '_')}.lasthit`)
@@ -235,15 +395,17 @@ export async function withHostLease(host, fn, { staleMs = 120_000 } = {}) {
   try {
     writeFileSync(path.join(lock, 'owner.json'), JSON.stringify({ pid: process.pid, task: 'W0-D', at: new Date().toISOString() }))
   } catch {}
+  const w0b = await waitOutW0B(host)
+  if (w0b.collided) HOST_COLLISIONS.push({ host, ...w0b })
   try {
     return await fn({
-      /** Honour HARVEST_MIN_DELAY_MS *across processes* via a shared timestamp file. */
+      /** Honour the delay *across processes* via a shared timestamp file. */
       async pace() {
         let last = 0
         try {
           last = Number(readFileSync(hitFile, 'utf8')) || 0
         } catch {}
-        const wait = CFG.minDelayMs - (Date.now() - last)
+        const wait = delayMs - (Date.now() - last)
         if (wait > 0) await sleep(wait)
         try {
           writeFileSync(hitFile, String(Date.now()))
@@ -301,18 +463,44 @@ export function robotsPatternToRegex(pattern) {
   return new RegExp('^' + escaped + (anchorEnd ? '$' : ''))
 }
 
-export function robotsVerdict(groups, urlPath) {
-  const star = groups.filter((g) => g.agents.includes('*'))
-  const rules = star.flatMap((g) => g.rules)
-  const crawlDelay = star.map((g) => g.crawlDelay).find((d) => d != null) ?? null
-  let best = null
-  for (const r of rules) {
-    if (r.pathPrefix === '' && !r.allow) continue // "Disallow:" empty means allow all
-    if (!robotsPatternToRegex(r.pathPrefix).test(urlPath)) continue
-    // Longest match wins; on an equal-length tie, Allow wins (REP convention).
-    if (!best || r.pathPrefix.length > best.pathPrefix.length || (r.pathPrefix.length === best.pathPrefix.length && r.allow)) best = r
+/**
+ * Product tokens we treat as addressing us.
+ *
+ * W0-B evaluates only the `*` group, reasoning that a browser user-agent carries
+ * no crawler product token. That is defensible for reading a page. W0-D is
+ * stricter on purpose, because it does a heavier thing: it downloads and stores
+ * copies of images. Recon found that tripadvisor.com and turizmguncel.com both
+ * publish a group naming ClaudeBot with `Disallow: /`. Those are the operator's
+ * words about this operator, and the fact that our UA string says Chrome does not
+ * make them not apply. The cost of honouring them measured out at two assets;
+ * the cost of ignoring them is taking material from a site that said no.
+ *
+ * This is deliberately stricter than W0-B. SYSTEM-PROMPT §0 permits stricter,
+ * never looser, and W4-C should review the divergence.
+ */
+export const OUR_ROBOTS_TOKENS = ['*', 'claudebot', 'anthropic-ai', 'claude-web', 'claude-searchbot']
+
+export function robotsVerdict(groups, urlPath, tokens = OUR_ROBOTS_TOKENS) {
+  const mine = groups.filter((g) => g.agents.some((a) => tokens.includes(a)))
+  const crawlDelay = mine.map((g) => g.crawlDelay).find((d) => d != null) ?? null
+
+  /** Most restrictive group wins: an explicit Disallow anywhere blocks the path. */
+  let verdict = { allowed: true, matched: null, agent: null, crawlDelay }
+  for (const g of mine) {
+    let best = null
+    for (const r of g.rules) {
+      if (r.pathPrefix === '' && !r.allow) continue // "Disallow:" empty means allow all
+      if (!robotsPatternToRegex(r.pathPrefix).test(urlPath)) continue
+      // Longest match wins; on an equal-length tie, Allow wins (REP convention).
+      if (!best || r.pathPrefix.length > best.pathPrefix.length || (r.pathPrefix.length === best.pathPrefix.length && r.allow)) best = r
+    }
+    if (best && !best.allow) {
+      const agent = g.agents.find((a) => tokens.includes(a)) ?? '*'
+      // A group naming us explicitly is the more specific instruction; report it.
+      if (verdict.allowed || agent !== '*') verdict = { allowed: false, matched: best.pathPrefix, agent, crawlDelay }
+    }
   }
-  return { allowed: best ? best.allow : true, matched: best?.pathPrefix ?? null, crawlDelay }
+  return verdict
 }
 
 const robotsCache = new Map()
@@ -474,7 +662,14 @@ export function hamming(a, b) {
 // ── classification ───────────────────────────────────────────────────────────
 const RX = {
   siteplan: /(site[-_\s]?plan|master[-_\s]?plan|masterplan|vaziyet|genplan|генплан|situationsplan|lageplan|site[-_\s]?layout)/i,
-  floorplan: /(floor[-_\s]?plan|floorplan|grundriss|grundrisse|kat[-_\s]?plan|planlar|planировк|планировк|apartment[-_\s]?plan|unit[-_\s]?plan|\bplans?\b|layout)/i,
+  // "planlar" (Turkish: plans) is DELIBERATELY not here. cebecigroup.com serves
+  // its construction-progress gallery from /planlar/ with CMS captions "Plan 2"
+  // … "Plan 28"; visual inspection of the downloaded pixels showed drone aerials
+  // of the building site — two with burned-in "Date of Last Take" stamps — not a
+  // single drawing. A plan-shaped word in a path is not a plan.
+  floorplan: /(floor[-_\s]?plan|floorplan|grundriss|grundrisse|kat[-_\s]?plan|планировк|apartment[-_\s]?plan|unit[-_\s]?plan|\bplans?\b|layout)/i,
+  /** Construction-progress photography — genuinely valuable, but it is a photo. */
+  progress: /(planlar|progress|insaat|in[şs]aat|construction|santiye|[şs]antiye|whatsapp-image)/i,
   logo: /(logo|brand[-_\s]?mark|favicon|apple-touch|wordmark)/i,
   render: /(render|rendering|3d|visual|görsel|gorsel|proje[-_\s]?görsel)/i,
   brochure: /(brochure|broschur|broschüre|katalog|catalog|prospekt|price[-_\s]?list|pdf)/i,
@@ -489,7 +684,12 @@ export function classify({ url, alt = '', caption = '', hintCategory, hintSubjec
   const hay = `${decodeURIComponent(url)} ${alt} ${caption}`
   const isPdf = /\.pdf(\?|$)/i.test(url)
 
+  // A hint from recon outranks the filename heuristic: those agents opened the
+  // image. A construction-progress path outranks a plan-shaped filename, because
+  // that combination is exactly how /planlar/ misfires.
+  const isProgress = RX.progress.test(hay)
   let category = hintCategory && hintCategory !== 'photo' ? hintCategory : null
+  if (!category && isProgress && !RX.siteplan.test(hay)) category = 'photo'
   if (!category) {
     if (RX.siteplan.test(hay)) category = 'siteplan'
     else if (RX.floorplan.test(hay)) category = 'floorplan'
@@ -511,7 +711,7 @@ export function classify({ url, alt = '', caption = '', hintCategory, hintSubjec
     else if (RX.location.test(hay)) subject = 'location'
     else subject = 'project'
   }
-  return { category, subject }
+  return { category, subject, constructionProgress: isProgress && category === 'photo' }
 }
 
 // ── rights engine ────────────────────────────────────────────────────────────
@@ -598,7 +798,12 @@ export function originalCandidates(url) {
   }
   try {
     const u = new URL(url)
-    if (u.search) {
+    // On a script endpoint the query IS the identity of the resource:
+    // seaside's /pdf/pdf.php?ilanno=111282&lang=4 without its query is a
+    // different document, and "upgrading" to it would silently swap the asset.
+    // Only strip size params when the path itself names a file.
+    const isScriptEndpoint = /\.(php|aspx?|jsp|cgi|do)$/i.test(u.pathname) || /\/(api|ajax|export|download)\//i.test(u.pathname)
+    if (u.search && !isScriptEndpoint) {
       const stripped = new URL(url)
       for (const k of ['w', 'h', 'width', 'height', 'size', 'resize', 'fit', 'q', 'quality', 'ca', 'ce', 's']) stripped.searchParams.delete(k)
       push(stripped.toString().replace(/\?$/, ''))
@@ -608,11 +813,56 @@ export function originalCandidates(url) {
     }
     push(url.replace(/-\d{2,4}x\d{2,4}(\.[a-z]{3,4})(\?|$)/i, '$1$2'))
     push(url.replace(/\/(thumbs?|thumbnail|thumbnails|small|medium|resize[d]?|cache|crop|preview)\//i, '/'))
+    // LiipImagine (Symfony) filter segment, e.g. Kalinka's
+    // /media/cache/large/default/0025/09/hash.jpg → /media/cache/default/…
+    push(url.replace(/\/(large|xlarge|xxlarge|huge|big|full)\/(default|resolve)\//i, '/$2/'))
+    push(url.replace(/\/(large|xlarge|xxlarge|huge|big)\//i, '/'))
     push(url.replace(/\/max\d+x\d+\//i, '/original/'))
     push(url.replace(/\/(square|max)\d+(x\d+)?\//i, '/max1920x1080/'))
     push(url.replace(/_(thumb|small|medium|s|m)(\.[a-z]{3,4})(\?|$)/i, '$2$3'))
+    // Housearch's Verba CDN names a size alias as the LAST path segment; "orig"
+    // is the true original and it is a large win (151KB webp → 6.3MB JPEG).
+    if (/(^|\.)housearch\.com$/.test(u.hostname) || /avatars\.housearch\.com$/.test(u.hostname))
+      push(url.replace(/\/[^/]+$/, '/orig'))
+    // Single-letter size segment (cebecigroup: /planlar/m/x.jpg is 1024x768,
+    // /planlar/x.jpg is 2048x1365 — 4x the pixels, and the site never links it).
+    push(url.replace(/\/[msb]\/([^/]+)$/i, '/$1'))
   } catch {}
   return out
+}
+
+/**
+ * Collapse a CDN's size variants of one image to a single key.
+ *
+ * A WordPress gallery emits foo-300x200.jpg, foo-768x512.jpg, foo-1024x683.jpg
+ * and foo.jpg as four URLs of ONE photograph; hasporealty.com produced 13,515
+ * raw candidates that way, almost all of them the same pictures at different
+ * widths. Deduping after download would mean paying 13,515 requests to someone
+ * else's server to learn what the filename already told us.
+ */
+export function canonicalKey(url) {
+  try {
+    const u = new URL(url)
+    const p = u.pathname
+      .replace(/-\d{2,4}x\d{2,4}(\.[a-z]{3,4})$/i, '$1')
+      .replace(/\/(thumbs?|thumbnail|thumbnails|small|medium|large|xlarge|huge|resize[d]?|cache|crop|preview)\//gi, '/')
+      .replace(/\/max\d+x\d+\//i, '/')
+    const q = new URLSearchParams(u.search)
+    for (const k of [...q.keys()]) if (/^(w|h|width|height|size|resize|fit|q|quality|ca|ce|s|itok|v)$/i.test(k)) q.delete(k)
+    const rest = q.toString()
+    return `${u.host}${p}${rest ? `?${rest}` : ''}`.toLowerCase()
+  } catch {
+    return url.toLowerCase()
+  }
+}
+
+/** Pixels advertised by the filename; a URL with no size suffix is presumed the original. */
+export function sizeRank(url) {
+  const m = /-(\d{2,4})x(\d{2,4})\.[a-z]{3,4}(\?|$)/i.exec(url)
+  if (m) return Number(m[1]) * Number(m[2])
+  const q = /[?&](?:w|width)=(\d{2,4})/i.exec(url)
+  if (q) return Number(q[1]) * Number(q[1])
+  return Number.MAX_SAFE_INTEGER
 }
 
 const extFor = (format) =>
@@ -643,7 +893,13 @@ const COLLECT_IN_PAGE = `() => {
     const sv = s.getAttribute('src'); if (sv) add(sv, 'source', s);
   }
   // CSS background images — many hero renders are never in an <img>.
-  for (const el of document.querySelectorAll('*')) {
+  // getComputedStyle is expensive: on a heavy DOM an unbounded sweep takes
+  // MINUTES and looks like a hang. Cap the sweep and report if it was truncated.
+  const BG_SCAN_LIMIT = 4000;
+  const els = document.querySelectorAll('*');
+  const bgScanned = Math.min(els.length, BG_SCAN_LIMIT);
+  for (let i = 0; i < bgScanned; i++) {
+    const el = els[i];
     let bg = '';
     try { bg = getComputedStyle(el).backgroundImage } catch { continue }
     if (!bg || bg === 'none') continue;
@@ -682,6 +938,7 @@ const COLLECT_IN_PAGE = `() => {
   }
   return { candidates: out, videos, title: document.title,
     bodyText: (document.body?.innerText || '').slice(0, 4000),
+    bgScanned, bgTotal: els.length, bgTruncated: els.length > BG_SCAN_LIMIT,
     linkCount: document.querySelectorAll('a[href]').length };
 }`
 
@@ -752,8 +1009,19 @@ export async function discoverSource(src, pace) {
     viewport: { width: 1440, height: 900 },
   })
 
+  // One slow host must not stall the whole pass. Cloudflare-fronted sites with
+  // lightbox galleries can sit in click/wait cycles for minutes per page; when a
+  // source exceeds its budget we stop visiting further pages and SAY SO, rather
+  // than silently returning a short list that looks like a complete one.
+  const deadline = Date.now() + CFG.sourceBudgetMs
   try {
     for (const url of src.pages.slice(0, CFG.maxPagesPerHost)) {
+      if (Date.now() > deadline) {
+        record.notes.push(
+          `source budget ${CFG.sourceBudgetMs}ms exhausted — ${src.pages.length - record.pages.length} page(s) not visited: ${src.pages.slice(record.pages.length).join(', ')}`,
+        )
+        break
+      }
       const u = new URL(url)
       const verdict = robotsVerdict(robots.groups, u.pathname)
       if (robots.status === 200 && !verdict.allowed) {
@@ -785,6 +1053,7 @@ export async function discoverSource(src, pace) {
         await autoScroll(page)
         await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
         for (const sel of GALLERY_TRIGGERS) {
+          if (Date.now() > deadline) break
           try {
             const el = page.locator(sel).first()
             if (await el.isVisible({ timeout: 400 })) {
@@ -801,10 +1070,18 @@ export async function discoverSource(src, pace) {
 
       let dom = { candidates: [], videos: [], title: '', bodyText: '', linkCount: 0 }
       try {
-        dom = await page.evaluate(COLLECT_IN_PAGE)
+        // page.evaluate() treats a string as an EXPRESSION, so passing the
+        // collector source verbatim evaluates to a function object and
+        // serialises as undefined. It has to be invoked in the page.
+        dom =
+          (await Promise.race([
+            page.evaluate(`(${COLLECT_IN_PAGE})()`),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('in-page collection exceeded 60s')), 60_000)),
+          ])) ?? dom
       } catch (e) {
         record.notes.push(`in-page collection failed on ${url}: ${String(e.message).split('\n')[0]}`)
       }
+      if (dom.bgTruncated) record.notes.push(`${url}: CSS background sweep capped at ${dom.bgScanned} of ${dom.bgTotal} elements`)
 
       const status = nav ? nav.status() : navError ? `error: ${navError}` : 'no_response'
       /** Bot wall / soft 404 detection at page level. */
@@ -954,8 +1231,28 @@ async function fetchBytes(url, { referer, allowInvalidTls = false } = {}) {
   if (allowInvalidTls) process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   try {
     const r = await fetch(url, { headers, redirect: 'follow' })
-    const buf = Buffer.from(await r.arrayBuffer())
-    return { status: r.status, contentType: r.headers.get('content-type'), buf, finalUrl: r.url }
+    const declared = Number(r.headers.get('content-length') ?? 0)
+    if (declared > CFG.maxDownloadBytes) {
+      // Do not pull 40MB we would immediately downscale to 2400px.
+      try {
+        await r.body?.cancel()
+      } catch {}
+      return { status: r.status, contentType: r.headers.get('content-type'), buf: Buffer.alloc(0), oversize: declared, finalUrl: r.url }
+    }
+    // Stream so an undeclared-length body cannot blow past the ceiling either.
+    const chunks = []
+    let total = 0
+    for await (const chunk of r.body ?? []) {
+      total += chunk.length
+      if (total > CFG.maxDownloadBytes) {
+        try {
+          await r.body.cancel()
+        } catch {}
+        return { status: r.status, contentType: r.headers.get('content-type'), buf: Buffer.alloc(0), oversize: total, finalUrl: r.url }
+      }
+      chunks.push(Buffer.from(chunk))
+    }
+    return { status: r.status, contentType: r.headers.get('content-type'), buf: Buffer.concat(chunks), finalUrl: r.url }
   } catch (e) {
     return { status: 0, error: String(e.cause?.code ?? e.cause?.message ?? e.message), buf: Buffer.alloc(0) }
   } finally {
@@ -974,45 +1271,74 @@ async function fetchBytes(url, { referer, allowInvalidTls = false } = {}) {
  *      normal browser behaviour for hotlink protection, not a bypass.
  * Every attempt lands in `attempts` so the report can explain any rejection.
  */
-export async function acquire(cand, pace) {
+export async function acquire(cand, pace, { maxUpgradeAttempts = 3 } = {}) {
   const attempts = []
-  const ordered = [...originalCandidates(cand.url).map((u) => ({ url: u, why: 'original-upgrade' })), { url: cand.url, why: 'as-discovered' }]
   let best = null
 
-  for (const step of ordered) {
+  const tryOne = async (url, why) => {
     await pace()
-    let res = await fetchBytes(step.url, { allowInvalidTls: cand.tlsInvalid && CFG.allowInvalidTls })
+    let res = await fetchBytes(url, { allowInvalidTls: cand.tlsInvalid && CFG.allowInvalidTls })
     let usedReferer = false
+    // 403 without a Referer is hotlink protection. Sending the page that
+    // displayed the image is what a browser does; it is not a bypass.
     if (res.status === 403 && cand.foundOn) {
       await pace()
-      res = await fetchBytes(step.url, { referer: cand.foundOn, allowInvalidTls: cand.tlsInvalid && CFG.allowInvalidTls })
+      res = await fetchBytes(url, { referer: cand.foundOn, allowInvalidTls: cand.tlsInvalid && CFG.allowInvalidTls })
       usedReferer = true
     }
-    if (res.status !== 200) {
-      attempts.push({ url: step.url, why: step.why, status: res.status, error: res.error ?? null, usedReferer, ok: false, reason: res.error ? `transport_${res.error}` : `http_${res.status}` })
-      continue
+    if (res.oversize) {
+      attempts.push({ url, why, status: res.status, usedReferer, ok: false, bytes: res.oversize, reason: `over_max_download_bytes(${(res.oversize / 1024 / 1024).toFixed(1)}MB > ${(CFG.maxDownloadBytes / 1024 / 1024).toFixed(0)}MB)`, reportable: true })
+      return null
     }
-    const v = await validateBytes(res.buf, { url: step.url })
+    if (res.status !== 200) {
+      attempts.push({ url, why, status: res.status, error: res.error ?? null, usedReferer, ok: false, reason: res.error ? `transport_${res.error}` : `http_${res.status}` })
+      return null
+    }
+    const v = await validateBytes(res.buf, { url })
     attempts.push({
-      url: step.url, why: step.why, status: 200, usedReferer, ok: v.ok,
+      url, why, status: 200, usedReferer, ok: v.ok,
       reason: v.ok ? null : v.reason, bytes: v.bytes, width: v.width ?? null, height: v.height ?? null,
       format: v.format ?? null, sniffKind: v.sniff?.kind ?? null, reportable: v.reportable ?? false,
     })
-    if (!v.ok) continue
-    const area = (v.width ?? 0) * (v.height ?? 0)
-    const bestArea = (best?.width ?? 0) * (best?.height ?? 0)
-    if (!best || area > bestArea || (area === bestArea && v.bytes > best.bytes)) best = { ...v, buf: res.buf, contentType: res.contentType, usedReferer, upgradedFrom: step.why === 'original-upgrade' ? cand.url : null }
-    // An original-upgrade that decoded is already the best we will get.
-    if (step.why === 'original-upgrade' && v.ok) break
+    return v.ok ? { ...v, buf: res.buf, contentType: res.contentType, usedReferer } : null
   }
+
+  const better = (a, b) => {
+    if (!b) return a
+    if (!a) return b
+    const aa = (a.width ?? 0) * (a.height ?? 0)
+    const ba = (b.width ?? 0) * (b.height ?? 0)
+    return aa > ba || (aa === ba && a.bytes > b.bytes) ? a : b
+  }
+
+  // Try the "original" ladder until one decodes — but do NOT stop there. Recon
+  // measured Kalinka's /large/ filter UPSCALING small sources, so 16 of 32
+  // "originals" had more bytes and fewer pixels than the URL on the page. An
+  // upgrade is a candidate, not a winner: always fetch the discovered URL too and
+  // let pixel area decide.
+  let upgrade = null
+  for (const u of originalCandidates(cand.url).slice(0, maxUpgradeAttempts)) {
+    upgrade = await tryOne(u, 'original-upgrade')
+    if (upgrade) break
+  }
+  const asDiscovered = await tryOne(cand.url, 'as-discovered')
+
+  best = better(upgrade, asDiscovered)
+  if (best) best.upgradedFrom = best === upgrade ? cand.url : null
 
   return { candidate: cand, attempts, accepted: best }
 }
 
 // ── the run ──────────────────────────────────────────────────────────────────
-function idFor(host, sha256, category) {
+/**
+ * Content-addressed id. Deliberately does NOT encode the category: classification
+ * is a judgement that gets corrected (the /planlar/ set moved from floorplan to
+ * photo after visual inspection), and an id that churns when a label changes
+ * takes every encoded filename and manifest reference with it.
+ */
+function idFor(host, sha256) {
   const slug = host.replace(/^www\./, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase()
-  return `${category}-${slug}-${sha256.slice(0, 10)}`
+  return `azw-${slug}-${sha256.slice(0, 12)}`
 }
 
 async function run() {
@@ -1024,6 +1350,7 @@ async function run() {
   }
   const only = (val('only', '') || '').split(',').filter(Boolean)
   const maxPerSource = Number(val('max-per-source', '0')) || Infinity
+  const maxPhotosPerHost = Number(val('max-photos-per-host', env('MEDIA_MAX_PHOTOS_PER_HOST', '45')))
 
   for (const d of [DIR.media, DIR.discovery, DIR.recon, DIR.raw, DIR.originals]) await mkdir(d, { recursive: true })
 
@@ -1036,8 +1363,12 @@ async function run() {
   if (flag('selftest')) return selftest()
 
   // ── discovery ─────────────────────────────────────────────────────────────
+  // --plan: merge what is already on disk and report the download plan without
+  // touching the network. Cheap way to check the scope filters before paying
+  // ~1000 requests to find out they were wrong.
+  const planOnly = flag('plan')
   let discoveries = []
-  if (!flag('download-only')) {
+  if (!flag('download-only') && !planOnly) {
     const byHost = new Map()
     for (const s of SOURCES) {
       if (only.length && !only.includes(s.host)) continue
@@ -1049,7 +1380,13 @@ async function run() {
     const reconPages = await reconPagesByHost()
     let added = 0
     for (const [host, srcs] of byHost) {
-      const extra = [...(reconPages.get(host) ?? [])].filter((u) => !srcs.some((s) => s.pages.includes(u)))
+      const scope = srcs[0]?.assetScope ?? null
+      const extra = [...(reconPages.get(host) ?? [])]
+        .filter((u) => !srcs.some((s) => s.pages.includes(u)))
+        // Don't even visit a page that a multi-project host scopes out — recon
+        // reached cebecigroup's /en/contact and /en/finished-projects, which are
+        // other developments.
+        .filter((u) => !scope || scope.test(decodeURIComponent(u)))
       if (extra.length && srcs[0]) {
         srcs[0].pages = [...srcs[0].pages, ...extra].slice(0, CFG.maxPagesPerHost)
         added += extra.length
@@ -1099,9 +1436,15 @@ async function run() {
 
   /** Candidate keyed by URL; `carriedBy` accumulates every page that served it. */
   const candidates = new Map()
+  const excluded = []
   const addCandidate = (c, originHost) => {
     if (!c.url || /^data:|^blob:/.test(c.url)) return
-    const key = c.url
+    const ex = exclusionFor(c.url)
+    if (ex) {
+      excluded.push({ url: c.url, foundOn: c.foundOn ?? null, reason: ex.reason })
+      return
+    }
+    const key = canonicalKey(c.url)
     const prev = candidates.get(key)
     if (prev) {
       if (c.foundOn && !prev.carriedBy.includes(c.foundOn)) prev.carriedBy.push(c.foundOn)
@@ -1109,6 +1452,16 @@ async function run() {
       prev.needsReferer = prev.needsReferer || Boolean(c.needsReferer)
       prev.watermarked = prev.watermarked || Boolean(c.watermarked)
       prev.userGeneratedContent = prev.userGeneratedContent || Boolean(c.userGeneratedContent)
+      // Same picture, bigger variant: fetch that one instead.
+      if (sizeRank(c.url) > sizeRank(prev.url)) {
+        prev.variantsFolded = (prev.variantsFolded ?? 0) + 1
+        prev.supersededUrl = prev.url
+        prev.url = c.url
+        if (!prev.alt && c.alt) prev.alt = c.alt
+        if (!prev.caption && c.caption) prev.caption = c.caption
+      } else {
+        prev.variantsFolded = (prev.variantsFolded ?? 0) + 1
+      }
       return
     }
     const h = originHost ?? hostOf(c.foundOn || c.url)
@@ -1129,14 +1482,23 @@ async function run() {
   }
 
   const videoRefs = []
+  const outOfProjectScope = []
   for (const d of discoveries) {
+    const scope = SOURCES.find((s) => s.id === d.sourceId)?.assetScope ?? null
     let n = 0
     for (const c of d.candidates) {
       if (n++ >= maxPerSource) break
+      // On a multi-project host, an asset that does not match the project's own
+      // path scope belongs to a different development.
+      if (scope && !scope.test(decodeURIComponent(c.url)) && !scope.test(c.foundOn ?? '')) {
+        outOfProjectScope.push({ url: c.url, foundOn: c.foundOn, host: d.host })
+        continue
+      }
       addCandidate(c, d.host)
     }
     for (const v of d.videos) videoRefs.push({ ...v, sourceHost: d.host, sourceId: d.sourceId, publisher: d.publisher, tier: d.tier })
   }
+  for (const e of EXTRA_CANDIDATES) addCandidate(e, e.host)
   for (const s of seeds) {
     if (s.__video) {
       videoRefs.push({ embedUrl: s.embedUrl, foundOn: s.pageUrl, platform: s.platform, videoId: s.videoId, durationSec: s.durationSec, poster: s.posterUrl, termsPermitRehost: s.termsPermitRehost, evidence: s.evidence, sourceHost: s.host, publisher: sourceByHost.get(s.host)?.publisher ?? s.host, tier: sourceByHost.get(s.host)?.tier ?? null, discovery: `recon:${s.reconAgent}` })
@@ -1163,48 +1525,100 @@ async function run() {
     console.log('  ! MEDIA_ALLOW_VIDEO_DOWNLOAD=true — video rehost is enabled; MEDIA-LICENSE.md must record why')
   }
 
+  /**
+   * Per-host cap on ordinary photography and renders.
+   *
+   * 4,018 candidates is not proportionate to the job: seaside-alanya.com alone
+   * declares Crawl-delay 30, so its 558 candidates would be 4.6 hours of
+   * requests against someone else's server for a set the pHash pass would then
+   * fold heavily anyway. So `photo` and `render` are capped per host.
+   *
+   * NOTHING high-value is capped: floorplan, siteplan, document, logo and video
+   * are always taken in full. Recon-verified candidates are preferred over
+   * DOM-scraped ones because their bytes were already probed.
+   *
+   * The cap is REPORTED per host, never silent — a truncated harvest that reads
+   * as complete is the failure mode this whole task exists to avoid.
+   */
+  const UNCAPPED = new Set(['floorplan', 'siteplan', 'document', 'logo', 'video'])
+  const capped = []
+  {
+    const byHostAll = new Map()
+    for (const c of candidates.values()) {
+      if (!byHostAll.has(c.sourceHost)) byHostAll.set(c.sourceHost, [])
+      byHostAll.get(c.sourceHost).push(c)
+    }
+    for (const [host, list] of byHostAll) {
+      const bulk = list.filter((c) => !UNCAPPED.has(c.category))
+      if (bulk.length <= maxPhotosPerHost) continue
+      const ranked = [...bulk].sort((a, b) => {
+        const ra = a.discovery.includes('recon') ? 0 : 1
+        const rb = b.discovery.includes('recon') ? 0 : 1
+        if (ra !== rb) return ra - rb
+        const ca = a.caption || a.alt ? 0 : 1
+        const cb = b.caption || b.alt ? 0 : 1
+        return ca - cb
+      })
+      for (const c of ranked.slice(maxPhotosPerHost)) {
+        candidates.delete(canonicalKey(c.url))
+        capped.push({ host, url: c.url, category: c.category })
+      }
+    }
+  }
+
   const all = [...candidates.values()].filter((c) => !only.length || only.includes(c.sourceHost))
   console.log(`\nCandidates   : ${all.length} unique URLs across ${new Set(all.map((c) => c.sourceHost)).size} hosts`)
 
-  if (flag('discover-only')) {
+  if (flag('discover-only') || planOnly) {
     await writeFile(path.join(DIR.media, 'candidates.json'), JSON.stringify({ generatedAt: new Date().toISOString(), candidates: all, videoRefs }, null, 2))
-    console.log('--discover-only: candidates.json written, no downloads performed')
+    const folded = all.reduce((n, c) => n + (c.variantsFolded ?? 0), 0)
+    console.log(`  size-variants folded : ${folded} (WordPress -WxH and CDN size params collapsed before download)`)
+    console.log(`  out-of-project scope : ${outOfProjectScope.length} dropped (other developments on a multi-project host)`)
+    console.log(`  excluded as chrome   : ${excluded.length}`)
+    if (capped.length) {
+      const byHostCap = {}
+      for (const c of capped) byHostCap[c.host] = (byHostCap[c.host] ?? 0) + 1
+      console.log(`  CAPPED (not silent)  : ${capped.length} photo/render candidates beyond ${maxPhotosPerHost}/host — ${JSON.stringify(byHostCap)}`)
+      console.log(`                         floorplan/siteplan/document/logo/video are never capped`)
+    }
+    const byCat = {}
+    const byHost2 = {}
+    for (const c of all) {
+      byCat[c.category] = (byCat[c.category] ?? 0) + 1
+      byHost2[c.sourceHost] = (byHost2[c.sourceHost] ?? 0) + 1
+    }
+    console.log(`  by category          : ${JSON.stringify(byCat)}`)
+    console.log('  download plan by host:')
+    for (const [h, n] of Object.entries(byHost2).sort((a, b) => b[1] - a[1])) console.log(`      ${h.padEnd(30)} ${String(n).padStart(5)}`)
+    console.log(`\n${planOnly ? '--plan' : '--discover-only'}: candidates.json written, no downloads performed`)
     return
   }
 
   // ── download + validate ──────────────────────────────────────────────────
-  console.log(`\nDownload + byte validation (${MIN_BYTES / 1024}KB floor · ${MIN_LONG_EDGE}px long-edge floor)`)
-  const results = []
-  const byHostQueue = new Map()
-  for (const c of all) {
-    if (!byHostQueue.has(c.sourceHost)) byHostQueue.set(c.sourceHost, [])
-    byHostQueue.get(c.sourceHost).push(c)
-  }
-  const queues = [...byHostQueue.entries()]
-  let qi = 0
-  const dlWorkers = Array.from({ length: Math.min(CFG.maxConcurrency, queues.length) }, async () => {
-    while (qi < queues.length) {
-      const [host, list] = queues[qi++]
-      await withHostLease(host, async ({ pace }) => {
-        let ok = 0
-        let bad = 0
-        for (const cand of list) {
-          const r = await acquire(cand, pace)
-          results.push(r)
-          if (r.accepted) ok++
-          else bad++
-        }
-        console.log(`  ${host.padEnd(28)} accepted ${String(ok).padStart(4)} · rejected ${String(bad).padStart(4)}`)
-      })
-    }
-  })
-  await Promise.all(dlWorkers)
-
-  // ── persist raw bytes + capped originals ─────────────────────────────────
+  // Persisted per candidate, not at the end: a 1200-asset run over hosts that ask
+  // for 30s between requests takes the better part of an hour, and losing all of
+  // it to one crash would mean re-requesting everything from someone else's
+  // server. attempts.jsonl is the resume log; --refresh ignores it.
   const sharp = loadDep('sharp')
-  const accepted = []
-  for (const r of results) {
-    if (!r.accepted) continue
+  const attemptsFile = path.join(DIR.media, 'attempts.jsonl')
+  const priorRecords = []
+  const alreadyDone = new Set()
+  if (!flag('refresh') && existsSync(attemptsFile)) {
+    for (const line of (await readFile(attemptsFile, 'utf8')).split('\n')) {
+      if (!line.trim()) continue
+      try {
+        const rec = JSON.parse(line)
+        priorRecords.push(rec)
+        alreadyDone.add(rec.candidate.url)
+      } catch {}
+    }
+    if (priorRecords.length) console.log(`  resume: ${priorRecords.length} candidates already attempted (--refresh to redo)`)
+  } else if (flag('refresh') && existsSync(attemptsFile)) {
+    await rm(attemptsFile)
+  }
+
+  /** Write the bytes, cap the working original at 2400px, compute the pHash. */
+  async function persistAccepted(r) {
     const v = r.accepted
     const ext = extFor(v.format)
     const hostDir = path.join(DIR.raw, r.candidate.sourceHost.replace(/[^a-z0-9.-]/gi, '_'))
@@ -1212,20 +1626,27 @@ async function run() {
     const rawPath = path.join(hostDir, `${v.sha256.slice(0, 16)}.${ext}`)
     if (!existsSync(rawPath)) await writeFile(rawPath, v.buf)
 
-    const id = idFor(r.candidate.sourceHost, v.sha256, r.candidate.category)
+    const id = idFor(r.candidate.sourceHost, v.sha256)
     let storedWidth = v.width
     let storedHeight = v.height
-    let originalPath = null
+    let originalPath
     let phash = null
 
     if (v.kind === 'image') {
-      const longEdge = Math.max(v.width, v.height)
-      const capped = longEdge > ORIGINAL_CAP_PX
+      const capped = Math.max(v.width, v.height) > ORIGINAL_CAP_PX
       originalPath = path.join(DIR.originals, `${id}.${capped ? 'jpg' : ext}`)
       if (capped) {
-        // Cap the working original; the true source dimensions are recorded below.
-        // .rotate() applies EXIF orientation before we drop metadata.
-        const out = await sharp(v.buf).rotate().resize({ width: v.width >= v.height ? ORIGINAL_CAP_PX : null, height: v.height > v.width ? ORIGINAL_CAP_PX : null, withoutEnlargement: true }).jpeg({ quality: 92, mozjpeg: true }).toBuffer()
+        // .rotate() applies EXIF orientation BEFORE metadata is dropped, so
+        // stripping EXIF cannot silently flip a photo.
+        const out = await sharp(v.buf)
+          .rotate()
+          .resize({
+            width: v.width >= v.height ? ORIGINAL_CAP_PX : null,
+            height: v.height > v.width ? ORIGINAL_CAP_PX : null,
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 92, mozjpeg: true })
+          .toBuffer()
         await writeFile(originalPath, out)
         const m = await sharp(out).metadata()
         storedWidth = m.width
@@ -1243,10 +1664,10 @@ async function run() {
       if (!existsSync(originalPath)) await writeFile(originalPath, v.buf)
     }
 
-    accepted.push({
+    return {
       id,
       url: r.candidate.url,
-      upgradedFrom: v.upgradedFrom,
+      upgradedFrom: v.upgradedFrom ?? null,
       sourceHost: r.candidate.sourceHost,
       carriedBy: r.candidate.carriedBy.length ? r.candidate.carriedBy : [r.candidate.foundOn].filter(Boolean),
       discovery: r.candidate.discovery,
@@ -1268,12 +1689,116 @@ async function run() {
       watermarked: r.candidate.watermarked,
       userGeneratedContent: r.candidate.userGeneratedContent,
       tlsInvalid: r.candidate.tlsInvalid,
+      constructionProgress: Boolean(r.candidate.constructionProgress),
       phash,
       rawPath: path.relative(REPO, rawPath).replace(/\\/g, '/'),
       originalPath: path.relative(REPO, originalPath).replace(/\\/g, '/'),
       collectedAt: new Date().toISOString(),
-    })
+    }
   }
+
+  const appendQueue = []
+  async function record(r) {
+    const stored = r.accepted ? await persistAccepted(r) : null
+    const line =
+      JSON.stringify({
+        candidate: { url: r.candidate.url, sourceHost: r.candidate.sourceHost, foundOn: r.candidate.foundOn, category: r.candidate.category },
+        attempts: r.attempts,
+        accepted: stored,
+      }) + '\n'
+    appendQueue.push(line)
+    await writeFile(attemptsFile, appendQueue.join(''), { flag: 'a' })
+    appendQueue.length = 0
+    return stored
+  }
+
+  console.log(`\nDownload + byte validation (${MIN_BYTES / 1024}KB floor · ${MIN_LONG_EDGE}px long-edge floor)`)
+  const results = []
+  const byHostQueue = new Map()
+  for (const c of all) {
+    if (!byHostQueue.has(c.sourceHost)) byHostQueue.set(c.sourceHost, [])
+    byHostQueue.get(c.sourceHost).push(c)
+  }
+  // Honour each host's declared Crawl-delay for the DOWNLOAD pass too, not just
+  // page navigation. seaside-alanya.com asks for 30s; at 63 assets that is half
+  // an hour of waiting, and it is their server, so we wait.
+  const crawlDelayByHost = new Map()
+  for (const d of discoveries) {
+    const cd = d.robots?.crawlDelay
+    if (cd) crawlDelayByHost.set(d.host, Math.max(crawlDelayByHost.get(d.host) ?? 0, cd))
+  }
+  for (const [h, cd] of crawlDelayByHost) console.log(`  ${h}: honouring robots Crawl-delay ${cd}s`)
+
+  const queues = [...byHostQueue.entries()].sort((a, b) => b[1].length - a[1].length)
+  let qi = 0
+  const dlWorkers = Array.from({ length: Math.min(CFG.maxConcurrency, queues.length) }, async () => {
+    while (qi < queues.length) {
+      const [host, list] = queues[qi++]
+      const hostDelay = (crawlDelayByHost.get(host) ?? 0) * 1000
+      await withHostLease(host, async ({ pace }) => {
+        let ok = 0
+        let bad = 0
+        let blocked = 0
+        let cached = 0
+        for (const cand of list) {
+          if (alreadyDone.has(cand.url)) {
+            cached++
+            continue
+          }
+          // Robots is checked against the ASSET's own origin, not the page's — a
+          // render served from a CDN is governed by the CDN's robots.txt. And it
+          // is checked here, not only at discovery: a recon-seeded URL must clear
+          // the same gate, or the gate is decoration.
+          let origin = null
+          let reqPath = '/'
+          try {
+            const u = new URL(cand.url)
+            origin = u.origin
+            reqPath = u.pathname + u.search
+          } catch {}
+          if (origin) {
+            const rb = await getRobots(origin, pace)
+            if (rb.status === 200) {
+              const v = robotsVerdict(rb.groups, reqPath)
+              if (!v.allowed) {
+                await record({
+                  candidate: cand,
+                  attempts: [{ url: cand.url, why: 'robots', ok: false, reason: `robots_disallow(${v.agent} "${v.matched}")` }],
+                  accepted: null,
+                })
+                blocked++
+                bad++
+                continue
+              }
+            }
+          }
+          const r = await acquire(cand, pace)
+          await record(r)
+          if (r.accepted) ok++
+          else bad++
+        }
+        console.log(
+          `  ${host.padEnd(28)} accepted ${String(ok).padStart(4)} · rejected ${String(bad).padStart(4)}` +
+            `${blocked ? ` (${blocked} robots-blocked)` : ''}${cached ? ` · ${cached} from resume log` : ''}`,
+        )
+      }, { minDelayMs: hostDelay })
+    }
+  })
+  await Promise.all(dlWorkers)
+
+  // ── collect results from the resume log ──────────────────────────────────
+  // Bytes and capped originals were already written per candidate inside the
+  // download loop; attempts.jsonl is the single source of truth for what
+  // happened, so a resumed run and a fresh run produce identical reports.
+  for (const line of (await readFile(attemptsFile, 'utf8')).split(/\r?\n/)) {
+    if (!line.trim()) continue
+    try {
+      results.push(JSON.parse(line))
+    } catch (e) {
+      console.error(`  ! unparseable line in attempts.jsonl: ${e.message}`)
+    }
+  }
+  const accepted = results.map((r) => r.accepted).filter(Boolean)
 
   // ── perceptual dedupe ────────────────────────────────────────────────────
   // The same render appears on six portals at six sizes. Keep the highest
@@ -1328,6 +1853,10 @@ async function run() {
       unique: unique.filter((a) => a.sourceHost === h).length,
     })),
     zeroYield: discoveries.filter((d) => d.zeroYieldReason).map((d) => ({ sourceId: d.sourceId, host: d.host, publisher: d.publisher, tier: d.tier, reason: d.zeroYieldReason, pages: d.pages })),
+    excludedNotThisProject: excluded,
+    outOfProjectScope: { count: outOfProjectScope.length, sample: outOfProjectScope.slice(0, 40) },
+    cappedNotHarvested: { policy: `photo/render capped at ${maxPhotosPerHost} per host; floorplan/siteplan/document/logo/video uncapped`, count: capped.length, items: capped },
+    hostCollisionsWithW0B: HOST_COLLISIONS,
     heicFindings: results.flatMap((r) => r.attempts.filter((a) => a.reportable).map((a) => ({ url: a.url, reason: a.reason }))),
     exifGpsFindings: accepted.filter((a) => a.hadExifGps).map((a) => ({ id: a.id, url: a.url })),
     attempts: results.map((r) => ({ url: r.candidate.url, host: r.candidate.sourceHost, foundOn: r.candidate.foundOn, category: r.candidate.category, accepted: Boolean(r.accepted), attempts: r.attempts })),

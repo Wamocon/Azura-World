@@ -1,0 +1,4 @@
+# Python bytecode from the dataset build. Scoped to this package rather than the
+# repo-root .gitignore, which W0-A owns — ORCHESTRATION §4 says ask, don't reach.
+__pycache__/
+*.pyc
