@@ -140,6 +140,17 @@ export function toApiError(error: unknown, label: string): ApiError {
         message: "The request did not satisfy a data rule.",
         retryable: false,
       }
+    // invalid_parameter_value. `search_operational_records()` raises it for a query over
+    // its 120-character ceiling, and a plpgsql RPC that validates its own input is the
+    // normal way to hit it. Without this case it fell through to persistence_unavailable
+    // (503) — telling the caller the service is broken and the request is worth retrying,
+    // when in fact the input was too long and retrying it unchanged will fail forever.
+    case "22023":
+      return {
+        code: "validation_failed",
+        message: "The request did not satisfy a data rule.",
+        retryable: false,
+      }
     // PGRST116 — .single() matched no rows.
     case "PGRST116":
       return {

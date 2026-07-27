@@ -191,6 +191,22 @@ create trigger track_pipeline_stage_change
 -- and tenant get NOTHING rather than a scoped subset.
 -- ---------------------------------------------------------------------------
 
+-- NOTE ON THE THRESHOLD, resolved against apps/web/lib/rbac.ts (W1-B) rather than guessed.
+--
+-- These policies originally admitted staff (level 40). rbac.ts grants no leads:* or
+-- buyer_pipeline:* permission to staff at all — only to manager and above. That made RLS
+-- LOOSER than RBAC, which is the dangerous direction: CONVENTIONS.md §2 says RLS is the
+-- security boundary and RBAC is the UX boundary, so a route handler that forgot its
+-- hasPermission() call would have leaked the sales pipeline to every staff account.
+-- The threshold is therefore 70, matching rbac.ts.
+--
+-- leads_select_assignee survives that change deliberately: it is the narrowest possible
+-- widening — an individual reading rows explicitly assigned to them — and it is what lets
+-- an agent work a lead without holding company-wide sight of the pipeline.
+--
+-- If W1-B decides sales agents should hold leads:view, relax this back to 40 AND add the
+-- permission there. Changing only one of the two re-opens the gap.
+
 alter table public.leads                  enable row level security;
 alter table public.buyer_pipeline_entries enable row level security;
 
@@ -198,7 +214,7 @@ drop policy if exists leads_select_staff on public.leads;
 create policy leads_select_staff on public.leads for select
   using (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   );
 
 -- An agent always sees the leads assigned to them, even outside the staff path.
@@ -210,18 +226,18 @@ drop policy if exists leads_staff_write on public.leads;
 create policy leads_staff_write on public.leads for all
   using (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   )
   with check (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   );
 
 drop policy if exists buyer_pipeline_select_staff on public.buyer_pipeline_entries;
 create policy buyer_pipeline_select_staff on public.buyer_pipeline_entries for select
   using (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   );
 
 drop policy if exists buyer_pipeline_select_owner on public.buyer_pipeline_entries;
@@ -232,11 +248,11 @@ drop policy if exists buyer_pipeline_staff_write on public.buyer_pipeline_entrie
 create policy buyer_pipeline_staff_write on public.buyer_pipeline_entries for all
   using (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   )
   with check (
     (select public.is_admin())
-    or ((select public.has_role_level(40)) and company_id = (select public.current_user_company_id()))
+    or ((select public.has_role_level(70)) and company_id = (select public.current_user_company_id()))
   );
 
 -- ---------------------------------------------------------------------------

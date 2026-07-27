@@ -93,6 +93,10 @@ test("Postgres error codes map onto the frozen ApiError union", () => {
   assert.equal(toApiError({ code: "23514", message: "" }, "t").code, "validation_failed")
   assert.equal(toApiError({ code: "23503", message: "" }, "t").code, "validation_failed")
   assert.equal(toApiError({ code: "PGRST116", message: "" }, "t").code, "not_found")
+  // 22023: the search RPC rejects an over-long query. It is the caller's input that is
+  // wrong, so it must not come back as a retryable 503.
+  assert.equal(toApiError({ code: "22023", message: "" }, "t").code, "validation_failed")
+  assert.equal(toApiError({ code: "22023", message: "" }, "t").retryable, false)
   assert.equal(toApiError({ code: "42P01", message: "" }, "t").code, "persistence_unavailable")
   assert.equal(toApiError({ code: "40001", message: "" }, "t").retryable, true)
   // An unrecognised failure is an outage, never a 500 for the caller.
