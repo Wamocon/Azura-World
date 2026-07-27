@@ -1,0 +1,98 @@
+{
+  "__note": "Single source of truth for terms that must NOT be translated. Read by apps/web/lib/proper-nouns.ts (the app-facing module) and by scripts/check-i18n.mjs (the gate). Kept as JSON precisely so both a TypeScript bundle and a plain-node script can read the same list without one re-declaring the other.",
+
+  "properNouns": [
+    "Azura World Residence & Hotel",
+    "Azura World Hotel",
+    "Azura World",
+    "Azura Concierge",
+    "Azura",
+    "Cebeci Group A.Ş.",
+    "Cebeci Group",
+    "Wyndham Alanya",
+    "Wyndham",
+    "Türkler",
+    "Alanya",
+    "Antalya",
+    "Tripadvisor",
+    "Booking.com",
+    "Google",
+    "Housearch",
+    "Supabase",
+    "WhatsApp",
+    "SMS",
+    "RevPAR",
+    "PDF",
+    "INTERNAL-107"
+  ],
+
+  "sharedTerms": [
+    "Aquapark",
+    "Portal",
+    "Normal",
+    "Status",
+    "Email",
+    "E-Mail",
+    "Ctrl + K",
+    "m²",
+    "km",
+    "m",
+    "%",
+    "—",
+    "Live",
+    "Offline",
+    "Hotel",
+    "Report",
+    "Dashboard",
+    "Wallet",
+    "Tickets",
+    "Compliance",
+    "Administration",
+    "Snapshot",
+    "Block",
+    "System",
+    "Neutral",
+    "Menü",
+    "Profil",
+    "Kanal",
+    "Liste",
+    "Telefon",
+    "Optional"
+  ],
+
+  "literalValues": [
+    "km",
+    "m",
+    "rooms",
+    "floors",
+    "beds",
+    "baths",
+    "night",
+    "month",
+    "year",
+    "min",
+    "oda",
+    "kat",
+    "gece",
+    "ay",
+    "yıl",
+    "dk"
+  ],
+
+  "layoutNotes": {
+    "1+1": "Turkish unit notation. A proper noun of the market — never translated, never expanded to \"1 bedroom + living room\" in any locale.",
+    "district": "District and place names (Türkler, Alanya, Antalya, Mahmutlar) stay verbatim in all four locales, including Russian. Transliterating them breaks the match against portal listings."
+  },
+
+  "variants": {
+    "Azura World Residenz & Hotel": "Azura World Residence & Hotel",
+    "Azura Dünya": "Azura World",
+    "Азура Ворлд": "Azura World",
+    "Азура Уорлд": "Azura World",
+    "Cebeci Grubu": "Cebeci Group",
+    "Группа Cebeci": "Cebeci Group",
+    "Тюрклер": "Türkler",
+    "Аланья": "Alanya",
+    "Анталья": "Antalya"
+  }
+}
