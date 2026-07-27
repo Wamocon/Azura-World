@@ -671,6 +671,20 @@ const RX = {
   floorplan: /(floor[-_\s]?plan|floorplan|grundriss|grundrisse|kat[-_\s]?plan|планировк|apartment[-_\s]?plan|unit[-_\s]?plan|\bplans?\b|layout)/i,
   /** Construction-progress photography — genuinely valuable, but it is a photo. */
   progress: /(planlar|progress|insaat|in[şs]aat|construction|santiye|[şs]antiye|whatsapp-image)/i,
+  /**
+   * Show-flat / model-apartment photography. "örnek daire" is Turkish for show
+   * flat, and cebecigroup files 7 such albums under /obj/ornek_daire/ named for
+   * unit types (aw_e-39_1_1). Rendered and inspected here: furnished bedrooms,
+   * kitchens and living rooms. Interiors of a unit, not drawings of one.
+   */
+  showflat: /(ornek[-_]?daire|örnek[-_]?daire|show[-_\s]?flat|showroom|musterwohnung|model[-_\s]?apartment)/i,
+  /**
+   * False friend. "Off plan" / "off-plan" is the sales term for a property sold
+   * before completion — it is not a drawing. IVM tags its marketing renders
+   * alt="Off Plans", which matched the plan regex and put a render of the
+   * complex into the floor-plan set. Confirmed by rendering the image.
+   */
+  offPlan: /off[-_\s]?plans?\b/i,
   logo: /(logo|brand[-_\s]?mark|favicon|apple-touch|wordmark)/i,
   render: /(render|rendering|3d|visual|görsel|gorsel|proje[-_\s]?görsel)/i,
   brochure: /(brochure|broschur|broschüre|katalog|catalog|prospekt|price[-_\s]?list|pdf)/i,
@@ -682,14 +696,30 @@ const RX = {
 }
 
 export function classify({ url, alt = '', caption = '', hintCategory, hintSubject }) {
-  const hay = `${decodeURIComponent(url)} ${alt} ${caption}`
+  let hay = `${decodeURIComponent(url)} ${alt} ${caption}`
+  // Neutralise the "off plan" sales term before any plan matching happens.
+  const hadOffPlan = RX.offPlan.test(hay)
+  if (hadOffPlan) hay = hay.replace(RX.offPlan, ' ')
   const isPdf = /\.pdf(\?|$)/i.test(url)
 
   // A hint from recon outranks the filename heuristic: those agents opened the
   // image. A construction-progress path outranks a plan-shaped filename, because
   // that combination is exactly how /planlar/ misfires.
   const isProgress = RX.progress.test(hay)
+  const isShowflat = RX.showflat.test(hay)
   let category = hintCategory && hintCategory !== 'photo' ? hintCategory : null
+  if (isShowflat && (category === 'floorplan' || !category)) category = 'photo'
+  // The recon hint was itself derived from the "Off Plans" alt text, so
+  // neutralising the regex is not enough — the hint has to fall too, unless some
+  // other plan evidence survives the substitution.
+  if (hadOffPlan && category === 'floorplan' && !RX.floorplan.test(hay) && !RX.siteplan.test(hay)) category = 'photo'
+  // A progress path overrides even a recon hint of "floorplan". The recon agents
+  // were forbidden from opening images, so their category is a filename
+  // inference; 15 cebecigroup /planlar/ assets were rendered and inspected here
+  // and every one was a construction aerial, two with burned-in date stamps.
+  // Observed pixels beat an inferred label. A siteplan hint still wins, because
+  // "vaziyet plan" names the drawing rather than the folder.
+  if (isProgress && category === 'floorplan' && !RX.siteplan.test(hay)) category = 'photo'
   if (!category && isProgress && !RX.siteplan.test(hay)) category = 'photo'
   if (!category) {
     if (RX.siteplan.test(hay)) category = 'siteplan'
@@ -704,6 +734,8 @@ export function classify({ url, alt = '', caption = '', hintCategory, hintSubjec
   if (isPdf && category === 'document' && RX.floorplan.test(hay)) category = 'floorplan'
 
   let subject = hintSubject ?? null
+  if (isShowflat) subject = 'unit'
+  if (isProgress && category === 'photo' && !isShowflat) subject = 'project'
   if (!subject) {
     if (category === 'logo') subject = RX.developer.test(hay) ? 'developer' : 'project'
     else if (RX.unit.test(hay)) subject = 'unit'
@@ -751,14 +783,23 @@ const RESTRICTIVENESS = { attributed_display: 0, unknown: 1, internal_only: 2 }
 export function resolveUsage(asset, policy) {
   const candidates = []
   const def = policy.default ?? { usage: 'internal_only', reason: 'implicit default' }
-  candidates.push({ usage: def.usage, reason: `default: ${def.reason}` })
 
   const floor = policy.categoryFloors?.[asset.category]
   if (floor) candidates.push({ usage: typeof floor === 'string' ? floor : floor.usage, reason: `category floor for "${asset.category}": ${typeof floor === 'string' ? 'set in rights-policy.json' : floor.reason}` })
 
   const host = policy.hosts?.[asset.sourceHost] ?? policy.hosts?.[asset.sourceHost?.replace(/^www\./, '')]
-  if (host) candidates.push({ usage: host.usage, reason: `host ${asset.sourceHost}: ${host.reasoning ?? 'per rights-policy.json'}` })
-  else candidates.push({ usage: 'unknown', reason: `host ${asset.sourceHost} has no entry in rights-policy.json` })
+  if (host) {
+    candidates.push({ usage: host.usage, reason: `host ${asset.sourceHost}: ${host.reasoning ?? 'per rights-policy.json'}` })
+  } else {
+    // The global default is a FALLBACK for hosts we have not assessed, not a
+    // floor over the ones we have. As a floor it would collapse every recorded
+    // "unknown" into "internal_only" and erase a real distinction: a source that
+    // explicitly forbids reuse is not the same as one that publishes no terms at
+    // all. Delivery is identical for both — only `attributed_display` is ever
+    // published — so keeping them apart costs nothing and states the truth.
+    candidates.push({ usage: def.usage, reason: `default (host not assessed): ${def.reason}` })
+  }
+  if (!candidates.length) candidates.push({ usage: def.usage, reason: `default: ${def.reason}` })
 
   if (asset.userGeneratedContent)
     candidates.push({ usage: 'internal_only', reason: 'user-generated content — rights held by the individual traveller, not the publisher' })
@@ -1456,6 +1497,18 @@ async function run() {
       prev.needsReferer = prev.needsReferer || Boolean(c.needsReferer)
       prev.watermarked = prev.watermarked || Boolean(c.watermarked)
       prev.userGeneratedContent = prev.userGeneratedContent || Boolean(c.userGeneratedContent)
+      // A label from a pass that OPENED the image outranks one derived from a
+      // filename. Without this, the DOM scrape's "photo" guess sticks, and a
+      // floor plan then gets deleted by the photo cap — which is how TERRA's 7
+      // plans and the GENERAL PLAN silently vanished from a "complete" manifest.
+      if (String(c.discovery ?? '').startsWith('recon') && c.category && c.category !== prev.reconCategory) {
+        prev.reconCategory = c.category
+        prev.reconSubject = c.subject ?? prev.reconSubject
+        const up = classify({ url: prev.url, alt: prev.alt ?? '', caption: prev.caption ?? '', hintCategory: c.category, hintSubject: c.subject ?? undefined })
+        prev.category = up.category
+        prev.subject = up.subject
+        prev.constructionProgress = up.constructionProgress
+      }
       // Same picture, bigger variant: fetch that one instead.
       if (sizeRank(c.url) > sizeRank(prev.url)) {
         prev.variantsFolded = (prev.variantsFolded ?? 0) + 1
@@ -1481,12 +1534,27 @@ async function run() {
       watermarked: Boolean(c.watermarked),
       userGeneratedContent: Boolean(c.userGeneratedContent),
       tlsInvalid: Boolean(c.tlsInvalid),
+      /** The label the source of this candidate proposed, kept so classification stays re-derivable. */
+      reconCategory: c.category ?? null,
+      reconSubject: c.subject ?? null,
       ...classify({ url: c.url, alt: c.alt ?? '', caption: c.caption ?? '', hintCategory: c.category ?? undefined, hintSubject: c.subject ?? undefined }),
     })
   }
 
   const videoRefs = []
   const outOfProjectScope = []
+
+  // Recon seeds FIRST, then discovery. The recon pass verified each asset's bytes
+  // and, for the plans, read what the drawing actually said; the DOM scrape only
+  // saw a filename. Whichever lands first sets the classification, so the better
+  // evidence goes first and the merge rule above lets it win either way.
+  for (const s of seeds) {
+    if (s.__video) {
+      videoRefs.push({ embedUrl: s.embedUrl, foundOn: s.pageUrl, platform: s.platform, videoId: s.videoId, durationSec: s.durationSec, poster: s.posterUrl, termsPermitRehost: s.termsPermitRehost, evidence: s.evidence, sourceHost: s.host, publisher: sourceByHost.get(s.host)?.publisher ?? s.host, tier: sourceByHost.get(s.host)?.tier ?? null, discovery: `recon:${s.reconAgent}` })
+    } else addCandidate(s, s.host)
+  }
+  for (const e of EXTRA_CANDIDATES) addCandidate(e, e.host)
+
   for (const d of discoveries) {
     const scope = SOURCES.find((s) => s.id === d.sourceId)?.assetScope ?? null
     let n = 0
@@ -1501,12 +1569,6 @@ async function run() {
       addCandidate(c, d.host)
     }
     for (const v of d.videos) videoRefs.push({ ...v, sourceHost: d.host, sourceId: d.sourceId, publisher: d.publisher, tier: d.tier })
-  }
-  for (const e of EXTRA_CANDIDATES) addCandidate(e, e.host)
-  for (const s of seeds) {
-    if (s.__video) {
-      videoRefs.push({ embedUrl: s.embedUrl, foundOn: s.pageUrl, platform: s.platform, videoId: s.videoId, durationSec: s.durationSec, poster: s.posterUrl, termsPermitRehost: s.termsPermitRehost, evidence: s.evidence, sourceHost: s.host, publisher: sourceByHost.get(s.host)?.publisher ?? s.host, tier: sourceByHost.get(s.host)?.tier ?? null, discovery: `recon:${s.reconAgent}` })
-    } else addCandidate(s, s.host)
   }
 
   // Video: reference, do not rehost. The brief permits a POSTER FRAME, so the
@@ -1823,23 +1885,83 @@ async function run() {
       console.error(`  ! unparseable line in attempts.jsonl: ${e.message}`)
     }
   }
+  // Re-derive classification from the CURRENT rules on every run. Category and
+  // subject are judgements that get corrected; the bytes are not. Because ids are
+  // content-addressed, correcting a label costs nothing and re-requests nothing.
+  let reclassified = 0
   const accepted = results.map((r) => r.accepted).filter(Boolean)
+  for (const a of accepted) {
+    const cand = candidates.get(canonicalKey(a.url))
+    const cls = classify({
+      url: a.url,
+      alt: a.alt ?? '',
+      caption: a.caption ?? '',
+      hintCategory: cand?.reconCategory ?? undefined,
+      hintSubject: cand?.reconSubject ?? undefined,
+    })
+    if (cls.category !== a.category || cls.subject !== a.subject) reclassified++
+    a.category = cls.category
+    a.subject = cls.subject
+    a.constructionProgress = cls.constructionProgress
+  }
+  if (reclassified) console.log(`  reclassified ${reclassified} asset(s) under the current rules (no re-download)`)
 
   // ── perceptual dedupe ────────────────────────────────────────────────────
   // The same render appears on six portals at six sizes. Keep the highest
   // resolution; credit every source that carried it.
-  const groups = []
+  // Stage 1 — EXACT duplicates fold unconditionally, across categories.
+  //
+  // Identical sha256 is the same file, whatever we labelled it. azuraworld.com
+  // serves the same bytes as /assets/en/1.jpg (a brochure page → "document") and
+  // /assets/en/s/1.jpg (its thumbnail → "photo"); leaving both produces two
+  // assets with the same content-addressed id, which then collide in lqip.json
+  // and in the manifest. The category constraint belongs on the PERCEPTUAL merge
+  // (where a plan must never be absorbed into a photo), not on byte equality.
+  const SPECIFICITY = ['siteplan', 'floorplan', 'document', 'logo', 'video', 'render', 'photo']
+  const mostSpecific = (cats) => SPECIFICITY.find((c) => cats.includes(c)) ?? cats[0]
+  const bySha = new Map()
   for (const a of accepted) {
-    if (!a.phash) {
-      // No perceptual hash (PDF/SVG) — dedupe by sha256 only.
-      const g = groups.find((x) => !x.phash && x.members.some((m) => m.sha256 === a.sha256))
-      if (g) g.members.push(a)
-      else groups.push({ phash: null, members: [a] })
+    const prev = bySha.get(a.sha256)
+    if (!prev) {
+      bySha.set(a.sha256, a)
       continue
     }
-    const g = groups.find((x) => x.phash && hamming(x.phash, a.phash) <= PHASH_MAX_DISTANCE)
+    prev.category = mostSpecific([prev.category, a.category])
+    prev.carriedBy = [...new Set([...(prev.carriedBy ?? []), ...(a.carriedBy ?? [])])]
+    prev.exactDuplicateUrls = [...new Set([...(prev.exactDuplicateUrls ?? []), a.url])]
+    prev.watermarked = prev.watermarked || a.watermarked
+    prev.userGeneratedContent = prev.userGeneratedContent || a.userGeneratedContent
+    prev.constructionProgress = prev.constructionProgress || a.constructionProgress
+  }
+  const exactFolded = accepted.length - bySha.size
+  const deduped = [...bySha.values()]
+
+  // Stage 2 — perceptual near-duplicates, within a category only.
+  const groups = []
+  for (const a of deduped) {
+    if (!a.phash) {
+      // No perceptual hash (PDF/SVG) — dedupe by sha256 only.
+      const g = groups.find((x) => !x.phash && x.category === a.category && x.members.some((m) => m.sha256 === a.sha256))
+      if (g) g.members.push(a)
+      else groups.push({ phash: null, category: a.category, members: [a] })
+      continue
+    }
+    // Complete linkage, and never across categories.
+    //
+    // Comparing only against a group's first member is single-linkage: A~B and
+    // B~C chain in an A~C pair that is 9 apart under a threshold of 6. That is
+    // how Seaside's SITE PLAN got absorbed into an ENS Pride render and vanished
+    // from the manifest — a silent loss of the highest-value asset class.
+    // Requiring the new member to be within the threshold of EVERY member kills
+    // the chaining, and refusing to merge a plan into a photo kills the rest.
+    const g = groups.find(
+      (x) =>
+        x.phash &&
+        x.category === a.category &&
+        x.members.every((m) => m.phash && hamming(m.phash, a.phash) <= PHASH_MAX_DISTANCE),
+    )
     if (g) g.members.push(a)
-    else groups.push({ phash: a.phash, members: [a] })
+    else groups.push({ phash: a.phash, category: a.category, members: [a] })
   }
 
   const unique = groups.map((g) => {
@@ -1869,7 +1991,7 @@ async function run() {
     generator: 'scripts/harvest-media.mjs',
     politeness: { minDelayMs: CFG.minDelayMs, maxConcurrency: CFG.maxConcurrency, onePerHost: true, lockDir: path.relative(REPO, CFG.lockDir).replace(/\\/g, '/'), userAgent: CFG.userAgent, allowInvalidTls: CFG.allowInvalidTls },
     validation: { minBytes: MIN_BYTES, minLongEdgePx: MIN_LONG_EDGE, phashMaxDistance: PHASH_MAX_DISTANCE, originalCapPx: ORIGINAL_CAP_PX },
-    totals: { attempted: results.length, decoded: accepted.length, rejected: rejections.length, unique: unique.length, duplicatesFolded: accepted.length - unique.length, videoReferences: videoRefs.length },
+    totals: { attempted: results.length, decoded: accepted.length, rejected: rejections.length, unique: unique.length, exactDuplicatesFolded: exactFolded, perceptualDuplicatesFolded: deduped.length - unique.length, duplicatesFolded: accepted.length - unique.length, videoReferences: videoRefs.length },
     rejectionReasons: reasonTally,
     perHost: [...new Set(all.map((c) => c.sourceHost))].map((h) => ({
       host: h,
@@ -1882,7 +2004,10 @@ async function run() {
     outOfProjectScope: { count: outOfProjectScope.length, sample: outOfProjectScope.slice(0, 40) },
     cappedNotHarvested: { policy: `photo/render capped at ${maxPhotosPerHost} per host; floorplan/siteplan/document/logo/video uncapped`, count: capped.length, items: capped },
     hostCollisionsWithW0B: HOST_COLLISIONS,
-    heicFindings: results.flatMap((r) => r.attempts.filter((a) => a.reportable).map((a) => ({ url: a.url, reason: a.reason }))),
+    // Both HEIC and over-ceiling attempts are flagged `reportable`, so these must
+    // be split by reason — otherwise the run claims HEIC findings it never made.
+    heicFindings: results.flatMap((r) => r.attempts.filter((a) => a.reason?.startsWith('heic')).map((a) => ({ url: a.url, reason: a.reason }))),
+    oversizeFindings: results.flatMap((r) => r.attempts.filter((a) => a.reason?.startsWith('over_max_download_bytes')).map((a) => ({ url: a.url, reason: a.reason }))),
     exifGpsFindings: accepted.filter((a) => a.hadExifGps).map((a) => ({ id: a.id, url: a.url })),
     attempts: results.map((r) => ({ url: r.candidate.url, host: r.candidate.sourceHost, foundOn: r.candidate.foundOn, category: r.candidate.category, accepted: Boolean(r.accepted), attempts: r.attempts })),
   }
@@ -1895,7 +2020,15 @@ async function run() {
   console.log(`  rejected  : ${report.totals.rejected}`)
   for (const [k, v] of Object.entries(reasonTally).sort((a, b) => b[1] - a[1])) console.log(`      ${String(v).padStart(4)}  ${k}`)
   console.log(`\n── Dedupe ──`)
-  console.log(`  unique ${report.totals.unique} of ${report.totals.decoded} decoded (${report.totals.duplicatesFolded} folded)`)
+  console.log(
+    `  unique ${report.totals.unique} of ${report.totals.decoded} decoded ` +
+      `(${report.totals.exactDuplicatesFolded} identical bytes + ${report.totals.perceptualDuplicatesFolded} perceptual = ${report.totals.duplicatesFolded} folded)`,
+  )
+  {
+    const ids = unique.map((u) => u.id)
+    const distinct = new Set(ids).size
+    console.log(`  id collisions: ${ids.length - distinct}${ids.length === distinct ? ' (ids are unique)' : '  *** DUPLICATE IDS ***'}`)
+  }
   console.log(`\n── By category ──`)
   const cats = {}
   for (const a of unique) cats[a.category] = (cats[a.category] ?? 0) + 1
@@ -1904,7 +2037,10 @@ async function run() {
     console.log(`\n── Zero-yield sources ──`)
     for (const z of report.zeroYield) console.log(`  [${String(z.sourceId).padStart(2)}] ${z.host.padEnd(28)} ${z.reason}`)
   }
-  if (report.heicFindings.length) console.log(`\n  ! ${report.heicFindings.length} HEIC asset(s) detected and reported, not silently dropped`)
+  console.log(
+    `\n  HEIC (undecodable, reported not dropped): ${report.heicFindings.length}` +
+      `   ·   over ${(CFG.maxDownloadBytes / 1024 / 1024).toFixed(0)}MB ceiling: ${report.oversizeFindings.length}`,
+  )
   if (report.exifGpsFindings.length) console.log(`  ! ${report.exifGpsFindings.length} asset(s) carry EXIF GPS — encode-images.mjs strips it`)
   console.log(`\n  videos referenced: ${videoRefs.length} (rehost ${CFG.allowVideoDownload ? 'ENABLED' : 'disabled'})`)
   console.log(`\nWrote sources/media/assets.json and sources/media/harvest-report.json`)
