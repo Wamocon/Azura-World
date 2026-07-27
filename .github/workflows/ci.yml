@@ -1,0 +1,103 @@
+# Lightweight guard rail. The FULL quality gate (19 checks) is owned by task W4-D
+# and lands as .github/workflows/quality.yml — do not duplicate it here.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Block committed env files
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '(^|/)\.env($|\.local$|\..*\.local$)'; then
+            echo "::error::An environment file is tracked. Rotate the credentials, then remove it."
+            exit 1
+          fi
+          echo "No tracked env files."
+
+      - name: Scan history for secret-shaped strings
+        run: |
+          set -euo pipefail
+          pattern='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9|ATATT3xFfGF|sk-[a-f0-9]{24,}|-----BEGIN [A-Z ]*PRIVATE KEY-----'
+          if git grep -nIE "$pattern" -- . ':(exclude).github/workflows/*' ':(exclude).githooks/*'; then
+            echo "::error::Secret-shaped string found in tracked content."
+            exit 1
+          fi
+          echo "No secret-shaped strings."
+
+  static:
+    name: Typecheck · Lint · Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Exit codes are captured directly — never pipe a gate through tail/head,
+      # which reports the pipe's status and makes a failing run look green.
+      - name: Typecheck
+        run: pnpm --dir apps/web typecheck
+
+      - name: Lint
+        run: pnpm --dir apps/web lint
+
+      - name: Build
+        run: pnpm --dir apps/web build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+
+  contracts:
+    name: Contract & evidence integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: OpenAPI ↔ implementation parity
+        run: |
+          if [ -f scripts/validate-openapi.mjs ]; then
+            node scripts/validate-openapi.mjs
+          else
+            echo "::notice::validate-openapi.mjs not present yet (W2-B) — NOT RUN"
+          fi
+
+      - name: Evidence invariants
+        run: |
+          if [ -f scripts/verify-evidence.mjs ]; then
+            node scripts/verify-evidence.mjs
+          else
+            echo "::notice::verify-evidence.mjs not present yet (W0-B) — NOT RUN"
+          fi

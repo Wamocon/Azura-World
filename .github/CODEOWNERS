@@ -1,0 +1,9 @@
+# Default owners for everything
+*       @Maanik23
+
+# Security-sensitive surfaces need explicit review
+/SECURITY.md            @Maanik23
+/.github/               @Maanik23
+/supabase/migrations/   @Maanik23
+/apps/web/lib/rbac.ts   @Maanik23
+/apps/web/lib/auth.ts   @Maanik23

@@ -1,0 +1,47 @@
+# --- secrets: never commit ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# --- dependencies ---
+node_modules/
+.pnpm-store/
+
+# --- build output ---
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# --- harvested competitor snapshots (large, regenerable, and not ours to redistribute) ---
+sources/raw/
+!sources/raw/.gitkeep
+
+# --- generated QA artefacts (repo policy: never keep these) ---
+quality/results/
+quality/layout/
+quality/manual/
+quality/browser-audit/
+test-results/
+playwright-report/
+qa_output/
+*.webm
+*.trace.zip
+
+# --- temp ---
+.tmp/
+.turbo/
+*.log
+
+# --- OS / editor ---
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# --- supabase local ---
+supabase/.branches/
+supabase/.temp/

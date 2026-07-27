@@ -1,0 +1,452 @@
+{
+  "generatedAt": "2026-07-27T14:44:12.118Z",
+  "runId": "2026-07-27T14-44-12Z",
+  "contractVersion": 1,
+  "generator": "scripts/harvest-azura.mjs",
+  "playwright": {
+    "chromium": "149.0.7827.55",
+    "resolvedFrom": "D:\\Ataberg"
+  },
+  "flags": {
+    "only": [
+      "tripadvisor",
+      "booking",
+      "booking-reviews",
+      "agoda",
+      "onthebeach",
+      "trustpoint",
+      "booking-ticket-url"
+    ],
+    "dryRun": false,
+    "allowInvalidTls": false,
+    "headed": true,
+    "units": false,
+    "timeout": null,
+    "concurrency": 2
+  },
+  "counts": {
+    "registerSelected": 7,
+    "discoveredUnitPages": 0,
+    "total": 7,
+    "validated": 2,
+    "failed": 5,
+    "notAttempted": 0
+  },
+  "entries": [
+    {
+      "id": "agoda",
+      "ticketRef": 18,
+      "url": "https://www.agoda.com/azura-world-hotel-ex-wyndham-alanya/hotel/alanya-tr.html",
+      "finalUrl": "https://www.agoda.com/en-gb/city/alanya-tr.html",
+      "publisher": "Agoda",
+      "tier": 5,
+      "kind": "booking",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": "redirected",
+      "fetchedAt": "2026-07-27T14:43:34.240Z",
+      "snapshotPath": "sources/raw/agoda.com/2026-07-27T14-43-34Z__agoda.html",
+      "snapshotHash": "a0b8b1dddb33efd6aec78356c000d4cb8d7c417b574e5c3bb1f504d040fcc6d5",
+      "screenshotPath": "sources/raw/agoda.com/2026-07-27T14-43-34Z__agoda.png",
+      "textPath": "sources/raw/agoda.com/2026-07-27T14-43-34Z__agoda.txt",
+      "bytes": 92244,
+      "contentValidated": false,
+      "contentValidatedReasons": [
+        "redirected_off_path(/en-gb/azura-world/hotel/alanya-tr.html → /en-gb/city/alanya-tr.html)",
+        "expect_missing(any:azura world)"
+      ],
+      "expectHits": [],
+      "title": "",
+      "textChars": 0,
+      "httpStatus": 200,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.agoda.com/azura-world-hotel-ex-wyndham-alanya/hotel/alanya-tr.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:03.205Z",
+          "httpStatus": 200,
+          "finalUrl": "https://www.agoda.com/azura-world-hotel-ex-wyndham-alanya/hotel/alanya-tr.html",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/agoda.com/2026-07-27T14-43-17Z__agoda.html",
+          "snapshotHash": "92c9ae25cd61d72de16abda9e209b2520fa331339380f16926f1cb69ed6fd2d3",
+          "bytes": 291676,
+          "finishedAt": "2026-07-27T14:43:17.441Z"
+        },
+        {
+          "url": "https://www.agoda.com/en-gb/azura-world/hotel/alanya-tr.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:19.965Z",
+          "httpStatus": 200,
+          "finalUrl": "https://www.agoda.com/en-gb/city/alanya-tr.html",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "redirected_off_path(/en-gb/azura-world/hotel/alanya-tr.html → /en-gb/city/alanya-tr.html)",
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/agoda.com/2026-07-27T14-43-34Z__agoda.html",
+          "snapshotHash": "a0b8b1dddb33efd6aec78356c000d4cb8d7c417b574e5c3bb1f504d040fcc6d5",
+          "bytes": 92244,
+          "finishedAt": "2026-07-27T14:43:34.240Z"
+        }
+      ]
+    },
+    {
+      "id": "booking",
+      "ticketRef": 17,
+      "url": "https://www.booking.com/hotel/tr/wyndham-alanya.html",
+      "finalUrl": "https://www.booking.com/hotel/tr/wyndham-alanya.en-gb.html",
+      "publisher": "Booking.com",
+      "tier": 5,
+      "kind": "booking",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": "expect_missing",
+      "fetchedAt": "2026-07-27T14:43:24.107Z",
+      "snapshotPath": "sources/raw/booking.com/2026-07-27T14-43-23Z__booking.html",
+      "snapshotHash": "da595da1f5fbe995e6f9fb89924a83115c5b790e63e6e341c7f2b029908f8157",
+      "screenshotPath": "sources/raw/booking.com/2026-07-27T14-43-23Z__booking.png",
+      "textPath": "sources/raw/booking.com/2026-07-27T14-43-23Z__booking.txt",
+      "bytes": 3782,
+      "contentValidated": false,
+      "contentValidatedReasons": [
+        "expect_missing(any:azura world)"
+      ],
+      "expectHits": [],
+      "title": "",
+      "textChars": 0,
+      "httpStatus": 202,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.booking.com/hotel/tr/wyndham-alanya.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:42:50.943Z",
+          "httpStatus": 202,
+          "finalUrl": "https://www.booking.com/hotel/tr/wyndham-alanya.html",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/booking.com/2026-07-27T14-43-07Z__booking.html",
+          "snapshotHash": "e8e2bec0950f97f1df3f7787a6128e28c4e53b6fc450bada68af87ec71f007a3",
+          "bytes": 3782,
+          "finishedAt": "2026-07-27T14:43:07.758Z"
+        },
+        {
+          "url": "https://www.booking.com/hotel/tr/wyndham-alanya.en-gb.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:10.292Z",
+          "httpStatus": 202,
+          "finalUrl": "https://www.booking.com/hotel/tr/wyndham-alanya.en-gb.html",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/booking.com/2026-07-27T14-43-23Z__booking.html",
+          "snapshotHash": "da595da1f5fbe995e6f9fb89924a83115c5b790e63e6e341c7f2b029908f8157",
+          "bytes": 3782,
+          "finishedAt": "2026-07-27T14:43:24.106Z"
+        }
+      ]
+    },
+    {
+      "id": "booking-reviews",
+      "ticketRef": null,
+      "url": "https://www.booking.com/reviews/tr/hotel/wyndham-alanya.html",
+      "finalUrl": "https://www.booking.com/hotel/tr/wyndham-alanya.html?aid=304142&label=gen173nr-10CA0o5AFCDnd5bmRoYW0tYWxhbnlhSDNYBGg7iAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuAKS3Z3TBsACAdICJGQ5YjQyM2ZlLTMwMmItNDkzNi1hZTczLWNkYzBmNjdiN2QwOdgCAeACAQ&came_from_hotel_review=1&keep_landing=1&sid=28f983f259b2c97ec403acdd99cd0544",
+      "publisher": "Booking.com",
+      "tier": 5,
+      "kind": "booking",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": "expect_missing",
+      "fetchedAt": "2026-07-27T14:43:47.474Z",
+      "snapshotPath": "sources/raw/booking.com/2026-07-27T14-43-47Z__booking-reviews.html",
+      "snapshotHash": "9173f45d1f5614b5bb7f686c2f39b2955f281f2ed54750a563f412c3dd563743",
+      "screenshotPath": "sources/raw/booking.com/2026-07-27T14-43-47Z__booking-reviews.png",
+      "textPath": "sources/raw/booking.com/2026-07-27T14-43-47Z__booking-reviews.txt",
+      "bytes": 3782,
+      "contentValidated": false,
+      "contentValidatedReasons": [
+        "expect_missing(any:azura world|review)"
+      ],
+      "expectHits": [],
+      "title": "",
+      "textChars": 0,
+      "httpStatus": 202,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.booking.com/reviews/tr/hotel/wyndham-alanya.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:29.171Z",
+          "httpStatus": 202,
+          "finalUrl": "https://www.booking.com/hotel/tr/wyndham-alanya.html?aid=304142&label=gen173nr-10CA0o5AFCDnd5bmRoYW0tYWxhbnlhSDNYBGg7iAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuAKS3Z3TBsACAdICJGQ5YjQyM2ZlLTMwMmItNDkzNi1hZTczLWNkYzBmNjdiN2QwOdgCAeACAQ&came_from_hotel_review=1&keep_landing=1&sid=28f983f259b2c97ec403acdd99cd0544",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world|review)"
+          ],
+          "snapshotPath": "sources/raw/booking.com/2026-07-27T14-43-47Z__booking-reviews.html",
+          "snapshotHash": "9173f45d1f5614b5bb7f686c2f39b2955f281f2ed54750a563f412c3dd563743",
+          "bytes": 3782,
+          "finishedAt": "2026-07-27T14:43:47.474Z"
+        }
+      ]
+    },
+    {
+      "id": "booking-ticket-url",
+      "ticketRef": 17,
+      "url": "https://www.booking.com/hotel/tr/azura-world.html",
+      "finalUrl": "https://www.booking.com/hotel/tr/azura-world.html",
+      "publisher": "Booking.com",
+      "tier": 5,
+      "kind": "booking",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": true,
+      "status": "expect_missing",
+      "fetchedAt": "2026-07-27T14:44:06.376Z",
+      "snapshotPath": "sources/raw/booking.com/2026-07-27T14-44-06Z__booking-ticket-url.html",
+      "snapshotHash": "bfba41654da7318549af97aacfa21b3ab610f779e3a467aa886f0cca577129e2",
+      "screenshotPath": "sources/raw/booking.com/2026-07-27T14-44-06Z__booking-ticket-url.png",
+      "textPath": "sources/raw/booking.com/2026-07-27T14-44-06Z__booking-ticket-url.txt",
+      "bytes": 3782,
+      "contentValidated": false,
+      "contentValidatedReasons": [
+        "expect_missing(any:azura world)"
+      ],
+      "expectHits": [],
+      "title": "",
+      "textChars": 0,
+      "httpStatus": 202,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.booking.com/hotel/tr/azura-world.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:52.526Z",
+          "httpStatus": 202,
+          "finalUrl": "https://www.booking.com/hotel/tr/azura-world.html",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/booking.com/2026-07-27T14-44-06Z__booking-ticket-url.html",
+          "snapshotHash": "bfba41654da7318549af97aacfa21b3ab610f779e3a467aa886f0cca577129e2",
+          "bytes": 3782,
+          "finishedAt": "2026-07-27T14:44:06.376Z"
+        }
+      ]
+    },
+    {
+      "id": "onthebeach",
+      "ticketRef": 19,
+      "url": "https://www.onthebeach.co.uk/hotels/turkey/antalya/alanya/azura-world-hotel",
+      "finalUrl": "https://www.onthebeach.co.uk/hotels/turkey/antalya/alanya/azura-world-hotel",
+      "publisher": "OnTheBeach",
+      "tier": 5,
+      "kind": "booking",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": 200,
+      "fetchedAt": "2026-07-27T14:43:46.858Z",
+      "snapshotPath": "sources/raw/onthebeach.co.uk/2026-07-27T14-43-42Z__onthebeach.html",
+      "snapshotHash": "a7cf0a313994dc7fd388d9bb5884b0a2ce6ee74523fe666b3672bdd01fb1fc9f",
+      "screenshotPath": "sources/raw/onthebeach.co.uk/2026-07-27T14-43-42Z__onthebeach.png",
+      "textPath": "sources/raw/onthebeach.co.uk/2026-07-27T14-43-42Z__onthebeach.txt",
+      "bytes": 447938,
+      "contentValidated": true,
+      "contentValidatedReasons": [],
+      "expectHits": [
+        "azura world"
+      ],
+      "title": "Azura World Hotel | Alanya | £19pp Deposits",
+      "textChars": 7837,
+      "httpStatus": 200,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.onthebeach.co.uk/hotels/turkey/antalya/alanya/azura-world-hotel",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:39.641Z",
+          "httpStatus": 200,
+          "finalUrl": "https://www.onthebeach.co.uk/hotels/turkey/antalya/alanya/azura-world-hotel",
+          "consentClicked": null,
+          "contentValidated": true,
+          "reasons": [],
+          "snapshotPath": "sources/raw/onthebeach.co.uk/2026-07-27T14-43-42Z__onthebeach.html",
+          "snapshotHash": "a7cf0a313994dc7fd388d9bb5884b0a2ce6ee74523fe666b3672bdd01fb1fc9f",
+          "bytes": 447938,
+          "finishedAt": "2026-07-27T14:43:46.858Z"
+        }
+      ]
+    },
+    {
+      "id": "tripadvisor",
+      "ticketRef": 13,
+      "url": "https://www.tripadvisor.com/Hotel_Review-g1069655-d33144231-Reviews-Azura_World_Hotel-Turkler_Alanya_Turkish_Mediterranean_Coast.html",
+      "finalUrl": "https://www.tripadvisor.com/Hotel_Review-g1069655-d33144231-Reviews-Azura_World_Hotel-Turkler_Alanya_Turkish_Mediterranean_Coast.html",
+      "publisher": "Tripadvisor",
+      "tier": 5,
+      "kind": "review",
+      "locale": "en",
+      "group": "reviews",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": 200,
+      "fetchedAt": "2026-07-27T14:43:00.442Z",
+      "snapshotPath": "sources/raw/tripadvisor.com/2026-07-27T14-42-56Z__tripadvisor.html",
+      "snapshotHash": "322cd903eac9febddbc37a6d4757def6a2a7ec3e4cd0639d2500624a98ee524c",
+      "screenshotPath": "sources/raw/tripadvisor.com/2026-07-27T14-42-56Z__tripadvisor.png",
+      "textPath": "sources/raw/tripadvisor.com/2026-07-27T14-42-56Z__tripadvisor.txt",
+      "bytes": 1017975,
+      "contentValidated": true,
+      "contentValidatedReasons": [],
+      "expectHits": [
+        "azura world"
+      ],
+      "title": "AZURA WORLD HOTEL: Updated 2026 Prices & Reviews (Turkey/Turkler, Antalya Province)",
+      "textChars": 39931,
+      "httpStatus": 200,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://www.tripadvisor.com/Hotel_Review-g1069655-d33144231-Reviews-Azura_World_Hotel-Turkler_Alanya_Turkish_Mediterranean_Coast.html",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:42:51.045Z",
+          "httpStatus": 200,
+          "finalUrl": "https://www.tripadvisor.com/Hotel_Review-g1069655-d33144231-Reviews-Azura_World_Hotel-Turkler_Alanya_Turkish_Mediterranean_Coast.html",
+          "consentClicked": "text:OK",
+          "contentValidated": true,
+          "reasons": [],
+          "snapshotPath": "sources/raw/tripadvisor.com/2026-07-27T14-42-56Z__tripadvisor.html",
+          "snapshotHash": "322cd903eac9febddbc37a6d4757def6a2a7ec3e4cd0639d2500624a98ee524c",
+          "bytes": 1017975,
+          "finishedAt": "2026-07-27T14:43:00.441Z"
+        }
+      ]
+    },
+    {
+      "id": "trustpoint",
+      "ticketRef": null,
+      "url": "https://trustpoint.com.tr/properties/alanya-azura-world-turkler-residence-villa-hotel/",
+      "finalUrl": "https://www.trustpoint.com.tr/properties/alanya-azura-world-turkler-residence-villa-hotel/",
+      "publisher": "Trustpoint",
+      "tier": 6,
+      "kind": "portal",
+      "locale": "en",
+      "group": "portal-intl",
+      "unitListing": false,
+      "parentId": null,
+      "priceKind": "sale",
+      "isStale": false,
+      "wrongPropertySuspect": false,
+      "status": "expect_missing",
+      "fetchedAt": "2026-07-27T14:44:06.153Z",
+      "snapshotPath": "sources/raw/trustpoint.com.tr/2026-07-27T14-44-05Z__trustpoint.html",
+      "snapshotHash": "72c3326e75fdc4a011de329d38b6403770089f5969711a3577b618b40b977732",
+      "screenshotPath": "sources/raw/trustpoint.com.tr/2026-07-27T14-44-05Z__trustpoint.png",
+      "textPath": "sources/raw/trustpoint.com.tr/2026-07-27T14-44-05Z__trustpoint.txt",
+      "bytes": 175759,
+      "contentValidated": false,
+      "contentValidatedReasons": [
+        "expect_missing(any:azura world)"
+      ],
+      "expectHits": [],
+      "title": "Best Apartments in Alanya – Luxury Homes",
+      "textChars": 8782,
+      "httpStatus": 200,
+      "robots": {
+        "status": 200,
+        "allowed": true,
+        "rule": null
+      },
+      "tlsToleranceUsed": false,
+      "attempts": [
+        {
+          "url": "https://trustpoint.com.tr/properties/alanya-azura-world-turkler-residence-villa-hotel/",
+          "ignoreHTTPSErrors": false,
+          "startedAt": "2026-07-27T14:43:50.152Z",
+          "httpStatus": 200,
+          "finalUrl": "https://www.trustpoint.com.tr/properties/alanya-azura-world-turkler-residence-villa-hotel/",
+          "consentClicked": null,
+          "contentValidated": false,
+          "reasons": [
+            "expect_missing(any:azura world)"
+          ],
+          "snapshotPath": "sources/raw/trustpoint.com.tr/2026-07-27T14-44-05Z__trustpoint.html",
+          "snapshotHash": "72c3326e75fdc4a011de329d38b6403770089f5969711a3577b618b40b977732",
+          "bytes": 175759,
+          "finishedAt": "2026-07-27T14:44:06.153Z"
+        }
+      ]
+    }
+  ]
+}

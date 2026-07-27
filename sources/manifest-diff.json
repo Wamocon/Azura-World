@@ -1,0 +1,314 @@
+{
+  "generatedAt": "2026-07-27T14:52:58.216Z",
+  "previousRun": "2026-07-27T14-44-12Z",
+  "baseline": false,
+  "changes": [
+    {
+      "id": "agoda",
+      "kind": "content_changed",
+      "from": "a0b8b1dddb33",
+      "to": "ba10409b0ec4"
+    },
+    {
+      "id": "alanya-home-466",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "alanya-home-891",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "alanyacebeci",
+      "kind": "added",
+      "to": "dns_timeout"
+    },
+    {
+      "id": "alanyhome",
+      "kind": "added",
+      "to": "dns_timeout"
+    },
+    {
+      "id": "altoprealestate-rental",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "azuraworld-official",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "azuraworldhotel",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "booking",
+      "kind": "content_changed",
+      "from": "da595da1f5fb",
+      "to": "b3d810fa411b"
+    },
+    {
+      "id": "booking-reviews",
+      "kind": "content_changed",
+      "from": "9173f45d1f56",
+      "to": "c2bd2e379984"
+    },
+    {
+      "id": "booking-ticket-url",
+      "kind": "content_changed",
+      "from": "bfba41654da7",
+      "to": "8e8915b31b55"
+    },
+    {
+      "id": "cebecigroup-index",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "cebecigroup-project",
+      "kind": "added",
+      "to": "http_500"
+    },
+    {
+      "id": "cestate",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "enspride",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "facebook-azuraworldhotel",
+      "kind": "added",
+      "to": "robots_disallowed"
+    },
+    {
+      "id": "facebook-cebecigroup",
+      "kind": "added",
+      "to": "robots_disallowed"
+    },
+    {
+      "id": "hasporealty",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-01",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-02",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-03",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-04",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-05",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-06",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-07",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-08",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-09",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-10",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-11",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-12",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-13",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-14",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-15",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-16",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-17",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "hasporealty-units-18",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-01",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-02",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-03",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-04",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-05",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "housearch-units-06",
+      "kind": "added",
+      "to": "http_404"
+    },
+    {
+      "id": "housearch-units-07",
+      "kind": "added",
+      "to": "http_404"
+    },
+    {
+      "id": "housearch-units-08",
+      "kind": "added",
+      "to": "http_404"
+    },
+    {
+      "id": "instagram-azuraworldhotel",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "instagram-cebecigroup",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "ivm-turkey",
+      "kind": "added",
+      "to": "soft_404"
+    },
+    {
+      "id": "kalinka-realty",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "onthebeach",
+      "kind": "content_changed",
+      "from": "a7cf0a313994",
+      "to": "872758584168"
+    },
+    {
+      "id": "realtygroup",
+      "kind": "added",
+      "to": "dns_timeout"
+    },
+    {
+      "id": "seaside-alanya",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "seaside-alanya-units",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "terrarealestate",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "tripadvisor",
+      "kind": "content_changed",
+      "from": "322cd903eac9",
+      "to": "b0a8ff3e5ef1"
+    },
+    {
+      "id": "trustpoint",
+      "kind": "content_changed",
+      "from": "72c3326e75fd",
+      "to": "e57b21624bae"
+    },
+    {
+      "id": "turizmguncel",
+      "kind": "added",
+      "to": 200
+    },
+    {
+      "id": "wyndham-antalyacoast",
+      "kind": "added",
+      "to": 200
+    }
+  ]
+}

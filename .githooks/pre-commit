@@ -1,0 +1,56 @@
+#!/bin/sh
+# Azura World CATI — pre-commit secret guard
+# Enable once per clone:  git config core.hooksPath .githooks
+
+fail=0
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+# 1. No env files except the placeholder template
+for f in $staged; do
+  case "$f" in
+    .env|.env.local|.env.*.local|*/.env|*/.env.local)
+      echo "BLOCKED: $f is an environment file and must never be committed."
+      fail=1 ;;
+    *.pem|*.key|*.p12|*.pfx)
+      echo "BLOCKED: $f looks like a private key."
+      fail=1 ;;
+  esac
+done
+
+# 2. Secret-shaped strings in staged content.
+#    The scanner definitions themselves contain these patterns by necessity, so
+#    .githooks/ and .github/workflows/ are excluded. Obvious placeholders are allowed.
+patterns='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9|ATATT3xFfGF|sk-[a-f0-9]{24,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|postgres(ql)?://[^:]+:[^@<[:space:]]+@'
+placeholders='your-|replace-with|<PASSWORD>|:PASSWORD@|example\.com|xxxx|\.\.\.'
+
+scan_paths=$(printf '%s\n' $staged | grep -vE '^(\.githooks/|\.github/workflows/)' || true)
+if [ -n "$scan_paths" ]; then
+  hits=$(git diff --cached -U0 -- $scan_paths \
+         | grep -E "^\+.*($patterns)" \
+         | grep -vE "($placeholders)" || true)
+  if [ -n "$hits" ]; then
+    echo "BLOCKED: staged content contains a secret-shaped string."
+    echo "Matches:"
+    printf '%s\n' "$hits" | cut -c1-120 | head -5
+    echo ""
+    echo "If this is a placeholder, rephrase it. If it is real: DO NOT COMMIT — rotate it."
+    fail=1
+  fi
+fi
+
+# 3. Large files (harvested evidence belongs in git-ignored sources/)
+for f in $staged; do
+  [ -f "$f" ] || continue
+  size=$(wc -c < "$f" 2>/dev/null || echo 0)
+  if [ "$size" -gt 5242880 ]; then
+    echo "BLOCKED: $f is $((size/1048576))MB. Evidence and media belong under git-ignored sources/."
+    fail=1
+  fi
+done
+
+if [ "$fail" -ne 0 ]; then
+  echo ""
+  echo "Commit rejected. Override only if you are certain:  git commit --no-verify"
+  exit 1
+fi
+exit 0

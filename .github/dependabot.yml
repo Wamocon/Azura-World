@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Pinned in CONVENTIONS.md §1 and proven in the reference repos.
+      # Majors here are a deliberate decision, never an automated one.
+      pinned-core:
+        patterns: ["next", "react", "react-dom", "three", "gsap", "tailwindcss"]
+        update-types: ["minor", "patch"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

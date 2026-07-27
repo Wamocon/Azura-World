@@ -1,0 +1,45 @@
+# Normalize line endings to LF for all text files across platforms.
+# The repository is stored with LF; this guarantees Windows checkouts also use
+# LF. Supabase migrations and shell scripts break on CRLF, and exact-match
+# source-inspection tests (security contracts, migration contracts) depend on it.
+* text=auto eol=lf
+
+# Explicit LF for the source/config types the toolchain and tests read.
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.mts  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.cjs  text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.sql  text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.sh   text eol=lf
+*.py   text eol=lf
+*.env.example text eol=lf
+
+# Binary assets, never touch line endings.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.avif binary
+*.svg  text eol=lf
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.mp4  binary
+*.webm binary
+*.mov  binary
+*.pdf  binary
+*.docx binary
+*.xlsx binary
+*.zip  binary

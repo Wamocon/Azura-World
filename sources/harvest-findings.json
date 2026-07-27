@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-07-27T14:52:58.215Z",
+  "findings": [
+    {
+      "key": "harvest.tls-invalid",
+      "severity": "medium",
+      "area": "harvest",
+      "field": "harvest.azuraworldhotel",
+      "message": "Azura World Hotel (https://azuraworldhotel.com/en) was flagged for an invalid/incomplete TLS chain, but Chromium validated it WITHOUT tolerance (tlsToleranceUsed: false, status 200). Browsers repair an incomplete chain by fetching the missing intermediate (AIA); strict TLS clients such as Node's https do not, which is why a plain fetch failed and this harvest succeeded. The server chain is still misconfigured — the failure was real, the diagnosis \"invalid certificate\" was not.",
+      "sourceIds": [
+        "azuraworldhotel"
+      ],
+      "resolution": "Recorded. Content is trusted at its normal tier because no verification was waived to obtain it.",
+      "resolvedTo": null
+    },
+    {
+      "key": "harvest.robots-disallowed",
+      "severity": "medium",
+      "area": "harvest",
+      "field": "harvest.robots",
+      "message": "2 source(s) disallow this path in robots.txt and were NOT fetched: facebook-azuraworldhotel (Disallow: /), facebook-cebecigroup (Disallow: /).",
+      "sourceIds": [
+        "facebook-azuraworldhotel",
+        "facebook-cebecigroup"
+      ],
+      "resolution": "Respected. The source is recorded as unavailable, not as empty.",
+      "resolvedTo": null
+    },
+    {
+      "key": "harvest.authority",
+      "severity": "medium",
+      "area": "harvest",
+      "field": "harvest.authority",
+      "message": "45/60 sources returned validated content. Tier ≤3 (official/developer/hotel) sources validated: 5 (azuraworld-official, azuraworldhotel, cebecigroup-index, instagram-azuraworldhotel, instagram-cebecigroup).",
+      "sourceIds": [
+        "azuraworld-official",
+        "azuraworldhotel",
+        "cebecigroup-index",
+        "instagram-azuraworldhotel",
+        "instagram-cebecigroup"
+      ],
+      "resolution": "Tier ≤3 corroboration exists for the fields those sources cover; everything else rests on tier 4-6.",
+      "resolvedTo": null
+    }
+  ]
+}
