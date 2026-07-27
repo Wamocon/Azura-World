@@ -1,0 +1,768 @@
+{
+  "common": {
+    "actions": {
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "confirm": "Bestätigen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "create": "Anlegen",
+      "search": "Suchen",
+      "filter": "Filtern",
+      "reset": "Zurücksetzen",
+      "apply": "Anwenden",
+      "back": "Zurück",
+      "next": "Weiter",
+      "previous": "Vorheriges",
+      "retry": "Erneut versuchen",
+      "refresh": "Aktualisieren",
+      "export": "Exportieren",
+      "download": "Herunterladen",
+      "upload": "Hochladen",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "share": "Teilen",
+      "print": "Drucken",
+      "viewAll": "Alle ansehen",
+      "showMore": "Mehr anzeigen",
+      "showLess": "Weniger anzeigen",
+      "openMenu": "Menü öffnen",
+      "closeMenu": "Menü schließen",
+      "skipToContent": "Zum Inhalt springen",
+      "submit": "Absenden",
+      "continue": "Fortfahren"
+    },
+    "states": {
+      "loading": "Wird geladen …",
+      "empty": "Keine Einträge",
+      "error": "Fehler",
+      "partial": "Teilweise geladen",
+      "offline": "Offline",
+      "saving": "Wird gespeichert …",
+      "saved": "Gespeichert",
+      "noResults": "Keine Treffer",
+      "noData": "Keine Daten",
+      "degraded": "Eingeschränkt",
+      "live": "Live",
+      "polling": "Abruf alle 30 s"
+    },
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen.",
+      "network": "Keine Verbindung zum Server.",
+      "notFound": "Nicht gefunden.",
+      "forbidden": "Kein Zugriff auf diese Seite.",
+      "unauthorized": "Bitte erneut anmelden.",
+      "validation": "Bitte Eingaben prüfen.",
+      "timeout": "Zeitüberschreitung.",
+      "rateLimited": "Zu viele Anfragen. Bitte kurz warten.",
+      "serverError": "Serverfehler.",
+      "tryAgain": "Bitte erneut versuchen."
+    },
+    "units": {
+      "sqm": "m²",
+      "km": "km",
+      "m": "m",
+      "minutes": "Min.",
+      "rooms": "Zimmer",
+      "floors": "Etagen",
+      "beds": "Betten",
+      "baths": "Bäder",
+      "night": "Nacht",
+      "month": "Monat",
+      "year": "Jahr",
+      "percent": "%"
+    },
+    "pagination": {
+      "page": "Seite",
+      "pageOf": "Seite {page} von {total}",
+      "rowsPerPage": "Zeilen pro Seite",
+      "showing": "{from}–{to} von {total}",
+      "first": "Erste Seite",
+      "last": "Letzte Seite"
+    },
+    "table": {
+      "sortAscending": "Aufsteigend",
+      "sortDescending": "Absteigend",
+      "noRows": "Keine Zeilen",
+      "selectRow": "Zeile auswählen",
+      "selectAll": "Alle auswählen",
+      "columns": "Spalten",
+      "density": "Zeilenhöhe",
+      "selected": "{count, plural, one {# ausgewählt} other {# ausgewählt}}"
+    },
+    "filters": {
+      "title": "Filter",
+      "clear": "Filter löschen",
+      "active": "{count, plural, one {# Filter aktiv} other {# Filter aktiv}}",
+      "none": "Kein Filter"
+    },
+    "time": {
+      "now": "Jetzt",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "updatedAt": "Aktualisiert {date}",
+      "observedAt": "Erhoben {date}",
+      "asOf": "Stand {date}",
+      "never": "Nie"
+    },
+    "boolean": {
+      "yes": "Ja",
+      "no": "Nein"
+    },
+    "required": "Pflichtfeld",
+    "optional": "Optional"
+  },
+  "nav": {
+    "brand": "Azura World Residence & Hotel",
+    "brandShort": "Azura World",
+    "home": "Start",
+    "project": "Projekt",
+    "hotel": "Hotel",
+    "amenities": "Ausstattung",
+    "location": "Lage",
+    "evidence": "Belege",
+    "report": "Report",
+    "dashboard": "Dashboard",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "language": "Sprache",
+    "languageSelect": "Sprachauswahl",
+    "menu": "Menü",
+    "sections": {
+      "hero": "Übersicht",
+      "why": "Das Projekt",
+      "immersion": "Rundgang",
+      "amenities": "Ausstattung",
+      "desire": "Hotel",
+      "evidence": "Quellen",
+      "action": "Kontakt",
+      "share": "Teilen",
+      "love": "Abschluss"
+    },
+    "groups": {
+      "inventory": "Bestand",
+      "finance": "Finanzen",
+      "operations": "Betrieb",
+      "governance": "Verwaltung",
+      "hospitality": "Hotel"
+    },
+    "modules": {
+      "overview": "Übersicht",
+      "evidence": "Belege",
+      "units": "Wohnungen",
+      "listings": "Inserate",
+      "leads": "Anfragen",
+      "pipeline": "Käufer-Pipeline",
+      "finance": "Finanzen",
+      "payments": "Zahlungen",
+      "wallet": "Wallet",
+      "vendorInvoices": "Lieferantenrechnungen",
+      "tickets": "Tickets",
+      "activities": "Aktivitäten",
+      "calendar": "Kalender",
+      "communications": "Nachrichten",
+      "documents": "Dokumente",
+      "compliance": "Compliance",
+      "reports": "Berichte",
+      "users": "Benutzer",
+      "admin": "Administration",
+      "settings": "Einstellungen",
+      "hotel": "Hotelbetrieb",
+      "reviews": "Bewertungen"
+    }
+  },
+  "evidence": {
+    "confidence": {
+      "confirmed": "Bestätigt (mehrere Quellen)",
+      "official": "Offizielle Angabe",
+      "single_source": "Einzelquelle",
+      "conflicted": "Quellen widersprechen sich",
+      "conflicted_long": "Quellen widersprechen sich — beide Werte sind erfasst",
+      "inferred": "Abgeleitet",
+      "gap": "Nicht belegt"
+    },
+    "confidenceShort": {
+      "confirmed": "Bestätigt",
+      "official": "Offiziell",
+      "single_source": "Einzelquelle",
+      "conflicted": "Widerspruch",
+      "inferred": "Abgeleitet",
+      "gap": "Offen"
+    },
+    "stale": "Veraltetes Inserat",
+    "modelled": "Modellierter Datensatz — kein reales Inserat",
+    "sourceUnreachable": "Quelle nicht erreichbar",
+    "label": {
+      "source": "Quelle",
+      "sources": "Quellen",
+      "sourceCount": "{count, plural, one {# Quelle} other {# Quellen}}",
+      "observedAt": "Erhoben am",
+      "fetchedAt": "Abgerufen am",
+      "snapshot": "Snapshot",
+      "openSource": "Quelle öffnen",
+      "method": "Erhebungsart",
+      "value": "Wert",
+      "noValue": "—"
+    },
+    "conflict": {
+      "title": "Quellen widersprechen sich",
+      "description": "Für diesen Wert liegen abweichende Angaben vor. Angezeigt wird die Angabe der offiziellen bzw. Bauträger-Quelle; die abweichenden Werte bleiben nachvollziehbar.",
+      "displayedValue": "Angezeigter Wert",
+      "alternativeValue": "Abweichende Angabe",
+      "finding": "Befund {id}"
+    },
+    "panel": {
+      "title": "Herkunft dieses Werts",
+      "description": "Jede Angabe auf dieser Seite führt auf die Seite zurück, von der sie stammt.",
+      "empty": "Für diesen Wert liegt keine Quelle vor.",
+      "toggle": "Belege anzeigen"
+    },
+    "method": {
+      "officialSite": "Offizielle Website",
+      "developerSite": "Bauträger-Website",
+      "portalListing": "Portal-Inserat",
+      "review": "Bewertungsportal",
+      "press": "Presse",
+      "registry": "Register",
+      "modelled": "Modelliert"
+    },
+    "disclaimer": "Wettbewerbsanalyse zu INTERNAL-107. Alle Angaben stammen aus öffentlich zugänglichen Quellen und sind mit ihrer Herkunft verlinkt.",
+    "gapNotice": "Zu dieser Angabe wurde keine belastbare Quelle gefunden. Sie bleibt bewusst leer."
+  },
+  "landing": {
+    "topBar": {
+      "notice": "Evidenzbasierte Wettbewerbsanalyse — jede Zahl mit Quelle",
+      "cta": "Belege ansehen"
+    },
+    "hero": {
+      "eyebrow": "Türkler · Alanya · Antalya",
+      "title": "Azura World Residence & Hotel",
+      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste — vollständig belegt, Zahl für Zahl.",
+      "ctaPrimary": "Projekt ansehen",
+      "ctaSecondary": "Quellen prüfen",
+      "figures": {
+        "area": "Grundstück",
+        "blocks": "Blöcke",
+        "units": "Wohnungen"
+      },
+      "scrollHint": "Scrollen",
+      "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel"
+    },
+    "why": {
+      "title": "Was Azura World ist",
+      "lead": "Ein Wohn- und Hotelkomplex des Bauträgers {developer} in {district}. Die folgenden Angaben stammen ausschließlich aus öffentlich zugänglichen Quellen.",
+      "developerLabel": "Bauträger",
+      "locationLabel": "Standort",
+      "timelineLabel": "Fertigstellung",
+      "statusLabel": "Status"
+    },
+    "immersion": {
+      "title": "Ein Tag vor Ort",
+      "lead": "Dieselbe Anlage über den Tagesverlauf — Licht, Belegung und Betrieb ändern sich, die Daten dahinter bleiben dieselben.",
+      "timeLabel": "Uhrzeit",
+      "reducedMotionNotice": "Bewegung ist reduziert. Die Darstellung bleibt statisch.",
+      "noWebglNotice": "Die 3D-Ansicht ist auf diesem Gerät nicht verfügbar. Es wird ein Standbild gezeigt."
+    },
+    "amenities": {
+      "title": "Ausstattung",
+      "lead": "Jede Position ist der Seite zugeordnet, die sie nennt.",
+      "empty": "Für die Ausstattung liegt keine belegte Quelle vor.",
+      "categoryLabel": "Kategorie"
+    },
+    "desire": {
+      "title": "Das Hotel vor Ort",
+      "lead": "Ein 5-Sterne-Haus mit All-inclusive-Betrieb direkt auf der Anlage — der Unterschied zu vergleichbaren Projekten in der Region.",
+      "roomsLabel": "Zimmer",
+      "starsLabel": "Kategorie",
+      "boardLabel": "Verpflegung",
+      "aquaparkLabel": "Rutschen"
+    },
+    "evidenceBand": {
+      "title": "Woher diese Zahlen kommen",
+      "lead": "Jede Angabe auf dieser Seite ist mit ihrer Quelle verknüpft. Wo Quellen sich widersprechen, steht der Widerspruch hier — er wird nicht aufgelöst.",
+      "sourcesLabel": "Ausgewertete Quellen",
+      "conflictsLabel": "Widersprüche",
+      "gapsLabel": "Offene Punkte",
+      "cta": "Vollständigen Beleg-Report öffnen"
+    },
+    "action": {
+      "title": "Zugang anfragen",
+      "lead": "Der vollständige Datenbestand liegt hinter der Anmeldung. Zugang wird geprüft und manuell freigegeben.",
+      "cta": "Zugang anfragen",
+      "secondary": "Öffentlichen Report ansehen"
+    },
+    "after": {
+      "title": "Nach dem Kauf",
+      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung — der Teil, den Verkaufsseiten auslassen."
+    },
+    "share": {
+      "title": "Weitergeben",
+      "lead": "Der öffentliche Report enthält dieselben Zahlen mit denselben Quellen.",
+      "copyLink": "Link kopieren",
+      "linkCopied": "Link kopiert"
+    },
+    "love": {
+      "title": "Warum das so gebaut ist",
+      "lead": "Eine Zahl ohne Quelle ist eine Behauptung. Dieses Projekt zeigt beides oder nichts."
+    },
+    "footer": {
+      "rights": "Analyse zu Wettbewerbszwecken. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
+      "sourcesLink": "Quellenverzeichnis",
+      "legalLink": "Rechtliches",
+      "updated": "Datenstand {date}"
+    }
+  },
+  "dashboard": {
+    "shell": {
+      "title": "Dashboard",
+      "welcome": "Willkommen, {name}",
+      "searchPlaceholder": "Suchen … (Strg + K)",
+      "searchHint": "Strg + K",
+      "notifications": "Benachrichtigungen",
+      "profile": "Profil",
+      "collapseNav": "Navigation einklappen",
+      "expandNav": "Navigation ausklappen",
+      "roleLabel": "Rolle",
+      "emptyRole": "Für diese Rolle ist derzeit kein Bereich freigegeben.",
+      "dataSource": {
+        "label": "Datenquelle",
+        "supabase": "Supabase",
+        "localSeed": "Lokaler Seed",
+        "notice": "Es werden lokale Seed-Daten angezeigt, keine Live-Daten."
+      }
+    },
+    "kpi": {
+      "title": "Kennzahlen",
+      "unitsTotal": "Wohnungen gesamt",
+      "unitsAvailable": "Verfügbar",
+      "unitsReserved": "Reserviert",
+      "unitsSold": "Verkauft",
+      "occupancy": "Auslastung",
+      "openTickets": "Offene Tickets",
+      "overdueAmount": "Offener Betrag",
+      "reviewScore": "Bewertungsschnitt",
+      "trendUp": "mehr als im Vormonat",
+      "trendDown": "weniger als im Vormonat",
+      "trendFlat": "unverändert"
+    },
+    "search": {
+      "title": "Globale Suche",
+      "placeholder": "Wohnung, Ticket, Dokument oder Person",
+      "noResults": "Keine Treffer",
+      "hint": "Enter zum Öffnen, Esc zum Schließen",
+      "groupUnits": "Wohnungen",
+      "groupTickets": "Tickets",
+      "groupDocuments": "Dokumente",
+      "groupPeople": "Personen"
+    },
+    "evidence": {
+      "title": "Beleg-Cockpit",
+      "lead": "Vollständigkeit, Widersprüche und Lücken des Datenbestands.",
+      "coverage": "Belegquote",
+      "conflicts": "Widersprüche",
+      "gaps": "Lücken",
+      "findings": "Befunde",
+      "sourceRegister": "Quellenverzeichnis",
+      "lastHarvest": "Letzte Erhebung",
+      "empty": "Es liegen noch keine Belege vor."
+    },
+    "units": {
+      "title": "Wohnungen",
+      "lead": "Wohnungsbestand über alle Blöcke.",
+      "count": "{count, plural, one {# Wohnung} other {# Wohnungen}}",
+      "empty": "Keine Wohnungen im aktuellen Filter.",
+      "columns": {
+        "id": "Nummer",
+        "block": "Block",
+        "floor": "Etage",
+        "layout": "Grundriss",
+        "area": "Fläche",
+        "price": "Preis",
+        "status": "Status",
+        "view": "Ausrichtung"
+      },
+      "status": {
+        "available": "Verfügbar",
+        "reserved": "Reserviert",
+        "sold": "Verkauft",
+        "blocked": "Gesperrt"
+      },
+      "filters": {
+        "block": "Block",
+        "layout": "Grundriss",
+        "priceRange": "Preisspanne",
+        "areaRange": "Fläche",
+        "status": "Status"
+      },
+      "modelledNotice": "Dieser Bestand ist modelliert und bildet kein reales Inserat ab."
+    },
+    "listings": {
+      "title": "Portal-Inserate",
+      "lead": "Dieselbe Wohnung auf mehreren Portalen — mit Preis, Datum und Abweichung.",
+      "count": "{count, plural, one {# Inserat} other {# Inserate}}",
+      "empty": "Keine Inserate erfasst.",
+      "columns": {
+        "portal": "Portal",
+        "title": "Titel",
+        "price": "Preis",
+        "currency": "Währung",
+        "observedAt": "Erhoben",
+        "status": "Status"
+      },
+      "staleNotice": "Dieses Inserat wurde seit {days} Tagen nicht bestätigt."
+    },
+    "leads": {
+      "title": "Anfragen",
+      "lead": "Eingehende Interessenten und ihr Bearbeitungsstand.",
+      "count": "{count, plural, one {# Anfrage} other {# Anfragen}}",
+      "empty": "Keine Anfragen.",
+      "columns": {
+        "name": "Name",
+        "channel": "Kanal",
+        "interest": "Interesse",
+        "stage": "Stufe",
+        "owner": "Betreuung",
+        "createdAt": "Eingang"
+      }
+    },
+    "pipeline": {
+      "title": "Käufer-Pipeline",
+      "lead": "Vom Erstkontakt bis zum Abschluss.",
+      "empty": "Keine Vorgänge in der Pipeline.",
+      "stages": {
+        "new": "Neu",
+        "qualified": "Qualifiziert",
+        "viewing": "Besichtigung",
+        "offer": "Angebot",
+        "contract": "Vertrag",
+        "closed": "Abgeschlossen",
+        "lost": "Verloren"
+      }
+    },
+    "finance": {
+      "title": "Finanzen",
+      "lead": "Buchungen, Salden und offene Posten.",
+      "empty": "Keine Buchungen im Zeitraum.",
+      "balance": "Saldo",
+      "income": "Einnahmen",
+      "expense": "Ausgaben",
+      "net": "Netto",
+      "period": "Zeitraum",
+      "postedNotice": "Gebuchte Positionen sind unveränderlich.",
+      "columns": {
+        "date": "Datum",
+        "description": "Beschreibung",
+        "account": "Konto",
+        "debit": "Soll",
+        "credit": "Haben",
+        "amount": "Betrag",
+        "status": "Status"
+      }
+    },
+    "payments": {
+      "title": "Zahlungen",
+      "lead": "Eingänge, Ausgänge und ihr Status.",
+      "empty": "Keine Zahlungen.",
+      "status": {
+        "pending": "Ausstehend",
+        "settled": "Verbucht",
+        "failed": "Fehlgeschlagen",
+        "refunded": "Erstattet"
+      }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "lead": "Guthaben und Bewegungen je Eigentümer.",
+      "empty": "Keine Bewegungen.",
+      "available": "Verfügbar",
+      "reserved": "Reserviert",
+      "topUp": "Aufladen",
+      "withdraw": "Auszahlen"
+    },
+    "vendorInvoices": {
+      "title": "Lieferantenrechnungen",
+      "lead": "Eingangsrechnungen und Freigabestand.",
+      "empty": "Keine Rechnungen.",
+      "status": {
+        "draft": "Entwurf",
+        "submitted": "Eingereicht",
+        "approved": "Freigegeben",
+        "paid": "Bezahlt",
+        "rejected": "Abgelehnt"
+      }
+    },
+    "tickets": {
+      "title": "Tickets",
+      "lead": "Service- und Instandhaltungsvorgänge.",
+      "count": "{count, plural, one {# Ticket} other {# Tickets}}",
+      "empty": "Keine Tickets.",
+      "newTicket": "Ticket anlegen",
+      "priority": {
+        "low": "Niedrig",
+        "normal": "Normal",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      },
+      "status": {
+        "open": "Offen",
+        "inProgress": "In Arbeit",
+        "waiting": "Wartet",
+        "resolved": "Gelöst",
+        "closed": "Geschlossen"
+      },
+      "columns": {
+        "reference": "Nummer",
+        "subject": "Betreff",
+        "unit": "Wohnung",
+        "priority": "Priorität",
+        "status": "Status",
+        "assignee": "Zuständig",
+        "createdAt": "Erstellt",
+        "dueAt": "Fällig"
+      }
+    },
+    "activities": {
+      "title": "Aktivitäten",
+      "lead": "Chronologischer Verlauf aller Vorgänge.",
+      "empty": "Keine Aktivitäten.",
+      "loadMore": "Ältere laden"
+    },
+    "calendar": {
+      "title": "Kalender",
+      "lead": "Termine, Wartungsfenster und Belegung.",
+      "empty": "Keine Termine.",
+      "today": "Heute",
+      "views": {
+        "month": "Monat",
+        "week": "Woche",
+        "day": "Tag",
+        "agenda": "Liste"
+      },
+      "newEvent": "Termin anlegen"
+    },
+    "communications": {
+      "title": "Nachrichten",
+      "lead": "Ein- und ausgehende Kommunikation je Vorgang.",
+      "empty": "Keine Nachrichten.",
+      "compose": "Neue Nachricht",
+      "channels": {
+        "email": "E-Mail",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "portal": "Portal",
+        "phone": "Telefon"
+      }
+    },
+    "documents": {
+      "title": "Dokumente",
+      "lead": "Verträge, Pläne und Nachweise.",
+      "count": "{count, plural, one {# Dokument} other {# Dokumente}}",
+      "empty": "Keine Dokumente.",
+      "upload": "Dokument hochladen",
+      "signedUrlNotice": "Download-Links sind zeitlich begrenzt gültig.",
+      "columns": {
+        "name": "Name",
+        "category": "Kategorie",
+        "size": "Größe",
+        "uploadedAt": "Hochgeladen",
+        "uploadedBy": "Von"
+      }
+    },
+    "compliance": {
+      "title": "Compliance",
+      "lead": "Fristen, Nachweise und offene Auflagen.",
+      "empty": "Keine offenen Punkte.",
+      "dueSoon": "Bald fällig",
+      "overdue": "Überfällig",
+      "compliant": "Erfüllt"
+    },
+    "reports": {
+      "title": "Berichte",
+      "lead": "Auswertungen als Datei oder Zeitplan.",
+      "empty": "Keine Berichte.",
+      "generate": "Bericht erzeugen",
+      "generating": "Bericht wird erzeugt …",
+      "ready": "Bericht bereit",
+      "queuedNotice": "Der Bericht wird im Hintergrund erzeugt. Diese Seite kann verlassen werden."
+    },
+    "users": {
+      "title": "Benutzer",
+      "lead": "Konten, Rollen und Zugriffsstand.",
+      "count": "{count, plural, one {# Benutzer} other {# Benutzer}}",
+      "empty": "Keine Benutzer.",
+      "invite": "Benutzer einladen",
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "status": "Status",
+        "lastSeen": "Zuletzt aktiv"
+      }
+    },
+    "admin": {
+      "title": "Administration",
+      "lead": "Systemzustand, Aufträge und Protokolle.",
+      "auditLog": "Protokoll",
+      "jobs": "Aufträge",
+      "health": "Systemzustand",
+      "empty": "Keine Einträge."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "lead": "Konto, Darstellung und Benachrichtigungen.",
+      "account": "Konto",
+      "appearance": "Darstellung",
+      "notifications": "Benachrichtigungen",
+      "language": "Sprache",
+      "theme": {
+        "label": "Design",
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System"
+      },
+      "saved": "Gespeichert"
+    },
+    "hotel": {
+      "title": "Hotelbetrieb",
+      "lead": "Belegung, Zimmerstatus und Buchungsquellen.",
+      "empty": "Keine Daten zum Hotelbetrieb.",
+      "occupancy": "Auslastung",
+      "adr": "Durchschnittsrate",
+      "revpar": "RevPAR",
+      "roomStatus": {
+        "clean": "Gereinigt",
+        "dirty": "Zu reinigen",
+        "inspected": "Geprüft",
+        "outOfOrder": "Außer Betrieb"
+      },
+      "bookingSources": "Buchungsquellen"
+    },
+    "reviews": {
+      "title": "Bewertungen",
+      "lead": "Gästebewertungen über alle Portale, mit Quelle und Datum.",
+      "count": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "empty": "Keine Bewertungen erfasst.",
+      "average": "Durchschnitt",
+      "distribution": "Verteilung",
+      "themes": "Themen",
+      "sentiment": {
+        "positive": "Positiv",
+        "neutral": "Neutral",
+        "negative": "Negativ"
+      },
+      "columns": {
+        "portal": "Portal",
+        "rating": "Note",
+        "title": "Titel",
+        "language": "Sprache",
+        "publishedAt": "Datum"
+      }
+    }
+  },
+  "hotel": {
+    "title": "Azura World Hotel",
+    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage.",
+    "formerNameNotice": "Zuvor unter dem Namen {formerName} geführt. Die Umbenennung ist als Befund erfasst.",
+    "rooms": "Zimmer",
+    "stars": "Kategorie",
+    "board": "Verpflegung",
+    "aquapark": "Aquapark",
+    "beachDistance": "Entfernung zum Strand",
+    "checkIn": "Anreise ab",
+    "checkOut": "Abreise bis",
+    "openedYear": "Eröffnet",
+    "gallery": "Galerie",
+    "galleryEmpty": "Für dieses Objekt liegen keine freigegebenen Bilder vor.",
+    "reviewsTitle": "Was Gäste schreiben",
+    "reviewsLead": "Auszüge aus öffentlichen Bewertungsportalen, jeweils mit Quelle.",
+    "bookExternal": "Beim Portal ansehen"
+  },
+  "report": {
+    "title": "Offener Report",
+    "lead": "Der Datenbestand zu Azura World — dieselben Zahlen, dieselben Quellen, ohne Anmeldung.",
+    "generatedAt": "Erstellt am {date}",
+    "sectionProject": "Projekt",
+    "sectionHotel": "Hotel",
+    "sectionMarket": "Marktumfeld",
+    "sectionSources": "Quellen",
+    "sectionFindings": "Befunde",
+    "downloadPdf": "Als PDF herunterladen",
+    "empty": "Keine belegten Daten für diesen Abschnitt.",
+    "shareTitle": "Report teilen",
+    "shareDescription": "Der Link führt auf denselben Stand, den Sie gerade sehen."
+  },
+  "concierge": {
+    "title": "Azura Concierge",
+    "subtitle": "Fragen zum Projekt — beantwortet ausschließlich aus dem belegten Datenbestand.",
+    "placeholder": "Frage stellen …",
+    "send": "Senden",
+    "thinking": "Antwort wird erstellt …",
+    "stop": "Abbrechen",
+    "clear": "Verlauf löschen",
+    "empty": "Noch keine Fragen gestellt.",
+    "disclaimer": "Antworten stammen aus dem erhobenen Datenbestand und nennen ihre Quelle. Wo keine Quelle vorliegt, wird das gesagt.",
+    "noAnswer": "Dazu liegt keine belegte Angabe vor.",
+    "sourcesLabel": "Genutzte Quellen",
+    "errors": {
+      "unavailable": "Der Assistent ist derzeit nicht erreichbar.",
+      "rateLimited": "Zu viele Fragen in kurzer Zeit. Bitte kurz warten.",
+      "tooLong": "Die Frage ist zu lang.",
+      "refused": "Diese Anfrage kann der Assistent nicht ausführen."
+    },
+    "suggestions": {
+      "one": "Wie viele Wohnungen hat die Anlage?",
+      "two": "Was ist über den Bauträger belegt?",
+      "three": "Wo widersprechen sich die Quellen?"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "lead": "Zugang zum vollen Datenbestand.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "forgot": "Passwort vergessen?",
+      "noAccount": "Kein Konto?",
+      "requestAccess": "Zugang anfragen",
+      "invalid": "E-Mail oder Passwort ist falsch.",
+      "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten."
+    },
+    "signup": {
+      "title": "Zugang anfragen",
+      "lead": "Zugänge werden geprüft und manuell freigegeben.",
+      "name": "Name",
+      "company": "Unternehmen",
+      "reason": "Grund der Anfrage",
+      "submit": "Anfrage senden",
+      "success": "Anfrage eingegangen. Sie erhalten eine Rückmeldung per E-Mail.",
+      "hasAccount": "Bereits ein Konto?"
+    },
+    "forbidden": {
+      "title": "Kein Zugriff",
+      "lead": "Ihre Rolle erlaubt diesen Bereich nicht.",
+      "back": "Zur Übersicht"
+    }
+  },
+  "legal": {
+    "title": "Rechtliches",
+    "privacy": {
+      "title": "Datenschutz",
+      "lead": "Welche Daten diese Anwendung verarbeitet und warum."
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "lead": "Bedingungen für die Nutzung dieser Anwendung."
+    },
+    "imprint": {
+      "title": "Impressum",
+      "lead": "Angaben gemäß § 5 TMG."
+    },
+    "mediaRights": {
+      "title": "Bildrechte",
+      "lead": "Bildmaterial stammt aus öffentlich zugänglichen Quellen und wird nur mit Quellenangabe gezeigt. Rechte verbleiben bei den jeweiligen Inhabern.",
+      "attribution": "Quelle: {source}"
+    }
+  }
+}

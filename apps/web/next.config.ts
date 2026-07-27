@@ -1,20 +1,21 @@
 import type { NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
 
 // ---------------------------------------------------------------------------
-// W1-C SEAM — next-intl plugin.
+// W1-C SEAM — next-intl plugin.  ENABLED by W1-C on 2026-07-27.
 //
 // next-intl's request config (`getRequestConfig`) is wired through this plugin.
-// W1-C owns `apps/web/i18n.ts` / `apps/web/i18n/request.ts`; until that file
-// exists the plugin has nothing to point at and the build would fail on a
-// missing module. W1-C must uncomment the two lines below and change the export
-// at the bottom of this file to `export default withNextIntl(nextConfig)`.
-//
-//   import createNextIntlPlugin from "next-intl/plugin"
-//   const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
+// `apps/web/i18n/request.ts` now exists, so the plugin resolves and the export
+// at the bottom of this file is `withNextIntl(nextConfig)`.
 //
 // Locale ROUTING (prefix, redirects) does not need the plugin and is already
 // live in `proxy.ts`, which reads the locale list from `lib/contracts.ts`.
+//
+// Only the two lines W0-A's handoff named were touched: this import and the
+// final export. Nothing else in this file is W1-C's.
 // ---------------------------------------------------------------------------
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
 /**
  * Supabase project origin, used in the CSP and in the image allowlist.
@@ -85,4 +86,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)
