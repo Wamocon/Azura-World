@@ -173,7 +173,7 @@ export function ConflictPopover<T>({
 
             <Popover.Close
               className={cn(
-                "self-start rounded-md px-2 py-1 text-xs font-semibold text-primary",
+                "inline-flex min-h-6 items-center self-start rounded-md px-2 text-xs font-semibold text-primary",
                 "outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
               )}
             >

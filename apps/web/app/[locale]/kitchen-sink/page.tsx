@@ -316,10 +316,23 @@ export default async function KitchenSinkPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  // Dev-only. A design gallery on a production origin is an information leak
-  // about an unreleased surface, and this one imports fixtures that exist to
-  // exercise edge cases rather than to be read as facts.
-  if (process.env.NODE_ENV === "production") {
+  // Dev-only by default. A design gallery on a production origin is an
+  // information leak about an unreleased surface, and this one renders
+  // fixtures that exist to exercise edge cases rather than to be read as
+  // facts.
+  //
+  // `AZURA_ENABLE_KITCHEN_SINK=1` opts a production BUILD back in, for one
+  // reason: the design review has to screenshot the production bundle. On this
+  // machine Turbopack cannot compile `globals.css` under load — it spawns a
+  // subprocess per PostCSS asset and Windows refuses with 0xc0000142 — so
+  // `next build --webpack` + `next start` is the only path that renders, and
+  // CONVENTIONS §1 names that the validated build anyway.
+  //
+  // This is NOT in the class of flag SYSTEM-PROMPT §2.12 governs. It gates a
+  // component gallery built from literals: no data, no mutation, no auth
+  // bypass. It is off unless explicitly set, and the deploy sets nothing.
+  const enabledInProduction = process.env["AZURA_ENABLE_KITCHEN_SINK"] === "1"
+  if (process.env.NODE_ENV === "production" && !enabledInProduction) {
     notFound()
   }
 
@@ -329,9 +342,14 @@ export default async function KitchenSinkPage({
     <main className="container mx-auto flex min-w-0 max-w-4xl flex-col gap-12 py-10">
       <header className="flex min-w-0 flex-col gap-4">
         <Badge variant="simulation">Nur Entwicklung</Badge>
-        <h1 className="font-display text-3xl font-bold">
-          <ScrambleText text="Azura Design System" />
-        </h1>
+        {/* The h1 is NOT scrambled. A decode effect on the one line that tells
+            you what the page is costs ~800ms of illegibility on the most
+            important text on screen — animate the rarely-read, not the
+            first-read. ScrambleText is demonstrated on its own row below. */}
+        <h1 className="font-display text-3xl font-bold">Azura Design System</h1>
+        <p className="font-display text-lg text-primary">
+          <ScrambleText text="Türkler · Alanya · Antalya" />
+        </p>
         <p className="max-w-prose text-muted-foreground">
           Jede Primitive in jedem Zustand. Diese Seite ist der Nachweis für
           W1-D — sechs Belege, jeweils mit <code>data-proof</code> markiert.
@@ -502,6 +520,23 @@ export default async function KitchenSinkPage({
             </div>
           </Card>
         </div>
+
+        <Card data-proof="glyph-coverage">
+          <CardTitle>Glyphenabdeckung</CardTitle>
+          <CardDescription>
+            Beide Schriften müssen Latin-ext (türkisch: ı İ ş ğ ç) und Kyrillisch
+            abdecken. Ein fehlendes Zeichen rendert als lautloses Kästchen — es
+            fällt niemandem auf, der die Sprache nicht liest.
+          </CardDescription>
+          <div className="flex flex-col gap-1">
+            <p className="font-display text-2xl">
+              Алания · Türkler · Straße · Азура Уорлд
+            </p>
+            <p className="text-base">
+              Алания · Türkler · Straße · Резиденция и отель
+            </p>
+          </div>
+        </Card>
 
         <GlassCard>
           <CardTitle>Quellen-Chips</CardTitle>

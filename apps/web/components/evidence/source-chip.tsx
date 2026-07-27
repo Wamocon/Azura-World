@@ -116,7 +116,11 @@ export function SourceChip({
           rel="noopener noreferrer"
           title={`${labels.openSource}: ${source.url}`}
           className={cn(
-            "inline-flex min-w-0 items-center gap-1 rounded-sm font-medium",
+            // `min-h-6` is load-bearing, not padding taste. The anchor is the
+            // tap target, and text-xs gives it a 16px line box — under the 24px
+            // floor CONVENTIONS §5 sets. The chip's own min-height does not
+            // help: the hit area is the <a>, not its container.
+            "inline-flex min-h-6 min-w-0 items-center gap-1 rounded-sm font-medium",
             "outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
           )}
         >
@@ -157,7 +161,8 @@ export function SourceChip({
           aria-label={`${labels.snapshot} — ${source.publisher}`}
           title={labels.snapshot}
           className={cn(
-            "inline-flex size-5 shrink-0 items-center justify-center rounded-sm",
+            // 24px, same reason as the publisher link above.
+            "inline-flex size-6 shrink-0 items-center justify-center rounded-sm",
             "outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
           )}
         >

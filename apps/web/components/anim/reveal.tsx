@@ -130,9 +130,27 @@ export function Reveal({
       }
     }, REVEAL_FAILSAFE_MS)
 
+    // Print reveals everything, scrolled-to or not.
+    //
+    // A printed page has no viewport and no scrolling, so an element that is
+    // still waiting for its IntersectionObserver prints as a blank space. The
+    // report poster has to come off A4 complete (W1-D brief, "Edge cases"),
+    // and this is the same class of bug as the reduced-motion one: content
+    // that exists but cannot be seen.
+    //
+    // `gsap.set` rather than `reveal()` — a print dialog is not the moment for
+    // a 500ms fade, and `matchMedia("print")` fires synchronously during the
+    // browser's print layout.
+    const showForPrint = () => {
+      revealed = true
+      gsap.set(targets, { y: 0, opacity: 1, clearProps: "transform,opacity" })
+    }
+    window.addEventListener("beforeprint", showForPrint)
+
     return () => {
       observer.disconnect()
       window.clearTimeout(safety)
+      window.removeEventListener("beforeprint", showForPrint)
       ctx.revert()
     }
   }, [y, delay, durationProp, stagger])
