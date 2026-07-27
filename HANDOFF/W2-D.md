@@ -214,10 +214,12 @@ endpoint down.
   need a browser with a real Supabase client. No Playwright config exists yet.
 - **A real Cache Storage enumeration (check 8's runtime half).** The predicate is proved
   exhaustively; what is unproven is that `public/sw.js` executes it as written in a real browser.
-- **`pnpm --dir apps/web build`.** The tree currently fails `lint` on six errors in W1-D / W3-I
-  work in progress (`kitchen-sink/theme-toggle.tsx`, `anim/reveal.tsx`, `immersion/primitives.tsx`
-  ×3, `three/coast-maquette.tsx`) and contains half-written route segments from two other windows.
-  A build result would describe their work, not this task's.
+- ~~`pnpm --dir apps/web build`~~ — **now RUN and PASSING.** It was skipped at commit time because
+  the tree failed `lint` on six errors in W1-D / W3-I work in progress; that window fixed them and
+  the build was re-run at 20:05. Exit 0, and `○ /manifest.webmanifest` appears in the route table,
+  so `app/manifest.ts` is emitted as a static asset as intended. The service worker is a plain
+  file in `public/` and is not part of the build graph — its presence in the output proves nothing
+  about it, which is why the gap below still stands.
 - **No hook has been rendered.** There is no React test environment in this repository. Everything
   provable without one was moved into `lib/realtime.ts`, `lib/pwa.ts` and
   `resolveMutationOutcome` precisely so it could be proved; what remains in the hooks is

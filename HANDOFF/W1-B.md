@@ -47,12 +47,14 @@ Window: 2 · Branch: `feature/INTERNAL-107-w1b-w2c-auth-ai` · Commit: `2f4615f`
 | SQL `guardian_role_for()` vs `additiveParent` | **PASS** | `…0001_rbac.sql:120-125` — identical for all three `child_*` |
 | `git status --porcelain` | **PASS** | only my 14 paths staged; see the commit's `--name-status` |
 
-**NOT RUN**, with reasons:
+| `pnpm --dir apps/web build` | **PASS** *(re-run at 20:05, see below)* | exit 0; `/api/access-profile` and `ƒ Proxy (Middleware)` both in the route table |
 
-- `pnpm --dir apps/web build` — **NOT RUN by W1-B.** The working tree is shared with three other
-  windows that are actively writing `app/[locale]/**`, `components/**` and `i18n/**`; a build
-  result would describe their in-progress tree, not this task. Typecheck and lint were green at
-  commit time and cover every file this task owns.
+`build` was deliberately not run at commit time — three other windows were mid-write in the shared
+tree and the result would have described their work, not this task's. It was re-run once the tree
+settled and passes; the route table confirms this task's route and proxy seams actually compile
+into the production output rather than only typechecking.
+
+**NOT RUN**, with reasons:
 - `pnpm --dir apps/web test:e2e` — no `playwright.config.ts` yet (W4-A).
 - `safeNextPath()` is **not covered by the probe.** It lives in a `"use server"` module that
   imports `next/navigation` and `@/lib/supabase/server`, so plain Node cannot load it. Its logic

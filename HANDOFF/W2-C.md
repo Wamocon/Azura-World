@@ -106,17 +106,25 @@ unreachable/unconfigured). Both pass — see below.
 | `node … scripts/ai-probe.mjs --live-gateway` | **PASS** | `INFO gateway OK in 706ms, model sokrates-fast, reply "ok"` |
 | Live end-to-end through the real gateway | **PASS** | see "Live gateway" below |
 
-**`pnpm --dir apps/web lint` (whole tree) reports 6 errors — none in W2-C or W1-B files.** All six
-are in W1-D / W3-I work in progress: `app/[locale]/kitchen-sink/theme-toggle.tsx`,
-`components/anim/reveal.tsx`, `components/immersion/primitives.tsx` (×3),
-`components/three/coast-maquette.tsx`. The tree is shared between four windows; my scoped run
-above is the honest statement about this task's files.
+| `pnpm --dir apps/web build` | **PASS** *(re-run at 20:05)* | exit 0; all four AI routes in the route table |
+| `pnpm --dir apps/web lint` (whole tree) | **PASS** *(re-run at 20:05)* | 0 errors, 0 warnings |
+
+At commit time the whole-tree `lint` reported 6 errors, all in W1-D / W3-I work in progress
+(`kitchen-sink/theme-toggle.tsx`, `anim/reveal.tsx`, `immersion/primitives.tsx` ×3,
+`three/coast-maquette.tsx`) and none in this task's files. That window fixed them; the tree is now
+green and `build` was re-run against it:
+
+```
+ƒ /api/ai/chat
+ƒ /api/ai/public-chat
+ƒ /api/ai/public-chat/feedback
+ƒ /api/ai/public-chat/stream
+```
+
+All four routes compile into the production output. That is not the same as having been *called* —
+see the gap below.
 
 **NOT RUN:**
-
-- `pnpm --dir apps/web build` — **NOT RUN by W2-C.** The tree currently fails `lint` on another
-  window's files and contains half-written route segments from two others; a build result would
-  describe their work, not this task's. Typecheck covers every file here.
 - `pnpm --dir apps/web test:e2e` — no `playwright.config.ts` yet (W4-A).
 - **The four routes have not been exercised over HTTP.** The pipeline they wrap is covered by 152
   assertions, and the live gateway was called end-to-end through `runConcierge`, but no request
