@@ -38,6 +38,10 @@ import { Button } from "@/components/ui/button"
 
 export interface SiteWorldLabels {
   heading: string
+  /** SHORT badge label, e.g. "Schema". Not a sentence — this goes in a Badge. */
+  schematicBadge: string
+  /** The full sentence. Rendered as a paragraph, twice: once under the scene
+   *  and once as the caption, because it is the component's main claim. */
   schematicWarning: string
   blocks: string
   hotel: string
@@ -101,7 +105,7 @@ export function AzuraSiteWorld({
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-display text-xl font-semibold">{labels.heading}</h3>
-        <Badge variant="modelled">{labels.schematicWarning}</Badge>
+        <Badge variant="modelled">{labels.schematicBadge}</Badge>
       </div>
 
       {/* The scene is decorative: the same information is in the figure list

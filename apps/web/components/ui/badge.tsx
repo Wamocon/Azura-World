@@ -17,7 +17,11 @@ import { cn } from "@/lib/cn"
  */
 const badgeVariants = cva(
   cn(
-    "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap",
+    // `max-w-full` and no `whitespace-nowrap`: a badge is meant to hold a short
+    // label, but the failure mode when someone puts a sentence in one must be
+    // "it wraps", not "the page scrolls sideways at 320px". Truncation was the
+    // other option and is worse — it hides meaning silently.
+    "inline-flex w-fit max-w-full shrink-0 items-center gap-1.5",
     "rounded-md border px-2 py-0.5 text-xs font-semibold tracking-[0.01em]",
     "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-3"
   ),

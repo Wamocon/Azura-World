@@ -92,10 +92,19 @@ export function AzuraImmersionSection({
   entryPriceFact,
   realtime = false,
 }: AzuraImmersionProps): ReactNode {
-  const blockCodes = blocks.map((block) => block.code)
-  // Only the ids the ticker can name — it never invents one, and it never
-  // needs more than a handful.
-  const unitIds = units.slice(0, 64).map((unit) => unit.id)
+  // Only the units the ticker can name — it never invents one, and it never
+  // needs more than a handful. Each carries its own block, so a feed row can
+  // never show a unit against a block its id contradicts.
+  //
+  // Sampled with a stride rather than `slice(0, 64)`: the dataset is ordered by
+  // block, so taking the head gives 64 units that are all in B01 and a feed
+  // that reads as if only one building is ever busy.
+  const SAMPLE_SIZE = 64
+  const stride = Math.max(1, Math.floor(units.length / SAMPLE_SIZE))
+  const simulationUnits = units
+    .filter((_, index) => index % stride === 0)
+    .slice(0, SAMPLE_SIZE)
+    .map((unit) => ({ id: unit.id, blockCode: unit.blockCode }))
 
   return (
     <AuroraBackground className="w-full py-16">
@@ -133,8 +142,7 @@ export function AzuraImmersionSection({
         />
 
         <AzuraLiveSimulation
-          blockCodes={blockCodes}
-          unitIds={unitIds}
+          units={simulationUnits}
           labels={labels.liveSimulation}
           locale={locale}
         />

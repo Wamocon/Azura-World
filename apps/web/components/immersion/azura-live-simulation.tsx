@@ -109,10 +109,16 @@ const KINDS: readonly SimulationEventKind[] = [
   "sync",
 ]
 
+/** A real unit from the dataset: its id and the block it actually belongs to. */
+export interface SimulationUnitRef {
+  id: string
+  blockCode: string
+}
+
 interface FeedEvent {
   id: string
   kind: SimulationEventKind
-  /** A real block code from the dataset. */
+  /** The unit's OWN block. Never picked independently — see `eventForTick`. */
   blockCode: string
   /** A real unit id from the dataset. Rendered as text, never a link. */
   unitId: string
@@ -129,34 +135,34 @@ const TICK_MS = 3200
 function eventForTick(
   tick: number,
   seed: number,
-  blockCodes: readonly string[],
-  unitIds: readonly string[]
+  units: readonly SimulationUnitRef[]
 ): FeedEvent {
   const rng = createRng(seed + tick * 2654435761)
   const kind = pick(KINDS, rng())
-  const unitId = pick(unitIds, rng())
-  const blockCode = pick(blockCodes, rng())
+  // The block comes from the unit, NOT from an independent draw. Picking both
+  // separately produced rows like "B03 · AZW-B01-0056" — a unit shown against a
+  // block its own id contradicts. The events are simulated; that is disclosed.
+  // Being internally incoherent is a different thing, and it reads as a bug in
+  // the data rather than as a deliberate demonstration.
+  const unit = pick(units, rng())
   return {
     id: `sim-${tick}`,
     kind,
-    blockCode,
-    unitId,
+    blockCode: unit.blockCode,
+    unitId: unit.id,
     at: simulationTime(tick, TICK_MS),
   }
 }
 
 export function AzuraLiveSimulation({
-  blockCodes,
-  unitIds,
+  units,
   labels,
   locale,
   seedKey = "azura-live",
   className,
 }: {
-  /** Real block codes from the dataset. */
-  blockCodes: readonly string[]
-  /** Real unit ids from the dataset. */
-  unitIds: readonly string[]
+  /** Real units from the dataset — id and the block each one belongs to. */
+  units: readonly SimulationUnitRef[]
   labels: LiveSimulationLabels
   locale: string
   seedKey?: string
@@ -174,9 +180,9 @@ export function AzuraLiveSimulation({
   const initialEvents = useMemo(
     () =>
       Array.from({ length: MAX_EVENTS }, (_, index) =>
-        eventForTick(MAX_EVENTS - index, seed, blockCodes, unitIds)
+        eventForTick(MAX_EVENTS - index, seed, units)
       ),
-    [seed, blockCodes, unitIds]
+    [seed, units]
   )
 
   const [events, setEvents] = useState<FeedEvent[]>(initialEvents)
@@ -185,14 +191,14 @@ export function AzuraLiveSimulation({
 
   useEffect(() => {
     if (reducedMotion) return
-    if (blockCodes.length === 0 || unitIds.length === 0) return
+    if (units.length === 0) return
 
     const clock = createSimulationClock({
       intervalMs: TICK_MS,
       seed,
       onTick: () => {
         tickRef.current += 1
-        const next = eventForTick(tickRef.current, seed, blockCodes, unitIds)
+        const next = eventForTick(tickRef.current, seed, units)
         setEvents((current) => [next, ...current].slice(0, MAX_EVENTS))
         // The sync badge flips on a fixed cadence, not randomly — a degraded
         // state that appears at random is indistinguishable from a real
@@ -203,7 +209,7 @@ export function AzuraLiveSimulation({
 
     clock.start()
     return () => clock.stop()
-  }, [reducedMotion, seed, blockCodes, unitIds])
+  }, [reducedMotion, seed, units])
 
   return (
     <section

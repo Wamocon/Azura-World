@@ -29,6 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import type { Confidence, SourcedFact, SourceRef } from "@/lib/contracts"
 import { locales } from "@/lib/contracts"
 
+import { ImmersionDemo } from "./immersion-demo"
 import { KitchenSinkClient } from "./kitchen-sink-client"
 import { ThemeToggle } from "./theme-toggle"
 
@@ -592,6 +593,9 @@ export default async function KitchenSinkPage({
 
       {/* ---- interactive ---- */}
       <KitchenSinkClient />
+
+      {/* ---- W3-I, against the real dataset ---- */}
+      <ImmersionDemo provenanceLabels={LABELS} />
     </main>
   )
 }
