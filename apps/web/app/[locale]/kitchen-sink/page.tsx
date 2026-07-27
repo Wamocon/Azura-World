@@ -56,7 +56,24 @@ import { ThemeToggle } from "./theme-toggle"
  * keeps the page renderable while W1-C's message files are still moving.
  */
 
-export const dynamic = "force-static"
+/**
+ * NOT `force-static`, and this is load-bearing.
+ *
+ * `proxy.ts` emits a per-request CSP containing `'nonce-…' 'strict-dynamic'`.
+ * Next can only stamp that nonce onto its script tags when there IS a request
+ * — it reads it from the request header. A statically prerendered page is
+ * built without one, so its scripts carry no nonce, and under `strict-dynamic`
+ * a script without a nonce does not load. The page renders, looks correct, and
+ * runs ZERO JavaScript: no hydration, no theme toggle, no popover, no canvas.
+ *
+ * Measured on this route before the fix: 0 bytes of JS transferred, 0 canvases
+ * mounted, and one CSP violation per chunk in the console.
+ *
+ * `generateStaticParams` stays — it still enumerates the locales for routing.
+ * Reported to W0-A/W1-B (proxy.ts) and W3-A in HANDOFF/W1-D.md, because any
+ * static page in this app has the same problem.
+ */
+export const dynamic = "force-dynamic"
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))

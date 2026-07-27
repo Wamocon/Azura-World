@@ -66,7 +66,7 @@ boundary. Placeholders are `{count}`, `{visible}`, `{total}`.
 | Scoped `tsc --noEmit` (W1-D + W3-I files) | **PASS** exit 0 | scratchpad config; W3-I subtree included |
 | `eslint` over all owned paths | **PASS** exit 0, 0 errors 0 warnings | see below |
 | Playwright, real Chromium | **PASS — 16/16** | output below |
-| `pnpm --dir apps/web build` | **FAIL — not mine** | `lib/ai-retrieval.ts:147` (W2-C) |
+| `pnpm --dir apps/web build` | **PASS** exit 0 | Blocked on W2-C's `ai-retrieval.ts:147` for most of the run; green in the final pass. |
 | `pnpm qa:perf` | **NOT RUN** | script does not exist; W4-B owns it |
 
 ### Lint — the five errors the supervisor flagged as S-002 were mine, and are fixed
@@ -230,14 +230,20 @@ design). The two are identical field-for-field.
 
 ## Known gaps
 
-- **`[GAP]` Perf: LCP ≤ 2.5s and JS ≤ 250KB gz on the landing route with this
-  layer present.** NOT MEASURED. `pnpm qa:perf` is W4-B's script and does not
-  exist, and the production build cannot complete (W2-C). **The budget is
-  therefore unproven, and this layer is the most likely thing to break it.**
-  Reduction levers, in order: `@react-three/drei` is used for exactly three
-  things (`RoundedBox`, `ContactShadows`, `AdaptiveDpr`) and all are replaceable
-  with plain three; the maquette is already behind a 300px intersection
-  observer, so it is off the LCP path either way.
+- **Bundle sizes are now MEASURED** (the build unblocked once W2-C fixed
+  `ai-retrieval.ts`). Real transfer sizes from `next start` + Chromium: **lazy
+  3D chunk 236.4 KB gz against a 150 KB budget — over by 86 KB**, and
+  `/de/kitchen-sink` initial JS 297.3 KB gz (a dev-only route importing the
+  whole dataset plus every primitive plus this layer, so not the landing
+  route). Removing `@react-three/drei` saved 10 bytes and was reverted — it was
+  already tree-shaken, so the 236 KB is three.js + R3F itself. Full reasoning
+  and the decision it forces are in HANDOFF/W1-D.md.
+- **`[GAP]` LCP ≤ 2.5s, INP, CLS** still NOT MEASURED — `pnpm qa:perf` is
+  W4-B's script and does not exist.
+- **PRODUCTION CSP: a statically rendered page runs zero JavaScript.** Found
+  while measuring, and it would have silently disabled this entire layer in
+  production. Evidence and the fix applied to my own route are in
+  HANDOFF/W1-D.md — **W3-A must read that before choosing a rendering mode.**
 - **`[GAP]` 60s soak / DevTools memory trace.** NOT RUN. The behavioural
   equivalent was measured — the ticker provably stops while the tab reports
   hidden and resumes without fast-forwarding, and the clock's `stop()` clears

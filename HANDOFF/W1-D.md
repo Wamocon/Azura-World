@@ -46,9 +46,9 @@ Completed: 2026-07-27
 | Command | Result | Evidence |
 |---|---|---|
 | Scoped `tsc --noEmit` over W1-D files | **PASS** | exit 0. Config at `scratchpad/tsconfig.w1d.json`, includes `components/{ui,evidence,anim,three,providers}`, `lib/{cn,motion}`, `app/[locale]/kitchen-sink`. |
-| `pnpm --dir apps/web typecheck` (full tree) | **FAIL — not mine** | See "Blocked verifications" below. |
-| `pnpm --dir apps/web build` | **Compiled successfully in 10.4s**, then **typecheck FAIL — not mine** | `✓ Compiled successfully in 10.4s` → `Failed to type check. ./lib/ai-retrieval.ts:147:5` (W2-C). Webpack compiled `globals.css` and all W1-D components without error. |
-| `pnpm --dir apps/web lint` | **NOT RUN** | See "Blocked verifications". |
+| `pnpm --dir apps/web typecheck` (full tree) | **PASS** exit 0 | Was failing on W1-B/W1-C files mid-run; green once they landed. |
+| `pnpm --dir apps/web build` | **PASS** exit 0 | `✓ Compiled successfully` · all 4 locale routes emitted. Blocked earlier on W2-C's `ai-retrieval.ts:147`; green once they fixed it. |
+| `pnpm --dir apps/web lint` | **PASS** exit 0, 0 errors 0 warnings | Whole tree. The 5 errors the supervisor logged as S-002 were mine and are fixed — see HANDOFF/W3-I.md. |
 | PostCSS compile of `globals.css` | **PASS** | 61,766 B output; provenance utilities generate, alpha modifiers emit `color-mix(in oklab, var(--confidence-conflicted) 45%, transparent)` with a solid fallback. |
 | Contrast harness | **PASS — 0 gated failures** | 33 pairs × 2 themes. Full table in `DESIGN.md` §4. |
 | Playwright design review, Chromium | **PASS — 27/27** | Output below. |
@@ -93,21 +93,14 @@ dark, and the open conflict popover.
 
 ### Blocked verifications — NOT RUN, with the reason
 
-- **`pnpm --dir apps/web typecheck` (full tree)** fails on three files this task
-  does not own, all uncommitted work in the shared tree:
-  `i18n/request.ts` (W1-C), `lib/auth.ts:325` and `lib/rbac.ts:515` (W1-B).
-  W1-D files are clean — proven by the scoped config above.
-- **`pnpm --dir apps/web build`** compiles, then fails typecheck on
-  `lib/ai-retrieval.ts:147` (**W2-C**): `Type 'number' is not assignable to type
-  'SourceTier'`. Their `SourceRef.tier` is widened to `number`.
-- **`pnpm --dir apps/web lint`** NOT RUN — it lints the whole tree and would
-  report other windows' in-flight files, so the result would be unattributable.
-- **3D route chunk size** NOT MEASURED. It needs a completed production build,
-  which is blocked above (`BUILD_ID` is empty, so the emitted chunks are not a
-  trustworthy route split). **The ≤150KB gz budget is therefore unproven.** The
-  levers if it turns out over: drop `@react-three/drei` (`RoundedBox`,
-  `ContactShadows`, `AdaptiveDpr` are the only uses and all are replaceable with
-  plain three) before touching three itself.
+*(Typecheck, lint and build were all blocked on other windows' files for most
+of the run — W1-B's `auth.ts`/`rbac.ts`, W1-C's `i18n/request.ts`, W2-C's
+`ai-retrieval.ts:147`. All three are green as of the final pass; the scoped
+config above is what let W1-D be verified while they were red.)*
+
+- **3D route chunk size is now MEASURED** — the build unblocked later in the
+  night once W2-C fixed `ai-retrieval.ts`. See "Measured bundle sizes" above:
+  236.4 KB gz against a 150 KB budget.
 - **LCP / INP / CLS** NOT MEASURED — `pnpm qa:perf` is W4-B's script and does
   not exist yet.
 
@@ -225,6 +218,76 @@ inside `<body>`. No other change.
 - **Deferred deliberately:** no `sonner`/toast primitive (nothing in wave 1
   needs one), and no `select`/`combobox` (the kitchen sink uses native controls;
   W3-C should request one if the unit filters need it).
+
+---
+
+## PRODUCTION IS BROKEN FOR ANY STATICALLY RENDERED PAGE — read this
+
+**Every script is blocked by our own CSP on a prerendered page. Zero JavaScript
+runs.** Found by serving `next start` and driving a browser; it does not
+reproduce under `next dev`.
+
+`proxy.ts` emits a per-request CSP containing `'nonce-...' 'strict-dynamic'`.
+Next can only stamp that nonce onto its script tags when there IS a request —
+it reads it back out of the request header. A statically prerendered page is
+built without one, so its scripts carry **no nonce at all**, and under
+`strict-dynamic` an unnonced script does not load.
+
+Measured on `/de/kitchen-sink` while it had `export const dynamic = "force-static"`:
+
+```
+script nonces in HTML: []
+INITIAL page JS transferred: 0 B across 0 files
+canvas mounted: 0
+console: "Loading the script '.../chunks/0225uih-r_h93.js' violates the
+          following Content Security Policy directive: script-src 'self'
+          'nonce-1DHkEpV+/8gL66EvST+fqw==' 'strict-dynamic'"   (x every chunk)
+```
+
+The page renders and *looks* correct, because the server-rendered HTML is fine.
+Nothing is interactive.
+
+I fixed my own route (`force-dynamic`) and re-measured: canvas mounts, three
+hydrated theme-toggle buttons, JS transfers normally.
+
+**W3-A: do not ship a `force-static` landing page** until this is resolved.
+**W0-A / W1-B (`proxy.ts` owners):** the real fix is a decision rather than a
+patch — either every page renders dynamically, or the CSP drops the nonce and
+`strict-dynamic` in favour of hashes, or static routes get their own CSP
+without a nonce. I did not touch `proxy.ts`; it is not mine.
+
+---
+
+## Measured bundle sizes
+
+From a real `next build` + `next start`, recording actual transfer sizes in
+Chromium — not from reading the chunk directory.
+
+| | Measured (gz) | Budget | |
+|---|---|---|---|
+| Lazy 3D chunk | **236.4 KB** across 5 files | 150 KB | **OVER by 86 KB** |
+| `/de/kitchen-sink` initial JS | 297.3 KB across 11 files | — | dev-only route |
+
+**The 150 KB budget for the 3D chunk is not reachable with the pinned stack,
+and that is a stack fact rather than a coding one.** three.js 0.185 + R3F is
+~236 KB gzipped before any of our code runs. I tested the obvious lever and it
+failed: removing `@react-three/drei` entirely — replacing `RoundedBox`,
+`ContactShadows` and `AdaptiveDpr` with a plain `boxGeometry`, a darkened plane
+and the existing `dpr` cap — saved **10 bytes**, because drei was already
+tree-shaken. Reverted, since it cost rounded corners and soft contact shadows
+for nothing.
+
+What this does NOT mean: it does not put the landing route over. The maquette
+sits behind an IntersectionObserver with a 300px margin and a poster
+underneath, so those 236 KB are never on the LCP path and are never fetched at
+all by a reduced-motion, low-tier, or WebGL-less visitor. The 297 KB figure is
+the kitchen sink, which imports the whole dataset, every primitive AND the
+immersion layer; it is not the landing route.
+
+**The remaining decision, for W4-B / W5:** accept the maquette as an opt-in
+enhancement that exceeds a budget written before the stack was measured, or
+drop WebGL and ship `CoastPoster` alone — ~2 KB, already the fallback, and
+already drawing the same massing.
 
 ---
 
