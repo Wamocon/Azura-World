@@ -28,17 +28,28 @@
  *      This is a heuristic, which is why it warns rather than fails.
  *
  * Usage:
- *   node scripts/check-i18n.mjs            # human output
- *   node scripts/check-i18n.mjs --json     # machine output for the gate
+ *   node scripts/check-i18n.mjs                 # human output
+ *   node scripts/check-i18n.mjs --json          # machine output for the gate
+ *   node scripts/check-i18n.mjs --dir=<path>    # check a different catalogue dir
+ *
+ * `--dir` exists so the gate can be pointed at fixture catalogues and shown to
+ * actually REJECT each rule. A validator nobody has watched fail is a validator
+ * nobody has tested — `scripts/smoke-contracts.mts` proves its invariants the
+ * same way.
  */
 
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
-import { dirname, join, relative } from "node:path"
+import { dirname, join, relative, resolve } from "node:path"
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = join(scriptDir, "..")
-const messagesDir = join(repoRoot, "apps", "web", "messages")
+
+const dirArg = process.argv.slice(2).find((value) => value.startsWith("--dir="))
+const messagesDir =
+  dirArg === undefined
+    ? join(repoRoot, "apps", "web", "messages")
+    : resolve(dirArg.slice("--dir=".length))
 
 /** CONTRACTS §7. Hard-coded rather than imported: this script must run with
  *  plain `node` and no TypeScript loader, and a drift between this list and
@@ -48,8 +59,22 @@ const DEFAULT_LOCALE = "de"
 /** Rule 6. German runs ~30% longer than English by nature; 1.4 is the point
  *  where it stops being the language and starts being a layout problem. */
 const LENGTH_RATIO_LIMIT = 1.4
-/** Rule 6 floor. A ratio computed on "Ja"/"Yes" is noise, not a signal. */
-const LENGTH_RATIO_MIN_CHARS = 12
+/**
+ * Rule 6 floor, applied to the GERMAN string.
+ *
+ * 20 characters, arrived at empirically rather than chosen. The floor was first
+ * written at 12 and on the English side, which let a 4-character English button
+ * with a 36-character German label through — the worst case there is. Moving it
+ * to the German side fixed that and immediately raised 24 findings, every one of
+ * which was simply German being German: "Zurücksetzen" (12) vs "Reset" (5) is
+ * 2.4x and overflows nothing. Above ~20 characters a label stops fitting a
+ * button or a column header at our breakpoints, and the ratio starts telling
+ * you something. Below it, the ratio is arithmetic about short words.
+ *
+ * This is an early warning, not a layout test. W4-B's harness measures real
+ * boxes; this only says "look here first".
+ */
+const LENGTH_RATIO_MIN_CHARS = 20
 /** Warning W1 floor, in characters remaining after normalisation. */
 const IDENTICAL_MIN_CHARS = 4
 
@@ -205,12 +230,18 @@ function loadCatalogue(locale) {
  * an array in a message catalogue means someone is building a list in JSON
  * that belongs in a component, and it makes rules 1 and 2 unanswerable.
  *
+ * `branches` records the paths that are objects, so that a path which is an
+ * object in one locale and a string in another can be reported as the one
+ * structural fault it is (rule 0b) instead of as the dozens of derived
+ * "missing key" errors it would otherwise masquerade as.
+ *
  * @param {Record<string, unknown>} node
  * @param {string} locale
  * @param {string} prefix
  * @param {Map<string, string>} out
+ * @param {Set<string>} branches
  */
-function flatten(node, locale, prefix, out) {
+function flatten(node, locale, prefix, out, branches) {
   for (const [key, value] of Object.entries(node)) {
     const path = prefix ? `${prefix}.${key}` : key
     if (typeof value === "string") {
@@ -218,7 +249,8 @@ function flatten(node, locale, prefix, out) {
     } else if (Array.isArray(value)) {
       error("0b", locale, path, "arrays are not allowed in a message catalogue")
     } else if (value !== null && typeof value === "object") {
-      flatten(/** @type {Record<string, unknown>} */ (value), locale, path, out)
+      branches.add(path)
+      flatten(/** @type {Record<string, unknown>} */ (value), locale, path, out, branches)
     } else {
       error(
         "0b",
@@ -329,14 +361,19 @@ function translatableRemainder(value) {
 
 /** @type {Map<string, Map<string, string>>} */
 const catalogues = new Map()
+/** @type {Map<string, Set<string>>} */
+const branchPaths = new Map()
 
 for (const locale of LOCALES) {
   const raw = loadCatalogue(locale)
   if (raw === null) continue
   /** @type {Map<string, string>} */
   const flat = new Map()
-  flatten(raw, locale, "", flat)
+  /** @type {Set<string>} */
+  const branches = new Set()
+  flatten(raw, locale, "", flat, branches)
   catalogues.set(locale, flat)
+  branchPaths.set(locale, branches)
 }
 
 const base = catalogues.get(DEFAULT_LOCALE)
@@ -350,6 +387,36 @@ const english = catalogues.get("en")
 for (const locale of LOCALES) {
   const flat = catalogues.get(locale)
   if (flat === undefined) continue
+
+  // Rule 0b — shape mismatch against German. Checked before rules 1 and 2
+  // because a namespace replaced by a string produces one real fault and a
+  // long tail of derived "missing key" noise; naming the real one first is
+  // the difference between a two-minute fix and a hunt.
+  if (locale !== DEFAULT_LOCALE) {
+    const baseBranches = branchPaths.get(DEFAULT_LOCALE) ?? new Set()
+    const localeBranches = branchPaths.get(locale) ?? new Set()
+    for (const path of baseBranches) {
+      if (flat.has(path)) {
+        error(
+          "0b",
+          locale,
+          path,
+          `is a namespace in ${DEFAULT_LOCALE}.json but a string here — the ` +
+            `"missing key" errors under this path are a consequence, not the cause`
+        )
+      }
+    }
+    for (const path of localeBranches) {
+      if (base.has(path)) {
+        error(
+          "0b",
+          locale,
+          path,
+          `is a string in ${DEFAULT_LOCALE}.json but a namespace here`
+        )
+      }
+    }
+  }
 
   // Rule 1 — missing.
   if (locale !== DEFAULT_LOCALE) {
@@ -435,8 +502,14 @@ if (english !== undefined) {
   for (const [key, deValue] of base) {
     if (key.endsWith("_long")) continue // the declared long variant is exempt
     const enValue = english.get(key)
-    if (enValue === undefined) continue
-    if (enValue.length < LENGTH_RATIO_MIN_CHARS) continue
+    if (enValue === undefined || enValue.length === 0) continue
+    // The floor is on the GERMAN length, not the English. Putting it on English
+    // was a bug caught by the reject-test: a 4-character English button
+    // ("Save") paired with a 36-character German label scores 9x and is the
+    // single worst overflow case there is, yet a floor on `enValue` skipped it
+    // entirely. A short *German* string cannot overflow anything, so that is
+    // the side where a ratio is genuinely noise.
+    if (deValue.length < LENGTH_RATIO_MIN_CHARS) continue
     const ratio = deValue.length / enValue.length
     if (ratio <= LENGTH_RATIO_LIMIT) continue
     if (base.has(`${key}_long`)) continue // an explicit short/long pair was provided
@@ -459,6 +532,11 @@ function report() {
   const keyCounts = Object.fromEntries(
     LOCALES.map((locale) => [locale, catalogues.get(locale)?.size ?? 0])
   )
+
+  // Structural faults (0a/0b/0c) print first: they are causes, and rules 1–6
+  // under a broken namespace are their symptoms. `sort` is stable in V8, so
+  // ties keep discovery order.
+  errors.sort((a, b) => Number(b.rule.startsWith("0")) - Number(a.rule.startsWith("0")))
 
   if (asJson) {
     process.stdout.write(

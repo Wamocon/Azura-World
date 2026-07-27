@@ -248,3 +248,225 @@ No contract needed amendment.
   present"); I did not re-verify it, and a missing glyph renders as a box silently.
 - **`prefers-reduced-motion`, tap targets, contrast** — not W1-C's scope; W4-B's layout harness.
 - `pnpm --dir apps/web build` not run (reason above).
+
+---
+
+# ADDENDUM — gaps closed after `f9bc385`
+
+*Written by the first executor (the one that implemented `f9bc385`), appended rather than
+merged: the section above is the other executor's work and stays as written. Everything here was
+run **after** 18:54, which is why the section above could not contain it. Where this addendum
+and the text above disagree, the disagreement is a change made after that snapshot, and is
+named as such.*
+
+## The three `[GAP]` items above are now closed
+
+### 1. `pnpm --dir apps/web build` — was NOT RUN, now **PASS, exit 0**
+
+The first attempt failed, and not on i18n:
+
+```
+./app/[locale]/kitchen-sink/page.tsx
+Module not found: Can't resolve './kitchen-sink-client'
+BUILD_EXIT=1
+```
+
+W1-D added the missing file; the rerun is green:
+
+```
+✓ Compiled successfully in 36.8s
+  Running TypeScript ... Finished TypeScript in 23.2s
+✓ Generating static pages using 5 workers (6/6) in 3.3s
+
+Route (app)
+┌ ○ /_not-found
+├ ● /[locale]/kitchen-sink
+│ ├ /de/kitchen-sink
+│ ├ /en/kitchen-sink
+│ ├ /tr/kitchen-sink
+│ └ /ru/kitchen-sink
+└ ƒ /api/access-profile
+BUILD_EXIT=0
+```
+
+Note what the route table proves independently of any HTTP request: `generateStaticParams` in
+`app/[locale]/layout.tsx` prerendered exactly four locale routes, and `xx` is **absent** from
+`.next/prerender-manifest.json`.
+
+Worth recording: the build compiled `app/globals.css` **without complaint**. That is the
+evidence that the Turbopack 500s were environmental, not a defect in W1-D's CSS.
+
+### 2. The four locale routes render, and `/xx` 404s — was NOT VERIFIED, now **PASS**
+
+The Turbopack blocker was routed around rather than waited out: **`npx next dev --webpack`**
+uses a different bundler and starts cleanly on the same tree. Probed live on 127.0.0.1:3200:
+
+```
+/                              -> 307  location: /de
+/de/kitchen-sink               -> 200
+/en/kitchen-sink               -> 200
+/tr/kitchen-sink               -> 200
+/ru/kitchen-sink               -> 200
+/xx/kitchen-sink               -> 404
+/xx/dashboard                  -> 404
+/xx                            -> 404
+```
+
+**`/xx/*` 404s rather than silently serving German.** That is the brief's requirement, now
+proven at runtime rather than reviewed in source.
+
+One trap for whoever retests: under `next start` **every** route 404s, valid locales included,
+because W1-D's `kitchen-sink/page.tsx` calls `notFound()` when `NODE_ENV === "production"` by
+design (it is a dev-only design gallery). A 404 there is W1-D's guard, not a routing fault. Use
+`next dev --webpack`, or wait for W3-A's real page.
+
+Messages and formatters were then read back **from the running server**, per locale, through a
+temporary `app/[locale]/i18n-probe-tmp/page.tsx` that has since been **deleted** (it is in no
+commit). It was needed because no production-visible route consumes `messages/*` yet — W3-A has
+not landed, and kitchen-sink hardcodes its German inline:
+
+| probe | de | en | tr | ru |
+|---|---|---|---|---|
+| `evidence.confidence.conflicted` | Quellen widersprechen sich | Sources disagree | Kaynaklar çelişiyor | Источники расходятся |
+| `dashboard.units.count` (1) | 1 Wohnung | 1 unit | 1 daire | 1 квартира |
+| `dashboard.units.count` (5) | 5 Wohnungen | 5 units | 5 daire | **5 квартир** |
+| `common.pagination.showing` | 1–25 von 656 | 1–25 of 656 | 1–25 / 656 | 1–25 из 656 |
+| `formatMoney` EUR 112000 | **112.000,00 €** | €112,000.00 | €112.000,00 | 112 000,00 € |
+| `formatMoney` USD 239171 | **239.171,00 $** | $239,171.00 | $239.171,00 | 239 171,00 $ |
+| `formatArea` 76000 | 76.000 m² | 76,000 m² | 76.000 m² | 76 000 m² |
+| `formatDistance` 450 / 1250 | 450 m / 1,3 km | 450 m / 1.3 km | 450 m / 1,3 km | 450 м / 1,3 км |
+| `formatDate` 2026-07-27 | 27.07.2026 | 07/27/2026 | 27.07.2026 | 27.07.2026 |
+| `formatPercent` 0.87 | 87 % | 87% | %87 | 87 % |
+
+Same USD-not-converted result the table above reports from a unit call, now confirmed through
+the full render path: plugin → `getRequestConfig` → catalogue → ICU → HTML.
+
+### 3. Locale switch preserves path + query + hash — was NOT EXERCISED, now **PASS in a real browser**
+
+Driven against the running server by dispatching a real `change` event on the `<select>`:
+
+```
+start          http://127.0.0.1:3200/en/i18n-probe-tmp?q=test#top
+switch -> de   http://127.0.0.1:3200/de/i18n-probe-tmp?q=test#top
+               pathname=/de/i18n-probe-tmp   search=?q=test   hash=#top
+               body re-rendered: "Quellen widersprechen sich" · "5 Wohnungen"
+switch -> ru   http://127.0.0.1:3200/ru/i18n-probe-tmp?q=test#top
+               body re-rendered: "5 квартир" · "239 171,00 $"
+```
+
+Path, query **and** hash all survive, and the second switch produces `/ru/...` rather than
+`/de/ru/...` — the `/en/en/dashboard` accumulation bug this component exists to prevent does
+not occur.
+
+---
+
+## Two additional verifications not in the table above
+
+### Every message parses and formats — 2304 checks, 0 failures
+
+`check-i18n` proves key *parity*. It does not prove the messages are valid **ICU**: a wrong
+plural category is invisible to a key check and throws at render time, in one locale only.
+Every message in every locale was therefore parsed and formatted through `intl-messageformat`
+11.2.12 — the engine next-intl actually uses at runtime:
+
+```
+ICU parse+format: 2304 messages checked across 4 locales, 0 failures
+
+Plural forms (1 / 2 / 5 / 21):
+  de  1 Wohnung   | 2 Wohnungen | 5 Wohnungen | 21 Wohnungen
+  en  1 unit      | 2 units     | 5 units     | 21 units
+  tr  1 daire     | 2 daire     | 5 daire     | 21 daire
+  ru  1 квартира  | 2 квартиры  | 5 квартир   | 21 квартира
+```
+
+Russian produces the three required stems and correctly returns to `квартира` at 21.
+
+### The gate is proven to REJECT, not merely to pass
+
+A validator nobody has watched fail is a validator nobody has tested. Each rule was injected
+into fixture copies of the catalogues (via a `--dir=` flag added to `check-i18n.mjs` for exactly
+this purpose) and the correct rule had to fire with exit 1:
+
+```
+PASS  rule 1  missing key         exit=1
+PASS  rule 2  orphan key          exit=1
+PASS  rule 3  empty value         exit=1
+PASS  rule 4  placeholder drift   exit=1   "missing {page}; unexpected {seite}"
+PASS  rule 5  value equals key    exit=1
+PASS  rule 6  German too long     exit=1   "German is 9.00x English (36 vs 4 chars)"
+PASS  rule 0b shape mismatch      exit=1
+PASS  rule 0c duplicate key       exit=1   "duplicate key at de.json:5"
+PASS  control: real catalogues    exit=0
+
+9 pass · 0 fail
+```
+
+**This found two real bugs in the gate itself.** Both are fixed, and both change statements made
+earlier in this document:
+
+1. **Rule 6's floor was on the English side; it is now on the German side at 20 characters.**
+   This supersedes "Decisions made" item 4 above, which describes the 12-character English floor
+   as shipped in `f9bc385`. The bug: a 4-character English button (`"Save"`) beside a
+   36-character German label scores 9x — the single worst overflow case there is — and a floor
+   on the *English* length skipped it silently. Moving the floor to German immediately raised 24
+   findings that were all just German being German (`"Zurücksetzen"` 12 vs `"Reset"` 5 = 2.4x,
+   which overflows nothing), so the floor went to 20 German characters: the point where a label
+   stops fitting a button at our breakpoints. Both numbers are documented in the script with the
+   reasoning. **No message text was changed to satisfy the rule.**
+2. **Rule 0b did not fire on a shape mismatch.** Replacing a namespace with a string produced 33
+   "missing key" errors and never named the cause. It now reports the shape fault explicitly,
+   and structural errors (0a/0b/0c) sort to the top of the report so the cause is read before
+   its symptoms.
+
+`node scripts/check-i18n.mjs` remains **exit 0, 576 keys x 4, 0 errors, 0 warnings** after both
+changes.
+
+---
+
+## Corrections to the state described above
+
+- **`pnpm --dir apps/web lint` is now PASS, exit 0, 0 errors 0 warnings.** The table above
+  records FAIL from the two `components/anim/*` findings; W1-D has since fixed them. "Requests
+  for other windows" item 3 above is therefore **resolved** — no action needed.
+- **`<html lang>` is still wrong**, confirmed by measurement rather than inference: `/de`,
+  `/en`, `/tr` and `/ru` all serve `lang="de"`. Request 1 above stands. It proposes moving
+  `<html>`/`<body>` into `app/[locale]/layout.tsx`; the smaller alternative is to keep the root
+  layout and make it `async` with `<html lang={await getLocale()}>`. Either works — W0-A owns
+  the file and should pick. **This remains the one Definition-of-Done item in the W1-C brief
+  that could not be satisfied inside W1-C's own file ownership.**
+- **The Turbopack blocker has a workaround, not a fix:** `npx next dev --webpack`. The
+  underlying `0xc0000142` PostCSS-worker spawn failure was still reproducing at 18:56 with ~29
+  node processes running. It is environmental and belongs to nobody's task; whoever runs the
+  02:00 check should expect it while the machine is this loaded.
+
+## New gaps found while closing the old ones
+
+- **`[GAP]` `check-i18n` does not know the `Confidence` union.** If `CONTRACTS.md` adds a
+  confidence level, nothing fails until a component renders `undefined`. Cheap fix for a later
+  window: assert `evidence.confidence.*` has exactly one key per union member.
+- **`[GAP]` Rule 6 compares German against English only.** A Turkish or Russian string 1.9x
+  German passes silently — and the p95 table above shows that is the direction which actually
+  bites here. W4-B's layout harness is the real detector; rule 6 is an early warning by design.
+- **`[GAP]` The `_long` convention has exactly one instance**
+  (`evidence.confidence.conflicted_long`) and so is not really exercised. A W3 window that trips
+  rule 6 should read the script header before inventing a different escape hatch.
+
+---
+
+## W0-D — not executed by this window
+
+The window-3 chain was `W1-C → finish W0-D`. This executor did **not** start W0-D, deliberately.
+
+The other window-3 executor claimed W0-D in `NIGHT-LOG.md` at 18:25, reported the harvest
+complete at 18:40 (1051 attempted / 1000 decoded / 51 rejected / 760 unique, selftest 8/8), and
+stated it would finish encode + manifest + handoff. At 18:51 it recorded killing its own encoder
+in favour of a twin run with better data — W0-D's history tonight already contains one collision
+between two encoders. Its encoder was still actively writing `sources/media/encoded/*` when
+checked at 18:56.
+
+Writing `scripts/encode-images.mjs`, `apps/web/lib/media-manifest.ts`, `MEDIA-LICENSE.md` or
+`HANDOFF/W0-D.md` into that is exactly the "two windows writing the same file silently lose
+work" failure CLAUDE.md §3 and OVERNIGHT.md §3 exist to prevent. The decision was logged in
+`NIGHT-LOG.md` rather than the work duplicated.
+
+**`HANDOFF/W0-D.md` is still unwritten and remains the outstanding item on that task.**
