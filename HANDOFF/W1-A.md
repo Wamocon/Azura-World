@@ -16,8 +16,9 @@ Window: 1 (chain W1-A → W2-A) · Branch: `feature/INTERNAL-107-w1a-w2a-data`
   1,354 sourced facts, 1,566 fact-source edges, 69 conflicts, 47 portal listings, 3 review
   sources, 10 quotes, 11 role profiles.
 - **`supabase/config.toml`** — local stack on ports 554xx (1Çatı holds 553xx).
-- **5 pgTAP files** in `supabase/tests/`. **233 assertions planned, 233 executed, 233 passed.**
-  Two more (`03-rls-positive.sql`, `04-rls-negative.sql`) are **still outstanding** — see below.
+- **7 pgTAP files** in `supabase/tests/`. **366 assertions planned, 366 executed, 366 passed.**
+  The brief's minimum is 150. The negative suite found three real bugs — see "What the tests
+  caught" below.
 - **`apps/web/lib/repository-base.ts`** — the W2-A foundation (that task's own handoff covers it).
 
 **Live database state after this task**, measured not estimated: **46 tables, 130 policies,
@@ -35,13 +36,14 @@ grants.
 | `supabase/seed.sql` — second run (idempotency) | **PASS** | identical counts: units 656, facts 1354, fact_sources 1566, findings 24, competing_prices 25, portal_listings 47, profiles 11, residents 3 |
 | pgTAP `01-schema.sql` | **PASS** | plan=99 pass=99 fail=0 |
 | pgTAP `02-rbac.sql` | **PASS** | plan=51 pass=51 fail=0 |
+| pgTAP `03-rls-positive.sql` | **PASS** | plan=56 pass=56 fail=0 |
+| pgTAP `04-rls-negative.sql` | **PASS** | plan=77 pass=77 fail=0 |
 | pgTAP `05-finance-invariants.sql` | **PASS** | plan=25 pass=25 fail=0 |
 | pgTAP `06-evidence-invariants.sql` | **PASS** | plan=23 pass=23 fail=0 |
 | pgTAP `07-seed-integrity.sql` | **PASS** | plan=35 pass=35 fail=0 |
-| **pgTAP total** | **PASS** | **planned=233 pass=233 fail=0** |
-| pgTAP `03-rls-positive.sql` | **NOT WRITTEN** | see the gap below |
-| pgTAP `04-rls-negative.sql` | **NOT WRITTEN** | see the gap below |
-| `pnpm --dir apps/web typecheck` | **PASS for my files** | 0 errors in anything W1-A/W2-A owns. Tree is red on `lib/ai-retrieval.ts` and `lib/local-ai.ts` — **W2-C's files, not mine** |
+| **pgTAP total** | **PASS** | **planned=366 pass=366 fail=0** |
+| `node --test` repository contract suite | **PASS** | 14 pass, 0 fail (see HANDOFF/W2-A.md) |
+| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, whole tree. It was red on W2-C's `lib/ai-retrieval.ts` and `lib/local-ai.ts` for part of the night; that window has since fixed them. |
 
 ### NOT RUN, and why
 
@@ -52,42 +54,44 @@ grants.
 | `npx supabase db lint` | **NOT RUN** | Same reason. |
 | `npx supabase gen types typescript --local` | **NOT RUN** | Same reason. The `--db-url` variant was not attempted; W2-A hand-wrote its row types instead. |
 
-### The two RLS suites — the brief's minimum is NOT met
+### What the tests caught
 
-tasks/W1-A asks for a **minimum of 150 assertions across seven files**, and names
-`03-rls-positive.sql` and `04-rls-negative.sql` — with "negative tests matter more than
-positive ones" and "**the important one**" against 04.
+The negative suite is the reason this task took as long as it did, and it paid for itself.
+**Three real bugs, none visible by reading the SQL, all found by running it.** They are
+fixed, and each has a regression assertion.
 
-**233 assertions across five files were executed. Those two files do not exist.** The
-assertion count clears the 150 minimum; the coverage does not clear the intent, because the
-one thing the brief singles out is the file that is missing.
+**1. Privilege escalation — every authenticated user was an administrator.**
+`is_admin()` is SECURITY DEFINER, so `current_user` inside it is the function's OWNER
+(postgres), not the caller. The first `is_service_context()` tested
+`current_user in ('postgres', 'supabase_admin', …)`, which was therefore **always true**.
+Every `authenticated` session satisfied `is_admin()`, which opened every admin-only write
+policy in the schema; an `owner` was reading all 24 findings. It now tests only the
+request's JWT role claim — the one signal that describes the caller rather than the
+connection. `session_user` was rejected as the fix because it is `authenticator` under
+PostgREST and `postgres` under psql, which would have made the negative tests vacuous.
 
-What IS proven about RLS today, from the five files that ran:
-- every table in `public` has RLS enabled (`01-schema.sql`, `13`'s sweep)
-- `anon` holds no write privilege on any table (migration 13 sweep, run on every apply)
-- `anon` cannot execute any authority helper (`02-rbac.sql`, 5 assertions)
-- every `SECURITY DEFINER` function pins an empty `search_path` (`02-rbac.sql` + sweep)
+**2. Deactivation was half a revocation.** `current_user_scope_profile_id()` fell through
+to `auth.uid()` whenever `guardian_role_for(current_user_role())` was null — which is also
+true when `current_user_role()` itself is null. So a **deactivated owner kept resolving its
+own unit set** and kept reading its withheld unit: deactivation revoked role authority and
+silently left residency authority intact. It now resolves the nil UUID, which matches
+nothing.
 
-What is NOT proven: **that an owner cannot read another owner's private unit** — the headline
-claim the whole `is_publicly_listed` design exists to make testable. The policies are written
-and the fixtures are seeded for it (`AZW-B01-0001` / `-0002` / `-0003`, two owners and a
-tenant, plus two guardianships); only the assertions are missing.
+**3. `anon` could not read `public.units` at all — the landing page would have been empty.**
+`units` is the only anon-granted table with no `for select using (true)` policy, so its
+policy set could not be constant-folded and still named `has_role_level(40)` — which
+migration 13 guarantees `anon` cannot execute. PostgreSQL checks function EXECUTE at
+executor start, so the whole SELECT failed `42501` instead of falling through to the public
+policy. Every helper-calling policy on an anon-readable table is now `to authenticated`, and
+`03-rls-positive.sql` asserts it with `lives_ok` so it stays fixed.
 
-This is the honest state at handoff time rather than a claim to have met the bar.
-
-**What was run instead of `supabase test db`, and why it is real evidence.** `pgtap 1.3.3` is
-available (not installed) on the linked project. Each test file is wrapped
-`begin; create extension if not exists pgtap …; select plan(N); … rollback;`, so it installs
-pgTAP, runs, and leaves no trace. Those are genuine assertions against the real schema and
-real seeded data on PostgreSQL 17.6 — not a static review. The reference project hit the
-same Docker wall and could only report NOT RUN; this window had a live database and used it.
-
-The gap that remains: these ran against the **cloud** schema built by applying migrations
-forward, not against a **from-scratch `db reset`**. Migrations were applied repeatedly onto
-an existing schema, which exercises idempotency but not a virgin build. A machine with
-Docker should run `supabase db reset` once to close that.
-
----
+**What the negative suite proves now**, against real fixtures rather than an empty table:
+an owner cannot read another owner's private unit; a `child_owner`'s unit set is byte-equal
+to its guardian's and never wider; a `child_tenant` cannot cross into the owner branch;
+guest, `child_guest` and `service_provider` reach no withheld unit and no personal data;
+staff and accountant cannot read the conflict register while a manager can (the control that
+makes every zero above authority rather than emptiness); and `anon` is refused outright on
+ten protected tables.
 
 ## Migration inventory — final number is **14**
 
@@ -281,7 +285,7 @@ forbids.
 
 | File | Owning task | What is needed |
 |---|---|---|
-| `apps/web/lib/ai-retrieval.ts`, `apps/web/lib/local-ai.ts` | **W2-C** | These are **red on `pnpm typecheck` right now** and are blocking the tree gate for everyone. Errors are `SourceTier`/`Money.currency` widening: object literals infer `tier: number` and `currency: string` where `contracts.ts` wants the literal unions. Fix with `satisfies` or an explicit annotation, not a cast. |
+| `apps/web/lib/ai-retrieval.ts`, `apps/web/lib/local-ai.ts` | **W2-C** | RESOLVED during the night — these were red on typecheck (`SourceTier`/`Money.currency` widening) and that window fixed them. Recorded so nobody re-investigates. |
 | `apps/web/app/[locale]/login/actions.ts` | **W1-B / W3-H** | `eslint` reports one warning: *"Unused eslint-disable directive (no problems were reported from 'no-control-regex')"*. Harmless, but SYSTEM-PROMPT §5 wants 0 warnings. |
 | `apps/web/lib/rbac.ts` | **W1-B** | No change needed — verified it imports `roleLevel` from `contracts.ts` rather than redeclaring it. The SQL half matches value-for-value. Recorded so W4-C need not re-derive it. |
 | `scripts/verify-evidence.mjs` | **W0-B** | The database enforces five of the six CONTRACTS §1 invariants. **Invariant 6 (every `snapshotHash` resolves to a real file under `sources/raw/`) is filesystem-side and Postgres cannot check it.** The DB half is an FK to `source_snapshots.snapshot_sha256`; the file-existence half is yours. |
@@ -290,11 +294,6 @@ forbids.
 
 ## Known gaps
 
-- **`[GAP]` `supabase/tests/03-rls-positive.sql` and `04-rls-negative.sql` do not exist.**
-  The brief names them and calls 04 "the important one". 233 assertions ran across the other
-  five files, which clears the 150 minimum numerically but not the intent. Fixtures for them
-  are already seeded and the exact assertions needed are listed in the section above. **This
-  is the single most valuable follow-up on this branch.**
 - **`[GAP]` `supabase db reset` / `test db` / `db lint` / `gen types` — NOT RUN**, Docker daemon
   down. pgTAP ran against the cloud instead. A from-scratch reset is unverified.
 - **`[GAP]` Storage buckets not created.** `azura-documents` and `azura-evidence` are
