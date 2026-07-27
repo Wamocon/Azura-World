@@ -470,3 +470,62 @@ work" failure CLAUDE.md §3 and OVERNIGHT.md §3 exist to prevent. The decision 
 `NIGHT-LOG.md` rather than the work duplicated.
 
 **`HANDOFF/W0-D.md` is still unwritten and remains the outstanding item on that task.**
+
+---
+
+# ADDENDUM 2 — runtime routing verified (second executor, 19:52)
+
+The `[GAP]` above said the four locale routes were never observed rendering, because every
+request 500'd on a Turbopack worker-spawn failure under memory pressure. That is now closed.
+Measured against the live server on `127.0.0.1:3200`, with `app/[locale]/kitchen-sink` (W1-D's
+demo route) as the positive control, since `app/[locale]/page.tsx` is still W3-A's and absent:
+
+| Path | Code | `<html lang>` | Verdict |
+|---|---|---|---|
+| `/` | **307** → `/de` | — | default-locale redirect works |
+| `/de/kitchen-sink` | **200** | `de` | resolves |
+| `/en/kitchen-sink` | **200** | `de` | resolves |
+| `/tr/kitchen-sink` | **200** | `de` | resolves |
+| `/ru/kitchen-sink` | **200** | `de` | resolves |
+| `/xx/kitchen-sink` | **404** | — | unknown locale 404s, does **not** fall through to German |
+| `/xx/dashboard` | **404** | — | ditto |
+
+`pnpm --dir apps/web build` (exit 0, 19:28) independently lists all four as SSG:
+`● /[locale]/kitchen-sink → /de|/en|/tr|/ru`, and `prerender-manifest.json` carries the same four.
+
+## The catalogues are proven to switch, not merely to load
+
+Counting locale-specific strings in the rendered HTML — the decisive pairs are the ones that
+appear in one locale and are **absent** in the other:
+
+| Probe | in `/de` | in `/en` |
+|---|---|---|
+| `Bestätigt (mehrere Quellen)` | 1 | **0** |
+| `Confirmed (multiple sources)` | **0** | 1 |
+| `Not established` | **0** | 1 |
+
+So `getRequestConfig` is loading the right catalogue per request, not defaulting to German.
+(A little German does leak into `/en` — `"Quellen widersprechen sich"`, `"Nicht belegt"` appear
+once each. Those are **literal German sample props hardcoded in W1-D's kitchen-sink demo page**,
+not catalogue output; the catalogue-driven strings above switch cleanly. Worth W1-D tidying so
+the demo does not read as an i18n bug.)
+
+## `<html lang>` — the request to W0-A is now evidence-backed, not just reasoned
+
+Every locale serves `<html lang="de">`, including `/en`, `/tr` and `/ru`. This is the defect
+filed under "Requests for other windows" §1 above, and it is now **measured** rather than
+inferred from reading the source. Screen-reader pronunciation and CSS hyphenation both read this
+attribute, so three of four locales are currently mis-announced. The fix is unchanged: make
+`app/layout.tsx` a pass-through and move `<html>`/`<body>` into `app/[locale]/layout.tsx`, which
+already has the awaited `locale`.
+
+## Tree state at 19:52
+
+- `pnpm --dir apps/web typecheck` → **exit 0**
+- `pnpm --dir apps/web lint` → **exit 0**, clean (the two `components/anim/*` findings reported
+  above were fixed by W1-D in the interim)
+- `pnpm --dir apps/web build` → **exit 0 at 19:28**; a re-run at 19:47 failed **exit 1** on
+  `hooks/use-realtime-channel.ts:119` — *"Parameter 'subscribeStatus' implicitly has an 'any'
+  type"*. That file is **W2-D's**, mid-flight in another window, and is not touched by W1-C or
+  W0-D. Reported rather than fixed: reaching into another window's file is what
+  SYSTEM-PROMPT §4.1 forbids.
