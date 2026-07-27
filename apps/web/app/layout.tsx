@@ -1,20 +1,15 @@
+import "./globals.css"
+
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 // ---------------------------------------------------------------------------
-// W1-D SEAM — global stylesheet.
+// W1-D SEAM — global stylesheet. ENABLED 2026-07-27 by W1-D.
 //
-// W1-D owns `apps/web/app/globals.css` (Tailwind v4, `@theme inline` tokens).
-// That file does not exist yet, so importing it here would fail the build.
-// W1-D must create the file and then enable EXACTLY this line, in this
-// position (before any component import, so the token layer is first in the
-// cascade):
-//
-// import "./globals.css"
-//
-// Nothing else in this file needs to change for styling to come online.
-// This is the one line W1-D may touch in a W0-A-owned file; see
-// HANDOFF/W0-A.md "Requests for other windows".
+// `apps/web/app/globals.css` now exists (Tailwind v4, `@theme inline` tokens)
+// and the import above is the single line W1-D was permitted to add to this
+// W0-A-owned file, in the position W0-A specified: before any component
+// import, so the token layer is first in the cascade.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
