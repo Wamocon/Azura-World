@@ -363,45 +363,45 @@ alter table public.finding_values   enable row level security;
 drop policy if exists sources_select_all on public.sources;
 create policy sources_select_all on public.sources for select using (true);
 drop policy if exists sources_admin_write on public.sources;
-create policy sources_admin_write on public.sources for all
+create policy sources_admin_write on public.sources for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists source_snapshots_select_all on public.source_snapshots;
 create policy source_snapshots_select_all on public.source_snapshots for select using (true);
 drop policy if exists source_snapshots_admin_write on public.source_snapshots;
-create policy source_snapshots_admin_write on public.source_snapshots for all
+create policy source_snapshots_admin_write on public.source_snapshots for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists sourced_facts_select_all on public.sourced_facts;
 create policy sourced_facts_select_all on public.sourced_facts for select using (true);
 drop policy if exists sourced_facts_admin_write on public.sourced_facts;
-create policy sourced_facts_admin_write on public.sourced_facts for all
+create policy sourced_facts_admin_write on public.sourced_facts for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists fact_sources_select_all on public.fact_sources;
 create policy fact_sources_select_all on public.fact_sources for select using (true);
 drop policy if exists fact_sources_admin_write on public.fact_sources;
-create policy fact_sources_admin_write on public.fact_sources for all
+create policy fact_sources_admin_write on public.fact_sources for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists fact_conflicts_select_all on public.fact_conflicts;
 create policy fact_conflicts_select_all on public.fact_conflicts for select using (true);
 drop policy if exists fact_conflicts_admin_write on public.fact_conflicts;
-create policy fact_conflicts_admin_write on public.fact_conflicts for all
+create policy fact_conflicts_admin_write on public.fact_conflicts for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists findings_select_manager on public.findings;
-create policy findings_select_manager on public.findings for select
+create policy findings_select_manager on public.findings for select to authenticated
   using ((select public.has_role_level(70)));
 drop policy if exists findings_admin_write on public.findings;
-create policy findings_admin_write on public.findings for all
+create policy findings_admin_write on public.findings for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists finding_values_select_manager on public.finding_values;
-create policy finding_values_select_manager on public.finding_values for select
+create policy finding_values_select_manager on public.finding_values for select to authenticated
   using ((select public.has_role_level(70)));
 drop policy if exists finding_values_admin_write on public.finding_values;
-create policy finding_values_admin_write on public.finding_values for all
+create policy finding_values_admin_write on public.finding_values for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 -- ---------------------------------------------------------------------------

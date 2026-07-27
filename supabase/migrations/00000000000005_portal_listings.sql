@@ -122,14 +122,14 @@ drop policy if exists portal_listings_select_all on public.portal_listings;
 create policy portal_listings_select_all on public.portal_listings for select using (true);
 
 drop policy if exists portal_listings_manager_write on public.portal_listings;
-create policy portal_listings_manager_write on public.portal_listings for all
+create policy portal_listings_manager_write on public.portal_listings for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists competing_prices_select_all on public.competing_prices;
 create policy competing_prices_select_all on public.competing_prices for select using (true);
 
 drop policy if exists competing_prices_manager_write on public.competing_prices;
-create policy competing_prices_manager_write on public.competing_prices for all
+create policy competing_prices_manager_write on public.competing_prices for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 -- ---------------------------------------------------------------------------

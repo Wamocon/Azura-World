@@ -207,28 +207,28 @@ drop policy if exists hotels_select_all on public.hotels;
 create policy hotels_select_all on public.hotels for select using (true);
 
 drop policy if exists hotels_manager_write on public.hotels;
-create policy hotels_manager_write on public.hotels for all
+create policy hotels_manager_write on public.hotels for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists hotel_rooms_select_all on public.hotel_rooms;
 create policy hotel_rooms_select_all on public.hotel_rooms for select using (true);
 
 drop policy if exists hotel_rooms_manager_write on public.hotel_rooms;
-create policy hotel_rooms_manager_write on public.hotel_rooms for all
+create policy hotel_rooms_manager_write on public.hotel_rooms for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists review_sources_select_all on public.review_sources;
 create policy review_sources_select_all on public.review_sources for select using (true);
 
 drop policy if exists review_sources_manager_write on public.review_sources;
-create policy review_sources_manager_write on public.review_sources for all
+create policy review_sources_manager_write on public.review_sources for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists review_quotes_select_all on public.review_quotes;
 create policy review_quotes_select_all on public.review_quotes for select using (true);
 
 drop policy if exists review_quotes_manager_write on public.review_quotes;
-create policy review_quotes_manager_write on public.review_quotes for all
+create policy review_quotes_manager_write on public.review_quotes for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 -- ---------------------------------------------------------------------------

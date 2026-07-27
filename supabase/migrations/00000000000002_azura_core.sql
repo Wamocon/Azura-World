@@ -360,28 +360,28 @@ drop policy if exists companies_select_all on public.companies;
 create policy companies_select_all on public.companies for select using (true);
 
 drop policy if exists companies_admin_write on public.companies;
-create policy companies_admin_write on public.companies for all
+create policy companies_admin_write on public.companies for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
 drop policy if exists sites_select_all on public.sites;
 create policy sites_select_all on public.sites for select using (true);
 
 drop policy if exists sites_manager_write on public.sites;
-create policy sites_manager_write on public.sites for all
+create policy sites_manager_write on public.sites for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists site_blocks_select_all on public.site_blocks;
 create policy site_blocks_select_all on public.site_blocks for select using (true);
 
 drop policy if exists site_blocks_manager_write on public.site_blocks;
-create policy site_blocks_manager_write on public.site_blocks for all
+create policy site_blocks_manager_write on public.site_blocks for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists site_floors_select_all on public.site_floors;
 create policy site_floors_select_all on public.site_floors for select using (true);
 
 drop policy if exists site_floors_manager_write on public.site_floors;
-create policy site_floors_manager_write on public.site_floors for all
+create policy site_floors_manager_write on public.site_floors for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 -- units — three read paths, OR'd by PostgreSQL.
@@ -390,40 +390,40 @@ create policy units_select_public on public.units for select
   using (is_publicly_listed);
 
 drop policy if exists units_select_staff on public.units;
-create policy units_select_staff on public.units for select
+create policy units_select_staff on public.units for select to authenticated
   using ((select public.has_role_level(40)));
 
 drop policy if exists units_select_own on public.units;
-create policy units_select_own on public.units for select
+create policy units_select_own on public.units for select to authenticated
   using (id in (select unit_id from public.current_user_unit_ids() u(unit_id)));
 
 drop policy if exists units_manager_write on public.units;
-create policy units_manager_write on public.units for all
+create policy units_manager_write on public.units for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 -- residents — personal data. No public path at all.
 drop policy if exists residents_select_self on public.residents;
-create policy residents_select_self on public.residents for select
+create policy residents_select_self on public.residents for select to authenticated
   using (profile_id = (select public.current_user_scope_profile_id()));
 
 drop policy if exists residents_select_staff on public.residents;
-create policy residents_select_staff on public.residents for select
+create policy residents_select_staff on public.residents for select to authenticated
   using ((select public.has_role_level(40)));
 
 drop policy if exists residents_manager_write on public.residents;
-create policy residents_manager_write on public.residents for all
+create policy residents_manager_write on public.residents for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 drop policy if exists unit_residents_select_own on public.unit_residents;
-create policy unit_residents_select_own on public.unit_residents for select
+create policy unit_residents_select_own on public.unit_residents for select to authenticated
   using (unit_id in (select unit_id from public.current_user_unit_ids() u(unit_id)));
 
 drop policy if exists unit_residents_select_staff on public.unit_residents;
-create policy unit_residents_select_staff on public.unit_residents for select
+create policy unit_residents_select_staff on public.unit_residents for select to authenticated
   using ((select public.has_role_level(40)));
 
 drop policy if exists unit_residents_manager_write on public.unit_residents;
-create policy unit_residents_manager_write on public.unit_residents for all
+create policy unit_residents_manager_write on public.unit_residents for all to authenticated
   using ((select public.has_role_level(70))) with check ((select public.has_role_level(70)));
 
 -- ---------------------------------------------------------------------------

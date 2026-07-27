@@ -142,15 +142,32 @@ language sql
 stable
 set search_path = ''
 as $$
-  select current_user in ('postgres', 'supabase_admin', 'supabase_auth_admin', 'service_role')
-      or coalesce(
-           nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role',
-           ''
-         ) = 'service_role';
+  select coalesce(
+    nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role',
+    ''
+  ) = 'service_role';
 $$;
 
 comment on function public.is_service_context() is
-  'True for migrations, the seed and server-side service-role calls. An `authenticated` session can never satisfy it.';
+  'True only when the REQUEST carries a service_role JWT claim. Deliberately does NOT test current_user — see below. Callers that need it (the seed) declare the claim explicitly with set_config.';
+
+-- WHY THIS DOES NOT TEST `current_user`, recorded because the first version did and it
+-- was a privilege-escalation hole that pgTAP caught:
+--
+--   is_service_context() is called from public.is_admin(), which is SECURITY DEFINER.
+--   Inside a SECURITY DEFINER function `current_user` is the function's OWNER — postgres —
+--   not the caller. So `current_user in ('postgres', …)` was ALWAYS true, which made
+--   is_admin() return true for EVERY authenticated session. An `owner` was reading the
+--   whole conflict register, and every admin-only write policy in the schema was open.
+--
+--   `session_user` is immune to SECURITY DEFINER, but it is 'authenticator' under PostgREST
+--   and 'postgres' under a direct psql session — which would make the negative RLS tests
+--   vacuous, since they connect as postgres.
+--
+--   The JWT role claim is the only signal that reflects the actual REQUEST rather than the
+--   connection or the definer. It is what PostgREST sets for a service-role key, and it is
+--   what the seed sets explicitly. Everything else is a property of the connection and
+--   cannot be trusted to describe the caller.
 
 create or replace function public.current_user_role()
 returns public.app_role
@@ -291,6 +308,13 @@ set search_path = ''
 as $$
   select coalesce(
     case
+      -- A deactivated or unauthenticated caller resolves NO role, and must therefore
+      -- resolve NO scope either. Without this branch the `else` below would hand back
+      -- auth.uid() for a suspended account, so a deactivated owner would keep reading
+      -- its own units long after current_user_role() started returning NULL —
+      -- deactivation would revoke role authority but silently leave residency authority
+      -- intact. That is a real hole, and it is the reason this case is first.
+      when public.current_user_role() is null then null
       when public.guardian_role_for(public.current_user_role()) is not null
         then public.current_user_guardian_id()
       else (select auth.uid())
@@ -300,7 +324,7 @@ as $$
 $$;
 
 comment on function public.current_user_scope_profile_id() is
-  'Whose data the caller may reach: itself, or its guardian when the caller holds a child_* role. Falls back to the nil UUID (matches nothing) rather than NULL, so a broken guardianship denies rather than leaks.';
+  'Whose data the caller may reach: itself, or its guardian when the caller holds a child_* role, or NOBODY when the profile is deactivated. Falls back to the nil UUID (matches nothing) rather than NULL, so a broken guardianship or a suspended account denies rather than leaks.';
 
 alter table public.guardianships enable row level security;
 
