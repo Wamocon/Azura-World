@@ -5,25 +5,36 @@
  * Owned by **W2-A**. Consumed only by `lib/governance-repository.ts` as the
  * `fallback()` argument to `withRepository()`.
  *
- * ## Everything here is invented, and that is safe
+ * ## These seeds mirror `supabase/seed.sql`. Where it is empty, so are they.
  *
- * Unlike `lib/hotel-data.ts`, none of these rows describes the real world. There
- * is no harvested source for "who works at Cebeci Group" and there must not be:
- * this is a competitor-intelligence build (CLAUDE.md §1) and putting a real
- * person's name, email or phone number in a seed file would be a privacy
- * problem, not a fidelity win. Every profile below is fictional, every address
- * is under the RFC 2606 reserved `example.com`, and every consumer of these rows
- * sees `source: "local-seed"` on the envelope.
+ * The repository has two seeds — this file and W1-A's `supabase/seed.sql` — and
+ * the only thing worse than one of them being wrong is the two disagreeing.
+ * Every id, email, name and relation below is the literal `seed.sql` inserts,
+ * checked against it on 2026-07-27: eleven profiles at
+ * `b0000000-0000-4000-8000-0000000000NN` in CONTRACTS §3 role order, two
+ * guardianships at `f0000000-…`.
  *
- * The *shapes*, by contrast, are exact — same columns, same nullability, same
- * TEXT-vs-uuid split — so swapping to `source: "supabase"` changes nothing
- * downstream.
+ * `seed.sql` inserts **no rows at all** into `audit_events`, `access_events` or
+ * `compliance_checks`, and W1-A's handoff records that as an explicit `[GAP]`
+ * owned by W3-D/E/F. So the three builders for those tables return empty arrays.
+ * Inventing "manager raised unit AZW-B03-0412 from €112,000 to €118,000" would
+ * read as a business event that happened, invent a price change against a real
+ * harvested figure, and put local-seed mode permanently out of step with a
+ * seeded database — three problems in one row. The exported row *types* are the
+ * contract those windows should build fixtures against; the rows themselves
+ * belong in `seed.sql`.
+ *
+ * No real person appears here. `@azura.local` is non-routable, the names are the
+ * role names title-cased, and this is a competitor-intelligence build
+ * (CLAUDE.md §1) where a real contact detail in a seed file would be a privacy
+ * problem rather than a fidelity win.
  *
  * ## Deterministic
  *
  * Literal UUIDs and `seedIso()` timestamps only. No `Math.random()`, no
- * `Date.now()`, no bare `new Date()`. Two calls to any builder return
- * byte-identical JSON.
+ * `Date.now()`, no bare `new Date()` — `seed.sql` uses `now()` for its
+ * timestamps, which a TypeScript seed cannot copy without becoming
+ * non-reproducible. Two calls to any builder return byte-identical JSON.
  *
  * ## Append-only tables
  *
@@ -68,6 +79,10 @@ export interface ProfileRecord {
 /**
  * A row of `guardianships`. `UNIQUE(guardian_profile_id, child_profile_id)`.
  *
+ * `relation` is CHECK-constrained to `parent | guardian | delegate` and `status`
+ * to `pending | active | revoked`; a value outside those lists is rejected by
+ * Postgres, so the seed uses only ones that would actually insert.
+ *
  * `revokedAt` non-null means the relation has ended; `status` carries the
  * lifecycle label. A `child_*` role's data horizon is a strict subset of its
  * guardian's (CONTRACTS §3, additive-authority rule) — never a different one.
@@ -111,8 +126,15 @@ export interface AccessEventRecord {
   id: string
   companyId: string | null
   actorProfileId: string | null
+  /**
+   * CHECK-constrained to a twelve-value vocabulary: `login_success`,
+   * `login_failure`, `logout`, `session_refresh`, `password_reset_requested`,
+   * `password_changed`, `mfa_challenge`, `permission_denied`,
+   * `signed_url_issued`, `export_generated`, `impersonation_started`,
+   * `impersonation_ended`. Not free text.
+   */
   eventType: string
-  /** "allow" / "deny" — the decision the guard actually took. */
+  /** `"allowed"` / `"denied"` — CHECK-constrained to exactly those two. */
   decision: string
   resource: string | null
   reason: string | null
@@ -129,6 +151,14 @@ export interface AccessEventRecord {
  * `subjectId` is **TEXT**, same reason as `audit_events.entity_id`. `version` is
  * the optimistic-concurrency column: a stale write returns `conflict` (409),
  * never last-write-wins.
+ *
+ * Four columns are CHECK-constrained vocabularies, not free text —
+ * `subject_type` (company · site · block · unit · resident · document · thread ·
+ * vendor · payment), `check_type` (fifteen values from `kyc_identity` to
+ * `vendor_due_diligence`), `status` (pending · in_review · passed · failed ·
+ * waived) and `risk_level` (low · medium · high · critical). A further
+ * constraint requires `decided_by`, `decided_at` **and** `rationale` together
+ * once `status` leaves `pending`/`in_review`.
  */
 export interface ComplianceCheckRecord {
   id: string
@@ -142,7 +172,12 @@ export interface ComplianceCheckRecord {
   riskLevel: string
   rationale: string | null
   evidenceDocumentId: string | null
-  /** True when a human must decide. The AI may recommend; it never approves. */
+  /**
+   * Always `true` — the column carries `check (human_decision_required)`, so
+   * Postgres rejects `false` outright. That is SYSTEM-PROMPT §2.9 written as a
+   * constraint: a model may recommend a compliance decision, and there is no
+   * representable state in which one is taken without a human.
+   */
   humanDecisionRequired: boolean
   decidedBy: string | null
   decidedAt: string | null
@@ -156,22 +191,30 @@ export interface ComplianceCheckRecord {
 }
 
 // ---------------------------------------------------------------------------
-// Fixed identifiers
+// Fixed identifiers — the literals `supabase/seed.sql` inserts
 // ---------------------------------------------------------------------------
 
-export const SEED_GOVERNANCE_COMPANY_ID = "00000000-0000-4000-8000-000000000c01"
-export const SEED_GOVERNANCE_SITE_ID = "00000000-0000-4000-8000-000000000501"
+export const SEED_GOVERNANCE_COMPANY_ID = "11111111-1111-4111-8111-111111111111"
+export const SEED_GOVERNANCE_SITE_ID = "22222222-2222-4222-8222-222222222222"
 
+/**
+ * `seed.sql` derives each profile id from the role's **index in the CONTRACTS §3
+ * order**: `b0000000-0000-4000-8000-` + the 1-based index padded to twelve
+ * digits. Spelling the ids out rather than recomputing them keeps this file a
+ * flat list of literals, which is what makes a seed auditable.
+ */
 export const SEED_PROFILE_IDS = Object.freeze({
-  admin: "00000000-0000-4000-8000-000000000a01",
-  manager: "00000000-0000-4000-8000-000000000a02",
-  accountant: "00000000-0000-4000-8000-000000000a03",
-  staff: "00000000-0000-4000-8000-000000000a04",
-  serviceProvider: "00000000-0000-4000-8000-000000000a05",
-  owner: "00000000-0000-4000-8000-000000000a06",
-  tenant: "00000000-0000-4000-8000-000000000a07",
-  guest: "00000000-0000-4000-8000-000000000a08",
-  childOwner: "00000000-0000-4000-8000-000000000a09",
+  admin: "b0000000-0000-4000-8000-000000000001",
+  manager: "b0000000-0000-4000-8000-000000000002",
+  accountant: "b0000000-0000-4000-8000-000000000003",
+  staff: "b0000000-0000-4000-8000-000000000004",
+  owner: "b0000000-0000-4000-8000-000000000005",
+  tenant: "b0000000-0000-4000-8000-000000000006",
+  guest: "b0000000-0000-4000-8000-000000000007",
+  serviceProvider: "b0000000-0000-4000-8000-000000000008",
+  childOwner: "b0000000-0000-4000-8000-000000000009",
+  childTenant: "b0000000-0000-4000-8000-000000000010",
+  childGuest: "b0000000-0000-4000-8000-000000000011",
 })
 
 // ---------------------------------------------------------------------------
@@ -179,145 +222,75 @@ export const SEED_PROFILE_IDS = Object.freeze({
 // ---------------------------------------------------------------------------
 
 /**
- * Nine fictional profiles, one per role that the governance surfaces need to
- * exercise. `guest` is included because a role with almost no permitted resource
- * must still land on a coherent empty state rather than a broken shell
- * (CONVENTIONS §5).
+ * All eleven roles, one profile each — the same set, ids, emails and names
+ * `supabase/seed.sql` creates.
+ *
+ * Eleven and not nine: `child_tenant` and `child_guest` exist so a test can show
+ * that each `child_*` role is a strict subset of *its own* guardian rather than
+ * of whichever adult happens to be seeded. `guest` is here because a role with
+ * almost no permitted resource must still land on a coherent empty state rather
+ * than a broken shell (CONVENTIONS §5), and that state needs a profile to render
+ * from.
+ *
+ * `full_name` is the role name title-cased, exactly as `seed.sql` computes it
+ * with `initcap(replace(role, '_', ' '))`. Fictional by construction: there is
+ * no person here to name.
  */
 export function seedProfiles(): ProfileRecord[] {
+  const base = {
+    phone: null,
+    locale: "de",
+    companyId: SEED_GOVERNANCE_COMPANY_ID,
+    isActive: true,
+    avatarUrl: null,
+    createdAt: seedIso(-120),
+    updatedAt: seedIso(-2),
+  } as const
+
   return [
-    {
-      id: SEED_PROFILE_IDS.admin,
-      email: "admin@example.com",
-      fullName: "Deniz Aksoy",
-      role: "admin",
-      phone: null,
-      locale: "de",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-120),
-      updatedAt: seedIso(-2),
-    },
-    {
-      id: SEED_PROFILE_IDS.manager,
-      email: "manager@example.com",
-      fullName: "Lena Brandt",
-      role: "manager",
-      phone: null,
-      locale: "de",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-118),
-      updatedAt: seedIso(-3),
-    },
-    {
-      id: SEED_PROFILE_IDS.accountant,
-      email: "accountant@example.com",
-      fullName: "Marek Novak",
-      role: "accountant",
-      phone: null,
-      locale: "en",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-110),
-      updatedAt: seedIso(-9),
-    },
-    {
-      id: SEED_PROFILE_IDS.staff,
-      email: "staff@example.com",
-      fullName: "Selin Yıldız",
-      role: "staff",
-      phone: null,
-      locale: "tr",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-95),
-      updatedAt: seedIso(-5),
-    },
-    {
-      id: SEED_PROFILE_IDS.serviceProvider,
-      email: "vendor@example.com",
-      fullName: "Kemal Arslan",
-      role: "service_provider",
-      phone: null,
-      locale: "tr",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-60),
-      updatedAt: seedIso(-6),
-    },
-    {
-      id: SEED_PROFILE_IDS.owner,
-      email: "owner@example.com",
-      fullName: "Irina Petrova",
-      role: "owner",
-      phone: null,
-      locale: "ru",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-45),
-      updatedAt: seedIso(-4),
-    },
-    {
-      id: SEED_PROFILE_IDS.tenant,
-      email: "tenant@example.com",
-      fullName: "Jonas Weber",
-      role: "tenant",
-      phone: null,
-      locale: "de",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-40),
-      updatedAt: seedIso(-4),
-    },
-    {
-      id: SEED_PROFILE_IDS.guest,
-      email: "guest@example.com",
-      fullName: "Hannah Vogt",
-      role: "guest",
-      phone: null,
-      locale: "en",
-      companyId: null,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-12),
-      updatedAt: seedIso(-1),
-    },
-    {
-      id: SEED_PROFILE_IDS.childOwner,
-      email: "child.owner@example.com",
-      fullName: "Mila Petrova",
-      role: "child_owner",
-      phone: null,
-      locale: "ru",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      isActive: true,
-      avatarUrl: null,
-      createdAt: seedIso(-30),
-      updatedAt: seedIso(-2),
-    },
+    { id: SEED_PROFILE_IDS.admin, email: "admin@azura.local", fullName: "Admin", role: "admin", ...base },
+    { id: SEED_PROFILE_IDS.manager, email: "manager@azura.local", fullName: "Manager", role: "manager", ...base },
+    { id: SEED_PROFILE_IDS.accountant, email: "accountant@azura.local", fullName: "Accountant", role: "accountant", ...base },
+    { id: SEED_PROFILE_IDS.staff, email: "staff@azura.local", fullName: "Staff", role: "staff", ...base },
+    { id: SEED_PROFILE_IDS.owner, email: "owner@azura.local", fullName: "Owner", role: "owner", ...base },
+    { id: SEED_PROFILE_IDS.tenant, email: "tenant@azura.local", fullName: "Tenant", role: "tenant", ...base },
+    { id: SEED_PROFILE_IDS.guest, email: "guest@azura.local", fullName: "Guest", role: "guest", ...base },
+    { id: SEED_PROFILE_IDS.serviceProvider, email: "service_provider@azura.local", fullName: "Service Provider", role: "service_provider", ...base },
+    { id: SEED_PROFILE_IDS.childOwner, email: "child_owner@azura.local", fullName: "Child Owner", role: "child_owner", ...base },
+    { id: SEED_PROFILE_IDS.childTenant, email: "child_tenant@azura.local", fullName: "Child Tenant", role: "child_tenant", ...base },
+    { id: SEED_PROFILE_IDS.childGuest, email: "child_guest@azura.local", fullName: "Child Guest", role: "child_guest", ...base },
   ]
 }
 
 /**
- * One active guardianship: the `owner` profile supervises the `child_owner`
- * profile. The child's horizon is a strict subset of the guardian's, which is
- * what `getGuardianships()` exists to let a caller verify.
+ * The two guardianships `seed.sql` creates: `owner` supervises `child_owner`,
+ * `tenant` supervises `child_tenant`.
+ *
+ * Two, not one, because one link cannot distinguish "the child sees a subset of
+ * its guardian" from "the child sees a subset of *some* adult". With both, a
+ * test can assert that `child_tenant` gets nothing through `owner`, which is the
+ * escalation CONVENTIONS §5 asks to be tested for.
+ *
+ * `relation: "guardian"` — one of the three values the CHECK permits, and the
+ * one `seed.sql` uses. `child_guest` deliberately has no guardian.
  */
 export function seedGuardianships(): GuardianshipRecord[] {
   return [
     {
-      id: "00000000-0000-4000-8000-000000000b01",
+      id: "f0000000-0000-4000-8000-000000000001",
       guardianProfileId: SEED_PROFILE_IDS.owner,
       childProfileId: SEED_PROFILE_IDS.childOwner,
-      relation: "parent",
+      relation: "guardian",
+      status: "active",
+      consentRecordedAt: seedIso(-30),
+      createdAt: seedIso(-30),
+      revokedAt: null,
+    },
+    {
+      id: "f0000000-0000-4000-8000-000000000002",
+      guardianProfileId: SEED_PROFILE_IDS.tenant,
+      childProfileId: SEED_PROFILE_IDS.childTenant,
+      relation: "guardian",
       status: "active",
       consentRecordedAt: seedIso(-30),
       createdAt: seedIso(-30),
@@ -326,179 +299,36 @@ export function seedGuardianships(): GuardianshipRecord[] {
   ]
 }
 
+// ---------------------------------------------------------------------------
+// The three empty tables
+//
+// `supabase/seed.sql` inserts no rows into `audit_events`, `access_events` or
+// `compliance_checks`, and W1-A's handoff records that as a `[GAP]` with
+// W3-D/E/F named as the owners of the missing fixtures. These builders return
+// empty rather than filling it: SYSTEM-PROMPT §3 says never to fill a `[GAP]`
+// with a plausible guess, and a fabricated audit row is the most plausible-
+// looking guess in this whole repository — it would read as a record of
+// something that happened.
+//
+// The exported row types above are the contract to build fixtures against. The
+// fixtures themselves belong in `seed.sql`, where both modes can see them.
+// ---------------------------------------------------------------------------
+
 /**
- * Three audit rows. `beforeData` is null on a create and populated on an update
- * — the pair is what makes an audit trail reconstructible rather than a log of
- * verbs.
+ * Empty. See the note above — the audit trail has no seeded rows, and
+ * `getAuditEvents()` returning `[]` in local-seed mode is the honest report of
+ * that, not a failure.
  */
 export function seedAuditEvents(): AuditEventRecord[] {
-  return [
-    {
-      id: "00000000-0000-4000-8000-000000000c11",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.manager,
-      action: "unit.price.update",
-      entityTable: "units",
-      // TEXT, not uuid.
-      entityId: "AZW-B03-0412",
-      beforeData: { asking_price_amount: "112000.00", asking_price_currency: "EUR" },
-      afterData: { asking_price_amount: "118000.00", asking_price_currency: "EUR" },
-      ipAddress: "203.0.113.10",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0001",
-      createdAt: seedIso(-3, 11),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000c12",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.accountant,
-      action: "finance.ledger_entry.post",
-      entityTable: "finance_ledger_entries",
-      entityId: "00000000-0000-4000-8000-0000000006a1",
-      beforeData: null,
-      afterData: { status: "posted", currency: "EUR" },
-      ipAddress: "203.0.113.11",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0002",
-      createdAt: seedIso(-2, 10),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000c13",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.admin,
-      action: "profile.role.update",
-      entityTable: "profiles",
-      entityId: SEED_PROFILE_IDS.staff,
-      beforeData: { role: "guest" },
-      afterData: { role: "staff" },
-      ipAddress: "203.0.113.12",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0003",
-      createdAt: seedIso(-1, 8),
-    },
-  ]
+  return []
 }
 
-/**
- * Three access decisions, including a denial. A log that only records successes
- * cannot answer the one question an access log exists for.
- */
+/** Empty, for the same reason as `seedAuditEvents()`. */
 export function seedAccessEvents(): AccessEventRecord[] {
-  return [
-    {
-      id: "00000000-0000-4000-8000-000000000d11",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.manager,
-      eventType: "route.view",
-      decision: "allow",
-      resource: "evidence",
-      reason: "evidence:view held by manager",
-      ipAddress: "203.0.113.10",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0101",
-      sessionId: "sess-seed-0001",
-      createdAt: seedIso(-3, 9),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000d12",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.owner,
-      eventType: "route.view",
-      decision: "deny",
-      resource: "evidence",
-      reason: "evidence:view not held by owner",
-      ipAddress: "203.0.113.20",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0102",
-      sessionId: "sess-seed-0002",
-      createdAt: seedIso(-2, 15),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000d13",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      actorProfileId: SEED_PROFILE_IDS.childOwner,
-      eventType: "api.call",
-      decision: "deny",
-      resource: "finance",
-      reason: "child_owner holds a strict subset of owner; finance workspace excluded",
-      ipAddress: "203.0.113.21",
-      userAgent: "Mozilla/5.0 (seed)",
-      requestId: "req-seed-0103",
-      sessionId: "sess-seed-0003",
-      createdAt: seedIso(-1, 16),
-    },
-  ]
+  return []
 }
 
-/**
- * Three compliance checks across the risk range, two of them still requiring a
- * human decision. `humanDecisionRequired` is the switch that keeps an automated
- * recommendation from becoming an automated approval.
- */
+/** Empty, for the same reason as `seedAuditEvents()`. */
 export function seedComplianceChecks(): ComplianceCheckRecord[] {
-  return [
-    {
-      id: "00000000-0000-4000-8000-000000000e11",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      siteId: SEED_GOVERNANCE_SITE_ID,
-      subjectType: "unit",
-      // TEXT, not uuid.
-      subjectId: "AZW-B03-0412",
-      checkType: "title_deed_present",
-      status: "open",
-      riskLevel: "high",
-      rationale: "No title deed document is attached to this unit.",
-      evidenceDocumentId: null,
-      humanDecisionRequired: true,
-      decidedBy: null,
-      decidedAt: null,
-      dueAt: seedIso(14, 12),
-      metadata: { blockCode: "AZW-B03" },
-      version: 1,
-      createdAt: seedIso(-20),
-      updatedAt: seedIso(-20),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000e12",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      siteId: SEED_GOVERNANCE_SITE_ID,
-      subjectType: "listing",
-      subjectId: "portal:haspo:oba-112000",
-      checkType: "listing_district_matches_project",
-      status: "open",
-      riskLevel: "medium",
-      rationale:
-        "Listing states a district that contradicts its own headline. Both readings are retained; neither is trusted as a price anchor.",
-      evidenceDocumentId: null,
-      humanDecisionRequired: true,
-      decidedBy: null,
-      decidedAt: null,
-      dueAt: seedIso(7, 12),
-      metadata: { finding: "F-019" },
-      version: 1,
-      createdAt: seedIso(-15),
-      updatedAt: seedIso(-15),
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000e13",
-      companyId: SEED_GOVERNANCE_COMPANY_ID,
-      siteId: SEED_GOVERNANCE_SITE_ID,
-      subjectType: "hotel",
-      subjectId: "AZW-HTL-01",
-      checkType: "brand_affiliation_claim",
-      status: "resolved",
-      riskLevel: "low",
-      rationale:
-        "No current chain affiliation is asserted by any source. The 2023 licence announcement is retained as a competing value, not as a present-tense claim.",
-      evidenceDocumentId: null,
-      humanDecisionRequired: false,
-      decidedBy: SEED_PROFILE_IDS.manager,
-      decidedAt: seedIso(-5, 13),
-      dueAt: null,
-      metadata: { findings: ["F-007", "F-018"] },
-      version: 2,
-      createdAt: seedIso(-25),
-      updatedAt: seedIso(-5, 13),
-    },
-  ]
+  return []
 }

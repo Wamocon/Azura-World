@@ -322,11 +322,16 @@ async function loadFinance(client: RepositoryClient): Promise<FinancePanel> {
     const debit = asMoney(row.debit_amount, row.currency)
     const credit = asMoney(row.credit_amount, row.currency)
     if (debit === null && credit === null) {
+      // Both columns are NOT NULL DEFAULT 0, so this only happens when the
+      // currency is missing or outside the supported set — never a real 0.
       entriesWithoutUsableAmount += 1
       continue
     }
-    if (debit !== null) debits.push(debit)
-    if (credit !== null) credits.push(credit)
+    // `finance_ledger_entries_single_sided` guarantees exactly one side is > 0.
+    // The other is a structural 0, and adding it would list a currency as having
+    // debits when every one of them was zero.
+    if (debit !== null && debit.amount !== 0) debits.push(debit)
+    if (credit !== null && credit.amount !== 0) credits.push(credit)
   }
 
   const debitTotalsByCurrency = sortedCounts(totalsByCurrency(debits))

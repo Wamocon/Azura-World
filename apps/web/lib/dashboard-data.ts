@@ -5,22 +5,26 @@
  * assembles these panels into a `DashboardSnapshot` in *both* modes, so the
  * seeded and Supabase-backed dashboards are the same shape by construction.
  *
- * ## Two kinds of number live in this file, and they are not equal
+ * ## Every number here was counted, and the counts come from `supabase/seed.sql`
  *
- * **Measured.** The inventory and evidence panels are transcribed from
- * `lib/azura-world-data.ts` — W0-B's generated dataset, counted on 2026-07-27.
- * Nothing there is estimated: 656 units, 25 `portal_listing` against 631
- * `modelled`, 7 blocks of 94/94/94/94/94/93/93, €371,036,506 of asking price,
- * 24 findings, 60 harvested sources, 1,354 sourced facts of which 633 are gaps.
- * They are transcribed rather than imported because that module is 1.5 MB and a
- * seed file has to stay safe to pull into any bundle; the upstream path is named
- * on each block so drift is findable.
+ * Not from the harvested dataset and not from judgement: these panels have to
+ * describe the same database the Supabase-backed loaders read, so each figure
+ * below was measured against W1-A's `supabase/seed.sql` on 2026-07-27 — 656
+ * units, 25 `portal_listing` against 631 `modelled`, 22 publicly listed, 7
+ * blocks of 94/94/94/94/94/93/93, €371,036,506 of asking price, 24 findings, 56
+ * sources, 1,354 sourced facts of which 633 are gaps. They are transcribed
+ * rather than imported because the generated dataset module is 1.5 MB and a seed
+ * file has to stay safe to pull into any bundle.
  *
- * **Synthetic.** The operations and finance panels have no real-world
- * counterpart — no source publishes Cebeci Group's ticket queue or ledger, and
- * inventing one that *looked* researched would be the failure SYSTEM-PROMPT §2.3
- * names. These rows exist only to exercise the UI, every caller sees
- * `source: "local-seed"` on the envelope, and they are marked below.
+ * ## Operations and finance are empty, and that is the honest answer
+ *
+ * `seed.sql` inserts **zero** rows into `service_tickets` and
+ * `finance_ledger_entries`; W1-A's handoff records it as a `[GAP]` for W3-D/E/F.
+ * So `seedOperationsPanel()` and `seedFinancePanel()` report zeros rather than a
+ * plausible 18 tickets and €486,300 of ledger movement. A fabricated figure
+ * would look researched, contradict the database the moment Supabase is
+ * configured, and — for a project whose entire premise is that every number
+ * carries provenance — be the one number on the dashboard that carries none.
  *
  * ## Deterministic
  *
@@ -52,9 +56,17 @@ export interface InventoryPanel {
   sampledUnits: number
   /** True when more rows exist than were sampled: distributions are partial. */
   truncated: boolean
-  /** Only non-null `sale_status` values. NULL is counted separately, not as "unknown". */
+  /**
+   * By `sale_status`, which is `NOT NULL DEFAULT 'unknown'`. The `unknown`
+   * bucket is therefore where an unestablished status lands — 631 of 656 today
+   * — and it means "no source states this", not "a source states it is unknown".
+   */
   bySaleStatus: Record<string, number>
-  /** A NULL `sale_status` is an unestablished fact, not a stated "unknown". */
+  /**
+   * Rows with a NULL `sale_status`. The column forbids NULL, so this should stay
+   * 0; it exists because a rollup that silently folds an impossible value into a
+   * bucket is how a schema change becomes a wrong number instead of a visible one.
+   */
   unitsWithoutSaleStatus: number
   byDataQuality: Record<string, number>
   /**
@@ -77,7 +89,7 @@ export interface InventoryPanel {
   unitsWithoutUsablePrice: number
 }
 
-/** Service-ticket rollup. **Synthetic in seed mode.** */
+/** Service-ticket rollup. Empty in seed mode — `seed.sql` has no tickets. */
 export interface OperationsPanel {
   totalTickets: number | null
   sampledTickets: number
@@ -96,7 +108,13 @@ export interface OperationsPanel {
   slaEvaluatedAt: string
 }
 
-/** Ledger rollup. **Synthetic in seed mode.** Per-currency, never summed across. */
+/**
+ * Ledger rollup. Empty in seed mode — `seed.sql` has no ledger entries.
+ *
+ * Per-currency, never summed across: `sum(EUR) + sum(TRY)` is a number with no
+ * meaning, and returning two maps instead of two totals removes the temptation
+ * to compute one.
+ */
 export interface FinancePanel {
   totalEntries: number | null
   sampledEntries: number
@@ -191,30 +209,32 @@ export type DashboardPanel = (typeof DASHBOARD_PANELS)[number]
 // ---------------------------------------------------------------------------
 
 /**
- * **Measured** from `azuraWorldDataset.units` (656 rows) on 2026-07-27.
+ * **Counted** from the 656 unit rows in `supabase/seed.sql` on 2026-07-27.
  *
- * Two figures worth reading twice:
+ * Three figures worth reading twice:
  *
  * - 631 of 656 units are `modelled` — synthesised to fill the inventory, not
  *   scraped. Only 25 are backed by a real portal listing.
- * - those same 631 carry no `sale_status`, which is why `unitsWithoutSaleStatus`
- *   dwarfs `bySaleStatus`. Reporting them as "unknown" would turn 631 absent
- *   facts into 631 stated ones.
+ * - those same 631 carry `sale_status = 'unknown'`, which is the column's way of
+ *   saying no source states one. The dashboard should read "25 known, 631
+ *   unestablished", never "631 units are in an unknown state".
+ * - 22, not 25, are publicly listed: the modelled rows are excluded from the
+ *   public catalogue, and `seed.sql` additionally unlists three portal units so
+ *   the RLS tests have something an owner may *not* read.
  */
 export function seedInventoryPanel(): InventoryPanel {
   return {
     totalUnits: 656,
     sampledUnits: 656,
     truncated: false,
-    bySaleStatus: { available: 25 },
-    unitsWithoutSaleStatus: 631,
+    bySaleStatus: { available: 25, unknown: 631 },
+    unitsWithoutSaleStatus: 0,
     byDataQuality: { modelled: 631, portal_listing: 25 },
     modelledUnits: 631,
     portalListingUnits: 25,
+    publiclyListedUnits: 22,
     byLayout: { "1+1": 136, "2+1": 134, "3+1": 132, "4+1": 127, "5+1": 127 },
     byBlock: { B01: 94, B02: 94, B03: 94, B04: 94, B05: 94, B06: 93, B07: 93 },
-    // The 25 portal-listing units are the ones a portal actually publishes.
-    publiclyListedUnits: 25,
     askingPriceTotalsByCurrency: { EUR: 371036506 },
     currencies: ["EUR"],
     unitsWithoutUsablePrice: 0,
@@ -222,12 +242,13 @@ export function seedInventoryPanel(): InventoryPanel {
 }
 
 /**
- * **Measured** from `azuraWorldDataset.findings` (24), `.harvest` (60) and every
- * `SourcedFact` in the dataset (1,354).
+ * **Counted** from `supabase/seed.sql`: 24 `findings`, 56 `sources`, 1,354
+ * `sourced_facts`.
  *
  * `gap: 633` and `inferred: 631` are dominated by the modelled units, and that
  * is exactly what the cockpit should show: most of this inventory is derived,
- * not observed.
+ * not observed. 47 of 1,354 facts — three and a half percent — reach
+ * `confirmed` or `conflicted`.
  */
 export function seedEvidencePanel(): EvidencePanel {
   return {
@@ -249,11 +270,12 @@ export function seedEvidencePanel(): EvidencePanel {
       inferred: 631,
       gap: 633,
     },
-    totalSources: 60,
+    totalSources: 56,
     // tier 1 official · 2 developer · 3 hotel · 4 portal · 5 review · 6 press.
-    // One tier-1 source for the entire project: no official site states a
-    // structural figure, which is why so much is `single_source` above.
-    sourcesByTier: { "1": 1, "2": 5, "3": 3, "4": 37, "5": 7, "6": 7 },
+    // **One** tier-1 source for the entire project, and three tier-3. No
+    // official or developer page states a structural figure, which is why the
+    // confidence split above looks the way it does.
+    sourcesByTier: { "1": 1, "2": 5, "3": 3, "4": 33, "5": 7, "6": 7 },
     truncated: false,
   }
 }
@@ -282,50 +304,46 @@ export function seedHotelPanel(): HotelPanel {
 }
 
 // ---------------------------------------------------------------------------
-// Synthetic panels
+// The two empty panels
 //
-// Nothing below describes the real world. No harvested source publishes this
-// developer's ticket queue or ledger, and a made-up figure that looked
-// researched would be worse than an empty panel.
+// `supabase/seed.sql` inserts no rows into `service_tickets` or
+// `finance_ledger_entries` — W1-A's handoff flags both as a `[GAP]` with
+// W3-D/E/F owning the missing fixtures. These builders report that rather than
+// filling it. The panel *shapes* are complete, so the UI can build its empty,
+// loading, error and partial states against them (CONVENTIONS §5 wants all
+// four); only the rows are missing, and they are missing in both modes.
 // ---------------------------------------------------------------------------
 
-/** **Synthetic.** 18 tickets, evaluated against the fixed seed anchor. */
+/**
+ * Zero tickets — `seed.sql` has none.
+ *
+ * `slaEvaluatedAt` is still the fixed anchor rather than the wall clock: an
+ * empty panel that reported a different timestamp on every render would break
+ * snapshot determinism for no benefit.
+ */
 export function seedOperationsPanel(): OperationsPanel {
   return {
-    totalTickets: 18,
-    sampledTickets: 18,
+    totalTickets: 0,
+    sampledTickets: 0,
     truncated: false,
-    byStatus: {
-      open: 6,
-      in_progress: 4,
-      waiting_on_owner: 2,
-      resolved: 5,
-      cancelled: 1,
-    },
-    byPriority: { urgent: 2, high: 5, normal: 8, low: 3 },
-    overdueTickets: 3,
-    ticketsWithoutSla: 2,
+    byStatus: {},
+    byPriority: {},
+    overdueTickets: 0,
+    ticketsWithoutSla: 0,
     slaEvaluatedAt: SEED_ANCHOR_ISO,
   }
 }
 
-/**
- * **Synthetic.** 24 entries in two currencies.
- *
- * Debits equal credits *within* each currency and are never added across them.
- * A single "total ledger value" spanning EUR and TRY would be a number with no
- * meaning, and the temptation to compute one is exactly why this shape returns
- * two maps instead of two numbers.
- */
+/** Zero ledger entries — `seed.sql` has none. No currencies, so no totals. */
 export function seedFinancePanel(): FinancePanel {
   return {
-    totalEntries: 24,
-    sampledEntries: 24,
+    totalEntries: 0,
+    sampledEntries: 0,
     truncated: false,
-    byStatus: { draft: 5, posted: 17, void: 2 },
-    debitTotalsByCurrency: { EUR: 486300, TRY: 1250000 },
-    creditTotalsByCurrency: { EUR: 486300, TRY: 1250000 },
-    currencies: ["EUR", "TRY"],
+    byStatus: {},
+    debitTotalsByCurrency: {},
+    creditTotalsByCurrency: {},
+    currencies: [],
     entriesWithoutUsableAmount: 0,
   }
 }
