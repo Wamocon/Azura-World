@@ -74,9 +74,17 @@ export interface SiteBlock {
 type Step = "site" | "block" | "floor" | "unit"
 const STEPS: readonly Step[] = ["site", "block", "floor", "unit"]
 
-/** Two rows of four — seven residence blocks plus the hotel. */
-const COLUMN_PITCH = 20
-const ROW_PITCH = 34
+/**
+ * Two rows of four — seven residence blocks plus the hotel.
+ *
+ * The back row is inset horizontally because the ground plate is a trapezoid
+ * under `rotateX`: its far edge is narrower than its near edge, so a column
+ * grid with uniform pitch puts the back row's outer blocks over the edge.
+ * Insetting it also happens to read as perspective, which is the point.
+ */
+const COLUMN_PITCH = 18
+const ROW_PITCH = 32
+const BACK_ROW_INSET = 5
 
 export function AzuraSiteWorld({
   blocks,
@@ -131,7 +139,7 @@ export function AzuraSiteWorld({
                 className="azura-iso-slot"
                 style={
                   {
-                    "--iso-x": `${column * COLUMN_PITCH}%`,
+                    "--iso-x": `${column * COLUMN_PITCH + (row === 0 ? BACK_ROW_INSET : 0)}%`,
                     "--iso-y": `${row * ROW_PITCH}%`,
                     "--iso-h": `${block.kind === "hotel" ? height + 26 : height}px`,
                     opacity: dimmed ? 0.4 : 1,
