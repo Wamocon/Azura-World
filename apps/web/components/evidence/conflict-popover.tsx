@@ -7,6 +7,7 @@ import type { ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import type { SourcedFact, SourceRef } from "@/lib/contracts"
 
+import { interpolate } from "./format"
 import { SourceChip, type SourceChipLabels } from "./source-chip"
 
 /**
@@ -40,8 +41,8 @@ export interface ConflictLabels {
   trigger: string
   /** Heading, e.g. "Konkurrierende Werte" */
   heading: string
-  /** e.g. (n) => `${n} Quellen, keine Auflösung` */
-  summary: (count: number) => string
+  /** Template with a `{count}` placeholder. */
+  summary: string
   /** The displayed value's own row, e.g. "Angezeigter Wert" */
   displayed: string
   /** Why nothing was picked. */
@@ -55,7 +56,7 @@ export function ConflictPopover<T>({
   locale,
   labels,
   formatValue,
-  snapshotHref,
+  snapshotBasePath,
   className,
 }: {
   fact: SourcedFact<T>
@@ -63,7 +64,7 @@ export function ConflictPopover<T>({
   labels: ConflictLabels
   /** Renders a competing value. Receives `unknown` — CONTRACTS §1's own type. */
   formatValue: (value: unknown) => string
-  snapshotHref?: (snapshotHash: string) => string
+  snapshotBasePath?: string
   className?: string
 }): ReactNode {
   const conflicts = fact.conflictsWith ?? []
@@ -102,7 +103,7 @@ export function ConflictPopover<T>({
       >
         <AlertTriangle className="size-3 shrink-0" aria-hidden="true" />
         <span>{labels.trigger}</span>
-        <span className="sr-only">{labels.summary(rows.length)}</span>
+        <span className="sr-only">{interpolate(labels.summary, { count: rows.length })}</span>
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -124,7 +125,7 @@ export function ConflictPopover<T>({
                 {labels.heading}
               </Popover.Title>
               <Popover.Description className="text-xs text-muted-foreground">
-                {labels.summary(rows.length)}
+                {interpolate(labels.summary, { count: rows.length })}
               </Popover.Description>
             </div>
 
@@ -160,7 +161,7 @@ export function ConflictPopover<T>({
                     source={row.source}
                     locale={locale}
                     labels={labels.source}
-                    {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+                    {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
                   />
                 </li>
               ))}

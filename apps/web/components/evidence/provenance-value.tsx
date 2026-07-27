@@ -50,8 +50,8 @@ export interface ProvenanceLabels {
   gap: string
   /** e.g. "berechnet" */
   inferred: string
-  /** e.g. (n) => `+${n} weitere` */
-  more: (remaining: number) => string
+  /** Template with a `{count}` placeholder, e.g. "+{count} weitere". */
+  more: string
   /** e.g. "Quellen" — labels the source list for screen readers. */
   sources: string
 }
@@ -63,8 +63,8 @@ export function ProvenanceValue<T>({
   labels,
   /** Show the source chips inline under the value. Off inside dense tables. */
   showSources = false,
-  /** Route serving the stored snapshot for a hash. */
-  snapshotHref,
+  /** Base path of the snapshot route, e.g. "/api/evidence/snapshot". */
+  snapshotBasePath,
   className,
 }: {
   fact: SourcedFact<T>
@@ -72,7 +72,7 @@ export function ProvenanceValue<T>({
   locale: string
   labels: ProvenanceLabels
   showSources?: boolean
-  snapshotHref?: (snapshotHash: string) => string
+  snapshotBasePath?: string
   className?: string
 }): ReactNode {
   const { confidence } = fact
@@ -140,14 +140,14 @@ export function ProvenanceValue<T>({
           formatValue={(value) =>
             formatFactValue(value, format, locale) ?? String(value)
           }
-          {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+          {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
         />
         {showSources ? (
           <SourceList
             fact={fact}
             locale={locale}
             labels={labels}
-            {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
           />
         ) : null}
       </span>
@@ -182,7 +182,7 @@ export function ProvenanceValue<T>({
             fact={fact}
             locale={locale}
             labels={labels}
-            {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
           />
         ) : null}
       </span>
@@ -215,7 +215,7 @@ export function ProvenanceValue<T>({
             fact={fact}
             locale={locale}
             labels={labels}
-            {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
           />
         ) : null}
       </span>
@@ -241,7 +241,7 @@ export function ProvenanceValue<T>({
           fact={fact}
           locale={locale}
           labels={labels}
-          {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+          {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
         />
       ) : null}
     </span>
@@ -252,12 +252,12 @@ function SourceList<T>({
   fact,
   locale,
   labels,
-  snapshotHref,
+  snapshotBasePath,
 }: {
   fact: SourcedFact<T>
   locale: string
   labels: ProvenanceLabels
-  snapshotHref?: (snapshotHash: string) => string
+  snapshotBasePath?: string
 }): ReactNode {
   if (fact.sources.length === 0) return null
   return (
@@ -268,7 +268,7 @@ function SourceList<T>({
         locale={locale}
         labels={labels.source}
         moreLabel={labels.more}
-        {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+        {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
       />
     </span>
   )

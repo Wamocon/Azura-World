@@ -17,6 +17,39 @@
 
 import type { Money } from "@/lib/contracts"
 
+/**
+ * Substitutes `{name}` placeholders in a label.
+ *
+ * Every label in the provenance components is a STRING WITH PLACEHOLDERS, not
+ * a formatting function, and that is a hard constraint rather than a style
+ * preference: these components are `"use client"` and their callers are Server
+ * Components, and React cannot serialise a function across that boundary. A
+ * `(count: number) => string` prop throws "Functions cannot be passed directly
+ * to Client Components" the first time a W3-* window renders one from a page.
+ *
+ * It also happens to be the shape next-intl messages already have, so the
+ * labels drop straight in from `messages/*.json` with no adapter.
+ */
+export function interpolate(
+  template: string,
+  values: Record<string, string | number>
+): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+    const value = values[key]
+    return value === undefined ? match : String(value)
+  })
+}
+
+/**
+ * Builds the href for a stored snapshot.
+ *
+ * A base path plus a hash, rather than a `(hash) => string` callback — same
+ * serialisation constraint as `interpolate` above.
+ */
+export function snapshotUrl(basePath: string, snapshotHash: string): string {
+  return `${basePath.replace(/\/$/, "")}/${snapshotHash}`
+}
+
 /** Built-in presets. Anything else: pass a function. */
 export type ProvenanceFormat =
   | "text"

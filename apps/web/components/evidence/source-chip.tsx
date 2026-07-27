@@ -6,6 +6,8 @@ import type { ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import type { SourceRef, SourceTier } from "@/lib/contracts"
 
+import { interpolate, snapshotUrl } from "./format"
+
 /**
  * SourceChip — one citation, rendered.                     Owner: W1-D
  *
@@ -80,15 +82,15 @@ export function SourceChip({
   labels,
   /** From `HarvestEntry.contentValidated` — false ⟹ a bot wall or soft-404. */
   reachable = true,
-  /** Route that serves the stored snapshot for a hash. */
-  snapshotHref,
+  /** Base path of the snapshot route, e.g. "/api/evidence/snapshot". */
+  snapshotBasePath,
   className,
 }: {
   source: SourceRef
   locale: string
   labels: SourceChipLabels
   reachable?: boolean
-  snapshotHref?: (snapshotHash: string) => string
+  snapshotBasePath?: string
   className?: string
 }): ReactNode {
   const tierKey = TIER_KEYS[source.tier]
@@ -147,9 +149,9 @@ export function SourceChip({
 
       <span className="sr-only">{tierLabel}</span>
 
-      {snapshotHref !== undefined ? (
+      {snapshotBasePath !== undefined ? (
         <a
-          href={snapshotHref(source.snapshotHash)}
+          href={snapshotUrl(snapshotBasePath, source.snapshotHash)}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${labels.snapshot} — ${source.publisher}`}
@@ -177,16 +179,16 @@ export function SourceChipList({
   labels,
   max = 3,
   moreLabel,
-  snapshotHref,
+  snapshotBasePath,
   className,
 }: {
   sources: readonly SourceRef[]
   locale: string
   labels: SourceChipLabels
   max?: number
-  /** e.g. (n) => `+${n} weitere` */
-  moreLabel: (remaining: number) => string
-  snapshotHref?: (snapshotHash: string) => string
+  /** Template with a `{count}` placeholder, e.g. "+{count} weitere". */
+  moreLabel: string
+  snapshotBasePath?: string
   className?: string
 }): ReactNode {
   const shown = sources.slice(0, max)
@@ -200,12 +202,12 @@ export function SourceChipList({
           source={source}
           locale={locale}
           labels={labels}
-          {...(snapshotHref !== undefined ? { snapshotHref } : {})}
+          {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
         />
       ))}
       {remaining > 0 ? (
         <span className="text-xs text-muted-foreground">
-          {moreLabel(remaining)}
+          {interpolate(moreLabel, { count: remaining })}
         </span>
       ) : null}
     </span>

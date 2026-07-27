@@ -13,13 +13,27 @@ import type { ReactNode } from "react"
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// W1-D SEAM — providers.
+// W1-D SEAM — providers. FILLED 2026-07-27 by W1-D.
 //
-// Theme, motion (`prefers-reduced-motion`) and any client provider belong to
-// W1-D and wrap `{children}` inside <body>. This layout is a shell on purpose:
-// a provider added here before W1-D's design tokens exist would render an
-// unthemed flash on every route.
+// Two providers wrap every route, and only two:
+//
+//   ThemeProvider    next-themes, `attribute="class"`, which is what
+//                    globals.css's `@custom-variant dark` matches on. It must
+//                    be outermost so the class lands on <html> before paint.
+//   TooltipProvider  one shared delay timer for the whole app, which is what
+//                    makes the second tooltip in a toolbar open instantly.
+//
+// NOT mounted here, deliberately:
+//
+//   LenisProvider    smooth scroll belongs to the marketing surfaces, not to
+//                    the dashboard. Hijacking the wheel on a 656-row table
+//                    fights the user; W3-A mounts it around the landing route.
+//   MotionPreference no provider needed — `useReducedMotion` is backed by a
+//                    module-level store, so it works anywhere without one.
 // ---------------------------------------------------------------------------
+
+import { ThemeProvider } from "@/components/providers/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 /**
  * Azura World Residence & Hotel — Türkler, Alanya, Antalya, Türkiye.
@@ -50,7 +64,11 @@ export default function RootLayout({
     // `suppressHydrationWarning` is here for W1-D's theme provider, which sets
     // a `class`/`data-theme` attribute on <html> before React hydrates.
     <html lang="de" dir="ltr" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
