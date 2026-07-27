@@ -25,8 +25,8 @@ were verified against the live database, not guessed.
 
 | Command | Result | Evidence |
 |---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS for W2-A** | 0 errors in any W2-A file. The whole-tree run was exit 0 at 22:10 and is exit 2 now, on one error in W2-D's `hooks/use-realtime-channel.ts`. |
-| `pnpm --dir apps/web lint` | **PASS for W2-A** | exit 0 over every file this task owns, `--max-warnings 0`. The whole-app run was exit 0 at 22:10 and is exit 1 now: W2-D landed `apps/web/hooks/*` in between, and all 4 remaining errors are there. |
+| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, whole tree |
+| `pnpm --dir apps/web lint` | **PASS** | exit 0, whole tree, 0 errors 0 warnings |
 | `pnpm --dir apps/web build` | **PASS** | exit 0, `next build --webpack` |
 | `node --test` — both suites | **PASS** | 24 pass, 0 fail |
 | pgTAP, 7 files (from W1-A) | **PASS** | 366 pass, 0 fail |
@@ -152,12 +152,21 @@ the 656-unit N+1 the brief warns about cannot occur. `getDashboardSnapshot()` fa
 | `apps/web/lib/rbac.ts` | **W1-B** | `staff` holds no `leads:*` or `buyer_pipeline:*` permission, but migration 14's RLS originally admitted staff. I **tightened the SQL to manager (70)** so RLS is not looser than RBAC. If sales agents are meant to be `staff`, add `leads:view` there and tell me to relax the policy — changing only one side re-opens the gap. Same question for `compliance:view`. |
 | `supabase/migrations/*` | **W1-A (me)** | Recorded rather than silently done: `getPipelineSummary`, `getFinanceSummary` and `getOperationsSummary` aggregate in TypeScript over one 500-row page because PostgREST cannot `GROUP BY`. They set `truncated` + a `degradedReason` when the exact count exceeds the page. An exact aggregate at volume needs a SQL view or RPC. Not built tonight. |
 | `docs/api/openapi.yaml` | **W2-B** | Finance and ticket **mutations are revoked for `authenticated`** by migrations 07 and 06 — the tables expect service-role RPCs that do not exist yet. `reverseLedgerEntry()`, `settleVendorInvoice()` and `updateTicketStatus()` are written and typed but will return `forbidden` (42501) until those RPCs land. They were deliberately **not** given a service-role client: that would bypass RLS from a request path. |
-| `apps/web/hooks/*` | **W2-D** | Currently red and blocking the tree gate for everyone: `use-realtime-channel.ts(119,23)` TS7006 implicit any, plus 4 eslint errors across `use-live-snapshot.ts`, `use-optimistic-mutation.ts` and `use-realtime-channel.ts` (`react-hooks/refs`, `react-hooks/set-state-in-effect`). |
 | `apps/web/lib/database.types.ts` | **unowned** | Does not exist, so the Supabase client is untyped and every row is mapped from `unknown`. Safe, but `supabase gen types` needs an owner. Blocked tonight by Docker (see W1-A). |
 
 ---
 
 ## Known gaps
+
+- **`[GAP]` Five tables are seeded EMPTY in both modes**: `service_tickets`, `finance_ledger_entries`,
+  `audit_events`, `access_events`, `compliance_checks`. Synthetic fixtures for them were drafted
+  and then deliberately removed — one included a fabricated price change against a real harvested
+  figure, which would have looked researched and contradicted the database the moment Supabase is
+  configured. The row TYPES are exported as the contract to build against; **the fixtures belong in
+  `supabase/seed.sql`**. W3-D/E/F have no demo data on those surfaces today.
+- **`[GAP]` `getDashboardSnapshot()` does not scope inventory per owner.** It reports the
+  restriction in `restrictedPanels` rather than guessing the `unit_residents` join. `owner`/`tenant`
+  get the public showcase there; per-unit inventory is `getUnitsForResident()`.
 
 - **`[GAP]` `updateTicketStatus()` is two statements, not one transaction** (UPDATE, then a
   `ticket_events` insert). A crash between them leaves a moved ticket with no history row.
