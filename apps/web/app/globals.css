@@ -726,6 +726,186 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Isometric masterplan (W3-I).
+
+   Mirrors the real house pattern, which is `site-command-simulation.tsx` +
+   the `.site-*` classes in the 1Çatı `globals.css` — NOT `isometric-erp-world
+   .tsx`. That older file hand-places four towers at hardcoded percentages as
+   2D `skewY` fakes sitting beside the rotated plate rather than inside it, so
+   it has no grid formula and does not tolerate more than a few buildings. The
+   `.site-*` version uses a real `preserve-3d` context with `translateZ` for
+   depth, which is why it takes eight.
+
+   Geometry is passed in from JSX as custom properties (`--iso-x`, `--iso-y`,
+   `--iso-h`) exactly as the reference does. Depth ordering comes from
+   `translateZ` plus back-to-front source order — NOT `z-index`, which fights
+   `preserve-3d` and produces different results per browser.
+   -------------------------------------------------------------------------- */
+
+@layer utilities {
+  .azura-iso-scene {
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  .azura-iso-sea {
+    position: absolute;
+    inset: 58% -10% -12% -10%;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sea-shallow) 55%, transparent),
+      color-mix(in srgb, var(--sea-deep) 75%, transparent)
+    );
+    transform: rotateX(64deg) rotateZ(-8deg) translateY(40px);
+    transform-origin: center;
+  }
+
+  .azura-iso-ground {
+    position: absolute;
+    inset: 14% 6% 16%;
+    border-radius: 18px;
+    background:
+      linear-gradient(
+        transparent 0 calc(100% - 1px),
+        color-mix(in srgb, var(--primary) 12%, transparent) 100%
+      ),
+      color-mix(in srgb, var(--primary) 6%, transparent);
+    background-size: 34px 34px;
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+    transform: rotateX(64deg) rotateZ(-8deg) translateY(30px);
+    transform-origin: center;
+  }
+
+  /* The block field and the ground use different rotateX (58 vs 64) so the
+     buildings sit into the plate with a little parallax rather than lying
+     flat on it. */
+  .azura-iso-field {
+    position: absolute;
+    inset: 0;
+    transform: rotateX(58deg) rotateZ(-8deg) translateY(24px);
+    transform-style: preserve-3d;
+  }
+
+  .azura-iso-slot {
+    position: absolute;
+    left: calc(10% + var(--iso-x));
+    top: calc(20% + var(--iso-y));
+    width: 64px;
+    height: 116px;
+    transform-style: preserve-3d;
+  }
+
+  .azura-iso-block {
+    position: absolute;
+    bottom: 16px;
+    left: 10px;
+    width: 44px;
+    height: var(--iso-h);
+    padding: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-content: end;
+    gap: 4px;
+    border-radius: 7px;
+    border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
+    background: color-mix(in srgb, var(--primary) 22%, transparent);
+    box-shadow: 0 16px 44px color-mix(in srgb, var(--sea-deep) 22%, transparent);
+    transform: translateZ(36px);
+    transform-style: preserve-3d;
+  }
+
+  /* The hotel is the one warm volume — taller, sand rather than azure. */
+  .azura-iso-block[data-kind="hotel"] {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+
+  /* Fake side wall, so a flat rectangle reads as a volume. */
+  .azura-iso-block::before {
+    content: "";
+    position: absolute;
+    inset: 6px -7px -6px auto;
+    width: 7px;
+    border-radius: 0 7px 7px 0;
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+    transform: rotateY(84deg);
+    transform-origin: left;
+  }
+
+  .azura-iso-window {
+    height: 4px;
+    border-radius: 1px;
+    background: color-mix(in srgb, var(--sea-foam) 55%, transparent);
+  }
+
+  .azura-iso-shadow {
+    position: absolute;
+    bottom: 10px;
+    left: 8px;
+    width: 50px;
+    height: 14px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--sea-deep) 30%, transparent);
+    filter: blur(7px);
+    transform: translateZ(-12px);
+  }
+
+  /* Labels counter-rotate to face the camera — the exact inverse of
+     .azura-iso-field's rotation, or they lie down on the plate. */
+  .azura-iso-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    background: color-mix(in srgb, var(--card) 90%, transparent);
+    padding: 1px 5px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--foreground);
+    transform: translateZ(44px) rotateX(-58deg) rotateZ(8deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .azura-iso-block {
+    animation: azura-iso-float 5.2s ease-in-out infinite;
+  }
+  .azura-iso-slot:nth-child(2n) .azura-iso-block {
+    animation-delay: 0.4s;
+  }
+  .azura-iso-slot:nth-child(3n) .azura-iso-block {
+    animation-delay: 0.8s;
+  }
+}
+
+/* A keyframe on a transformed element MUST restate the full transform, or the
+   projection is lost for the duration of the animation. */
+@keyframes azura-iso-float {
+  0%,
+  100% {
+    transform: translateZ(36px) translateY(0);
+  }
+  50% {
+    transform: translateZ(42px) translateY(-4px);
+  }
+}
+
+@keyframes azura-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes azura-tide {
   0% {
     transform: translate3d(0, 0, 0) scale(1);

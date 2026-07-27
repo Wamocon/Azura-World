@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, type ReactNode } from "react"
 
-import { duration as durationTokens, ease } from "@/lib/motion"
+import { ease } from "@/lib/motion"
 
 import { gsap, registerGsap } from "./gsap"
 

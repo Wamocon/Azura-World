@@ -81,7 +81,7 @@ export function KitchenSinkClient(): ReactNode {
     "loading" | "error" | "empty" | "ready"
   >("ready")
 
-  const units = useMemo(demoUnits, [])
+  const units = useMemo(() => demoUnits(), [])
   const scrollRef = useTableScrollRef()
 
   const visible = useMemo(() => {

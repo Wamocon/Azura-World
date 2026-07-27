@@ -2,7 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useEffect, useState, type ReactNode } from "react"
+import { useSyncExternalStore, type ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
 
@@ -20,11 +20,15 @@ import { Button } from "@/components/ui/button"
  */
 export function ThemeToggle(): ReactNode {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  // "Have we hydrated yet?" without a state write in an effect. The server
+  // snapshot is false and the client snapshot is true, so React resolves it
+  // during hydration rather than in a second paint.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   const options = [
     { value: "light", icon: Sun, label: "Hell" },

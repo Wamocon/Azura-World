@@ -1,7 +1,13 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useEffect, useRef, useState, type ReactNode } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react"
 
 import { cn } from "@/lib/cn"
 import { isWebGLAvailable, motionTier } from "@/lib/motion"
@@ -41,6 +47,25 @@ const CoastMaquetteScene = dynamic(() => import("./coast-maquette-scene"), {
   loading: () => null,
 })
 
+/** No external source to subscribe to — capability does not change at runtime. */
+function subscribeNever(): () => void {
+  return () => {}
+}
+
+let capabilityCache: boolean | null = null
+
+function getCapabilitySnapshot(): boolean {
+  if (capabilityCache === null) {
+    capabilityCache = motionTier() === "full" && isWebGLAvailable()
+  }
+  return capabilityCache
+}
+
+/** The server cannot probe a GPU. Always the poster. */
+function getServerCapability(): boolean {
+  return false
+}
+
 export function CoastMaquette({
   posterLabel,
   className,
@@ -53,24 +78,32 @@ export function CoastMaquette({
 }): ReactNode {
   const containerRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
-  const [inView, setInView] = useState(false)
-  const [capable, setCapable] = useState<boolean | null>(null)
+  /**
+   * Capability, resolved on the client only.
+   *
+   * `useSyncExternalStore` rather than `useState` + `useEffect`: the server
+   * snapshot is `false`, the client snapshot probes once and memoises, and
+   * there is no cascading render. Deciding during render would make the server
+   * and client disagree about what to render; setting state in an effect
+   * would do it in two paints instead of one.
+   */
+  const capable = useSyncExternalStore(
+    subscribeNever,
+    getCapabilitySnapshot,
+    getServerCapability
+  )
 
-  // Capability is resolved on the client only. Deciding during render would
-  // make the server and the client disagree about what to render.
-  useEffect(() => {
-    setCapable(motionTier() === "full" && isWebGLAvailable())
-  }, [])
+  const [inView, setInView] = useState(
+    // No IntersectionObserver (a very old browser, some test runners): show the
+    // scene rather than never showing it. Computed as the initial value, not
+    // assigned from an effect. The other three gates still apply.
+    () => typeof IntersectionObserver === "undefined"
+  )
 
   useEffect(() => {
     const element = containerRef.current
     if (element === null) return
-    if (typeof IntersectionObserver === "undefined") {
-      // No observer (very old browser, some test runners): show the scene
-      // rather than never showing it. The other three gates still apply.
-      setInView(true)
-      return
-    }
+    if (typeof IntersectionObserver === "undefined") return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -88,7 +121,7 @@ export function CoastMaquette({
     return () => observer.disconnect()
   }, [rootMargin])
 
-  const showScene = capable === true && !reducedMotion && inView
+  const showScene = capable && !reducedMotion && inView
 
   return (
     <div

@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  createElement,
-  useEffect,
-  useRef,
-  type ElementType,
-  type ReactNode,
-} from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 
 import {
   REVEAL_FAILSAFE_MS,
@@ -44,9 +38,31 @@ import { gsap, registerGsap } from "./gsap"
  * or not at all. IO is driven by the compositor and does not care.
  */
 
+/**
+ * The element to render.
+ *
+ * A closed union of intrinsic tags rather than `ElementType`. The NLP
+ * reference reaches for `createElement` with a `Record<string, unknown>` cast
+ * to dodge TypeScript's "props resolve to never" on a generic polymorphic
+ * `as` + `ref`; that cast also hides the ref from React's lint rules, which
+ * then read `ref` in the props object as a ref access during render.
+ *
+ * Naming the tags costs flexibility nothing has needed and buys real typing.
+ */
+export type RevealTag =
+  | "div"
+  | "section"
+  | "article"
+  | "aside"
+  | "header"
+  | "footer"
+  | "ul"
+  | "ol"
+  | "li"
+
 interface RevealProps {
   children: ReactNode
-  as?: ElementType
+  as?: RevealTag
   className?: string
   /** Travel in px. Small on purpose: 34px reads as arrival, 100px as a slide. */
   y?: number
@@ -65,7 +81,11 @@ export function Reveal({
   duration: durationProp = duration.slow,
   stagger,
 }: RevealProps): ReactNode {
-  const ref = useRef<HTMLElement>(null)
+  // `HTMLElement`, assigned through a callback ref. A plain
+  // `useRef<HTMLDivElement>` will not satisfy the `ref` prop of a UNION of
+  // intrinsic tags — TS requires a ref valid for every member — and a callback
+  // taking the shared base type is assignable to all of them.
+  const ref = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const el = ref.current
@@ -155,15 +175,18 @@ export function Reveal({
     }
   }, [y, delay, durationProp, stagger])
 
-  return createElement(
-    Tag as ElementType,
-    {
-      ref,
-      className,
-      // Marks the element for the reduced-motion safety net in globals.css.
-      "data-reveal": "",
-    } as Record<string, unknown>,
-    children
+  // `data-reveal` marks the element for the reduced-motion safety net in
+  // globals.css, and for the print rule.
+  return (
+    <Tag
+      ref={(node: HTMLElement | null) => {
+        ref.current = node
+      }}
+      className={className}
+      data-reveal=""
+    >
+      {children}
+    </Tag>
   )
 }
 
