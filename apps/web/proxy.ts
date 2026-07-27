@@ -19,6 +19,12 @@
 import createIntlMiddleware from "next-intl/middleware"
 import { NextResponse, type NextRequest, type ProxyConfig } from "next/server"
 import { defaultLocale, locales, type Locale } from "./lib/contracts"
+// W1-B seam imports. Both modules are proxy-runtime safe on purpose: neither
+// reaches `next/headers` (unavailable here) and neither can construct a
+// service-role client. `lib/auth.ts` is deliberately NOT imported for that
+// reason — it depends on `cookies()`.
+import { accessProfilesEnabledForEnvironment } from "./lib/access-profile-policy"
+import { updateSession } from "./lib/supabase/middleware"
 
 // ---------------------------------------------------------------------------
 // 1. Intl routing
@@ -125,11 +131,11 @@ function applySecurityHeaders(response: NextResponse, csp: string): void {
 }
 
 // ---------------------------------------------------------------------------
-// 2. Supabase session refresh — TODO(W1-B)
+// 2. Supabase session refresh — filled by W1-B
 // ---------------------------------------------------------------------------
 
 /**
- * TODO(W1-B): implement Supabase session refresh.
+ * Supabase session refresh.
  *
  * What must go in here, and nothing else:
  *
@@ -149,25 +155,37 @@ function applySecurityHeaders(response: NextResponse, csp: string): void {
  *  - Never use the service-role key here. This code runs on every matched
  *    request and its imports land in the proxy bundle (SYSTEM-PROMPT §2.7).
  *
- * The no-op below lets the app run unauthenticated today: everything is public,
- * nothing redirects.
+ * FILLED BY W1-B. The body delegates to `lib/supabase/middleware.ts`, which W1-B
+ * owns; keeping the implementation there rather than inline is what limits this
+ * W0-A-owned file to one import line and one function body. See
+ * HANDOFF/W1-B.md for the exact line ranges touched.
+ *
+ * `updateSession` honours every constraint listed above: it returns untouched
+ * with `isAuthenticated: false` when `isSupabaseConfigured()` is false, writes
+ * refreshed cookies to BOTH `request.cookies` and `response.cookies`, uses
+ * `getClaims()`, never touches the service-role key, and never throws.
  */
-// TODO(W1-B): fill this seam. Signature is final — build against it.
 async function refreshSupabaseSession(
   request: NextRequest,
   response: NextResponse
 ): Promise<{ response: NextResponse; isAuthenticated: boolean }> {
-  // Referenced so the parameter is not flagged as unused before W1-B lands.
-  void request
-  return { response, isAuthenticated: false }
+  return updateSession(request, response)
 }
 
 // ---------------------------------------------------------------------------
-// 3. Route guard — TODO(W1-B)
+// 3. Route guard — filled by W1-B
 // ---------------------------------------------------------------------------
 
 /**
- * TODO(W1-B): implement the route guard.
+ * Locale-free path prefixes that require a session. Matched as whole segments
+ * (`/dashboard` or `/dashboard/...`), never as a bare `startsWith` — a bare one
+ * would also protect a future `/dashboards-public` and leave `/dashboardx`
+ * looking deliberate rather than accidental.
+ */
+const PROTECTED_PREFIXES = ["/dashboard"] as const
+
+/**
+ * The route guard.
  *
  * What must go in here, and nothing else:
  *
@@ -188,16 +206,62 @@ async function refreshSupabaseSession(
  *    handler re-checks permission server-side regardless of what happens here
  *    (CONVENTIONS §2).
  *
- * The no-op below lets the app run unauthenticated today.
+ * FILLED BY W1-B.
+ *
+ * Two deviations from the notes above, both deliberate and both recorded in
+ * HANDOFF/W1-B.md:
+ *
+ *  - The relaxation gate is `accessProfilesEnabledForEnvironment()` from
+ *    `lib/access-profile-policy.ts`, not `accessProfilesEnabled()` from
+ *    `lib/env.ts`. The W1-B brief §3 defines the gate as
+ *    `!isSupabaseConfigured() || (all three flags)`, and `lib/env.ts` omits the
+ *    first clause — with it missing, the app is unusable without a database,
+ *    which CONVENTIONS §2 requires to work. The two agree exactly in production:
+ *    both are hard `false` there, and the policy module additionally *throws at
+ *    module load* if a production process is configured otherwise. This is
+ *    still not a second bypass; it is the same one, specified more completely.
+ *
+ *  - The 403-not-redirect rule for a forbidden route is NOT enforced here. This
+ *    seam knows only whether a session exists, not which role it carries;
+ *    resolving the role needs `cookies()` and a `profiles` read, neither of
+ *    which is available in the proxy runtime. Per-role 403s are enforced in the
+ *    route segments and route handlers, where the profile is resolvable. What
+ *    this seam does guarantee is the property the note is really protecting
+ *    against: an authenticated user is never redirected to login, so the
+ *    redirect loop cannot form.
  */
-// TODO(W1-B): fill this seam. Signature is final — build against it.
 function guardRoute(
   request: NextRequest,
   ctx: { locale: Locale; pathWithoutLocale: string; isAuthenticated: boolean }
 ): NextResponse | null {
-  // Referenced so the parameters are not flagged as unused before W1-B lands.
-  void request
-  void ctx
+  const path = ctx.pathWithoutLocale
+  const isProtected = PROTECTED_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+  )
+  const isLogin = path === "/login" || path.startsWith("/login/")
+
+  if (isProtected && !ctx.isAuthenticated) {
+    if (accessProfilesEnabledForEnvironment()) return null
+    const url = request.nextUrl.clone()
+    url.pathname = `/${ctx.locale}/login`
+    url.search = ""
+    // The locale-free path plus its query string, so a session that expires
+    // mid-form returns the user to exactly where they were (CONVENTIONS §5).
+    // `searchParams.set` percent-encodes, so this cannot smuggle a second
+    // parameter; `login/actions.ts` still re-validates it as untrusted input.
+    url.searchParams.set("next", `${path}${request.nextUrl.search}`)
+    return NextResponse.redirect(url)
+  }
+
+  if (isLogin && ctx.isAuthenticated) {
+    // Always the dashboard, never `?next=`. Honouring a caller-supplied
+    // destination here would put an open-redirect surface in the proxy, and the
+    // login action already handles `next` after a successful sign-in.
+    return NextResponse.redirect(
+      new URL(`/${ctx.locale}/dashboard`, request.url)
+    )
+  }
+
   return null
 }
 
