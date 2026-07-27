@@ -446,7 +446,8 @@ At 19:23 the entire W0-D deliverable existed **only in the working tree**. `git 
 branch showed `0b82deb` (the `--finalize` mode) and three W1-C commits — and nothing else. The
 manifest, the LQIP table, the encoder changes and this handoff were all uncommitted. One
 `git checkout` by any of the four windows sharing the tree would have taken the night with it.
-Commit `1c5cad8` is that work committed.
+Commit `83a696c` is that work committed: the manifest, the LQIP table, both script changes and
+this handoff, and **no image bytes** — the encoded renditions stay git-ignored.
 
 ## Re-run, on the final tree, exit codes captured explicitly
 
