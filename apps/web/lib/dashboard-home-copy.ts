@@ -3,7 +3,7 @@
  *
  * WHY THIS EXISTS ALONGSIDE `messages/*.json`, WHICH IS W1-C's:
  * the shell needs about forty strings that the message catalogue does not
- * carry — group headings, the 403 body, per-role home intros, the data-table
+ * carry. Group headings, the 403 body, per-role home intros, the data-table
  * chrome. Adding them means editing four files W1-C owns while they are
  * actively working in them, which ORCHESTRATION §4 forbids and which would
  * collide. The 1Çatı reference solves it the same way, with a
@@ -11,7 +11,7 @@
  * catalogue.
  *
  * Everything W1-C DOES already ship is used from `messages/*.json` and is not
- * duplicated here — nav labels are `dashboard.<module>.title`, and
+ * duplicated here. Nav labels are `dashboard.<module>.title`, and
  * `dashboard.shell.*` covers the topbar. Two copies of one string is two things
  * to translate and one of them to forget.
  *
@@ -110,7 +110,7 @@ const de: DashboardShellCopy = {
 
   forbiddenTitle: "Kein Zugriff auf diesen Bereich",
   forbiddenBody:
-    "Ihre Rolle ({role}) hat keine Berechtigung für diese Seite. Die Adresse bleibt erhalten — Sie können sie an eine berechtigte Person weitergeben.",
+    "Ihre Rolle ({role}) hat keine Berechtigung für diese Seite. Die Adresse bleibt erhalten. Sie können sie an eine berechtigte Person weitergeben.",
   forbiddenAction: "Zu einem freigegebenen Bereich",
 
   noAccessTitle: "Für diese Rolle ist kein Bereich freigegeben",
@@ -126,7 +126,7 @@ const de: DashboardShellCopy = {
   panelFailedHint:
     "Dieser Bereich konnte nicht geladen werden. Die übrigen Kennzahlen sind davon unberührt.",
   panelTruncated:
-    "Verteilungen aus einer begrenzten Stichprobe — die Anteile sind Näherungen.",
+    "Verteilungen aus einer begrenzten Stichprobe. Die Anteile sind Näherungen.",
   retry: "Erneut versuchen",
   refresh: "Aktualisieren",
 
@@ -137,7 +137,7 @@ const de: DashboardShellCopy = {
   kpiOverdueTickets: "SLA überschritten",
   kpiFindings: "Befunde",
   kpiCriticalFindings: "Kritische Befunde",
-  kpiFactGaps: "Nicht belegte Angaben",
+  kpiFactGaps: "Angaben ohne Quelle",
   kpiSourcesValidated: "Geprüfte Quellen",
   kpiHotelRooms: "Hotelzimmer",
   kpiReviewSources: "Bewertungsportale",
@@ -154,7 +154,7 @@ const de: DashboardShellCopy = {
   tableSortDesc: "Absteigend sortieren",
   tableSortClear: "Sortierung aufheben",
   tableLoading: "Daten werden geladen",
-  tableNoValue: "—",
+  tableNoValue: "Keine Angabe",
   tableEmptyTitle: "Keine Einträge",
   tableEmptyBody:
     "Für die aktuelle Auswahl gibt es keine Einträge. Setzen Sie die Filter zurück, um mehr zu sehen.",
@@ -184,7 +184,7 @@ const en: DashboardShellCopy = {
 
   forbiddenTitle: "No access to this area",
   forbiddenBody:
-    "Your role ({role}) does not carry permission for this page. The address is preserved — you can pass it to someone who does.",
+    "Your role ({role}) does not carry permission for this page. The address is preserved. You can pass it to someone who does.",
   forbiddenAction: "Go to an area you can open",
 
   noAccessTitle: "No area is available for this role",
@@ -200,7 +200,7 @@ const en: DashboardShellCopy = {
   panelFailedHint:
     "This panel could not be loaded. The remaining figures are unaffected.",
   panelTruncated:
-    "Distributions computed from a bounded sample — the proportions are approximate.",
+    "Distributions computed from a bounded sample. The proportions are approximate.",
   retry: "Try again",
   refresh: "Refresh",
 
@@ -228,7 +228,7 @@ const en: DashboardShellCopy = {
   tableSortDesc: "Sort descending",
   tableSortClear: "Clear sorting",
   tableLoading: "Loading data",
-  tableNoValue: "—",
+  tableNoValue: "Not stated",
   tableEmptyTitle: "No entries",
   tableEmptyBody:
     "There are no entries for the current selection. Reset the filters to see more.",
@@ -258,7 +258,7 @@ const tr: DashboardShellCopy = {
 
   forbiddenTitle: "Bu bölüme erişiminiz yok",
   forbiddenBody:
-    "Rolünüz ({role}) bu sayfa için yetki taşımıyor. Adres korunuyor — yetkili bir kişiye iletebilirsiniz.",
+    "Rolünüz ({role}) bu sayfa için yetki taşımıyor. Adres korunuyor. Yetkili bir kişiye iletebilirsiniz.",
   forbiddenAction: "Açabileceğiniz bir bölüme git",
 
   noAccessTitle: "Bu rol için açık bir bölüm yok",
@@ -273,7 +273,7 @@ const tr: DashboardShellCopy = {
   panelFailed: "Yüklenemedi",
   panelFailedHint: "Bu panel yüklenemedi. Diğer göstergeler bundan etkilenmez.",
   panelTruncated:
-    "Dağılımlar sınırlı bir örneklemden hesaplandı — oranlar yaklaşıktır.",
+    "Dağılımlar sınırlı bir örneklemden hesaplandı. Oranlar yaklaşıktır.",
   retry: "Tekrar dene",
   refresh: "Yenile",
 
@@ -301,7 +301,7 @@ const tr: DashboardShellCopy = {
   tableSortDesc: "Azalan sırala",
   tableSortClear: "Sıralamayı kaldır",
   tableLoading: "Veriler yükleniyor",
-  tableNoValue: "—",
+  tableNoValue: "Belirtilmemiş",
   tableEmptyTitle: "Kayıt yok",
   tableEmptyBody:
     "Geçerli seçim için kayıt bulunmuyor. Daha fazlasını görmek için filtreleri sıfırlayın.",
@@ -331,7 +331,7 @@ const ru: DashboardShellCopy = {
 
   forbiddenTitle: "Нет доступа к этому разделу",
   forbiddenBody:
-    "Ваша роль ({role}) не даёт прав на эту страницу. Адрес сохранён — вы можете передать его тому, у кого есть доступ.",
+    "Ваша роль ({role}) не даёт прав на эту страницу. Адрес сохранён. Вы можете передать его тому, у кого есть доступ.",
   forbiddenAction: "Перейти в доступный раздел",
 
   noAccessTitle: "Для этой роли нет доступных разделов",
@@ -347,7 +347,7 @@ const ru: DashboardShellCopy = {
   panelFailedHint:
     "Эту панель не удалось загрузить. Остальные показатели это не затрагивает.",
   panelTruncated:
-    "Распределения рассчитаны по ограниченной выборке — доли приблизительны.",
+    "Распределения рассчитаны по ограниченной выборке. Доли приблизительны.",
   retry: "Повторить",
   refresh: "Обновить",
 
@@ -375,7 +375,7 @@ const ru: DashboardShellCopy = {
   tableSortDesc: "Сортировать по убыванию",
   tableSortClear: "Снять сортировку",
   tableLoading: "Загрузка данных",
-  tableNoValue: "—",
+  tableNoValue: "Нет данных",
   tableEmptyTitle: "Записей нет",
   tableEmptyBody:
     "Для текущего выбора записей нет. Сбросьте фильтры, чтобы увидеть больше.",
@@ -402,7 +402,7 @@ export const dashboardShellCopy: Record<Locale, DashboardShellCopy> = Object.fre
   ru,
 })
 
-/** German for anything unrecognised — CONTRACTS §7 makes `de` the default. */
+/** German for anything unrecognised. CONTRACTS §7 makes `de` the default. */
 export function shellCopy(locale: string): DashboardShellCopy {
   return dashboardShellCopy[locale as Locale] ?? de
 }
@@ -426,7 +426,7 @@ export function fill(
  * Builds W1-D's `ProvenanceLabels` from W1-C's `evidence.*` catalogue.
  *
  * EVERY MODULE NEEDS THIS, so it lives in the shared contract rather than
- * being reassembled per module — six windows hand-writing the same seventeen
+ * being reassembled per module. Six windows hand-writing the same seventeen
  * strings is six chances for one of them to say something subtly different
  * about what a conflict means.
  *
@@ -434,7 +434,7 @@ export function fill(
  * so the same builder works from a Server Component (`getTranslations`) and a
  * client one (`useTranslations`).
  *
- * The strings are W1-C's, not invented here — `evidence.confidence.*`,
+ * The strings are W1-C's, not invented here. `evidence.confidence.*`,
  * `evidence.conflict.*` and `evidence.label.*` already exist in all four
  * locales. Only the source-tier names fall back to this module, because the
  * catalogue has no key for them.
@@ -471,7 +471,7 @@ export function buildProvenanceLabels(
     conflict: {
       trigger: t("evidence.confidence.conflicted"),
       heading: t("evidence.conflict.title"),
-      // `{count}` is W1-D's placeholder, not ICU — the components interpolate
+      // `{count}` is W1-D's placeholder, not ICU. The components interpolate
       // with their own `fill()` so they stay usable outside next-intl.
       summary: `{count} · ${t("evidence.label.sources")}`,
       displayed: t("evidence.conflict.displayedValue"),
