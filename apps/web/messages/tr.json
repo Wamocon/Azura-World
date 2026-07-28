@@ -891,7 +891,126 @@
         "debit": "Borç",
         "credit": "Alacak",
         "amount": "Tutar",
-        "status": "Durum"
+        "status": "Durum",
+        "currency": "Para birimi",
+        "unit": "Daire",
+        "reference": "Belge",
+        "dueDate": "Vade",
+        "group": "İşlem",
+        "entryType": "Tür",
+        "actions": "Değişiklik"
+      },
+      "intro": "Her tutar, kaydedildiği para biriminde gösterilir. Farklı para birimlerindeki tutarlar hiçbir zaman toplanmaz.",
+      "seedNotice": "Bu sayfa yerel veri kümesinden örnek veri gösterir, canlı kayıt değil.",
+      "unreadableNote": "{count} kayıt okunamadı ve hiçbir toplama dahil edilmedi.",
+      "overflowNote": "{currency} toplamı güvenli hesaplanamayacak kadar büyük, bu yüzden gösterilmiyor.",
+      "forbidden": "Finans bölümüne erişim yok.",
+      "forbiddenHint": "Rolünüz bu sayfayı açamaz. Erişim gerekiyorsa yönetime başvurun.",
+      "totals": {
+        "heading": "Para birimine göre toplamlar",
+        "description": "Para birimleri ayrı tutulur. Kur olmadan birleştirilmiş bir toplam anlam taşımaz.",
+        "postedDebit": "Kaydedilen, borç",
+        "postedCredit": "Kaydedilen, alacak",
+        "postedNet": "Kaydedilen, bakiye",
+        "draftNet": "Taslak, bakiye",
+        "openInvoices": "Açık tedarikçi faturaları",
+        "walletBalance": "Cüzdan bakiyesi",
+        "noneYet": "Henüz tutar yok."
+      },
+      "ledger": {
+        "heading": "Kayıtlar",
+        "description": "En yeni kayıt önce. Taslaklar en sonda, çünkü henüz kayıt tarihleri yok.",
+        "empty": "Kayıt bulunamadı.",
+        "emptyHint": "Seçtiğiniz filtre için kayıt yok. Tümünü görmek için filtreyi sıfırlayın.",
+        "rowsShown": "{total} kayıttan {shown} tanesi"
+      },
+      "status": {
+        "draft": "Taslak",
+        "posted": "Kaydedildi",
+        "void": "İptal"
+      },
+      "entryType": {
+        "dues": "Aidat",
+        "service_charge": "İşletme gideri",
+        "utility": "Tüketim",
+        "deposit": "Depozito",
+        "refund": "İade",
+        "penalty": "Gecikme bedeli",
+        "adjustment": "Düzeltme",
+        "payment": "Ödeme",
+        "vendor_bill": "Tedarikçi faturası",
+        "reversal": "Ters kayıt"
+      },
+      "immutable": {
+        "heading": "Kaydedilen satırlar değiştirilemez",
+        "body": "Bir satır kaydedildikten sonra veritabanı her değişikliği ve her silmeyi engeller. Yanlış bir kayıt üzerine yazılmaz, ters bir kayıtla kapatılır. Böylece ilk yazılan şey görünür kalır.",
+        "locked": "Kaydedildi, kilitli",
+        "lockedReason": "Bu satır kaydedildi. Değişiklik kapalıdır, düzeltme ters kayıtla yapılır.",
+        "editDraft": "Taslağı düzenle",
+        "correction": "Ters kayıt oluştur",
+        "voidLocked": "İptal, kilitli",
+        "voidReason": "Bu taslak bırakıldı ve kapandı."
+      },
+      "balanceCheck": {
+        "heading": "Borç alacağa eşit",
+        "description": "Her işlem, her para biriminde sıfıra gelmelidir. Gelmeyen işlemler farkıyla birlikte burada listelenir.",
+        "balanced": "Denk",
+        "unbalanced": "Denk değil",
+        "singleSided": "Tek taraflı",
+        "singleSidedHint": "Karşılığı olmayan tek bir kayıt geçerlidir, örneğin bir tahakkuk veya devreden açılış bakiyesi. Burada hata sayılmaz.",
+        "group": "İşlem",
+        "difference": "Fark",
+        "allBalanced": "{count} işlemin tümü denk.",
+        "empty": "Bu görünümde gruplanmış işlem yok."
+      },
+      "debtors": {
+        "heading": "Açık kalemler",
+        "description": "Kaydedilen borçlardan kaydedilen ödemeler düşülür, daire ve para birimi bazında.",
+        "byUnit": "Daireye göre",
+        "unit": "Daire",
+        "open": "Açık",
+        "empty": "Açık kalem yok.",
+        "noUnit": "Bir daireye bağlı değil"
+      },
+      "ageing": {
+        "heading": "Yaşlandırma",
+        "description": "Açık tedarikçi faturaları gecikme süresine göre, para birimi bazında. Cihazınızın saatine göre değil, sunucu saatine göre hesaplanır.",
+        "asOf": "{date} itibarıyla",
+        "current": "Vadesi gelmedi",
+        "days1To30": "1 ile 30 gün",
+        "days31To60": "31 ile 60 gün",
+        "days61To90": "61 ile 90 gün",
+        "days90Plus": "90 günden fazla",
+        "empty": "Açık fatura yok."
+      },
+      "reconciliation": {
+        "heading": "Ödeme eşleştirme",
+        "description": "Hiçbir kayda ve hiçbir faturaya ait olmayan ödemeler burada listelenir. Gizlenmezler.",
+        "matched": "{count} ödeme eşleşti.",
+        "unmatched": "Eşleşmeyen",
+        "unmatchedHint": "Bu ödemeler geldi ama bir kayda veya faturaya atanmadı.",
+        "empty": "Tüm ödemeler eşleşti."
+      },
+      "filters": {
+        "heading": "Filtre",
+        "all": "Tümü",
+        "allStatuses": "Tüm durumlar",
+        "allCurrencies": "Tüm para birimleri",
+        "reset": "Filtreyi sıfırla"
+      },
+      "export": {
+        "csv": "CSV olarak indir",
+        "hint": "Dosya tam olarak geçerli filtreyi içerir ve dosya adı bunu belirtir."
+      },
+      "statement": {
+        "title": "Hesap özeti {unit}",
+        "lead": "Bu daireye ait tüm kaydedilen kalemler, para birimine göre ayrı.",
+        "back": "Finansa dön",
+        "forbidden": "Bu hesap özetine erişim yok.",
+        "forbiddenHint": "Bu daire sizin kapsamınızda değil. Deneme kayıt altına alındı.",
+        "notFound": "Bu daire için kayıt yok.",
+        "openBalance": "Bakiye",
+        "entries": "Kalemler"
       }
     },
     "payments": {
@@ -899,10 +1018,81 @@
       "lead": "Gelen, giden ve durumları.",
       "empty": "Ödeme yok.",
       "status": {
-        "pending": "Bekliyor",
-        "settled": "İşlendi",
+        "pending": "Beklemede",
         "failed": "Başarısız",
-        "refunded": "İade edildi"
+        "refunded": "İade edildi",
+        "authorized": "Onaylandı",
+        "captured": "Tahsil edildi",
+        "cancelled": "İptal edildi"
+      },
+      "direction": {
+        "inbound": "Giriş",
+        "outbound": "Çıkış"
+      },
+      "columns": {
+        "date": "Tarih",
+        "provider": "Yöntem",
+        "reference": "Referans",
+        "direction": "Yön",
+        "amount": "Tutar",
+        "status": "Durum",
+        "unit": "Daire",
+        "invoice": "Fatura",
+        "failureReason": "Sebep"
+      },
+      "console": {
+        "heading": "Ödeme kaydet",
+        "description": "Bir ödemeyi kaydeder ve bir faturaya veya daireye atar.",
+        "amount": "Tutar",
+        "amountHint": "Biçim: {example}",
+        "currency": "Para birimi",
+        "method": "Ödeme yöntemi",
+        "reference": "Referans",
+        "referenceHint": "Belge veya havale numarası, en fazla 120 karakter.",
+        "allocation": "Atama",
+        "allocationNone": "Lütfen seçin",
+        "allocationInvoice": "Fatura {invoiceNo}",
+        "allocationUnit": "Daire {unit}",
+        "submit": "Ödemeyi kaydet",
+        "submitting": "Kaydediliyor",
+        "doubleClickSafe": "Bu düğmeye ikinci kez basmak ikinci bir ödeme oluşturmaz. Her gönderim tek kullanımlık bir anahtar taşır."
+      },
+      "result": {
+        "posted": "Ödeme kaydedildi.",
+        "duplicate": "Bu ödeme zaten kaydedilmişti. Hiçbir şey iki kez kaydedilmedi.",
+        "unavailable": "Veritabanı olmadan hiçbir şey kaydedilemez. Hiçbir şey kaydedilmedi.",
+        "notImplemented": "Veritabanına yazma yolu henüz yok. Hiçbir şey kaydedilmedi.",
+        "forbidden": "Rolünüz ödeme kaydedemez.",
+        "conflict": "Kayıt siz çalışırken değişti. Sayfayı yenileyip tekrar deneyin.",
+        "exceedsInvoice": "Tutar, bu faturanın kalan borcundan fazla. Kalan: {remaining}.",
+        "unknownAllocation": "Böyle bir atama yok.",
+        "parsed": "{value} olarak okundu."
+      },
+      "errors": {
+        "empty": "Lütfen bir tutar girin.",
+        "unexpected_character": "Bu tutar buraya ait olmayan karakterler içeriyor. Beklenen: {example}.",
+        "malformed_grouping": "Lütfen {example} biçimini kullanın. Nokta binleri, virgül ondalığı ayırır.",
+        "too_many_decimals": "En fazla iki ondalık basamak. Tutarlar burada yuvarlanmaz.",
+        "too_large": "Bu tutar çok büyük.",
+        "zero": "Tutar sıfır olamaz.",
+        "negative": "Burada negatif tutar kabul edilmez."
+      },
+      "approval": {
+        "heading": "Onay",
+        "threshold": "{amount} ve üzeri için yönetim onayı gerekir.",
+        "required": "Onay gerekli",
+        "notRequired": "Onay gerekmiyor",
+        "canApprove": "Onaylayabilirsiniz.",
+        "cannotApprove": "Onayı yönetim verir."
+      },
+      "audit": {
+        "heading": "İşlem kaydı",
+        "description": "Kimin neyi ne zaman değiştirdiği, önceki ve sonraki değeriyle.",
+        "actor": "Kişi",
+        "at": "Zaman",
+        "before": "Önce",
+        "after": "Sonra",
+        "none": "Henüz kayıt yok."
       }
     },
     "wallet": {
@@ -912,7 +1102,56 @@
       "available": "Kullanılabilir",
       "reserved": "Bloke",
       "topUp": "Yükle",
-      "withdraw": "Çek"
+      "withdraw": "Çek",
+      "intro": "Kişi ve para birimi başına bir bakiye. Farklı para birimlerindeki bakiyeler hiçbir zaman toplanmaz.",
+      "seedNotice": "Bu sayfa yerel veri kümesinden örnek veri gösterir, canlı bakiye değil.",
+      "forbidden": "Cüzdanlara erişim yok.",
+      "forbiddenHint": "Rolünüz bu sayfayı açamaz.",
+      "columns": {
+        "holder": "Sahip",
+        "kind": "Tür",
+        "currency": "Para birimi",
+        "balance": "Bakiye",
+        "status": "Durum",
+        "threshold": "Alt sınır",
+        "overdraft": "Eksiye düşme",
+        "updated": "Güncellendi"
+      },
+      "kind": {
+        "resident": "Sakin",
+        "vendor": "Tedarikçi",
+        "company": "Yönetim"
+      },
+      "status": {
+        "active": "Aktif",
+        "frozen": "Donduruldu",
+        "closed": "Kapatıldı"
+      },
+      "overdraft": {
+        "heading": "Eksiye düşme",
+        "description": "Bir bakiye yalnızca açıkça izin verildiğinde ve limit yettiğinde sıfırın altına inebilir. Bu izin olmadan veritabanı kaydı reddeder.",
+        "allowed": "{limit} tutarına kadar izinli",
+        "notAllowed": "İzin yok",
+        "inOverdraft": "Sıfırın altında",
+        "rejected": "İzin verilmiş bir eksiye düşme olmadan, sıfırın altına inecek bir kayıt reddedilir. Hiçbir şey kaydedilmez."
+      },
+      "lowBalance": {
+        "label": "Alt sınırın altında",
+        "hint": "{count} bakiye alt sınırın altında."
+      },
+      "history": {
+        "heading": "Hareketler",
+        "description": "Bu bakiye üzerinden geçen ödemeler.",
+        "empty": "Bu bakiyede hareket yok."
+      },
+      "scope": {
+        "own": "Kendi bakiyeniz",
+        "ownHint": "Yalnızca kendi bakiyenizi ve hareketlerini görürsünüz.",
+        "company": "Tüm bakiyeler",
+        "companyHint": "Yönetimin tuttuğu tüm bakiyeleri görürsünüz."
+      },
+      "noHolder": "Belirli bir sahibi yok",
+      "emptyHint": "Hesabınız için henüz bir bakiye yok."
     },
     "vendorInvoices": {
       "title": "Tedarikçi faturaları",
@@ -920,10 +1159,59 @@
       "empty": "Fatura yok.",
       "status": {
         "draft": "Taslak",
-        "submitted": "Gönderildi",
-        "approved": "Onaylandı",
         "paid": "Ödendi",
-        "rejected": "Reddedildi"
+        "open": "Açık",
+        "partially_paid": "Kısmen ödendi",
+        "disputed": "İhtilaflı",
+        "void": "İptal"
+      },
+      "intro": "Gelen faturalar, onay durumu ve kalan borcuyla, para birimine göre ayrı.",
+      "seedNotice": "Bu sayfa yerel veri kümesinden örnek veri gösterir, canlı fatura değil.",
+      "forbidden": "Tedarikçi faturalarına erişim yok.",
+      "forbiddenHint": "Rolünüz bu sayfayı açamaz.",
+      "emptyHint": "Seçtiğiniz filtre için fatura yok.",
+      "columns": {
+        "vendor": "Tedarikçi",
+        "invoiceNo": "Fatura numarası",
+        "issued": "Düzenlendi",
+        "due": "Vade",
+        "total": "Toplam",
+        "tax": "Vergi",
+        "paid": "Ödenen",
+        "outstanding": "Kalan",
+        "currency": "Para birimi",
+        "status": "Durum"
+      },
+      "totals": {
+        "heading": "Para birimine göre toplamlar",
+        "open": "Kalan",
+        "settled": "Ödenen",
+        "overdue": "Bunun gecikmiş kısmı"
+      },
+      "duplicates": {
+        "heading": "Olası mükerrer kayıt",
+        "description": "Aynı tedarikçi, aynı fatura numarası ve aynı tutarı taşıyan faturalar. İşaretlenir, silinmez.",
+        "flagged": "{count} olası mükerrer kayıt",
+        "flaggedRow": "{other} ile aynı tedarikçi, aynı numara ve aynı tutar.",
+        "none": "Mükerrer kayıt bulunamadı.",
+        "matchOn": "Tedarikçi, fatura numarası ve tutar birlikte kontrol edilir."
+      },
+      "approval": {
+        "heading": "Onay",
+        "canApprove": "Fatura onaylayabilirsiniz.",
+        "cannotApprove": "Onayı yönetim veya muhasebe verir.",
+        "settle": "Ödeme kaydet",
+        "settleHint": "Bu faturanın ne kadarının ödendiğini kaydeder. Aynı sürüm üzerine ikinci bir kayıt reddedilir."
+      },
+      "overdue": {
+        "label": "Gecikmiş",
+        "days": "{days} gün gecikmiş",
+        "notDue": "Vadesi gelmedi",
+        "noDueDate": "Vade tarihi yok"
+      },
+      "export": {
+        "csv": "CSV olarak indir",
+        "hint": "Dosya tam olarak geçerli filtreyi içerir ve dosya adı bunu belirtir."
       }
     },
     "tickets": {

@@ -891,7 +891,126 @@
         "debit": "Debit",
         "credit": "Credit",
         "amount": "Amount",
-        "status": "Status"
+        "status": "Status",
+        "currency": "Currency",
+        "unit": "Unit",
+        "reference": "Reference",
+        "dueDate": "Due",
+        "group": "Transaction",
+        "entryType": "Type",
+        "actions": "Change"
+      },
+      "intro": "Every amount is shown in the currency it was booked in. Amounts in different currencies are never added together.",
+      "seedNotice": "This page shows sample data from the local dataset, not live entries.",
+      "unreadableNote": "{count} entries could not be read and are missing from every total.",
+      "overflowNote": "The total for {currency} is too large to calculate safely, so it is not shown.",
+      "forbidden": "No access to finance.",
+      "forbiddenHint": "Your role cannot open this page. Ask the management team if you need access.",
+      "totals": {
+        "heading": "Totals by currency",
+        "description": "Kept apart by currency. One combined total across currencies would mean nothing without an exchange rate.",
+        "postedDebit": "Posted, debit",
+        "postedCredit": "Posted, credit",
+        "postedNet": "Posted, balance",
+        "draftNet": "Drafts, balance",
+        "openInvoices": "Open vendor invoices",
+        "walletBalance": "Wallet balance",
+        "noneYet": "No amounts yet."
+      },
+      "ledger": {
+        "heading": "Entries",
+        "description": "Newest posting first. Drafts come last because they have no posting date yet.",
+        "empty": "No entries found.",
+        "emptyHint": "There are no entries for the filter you chose. Reset the filter to see everything.",
+        "rowsShown": "{shown} of {total} entries"
+      },
+      "status": {
+        "draft": "Draft",
+        "posted": "Posted",
+        "void": "Void"
+      },
+      "entryType": {
+        "dues": "Dues",
+        "service_charge": "Service charge",
+        "utility": "Utility",
+        "deposit": "Deposit",
+        "refund": "Refund",
+        "penalty": "Penalty",
+        "adjustment": "Adjustment",
+        "payment": "Payment",
+        "vendor_bill": "Vendor bill",
+        "reversal": "Reversal"
+      },
+      "immutable": {
+        "heading": "Posted entries cannot be changed",
+        "body": "Once an entry is posted, the database blocks every change and every deletion. A wrong entry is not overwritten, it is cancelled with a matching reversal. That keeps what was originally recorded visible.",
+        "locked": "Posted, locked",
+        "lockedReason": "This entry is posted. Changes are blocked, corrections are made with a reversal.",
+        "editDraft": "Edit draft",
+        "correction": "Create a reversal",
+        "voidLocked": "Void, locked",
+        "voidReason": "This draft was abandoned and is therefore closed."
+      },
+      "balanceCheck": {
+        "heading": "Debit equals credit",
+        "description": "Every transaction must come to zero within each currency. Transactions that do not are listed here with their difference.",
+        "balanced": "Balances",
+        "unbalanced": "Does not balance",
+        "singleSided": "Single sided",
+        "singleSidedHint": "A single entry with no counterpart is allowed, for example an accrual or an imported opening balance. It is not counted as an error here.",
+        "group": "Transaction",
+        "difference": "Difference",
+        "allBalanced": "All {count} transactions balance.",
+        "empty": "No grouped transactions in this view."
+      },
+      "debtors": {
+        "heading": "Outstanding items",
+        "description": "Posted charges less posted payments, per unit and per currency.",
+        "byUnit": "By unit",
+        "unit": "Unit",
+        "open": "Outstanding",
+        "empty": "Nothing outstanding.",
+        "noUnit": "Not linked to a unit"
+      },
+      "ageing": {
+        "heading": "Ageing",
+        "description": "Open vendor invoices by how overdue they are, per currency. Measured against the server time, not your device clock.",
+        "asOf": "As at {date}",
+        "current": "Not due",
+        "days1To30": "1 to 30 days",
+        "days31To60": "31 to 60 days",
+        "days61To90": "61 to 90 days",
+        "days90Plus": "Over 90 days",
+        "empty": "No open invoices."
+      },
+      "reconciliation": {
+        "heading": "Payment matching",
+        "description": "Payments that belong to no entry and no invoice are listed here. They are not hidden.",
+        "matched": "{count} payments are matched.",
+        "unmatched": "Unmatched",
+        "unmatchedHint": "These payments arrived but are not assigned to an entry or an invoice.",
+        "empty": "Every payment is matched."
+      },
+      "filters": {
+        "heading": "Filter",
+        "all": "All",
+        "allStatuses": "All statuses",
+        "allCurrencies": "All currencies",
+        "reset": "Reset filter"
+      },
+      "export": {
+        "csv": "Download as CSV",
+        "hint": "The file holds exactly the current filter, and the file name says so."
+      },
+      "statement": {
+        "title": "Statement {unit}",
+        "lead": "Every posted item for this unit, kept apart by currency.",
+        "back": "Back to finance",
+        "forbidden": "No access to this statement.",
+        "forbiddenHint": "This unit is not in your scope. The attempt was logged.",
+        "notFound": "There are no entries for this unit.",
+        "openBalance": "Balance",
+        "entries": "Items"
       }
     },
     "payments": {
@@ -900,9 +1019,80 @@
       "empty": "No payments.",
       "status": {
         "pending": "Pending",
-        "settled": "Settled",
         "failed": "Failed",
-        "refunded": "Refunded"
+        "refunded": "Refunded",
+        "authorized": "Authorised",
+        "captured": "Captured",
+        "cancelled": "Cancelled"
+      },
+      "direction": {
+        "inbound": "Incoming",
+        "outbound": "Outgoing"
+      },
+      "columns": {
+        "date": "Date",
+        "provider": "Method",
+        "reference": "Reference",
+        "direction": "Direction",
+        "amount": "Amount",
+        "status": "Status",
+        "unit": "Unit",
+        "invoice": "Invoice",
+        "failureReason": "Reason"
+      },
+      "console": {
+        "heading": "Record a payment",
+        "description": "Records a payment and assigns it to an invoice or to a unit.",
+        "amount": "Amount",
+        "amountHint": "Format: {example}",
+        "currency": "Currency",
+        "method": "Payment method",
+        "reference": "Reference",
+        "referenceHint": "Receipt or transfer number, up to 120 characters.",
+        "allocation": "Assign to",
+        "allocationNone": "Please choose",
+        "allocationInvoice": "Invoice {invoiceNo}",
+        "allocationUnit": "Unit {unit}",
+        "submit": "Record payment",
+        "submitting": "Recording",
+        "doubleClickSafe": "A second click on this button does not create a second payment. Each submission carries a one time key."
+      },
+      "result": {
+        "posted": "Payment recorded.",
+        "duplicate": "This payment was already recorded. Nothing was booked twice.",
+        "unavailable": "Nothing can be saved without a database. Nothing was booked.",
+        "notImplemented": "The write path into the database does not exist yet. Nothing was booked.",
+        "forbidden": "Your role cannot record payments.",
+        "conflict": "The record changed while you were working on it. Reload and try again.",
+        "exceedsInvoice": "The amount is more than this invoice still owes. {remaining} remains.",
+        "unknownAllocation": "That assignment does not exist.",
+        "parsed": "Read as {value}."
+      },
+      "errors": {
+        "empty": "Please enter an amount.",
+        "unexpected_character": "That amount contains characters that do not belong here. Expected {example}.",
+        "malformed_grouping": "Please use the format {example}. The comma separates thousands, the dot separates decimals.",
+        "too_many_decimals": "Two decimal places at most. Amounts are not rounded here.",
+        "too_large": "That amount is too large.",
+        "zero": "The amount cannot be zero.",
+        "negative": "A negative amount is not allowed here."
+      },
+      "approval": {
+        "heading": "Approval",
+        "threshold": "Anything from {amount} needs approval from the management team.",
+        "required": "Approval needed",
+        "notRequired": "No approval needed",
+        "canApprove": "You may approve.",
+        "cannotApprove": "The management team approves."
+      },
+      "audit": {
+        "heading": "Audit trail",
+        "description": "Who changed what and when, with the value before and after.",
+        "actor": "Person",
+        "at": "Time",
+        "before": "Before",
+        "after": "After",
+        "none": "No entries yet."
       }
     },
     "wallet": {
@@ -912,7 +1102,56 @@
       "available": "Available",
       "reserved": "Reserved",
       "topUp": "Top up",
-      "withdraw": "Withdraw"
+      "withdraw": "Withdraw",
+      "intro": "One balance per person and currency. Balances in different currencies are never added together.",
+      "seedNotice": "This page shows sample data from the local dataset, not live balances.",
+      "forbidden": "No access to wallets.",
+      "forbiddenHint": "Your role cannot open this page.",
+      "columns": {
+        "holder": "Holder",
+        "kind": "Type",
+        "currency": "Currency",
+        "balance": "Balance",
+        "status": "Status",
+        "threshold": "Minimum",
+        "overdraft": "Overdraft",
+        "updated": "Updated"
+      },
+      "kind": {
+        "resident": "Resident",
+        "vendor": "Contractor",
+        "company": "Management"
+      },
+      "status": {
+        "active": "Active",
+        "frozen": "Frozen",
+        "closed": "Closed"
+      },
+      "overdraft": {
+        "heading": "Overdraft",
+        "description": "A balance may only go below zero when overdraft is explicitly allowed and the limit covers it. Without that permission the database rejects the entry.",
+        "allowed": "Allowed up to {limit}",
+        "notAllowed": "Not allowed",
+        "inOverdraft": "Below zero",
+        "rejected": "Without an allowed overdraft, an entry that would go below zero is rejected. Nothing is saved."
+      },
+      "lowBalance": {
+        "label": "Below minimum",
+        "hint": "{count} balances are below their minimum."
+      },
+      "history": {
+        "heading": "Movements",
+        "description": "Payments that ran through this balance.",
+        "empty": "No movements on this balance."
+      },
+      "scope": {
+        "own": "Your own balance",
+        "ownHint": "You see only your own balance and its movements.",
+        "company": "All balances",
+        "companyHint": "You see every balance held by the management team."
+      },
+      "noHolder": "No named holder",
+      "emptyHint": "There is no balance for your account yet."
     },
     "vendorInvoices": {
       "title": "Vendor invoices",
@@ -920,10 +1159,59 @@
       "empty": "No invoices found.",
       "status": {
         "draft": "Draft",
-        "submitted": "Submitted",
-        "approved": "Approved",
         "paid": "Paid",
-        "rejected": "Rejected"
+        "open": "Open",
+        "partially_paid": "Partly paid",
+        "disputed": "Disputed",
+        "void": "Void"
+      },
+      "intro": "Incoming invoices with approval status and what is still owed, kept apart by currency.",
+      "seedNotice": "This page shows sample data from the local dataset, not live invoices.",
+      "forbidden": "No access to vendor invoices.",
+      "forbiddenHint": "Your role cannot open this page.",
+      "emptyHint": "There are no invoices for the filter you chose.",
+      "columns": {
+        "vendor": "Contractor",
+        "invoiceNo": "Invoice number",
+        "issued": "Issued",
+        "due": "Due",
+        "total": "Total",
+        "tax": "Tax",
+        "paid": "Paid",
+        "outstanding": "Outstanding",
+        "currency": "Currency",
+        "status": "Status"
+      },
+      "totals": {
+        "heading": "Totals by currency",
+        "open": "Outstanding",
+        "settled": "Paid",
+        "overdue": "Of which overdue"
+      },
+      "duplicates": {
+        "heading": "Possible duplicate",
+        "description": "Invoices with the same contractor, the same invoice number and the same amount. They are flagged, not deleted.",
+        "flagged": "{count} possible duplicates",
+        "flaggedRow": "Same contractor, same number and same amount as {other}.",
+        "none": "No duplicates found.",
+        "matchOn": "Checked on contractor, invoice number and amount together."
+      },
+      "approval": {
+        "heading": "Approval",
+        "canApprove": "You may approve invoices.",
+        "cannotApprove": "The management or finance team approves.",
+        "settle": "Record a payment",
+        "settleHint": "Records how much of this invoice is paid. A second record against the same version is rejected."
+      },
+      "overdue": {
+        "label": "Overdue",
+        "days": "{days} days overdue",
+        "notDue": "Not due yet",
+        "noDueDate": "No due date"
+      },
+      "export": {
+        "csv": "Download as CSV",
+        "hint": "The file holds exactly the current filter, and the file name says so."
       }
     },
     "tickets": {

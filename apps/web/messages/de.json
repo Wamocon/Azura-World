@@ -891,7 +891,126 @@
         "debit": "Soll",
         "credit": "Haben",
         "amount": "Betrag",
-        "status": "Status"
+        "status": "Status",
+        "currency": "Währung",
+        "unit": "Wohneinheit",
+        "reference": "Beleg",
+        "dueDate": "Fällig am",
+        "group": "Vorgang",
+        "entryType": "Art",
+        "actions": "Änderung"
+      },
+      "intro": "Jeder Betrag steht in der Währung, in der er gebucht wurde. Beträge in verschiedenen Währungen werden nie zusammengezählt.",
+      "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Buchungen.",
+      "unreadableNote": "{count} Positionen konnten nicht gelesen werden und fehlen in allen Summen.",
+      "overflowNote": "Die Summe für {currency} ist zu groß für eine sichere Berechnung und wird deshalb nicht angezeigt.",
+      "forbidden": "Kein Zugriff auf die Finanzen.",
+      "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen. Wenden Sie sich an die Verwaltung, wenn Sie Zugriff brauchen.",
+      "totals": {
+        "heading": "Summen je Währung",
+        "description": "Getrennt nach Währung. Eine gemeinsame Summe über mehrere Währungen wäre ohne Umrechnungskurs nicht aussagekräftig.",
+        "postedDebit": "Gebucht, Soll",
+        "postedCredit": "Gebucht, Haben",
+        "postedNet": "Gebucht, Saldo",
+        "draftNet": "Entwürfe, Saldo",
+        "openInvoices": "Offene Lieferantenrechnungen",
+        "walletBalance": "Guthaben",
+        "noneYet": "Noch keine Beträge vorhanden."
+      },
+      "ledger": {
+        "heading": "Buchungen",
+        "description": "Neueste Buchung zuerst. Entwürfe stehen am Ende, weil sie noch kein Buchungsdatum haben.",
+        "empty": "Keine Buchungen gefunden.",
+        "emptyHint": "Für den gewählten Filter gibt es keine Buchungen. Setzen Sie den Filter zurück, um alles zu sehen.",
+        "rowsShown": "{shown} von {total} Buchungen"
+      },
+      "status": {
+        "draft": "Entwurf",
+        "posted": "Gebucht",
+        "void": "Verworfen"
+      },
+      "entryType": {
+        "dues": "Hausgeld",
+        "service_charge": "Nebenkosten",
+        "utility": "Verbrauch",
+        "deposit": "Kaution",
+        "refund": "Erstattung",
+        "penalty": "Mahngebühr",
+        "adjustment": "Korrektur",
+        "payment": "Zahlung",
+        "vendor_bill": "Lieferantenrechnung",
+        "reversal": "Storno"
+      },
+      "immutable": {
+        "heading": "Gebuchte Positionen lassen sich nicht ändern",
+        "body": "Sobald eine Position gebucht ist, sperrt die Datenbank jede Änderung und jede Löschung. Eine falsche Buchung wird nicht überschrieben, sondern mit einer Gegenbuchung ausgeglichen. So bleibt nachvollziehbar, was ursprünglich erfasst wurde.",
+        "locked": "Gebucht, gesperrt",
+        "lockedReason": "Diese Position ist gebucht. Änderungen sind gesperrt, korrigiert wird mit einer Gegenbuchung.",
+        "editDraft": "Entwurf bearbeiten",
+        "correction": "Gegenbuchung anlegen",
+        "voidLocked": "Verworfen, gesperrt",
+        "voidReason": "Dieser Entwurf wurde verworfen und ist damit abgeschlossen."
+      },
+      "balanceCheck": {
+        "heading": "Soll gleich Haben",
+        "description": "Jeder Vorgang muss je Währung auf null aufgehen. Vorgänge, die das nicht tun, stehen hier mit ihrer Differenz.",
+        "balanced": "Geht auf",
+        "unbalanced": "Geht nicht auf",
+        "singleSided": "Einseitig",
+        "singleSidedHint": "Einzelne Buchungen ohne Gegenseite sind zulässig, etwa eine Abgrenzung oder ein übernommener Anfangsbestand. Sie werden hier nicht als Fehler gezählt.",
+        "group": "Vorgang",
+        "difference": "Differenz",
+        "allBalanced": "Alle {count} Vorgänge gehen auf.",
+        "empty": "Keine zusammengehörenden Vorgänge im gewählten Ausschnitt."
+      },
+      "debtors": {
+        "heading": "Offene Posten",
+        "description": "Gebuchte Forderungen abzüglich gebuchter Zahlungen, je Wohneinheit und je Währung.",
+        "byUnit": "Nach Wohneinheit",
+        "unit": "Wohneinheit",
+        "open": "Offen",
+        "empty": "Keine offenen Posten.",
+        "noUnit": "Ohne Zuordnung zu einer Wohneinheit"
+      },
+      "ageing": {
+        "heading": "Fälligkeiten",
+        "description": "Offene Lieferantenrechnungen nach Überfälligkeit, je Währung. Gerechnet zum Serverzeitpunkt, nicht zur Uhrzeit Ihres Geräts.",
+        "asOf": "Stand {date}",
+        "current": "Nicht fällig",
+        "days1To30": "1 bis 30 Tage",
+        "days31To60": "31 bis 60 Tage",
+        "days61To90": "61 bis 90 Tage",
+        "days90Plus": "Über 90 Tage",
+        "empty": "Keine offenen Rechnungen."
+      },
+      "reconciliation": {
+        "heading": "Zahlungsabgleich",
+        "description": "Zahlungen, die zu keiner Buchung und zu keiner Rechnung gehören, stehen hier. Sie werden nicht ausgeblendet.",
+        "matched": "{count} Zahlungen sind zugeordnet.",
+        "unmatched": "Nicht zugeordnet",
+        "unmatchedHint": "Diese Zahlungen sind eingegangen, aber keiner Buchung und keiner Rechnung zugewiesen.",
+        "empty": "Alle Zahlungen sind zugeordnet."
+      },
+      "filters": {
+        "heading": "Filter",
+        "all": "Alle",
+        "allStatuses": "Alle Status",
+        "allCurrencies": "Alle Währungen",
+        "reset": "Filter zurücksetzen"
+      },
+      "export": {
+        "csv": "Als CSV herunterladen",
+        "hint": "Die Datei enthält genau den aktuellen Filter, und der Dateiname nennt ihn."
+      },
+      "statement": {
+        "title": "Kontoauszug {unit}",
+        "lead": "Alle gebuchten Positionen zu dieser Wohneinheit, je Währung getrennt.",
+        "back": "Zurück zu den Finanzen",
+        "forbidden": "Kein Zugriff auf diesen Kontoauszug.",
+        "forbiddenHint": "Diese Wohneinheit gehört nicht zu Ihrem Bereich. Der Aufruf wurde protokolliert.",
+        "notFound": "Zu dieser Wohneinheit gibt es keine Buchungen.",
+        "openBalance": "Saldo",
+        "entries": "Positionen"
       }
     },
     "payments": {
@@ -900,9 +1019,80 @@
       "empty": "Keine Zahlungen.",
       "status": {
         "pending": "Ausstehend",
-        "settled": "Verbucht",
         "failed": "Fehlgeschlagen",
-        "refunded": "Erstattet"
+        "refunded": "Erstattet",
+        "authorized": "Freigegeben",
+        "captured": "Eingezogen",
+        "cancelled": "Abgebrochen"
+      },
+      "direction": {
+        "inbound": "Eingang",
+        "outbound": "Ausgang"
+      },
+      "columns": {
+        "date": "Datum",
+        "provider": "Weg",
+        "reference": "Referenz",
+        "direction": "Richtung",
+        "amount": "Betrag",
+        "status": "Status",
+        "unit": "Wohneinheit",
+        "invoice": "Rechnung",
+        "failureReason": "Grund"
+      },
+      "console": {
+        "heading": "Zahlung erfassen",
+        "description": "Erfasst eine Zahlung und ordnet sie einer Rechnung oder einer Wohneinheit zu.",
+        "amount": "Betrag",
+        "amountHint": "Format: {example}",
+        "currency": "Währung",
+        "method": "Zahlungsweg",
+        "reference": "Referenz",
+        "referenceHint": "Beleg- oder Überweisungsnummer, höchstens 120 Zeichen.",
+        "allocation": "Zuordnung",
+        "allocationNone": "Bitte wählen",
+        "allocationInvoice": "Rechnung {invoiceNo}",
+        "allocationUnit": "Wohneinheit {unit}",
+        "submit": "Zahlung erfassen",
+        "submitting": "Wird erfasst",
+        "doubleClickSafe": "Ein zweiter Klick auf diesen Knopf erzeugt keine zweite Zahlung. Jede Erfassung trägt einen einmaligen Schlüssel."
+      },
+      "result": {
+        "posted": "Zahlung erfasst.",
+        "duplicate": "Diese Zahlung wurde bereits erfasst. Es wurde nichts doppelt gebucht.",
+        "unavailable": "Ohne Datenbank kann nichts gespeichert werden. Es wurde nichts gebucht.",
+        "notImplemented": "Der Schreibweg in die Datenbank existiert noch nicht. Es wurde nichts gebucht.",
+        "forbidden": "Ihre Rolle darf keine Zahlungen erfassen.",
+        "conflict": "Der Vorgang hat sich zwischenzeitlich geändert. Bitte neu laden und erneut versuchen.",
+        "exceedsInvoice": "Der Betrag übersteigt den offenen Rest dieser Rechnung. Offen sind noch {remaining}.",
+        "unknownAllocation": "Diese Zuordnung gibt es nicht.",
+        "parsed": "Gelesen als {value}."
+      },
+      "errors": {
+        "empty": "Bitte einen Betrag eingeben.",
+        "unexpected_character": "Dieser Betrag enthält Zeichen, die hier nicht hingehören. Erwartet wird {example}.",
+        "malformed_grouping": "Bitte im Format {example} eingeben. Der Punkt trennt Tausender, das Komma die Nachkommastellen.",
+        "too_many_decimals": "Höchstens zwei Nachkommastellen. Beträge werden hier nicht gerundet.",
+        "too_large": "Dieser Betrag ist zu groß.",
+        "zero": "Der Betrag darf nicht null sein.",
+        "negative": "Ein negativer Betrag ist hier nicht zulässig."
+      },
+      "approval": {
+        "heading": "Freigabe",
+        "threshold": "Ab {amount} ist eine Freigabe durch die Verwaltung nötig.",
+        "required": "Freigabe nötig",
+        "notRequired": "Keine Freigabe nötig",
+        "canApprove": "Sie dürfen freigeben.",
+        "cannotApprove": "Freigeben darf die Verwaltung."
+      },
+      "audit": {
+        "heading": "Protokoll",
+        "description": "Wer was wann geändert hat, mit dem Wert davor und danach.",
+        "actor": "Person",
+        "at": "Zeitpunkt",
+        "before": "Vorher",
+        "after": "Nachher",
+        "none": "Noch keine Einträge."
       }
     },
     "wallet": {
@@ -912,7 +1102,56 @@
       "available": "Verfügbar",
       "reserved": "Reserviert",
       "topUp": "Aufladen",
-      "withdraw": "Auszahlen"
+      "withdraw": "Auszahlen",
+      "intro": "Ein Guthaben je Person und Währung. Guthaben in verschiedenen Währungen werden nie zusammengezählt.",
+      "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Guthaben.",
+      "forbidden": "Kein Zugriff auf die Guthaben.",
+      "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen.",
+      "columns": {
+        "holder": "Inhaber",
+        "kind": "Art",
+        "currency": "Währung",
+        "balance": "Guthaben",
+        "status": "Status",
+        "threshold": "Mindestbestand",
+        "overdraft": "Überziehung",
+        "updated": "Aktualisiert"
+      },
+      "kind": {
+        "resident": "Bewohner",
+        "vendor": "Dienstleister",
+        "company": "Verwaltung"
+      },
+      "status": {
+        "active": "Aktiv",
+        "frozen": "Gesperrt",
+        "closed": "Geschlossen"
+      },
+      "overdraft": {
+        "heading": "Überziehung",
+        "description": "Ein Guthaben darf nur ins Minus gehen, wenn die Überziehung ausdrücklich erlaubt ist und das Limit reicht. Ohne diese Erlaubnis weist die Datenbank die Buchung ab.",
+        "allowed": "Erlaubt bis {limit}",
+        "notAllowed": "Nicht erlaubt",
+        "inOverdraft": "Im Minus",
+        "rejected": "Ohne erlaubte Überziehung wird eine Buchung ins Minus abgewiesen. Es wird nichts gespeichert."
+      },
+      "lowBalance": {
+        "label": "Unter Mindestbestand",
+        "hint": "{count} Guthaben liegen unter ihrem Mindestbestand."
+      },
+      "history": {
+        "heading": "Bewegungen",
+        "description": "Zahlungen, die auf dieses Guthaben gelaufen sind.",
+        "empty": "Keine Bewegungen zu diesem Guthaben."
+      },
+      "scope": {
+        "own": "Ihr eigenes Guthaben",
+        "ownHint": "Sie sehen nur Ihr eigenes Guthaben und dessen Bewegungen.",
+        "company": "Alle Guthaben",
+        "companyHint": "Sie sehen alle Guthaben der Verwaltung."
+      },
+      "noHolder": "Ohne festen Inhaber",
+      "emptyHint": "Zu Ihrem Zugang gibt es noch kein Guthaben."
     },
     "vendorInvoices": {
       "title": "Lieferantenrechnungen",
@@ -920,10 +1159,59 @@
       "empty": "Keine Rechnungen.",
       "status": {
         "draft": "Entwurf",
-        "submitted": "Eingereicht",
-        "approved": "Freigegeben",
         "paid": "Bezahlt",
-        "rejected": "Abgelehnt"
+        "open": "Offen",
+        "partially_paid": "Teilweise bezahlt",
+        "disputed": "Strittig",
+        "void": "Verworfen"
+      },
+      "intro": "Eingangsrechnungen mit Freigabestand und offenem Rest, je Währung getrennt.",
+      "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Rechnungen.",
+      "forbidden": "Kein Zugriff auf die Lieferantenrechnungen.",
+      "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen.",
+      "emptyHint": "Für den gewählten Filter gibt es keine Rechnungen.",
+      "columns": {
+        "vendor": "Lieferant",
+        "invoiceNo": "Rechnungsnummer",
+        "issued": "Ausgestellt",
+        "due": "Fällig",
+        "total": "Gesamt",
+        "tax": "Steuer",
+        "paid": "Bezahlt",
+        "outstanding": "Offen",
+        "currency": "Währung",
+        "status": "Status"
+      },
+      "totals": {
+        "heading": "Summen je Währung",
+        "open": "Offen",
+        "settled": "Bezahlt",
+        "overdue": "Davon überfällig"
+      },
+      "duplicates": {
+        "heading": "Mögliche Doppelerfassung",
+        "description": "Rechnungen mit gleichem Lieferanten, gleicher Rechnungsnummer und gleichem Betrag. Sie werden markiert, nicht gelöscht.",
+        "flagged": "{count} mögliche Doppelerfassungen",
+        "flaggedRow": "Gleicher Lieferant, gleiche Nummer, gleicher Betrag wie {other}.",
+        "none": "Keine Doppelerfassung erkannt.",
+        "matchOn": "Geprüft wird auf Lieferant, Rechnungsnummer und Betrag zusammen."
+      },
+      "approval": {
+        "heading": "Freigabe",
+        "canApprove": "Sie dürfen Rechnungen freigeben.",
+        "cannotApprove": "Freigeben darf die Verwaltung oder die Buchhaltung.",
+        "settle": "Zahlung vermerken",
+        "settleHint": "Vermerkt, wie viel von dieser Rechnung bezahlt ist. Ein zweiter Vermerk auf demselben Stand wird abgewiesen."
+      },
+      "overdue": {
+        "label": "Überfällig",
+        "days": "{days} Tage überfällig",
+        "notDue": "Noch nicht fällig",
+        "noDueDate": "Kein Fälligkeitsdatum"
+      },
+      "export": {
+        "csv": "Als CSV herunterladen",
+        "hint": "Die Datei enthält genau den aktuellen Filter, und der Dateiname nennt ihn."
       }
     },
     "tickets": {
