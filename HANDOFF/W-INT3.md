@@ -44,9 +44,9 @@ Nothing piped.
 | `a11y-audit` | **1** | FAIL, **6 pass · 18 fail** |
 | `security-probe` | **1** | FAIL, **10 open findings** |
 | `perf` | **1** | FAIL, **9 pass · 3 fail** — identical to W-INT2 (CLS 0.1244 > 0.1, landing JS > 250 KB) |
-| `e2e` chromium | *(see below)* | started, not complete when this file was written |
+| `e2e` chromium | **1** | **RESULT INVALID** — 273 failed · 10 passed, measured against a stale stray dev server, not this build. See §2a |
 
-**8 pass, 4 fail, 1 incomplete** (`e2e` still running).
+**8 pass, 4 fail, 1 invalid.** The e2e run completed but did not measure this build; §2a.
 
 `format` passing is new: W-FIX's `.prettierignore` is now on `main`, so the gate that had never
 been green is green, and it stays green because the thing that made it structurally unpassable is
@@ -56,6 +56,29 @@ fixed rather than worked around.
 attaches to whatever is there and correctly refuses to pass itself against a dev policy. That is
 the probe working, not a regression, but it means **the default port is not safe to use on this
 machine**.
+
+### 2a. The e2e result is invalid, and I reported it wrongly first
+
+I wrote that e2e "is not expected to move". **That was wrong, and the correction is not small.** The
+run finished at **273 failed · 10 passed**, an inversion of W-INT2's 270 passed · 13 failed.
+
+It is not a product regression. The failures are all downstream of the server logging
+`FORMATTING_ERROR: The intl string context variable "count" was not provided…` on nearly every
+render, and the cause is the same stray `next dev` on port 3200 that produced the `qa:csp` false
+alarm earlier in this same run. `apps/web/playwright.config.ts` points `baseURL` at `DEV_PORT`, so
+Playwright attached to that stale dev server — running a different tree state, in dev mode where
+next-intl throws on a missing ICU argument — instead of starting one against this build.
+
+Measured against a **fresh production server on a free port**, the same pages are healthy:
+`/de` 200, `/de/hotel` 200, `/en/hotel` 200, and **zero** `FORMATTING_ERROR` in the server log.
+
+So the honest status of gate 12 is **NOT VALIDLY RUN**, not FAIL and not PASS. It needs one re-run
+on a port nothing else holds. The last trustworthy figure remains W-INT2's 270 passed · 13 failed
+on `b5a0c83`.
+
+**The generalisable lesson, which now has two instances in one run:** every browser gate on this
+machine must pin its own port. `qa:csp` self-protected and refused to pass; the e2e suite had no
+such guard and produced a confident, wrong number instead.
 
 `layout-audit` moved 50/149 → 49/150 and 1,822 → 1,823 findings against W-INT2. One finding, and
 it arrived with the merged surfaces rather than with the manifest change.
@@ -142,10 +165,9 @@ Regenerated: **`unrelated` 9 · `project` 359** (was 368). Exactly the split.
 - `perf` **completed: exit 1, 9 pass · 3 fail**, byte-identical to W-INT2. CLS 0.1244 against a
   0.1 budget and landing JS over 250 KB gz are both unchanged and both still on the page a client
   would be shown.
-- `[GAP]` **`e2e` was still running when this file was written.** Its last complete result is in
-  `HANDOFF/W-INT2.md` §2 on `b5a0c83`: 270 passed · 13 failed. It is not expected to move — no
-  commit in this merge touches a rendered surface — but *expected* is not *measured*, and this
-  file does not claim otherwise.
+- `[GAP]` **`e2e` completed but its result is INVALID** — see §2a. 273 failed · 10 passed against a
+  stale stray dev server on port 3200, not against this build. Needs a re-run on a pinned free
+  port. Last trustworthy figure: 270 passed · 13 failed on `b5a0c83`.
 - `[GAP]` **The 9 reclassified posters were not visually confirmed by me.** The identification rests
   on the structural evidence in §3 and on the reported titles; I did not open the nine YouTube
   pages. A fresh harvest that captures titles would confirm it directly.
