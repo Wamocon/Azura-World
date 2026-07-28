@@ -867,7 +867,9 @@
         "on_track": "Zamanında",
         "due_soon": "Süresi doluyor",
         "breached": "Süre aşıldı"
-      }
+      },
+      "noValue": "Belirtilmemiş",
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
     },
     "activities": {
       "title": "Etkinlikler",
@@ -915,7 +917,9 @@
         "unknown": "Doluluk bilinmiyor",
         "waitlist": "Bekleme listesinde {n} kişi",
         "totalPlaces": "Toplam {capacity} yer"
-      }
+      },
+      "noValue": "Belirtilmemiş",
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
     },
     "calendar": {
       "title": "Takvim",
@@ -948,7 +952,9 @@
         "askAdmin": "Bağlantıyı yönetimden alabilirsiniz.",
         "notConfigured": "Abonelik kurulmamış. Kayıtlı bir erişim anahtarı olmadan takvim hiçbir şey döndürmez.",
         "revocation": "Erişim, yönetimin anahtarı değiştirmesiyle geri alınır. Bundan sonra eski bağlantı bir şey döndürmez."
-      }
+      },
+      "noValue": "Belirtilmemiş",
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
     },
     "communications": {
       "title": "Mesajlar",
@@ -994,7 +1000,9 @@
         "resolved": "Çözüldü",
         "closed": "Kapatıldı",
         "archived": "Arşivlendi"
-      }
+      },
+      "noValue": "Belirtilmemiş",
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
     },
     "documents": {
       "title": "Belgeler",

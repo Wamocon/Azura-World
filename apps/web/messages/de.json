@@ -867,7 +867,9 @@
         "on_track": "Im Zeitrahmen",
         "due_soon": "Läuft bald ab",
         "breached": "Frist überschritten"
-      }
+      },
+      "noValue": "Keine Angabe",
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
     },
     "activities": {
       "title": "Aktivitäten",
@@ -915,7 +917,9 @@
         "unknown": "Belegung nicht bekannt",
         "waitlist": "{n} auf der Warteliste",
         "totalPlaces": "{capacity} Plätze insgesamt"
-      }
+      },
+      "noValue": "Keine Angabe",
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
     },
     "calendar": {
       "title": "Kalender",
@@ -948,7 +952,9 @@
         "askAdmin": "Den Link gibt die Verwaltung aus.",
         "notConfigured": "Das Abonnement ist nicht eingerichtet. Ohne hinterlegten Zugangsschlüssel liefert der Kalender nichts.",
         "revocation": "Der Zugang lässt sich zurückziehen, indem die Verwaltung den Schlüssel wechselt. Danach liefert der alte Link nichts mehr."
-      }
+      },
+      "noValue": "Keine Angabe",
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
     },
     "communications": {
       "title": "Nachrichten",
@@ -994,7 +1000,9 @@
         "resolved": "Erledigt",
         "closed": "Abgeschlossen",
         "archived": "Archiviert"
-      }
+      },
+      "noValue": "Keine Angabe",
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
     },
     "documents": {
       "title": "Dokumente",

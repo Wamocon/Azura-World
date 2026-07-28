@@ -188,9 +188,7 @@ export default async function TicketDetailPage({
         <Field label={t("columns.category")}>
           {categoryLabels[ticket.category]}
         </Field>
-        <Field label={t("columns.unit")}>
-          {ticket.unitId ?? tCommon("notAvailable")}
-        </Field>
+        <Field label={t("columns.unit")}>{ticket.unitId ?? t("noValue")}</Field>
         <Field label={t("columns.assignee")}>
           {ticket.assigneeProfileId ?? t("unassigned")}
         </Field>
@@ -199,14 +197,14 @@ export default async function TicketDetailPage({
         </Field>
         <Field label={t("columns.dueAt")}>
           {ticket.slaDueAt === null
-            ? tCommon("notAvailable")
+            ? t("noValue")
             : formatDateTime(ticket.slaDueAt, locale)}
         </Field>
         <Field label={t("columns.estimatedCost")}>
           {/* A missing estimate is a gap, never 0. `asMoney` already refuses to
               build a Money without both an amount and a currency. */}
           {ticket.estimatedCost === null
-            ? tCommon("notAvailable")
+            ? t("noValue")
             : formatMoney(ticket.estimatedCost, locale)}
         </Field>
       </dl>

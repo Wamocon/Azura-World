@@ -867,7 +867,9 @@
         "on_track": "On track",
         "due_soon": "Due soon",
         "breached": "Target missed"
-      }
+      },
+      "noValue": "Not stated",
+      "seedNotice": "This page shows stored sample data. The database is not connected."
     },
     "activities": {
       "title": "Activities",
@@ -915,7 +917,9 @@
         "unknown": "Occupancy not known",
         "waitlist": "{n} on the waiting list",
         "totalPlaces": "{capacity} places in total"
-      }
+      },
+      "noValue": "Not stated",
+      "seedNotice": "This page shows stored sample data. The database is not connected."
     },
     "calendar": {
       "title": "Calendar",
@@ -948,7 +952,9 @@
         "askAdmin": "Ask management for the link.",
         "notConfigured": "The subscription is not set up. Without a stored access key the calendar returns nothing.",
         "revocation": "Access is withdrawn by having management change the key. The old link then returns nothing."
-      }
+      },
+      "noValue": "Not stated",
+      "seedNotice": "This page shows stored sample data. The database is not connected."
     },
     "communications": {
       "title": "Messages",
@@ -994,7 +1000,9 @@
         "resolved": "Done",
         "closed": "Closed",
         "archived": "Archived"
-      }
+      },
+      "noValue": "Not stated",
+      "seedNotice": "This page shows stored sample data. The database is not connected."
     },
     "documents": {
       "title": "Documents",

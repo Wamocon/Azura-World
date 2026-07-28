@@ -189,7 +189,7 @@ export default async function TicketsPage({
           role="status"
           className="rounded-lg border border-confidence-gap/30 bg-confidence-gap/10 px-3 py-2 text-sm text-foreground"
         >
-          {tCommon("dataSource.localSeedHint")}
+          {t("seedNotice")}
         </p>
       ) : null}
 
@@ -288,7 +288,7 @@ export default async function TicketsPage({
                   priorityLabels={priorityLabels}
                   categoryLabels={categoryLabels}
                   slaLabelSet={sla}
-                  noValue={tCommon("notAvailable")}
+                  noValue={t("noValue")}
                   ageLabel={(age) => t("age", { age })}
                   hourUnit={t("hourUnit")}
                   dayUnit={t("dayUnit")}

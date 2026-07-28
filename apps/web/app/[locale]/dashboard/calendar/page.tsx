@@ -235,7 +235,7 @@ export default async function CalendarPage({
           role="status"
           className="rounded-lg border border-confidence-gap/30 bg-confidence-gap/10 px-3 py-2 text-sm text-foreground"
         >
-          {tCommon("dataSource.localSeedHint")}
+          {t("seedNotice")}
         </p>
       ) : null}
 
