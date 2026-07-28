@@ -1,0 +1,959 @@
+/* ==========================================================================
+   Azura World CATI — design tokens and base layer.        Owner: W1-D
+   ==========================================================================
+
+   Tailwind v4, CSS-first. There is NO `tailwind.config.js` and adding one
+   breaks the build silently in dev and loudly in prod (CONVENTIONS §1).
+
+   Structure mirrors the 1Çatı reference (`Cati/apps/web/app/globals.css`):
+   imports → dark variant → `@theme inline` indirection → `:root` / `.dark`
+   literals → base → utilities → keyframes. `@theme inline` deliberately
+   declares no literal colour: every entry is `--color-x: var(--x)`, so the
+   `var()` is substituted at use-site and the `.dark` override actually wins.
+   Resolving them eagerly (plain `@theme`) is the classic v4 mistake that makes
+   dark mode silently do nothing.
+
+   IDENTITY — the one thing this file exists to get right.
+   1Çatı is deep teal #066B63 + gold #B9822B, Aptos throughout, no display
+   face, dark mode forced off. Azura is azure: Mediterranean water, 300 m from
+   the sea, a 5-star resort. Cool, luminous, coastal — Playfair Display over
+   Manrope, softer radii, a working light/dark pair, and a provenance colour
+   family that 1Çatı has no equivalent of. See DESIGN.md §"What makes this not
+   1Çatı".
+
+   CONTRAST — every gated pair is measured, not eyeballed. The numbers are in
+   DESIGN.md §4 and HANDOFF/W1-D.md; 0 gated failures at the values below.
+   Do not adjust a colour here without re-running that check.
+   ========================================================================== */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+/* Ships the nine `data-*` custom variants (data-open, data-closed, …) that
+   Base UI emits, plus the `no-scrollbar` utility. Without this import,
+   `data-open:` compiles to nothing at all — silently. */
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* --------------------------------------------------------------------------
+   Self-hosted type.
+
+   `proxy.ts` emits `font-src 'self' data:` and `style-src 'self'
+   'unsafe-inline'`, so a Google Fonts CDN link is blocked by our own CSP on
+   both counts. Self-hosting is the only compliant route, not a preference.
+
+   Both faces are variable and SIL OFL 1.1, so redistribution is fine — unlike
+   everything under sources/media, which is a competitor's material.
+
+   `unicode-range` is what makes `ru` affordable: a de/en/tr visitor never
+   downloads the Cyrillic subsets. Cyrillic coverage is verified rather than
+   assumed — a missing glyph renders as a silent box (W1-D brief §1).
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-var-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-var-latin-ext.woff2") format("woff2");
+  /* Turkish ı İ ş ğ and German ß live here. */
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-var-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-var-cyrillic-ext.woff2") format("woff2");
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F,
+    U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/playfair-var-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/playfair-var-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/playfair-var-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* --------------------------------------------------------------------------
+   Tailwind token surface. Indirection only — values live in :root / .dark.
+   -------------------------------------------------------------------------- */
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Provenance — the Azura-specific family. Every confidence level in
+     CONTRACTS §1 has exactly one colour, in both themes. */
+  --color-confidence-confirmed: var(--confidence-confirmed);
+  --color-confidence-official: var(--confidence-official);
+  --color-confidence-single: var(--confidence-single);
+  --color-confidence-conflicted: var(--confidence-conflicted);
+  --color-confidence-inferred: var(--confidence-inferred);
+  --color-confidence-gap: var(--confidence-gap);
+  --color-surface-conflict: var(--surface-conflict);
+  --color-quality-modelled: var(--quality-modelled);
+  --color-quality-stale: var(--quality-stale);
+  --color-simulation: var(--simulation);
+  --color-surface-simulation: var(--surface-simulation);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.35);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.4);
+
+  /* Motion. `lib/motion.ts` holds the JS mirror of these; the two must agree.
+     Curves are the strong custom variants — the built-in CSS easings are too
+     weak to read as intentional. `ease-in` is deliberately absent: it delays
+     the first frame, which is exactly when the user is looking. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-coastal: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-instant: 120ms;
+  --duration-fast: 200ms;
+  --duration-base: 320ms;
+  --duration-slow: 500ms;
+  --duration-hero: 800ms;
+}
+
+/* --------------------------------------------------------------------------
+   Light — the default. Azure over a near-white with a blue cast, so the page
+   reads as daylight on water rather than as office grey.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --font-sans: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+
+  /* 0.875rem, against 1Çatı's 0.625rem. Softer corners read resort, not
+     registry — and it is visible at a glance in a side-by-side screenshot. */
+  --radius: 0.875rem;
+
+  color-scheme: light;
+
+  --background: #f4f9fb;
+  --foreground: #08161f;
+  --card: #ffffff;
+  --card-foreground: #08161f;
+  --popover: #ffffff;
+  --popover-foreground: #08161f;
+
+  --primary: #0b5e7d;
+  --primary-foreground: #f4f9fb;
+  --secondary: #e2eef3;
+  --secondary-foreground: #0b3446;
+  --muted: #e7f0f4;
+  --muted-foreground: #4a6472;
+
+  /* Warm sand. CTAs only — never a surface, never body text at small sizes.
+     It is the single warm note in a cold palette and stops being special the
+     moment it is used twice on a screen. */
+  --accent: #a75b12;
+  --accent-foreground: #ffffff;
+
+  --destructive: #b0243a;
+  --destructive-foreground: #ffffff;
+
+  /* --border is a decorative hairline and is NOT held to 3:1 — WCAG 1.4.11
+     governs UI *component* boundaries, not separators. --input is the control
+     boundary and IS gated at 3:1. Collapsing the two into one token is why so
+     many themes either look heavy-handed or fail an audit. */
+  --border: #c9dce4;
+  --input: #6e8fa0;
+  --ring: #1188b4;
+
+  --chart-1: #0b5e7d;
+  --chart-2: #1188b4;
+  --chart-3: #0f6b4f;
+  --chart-4: #a75b12;
+  --chart-5: #5b4b8a;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #08161f;
+  --sidebar-primary: #0b5e7d;
+  --sidebar-primary-foreground: #f4f9fb;
+  --sidebar-accent: #e7f0f4;
+  --sidebar-accent-foreground: #0b3446;
+  --sidebar-border: #c9dce4;
+  --sidebar-ring: #1188b4;
+
+  --confidence-confirmed: #0f6b4f;
+  --confidence-official: #0b5e7d;
+  --confidence-single: #4a6472;
+  --confidence-conflicted: #8a5200;
+  --confidence-inferred: #5b4b8a;
+  --confidence-gap: #61737e;
+  --surface-conflict: #fdf3e3;
+  --quality-modelled: #5b4b8a;
+  --quality-stale: #9a3412;
+  --simulation: #8a5200;
+  --surface-simulation: #fdf3e3;
+
+  /* Coastal light. Used by .azura-aurora; kept as tokens so the effect is
+     themed rather than a hardcoded gradient. */
+  --sea-deep: #063049;
+  --sea-mid: #0b5e7d;
+  --sea-shallow: #1188b4;
+  --sea-foam: #bfe4f0;
+  --sand: #e8d4b4;
+}
+
+/* --------------------------------------------------------------------------
+   Dark — night over water. Not "light with the values flipped": the hue
+   shifts colder and the primary moves up to a luminous cyan, because a dark
+   azure on a dark ground has nowhere to go.
+   -------------------------------------------------------------------------- */
+
+.dark {
+  color-scheme: dark;
+
+  --background: #04101a;
+  --foreground: #e8f3f8;
+  --card: #0a1b27;
+  --card-foreground: #e8f3f8;
+  --popover: #0c2030;
+  --popover-foreground: #e8f3f8;
+
+  --primary: #4fc9e8;
+  --primary-foreground: #04101a;
+  --secondary: #122c3c;
+  --secondary-foreground: #cfe6f0;
+  --muted: #0f2735;
+  --muted-foreground: #9db6c4;
+
+  --accent: #e8a24e;
+  --accent-foreground: #231303;
+
+  --destructive: #ff7b8e;
+  --destructive-foreground: #2a0510;
+
+  --border: #1d3b4e;
+  --input: #4a7288;
+  --ring: #4fc9e8;
+
+  --chart-1: #4fc9e8;
+  --chart-2: #7ad9f2;
+  --chart-3: #54d6a6;
+  --chart-4: #e8a24e;
+  --chart-5: #b9a6f0;
+
+  --sidebar: #0a1b27;
+  --sidebar-foreground: #e8f3f8;
+  --sidebar-primary: #4fc9e8;
+  --sidebar-primary-foreground: #04101a;
+  --sidebar-accent: #122c3c;
+  --sidebar-accent-foreground: #cfe6f0;
+  --sidebar-border: #1d3b4e;
+  --sidebar-ring: #4fc9e8;
+
+  --confidence-confirmed: #54d6a6;
+  --confidence-official: #4fc9e8;
+  --confidence-single: #9db6c4;
+  --confidence-conflicted: #f0b45c;
+  --confidence-inferred: #b9a6f0;
+  --confidence-gap: #8ea5b2;
+  --surface-conflict: #2a1d08;
+  --quality-modelled: #b9a6f0;
+  --quality-stale: #f5a97f;
+  --simulation: #f0b45c;
+  --surface-simulation: #2a1d08;
+
+  --sea-deep: #02202f;
+  --sea-mid: #073d55;
+  --sea-shallow: #0e6d8f;
+  --sea-foam: #2a8fae;
+  --sand: #7a5c33;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply font-sans;
+    /* No `scroll-smooth`: Lenis owns scrolling and the two fight each other.
+       LenisProvider disables itself under reduced motion, at which point the
+       browser's own instant scroll is the correct behaviour. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Type is sized in rem so a user's larger default scales the layout with
+       it instead of overflowing it (apple-design §15). */
+    font-size: 1rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tracking is size-specific. A single letter-spacing value is wrong
+     somewhere: large text reads too loose as it grows and wants negative
+     tracking; small text wants a little positive. */
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h1 {
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+  }
+
+  /* Never remove a focus ring without replacing it. Both themes verified at
+     ≥3:1 against background and card. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 22%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Turkish and Russian break differently from German; German compounds are
+     the ones that actually overflow (~30% longer than English). Allow the
+     browser to break a long compound rather than blow out the container. */
+  h1,
+  h2,
+  h3,
+  p,
+  li,
+  td,
+  th,
+  button,
+  label {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Tabular figures wherever numbers are compared down a column — prices,
+     areas, counts. Proportional digits make a column of money illegible. */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion policy — the single most important accessibility rule in this build.
+
+   DESIGN-RESEARCH §4.1: reduced motion must yield a COMPLETE, static page,
+   not a faster one. The common failure is the blanket
+   `animation-duration: 0.001ms !important` clamp: it stops the animation but
+   leaves whatever set `opacity: 0` in place, so scroll-revealed content stays
+   permanently invisible to exactly the user who cannot dismiss it. The 1Çatı
+   reference hit this bug and patched it per-component after the fact.
+
+   So the policy here is inverted: ambient motion is opted IN under
+   `no-preference`, never opted out under `reduce`. Nothing is hidden first
+   and revealed later — JS reveal helpers bail before they hide anything
+   (`components/anim/reveal.tsx`). The `reduce` block below is a safety net
+   for anything that slipped through, not the mechanism.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The safety net. Anything that could have been left hidden by an entrance
+     animation is forced visible. Framer Motion bakes its `initial` state into
+     SSR output, so without this a suppressed entrance is an invisible element,
+     forever. */
+  [data-reveal],
+  [data-reveal] > *,
+  [data-motion-hidden] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    visibility: visible !important;
+  }
+}
+
+@media (forced-colors: active) {
+  /* Windows high-contrast paints its own palette; our translucency and
+     colour-mix surfaces stop meaning anything. Keep structure, drop effects. */
+  .azura-aurora,
+  .azura-glass {
+    background: Canvas !important;
+    backdrop-filter: none !important;
+  }
+
+  [data-confidence] {
+    forced-color-adjust: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Components
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* v4 removed the configurable container plugin; this is the hand-roll. */
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: 0 0 var(--radius-md) 0;
+    font-weight: 600;
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+@layer utilities {
+  /* Coastal light behind the hero. CSS only — no canvas, no image, no bytes.
+     Two slow radial pools over a vertical sea gradient. */
+  .azura-aurora {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(
+        60% 50% at 15% 12%,
+        color-mix(in srgb, var(--sea-shallow) 26%, transparent),
+        transparent 68%
+      ),
+      radial-gradient(
+        55% 45% at 88% 8%,
+        color-mix(in srgb, var(--sea-foam) 22%, transparent),
+        transparent 64%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--sea-deep) 6%, var(--background)) 0%,
+        var(--background) 55%
+      );
+  }
+
+  /* Translucent chrome. Content scrolls under it rather than being pushed by
+     an opaque strip (apple-design §12). Degrades to a solid surface under
+     prefers-reduced-transparency. */
+  .azura-glass {
+    background: color-mix(in srgb, var(--card) 72%, transparent);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
+  /* Bigger surfaces read as thicker: more blur, deeper shadow. */
+  .azura-glass-heavy {
+    background: color-mix(in srgb, var(--card) 84%, transparent);
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow: 0 24px 70px color-mix(in srgb, var(--sea-deep) 18%, transparent);
+  }
+
+  /* A hairline of caught light along the top edge — the cheapest way to make
+     a flat surface read as a material. */
+  .azura-edge-light {
+    position: relative;
+  }
+  .azura-edge-light::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--primary) 40%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  /* Fade content into floating chrome instead of drawing a 1px divider. */
+  .azura-scroll-edge {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 12px,
+      #000 calc(100% - 12px),
+      transparent 100%
+    );
+  }
+
+  /* Provenance: single_source gets a dotted underline, and it must survive
+     both themes and a greyscale print. */
+  .azura-underline-dotted {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.28em;
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--confidence-single) 70%,
+      transparent
+    );
+  }
+
+  /* Every tappable thing clears 24px (CONVENTIONS §5); interactive controls
+     clear 44px. Applied by the primitives, available for one-offs. */
+  .azura-tap {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .azura-tap-compact {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  .azura-scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--input) 70%, transparent)
+      transparent;
+  }
+  .azura-scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .azura-scrollbar-slim::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--input) 70%, transparent);
+    border-radius: 999px;
+  }
+  .azura-scrollbar-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@media (forced-colors: active) {
+  .azura-scrollbar-slim {
+    scrollbar-color: auto;
+  }
+}
+
+/* Frostier, not blurrier, when the user asks for less transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .azura-glass,
+  .azura-glass-heavy {
+    background: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .azura-glass,
+  .azura-glass-heavy {
+    background: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: var(--foreground);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Ambient motion — opted IN, never opted out. See the motion policy above.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .azura-aurora::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      45% 38% at 50% 0%,
+      color-mix(in srgb, var(--sea-shallow) 16%, transparent),
+      transparent 70%
+    );
+    animation: azura-tide 14s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .azura-shimmer {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--muted) 90%, transparent) 25%,
+      color-mix(in srgb, var(--muted-foreground) 14%, transparent) 37%,
+      color-mix(in srgb, var(--muted) 90%, transparent) 63%
+    );
+    background-size: 400% 100%;
+    animation: azura-shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+/* Skeletons still need to read as "loading" without motion — a static tinted
+   block, matched to the real content's dimensions so nothing shifts on load. */
+@media (prefers-reduced-motion: reduce) {
+  .azura-shimmer {
+    background: color-mix(in srgb, var(--muted) 90%, transparent);
+  }
+}
+
+/* Print: the report poster must come off A4 cleanly. Drop the theatre, keep
+   the evidence — provenance and conflict state have to survive on paper. */
+@media print {
+  .azura-aurora,
+  .azura-aurora::after {
+    background: none !important;
+    animation: none !important;
+  }
+
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    word-break: break-all;
+  }
+
+  [data-confidence="conflicted"]::before {
+    content: "⚠ ";
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Isometric masterplan (W3-I).
+
+   Mirrors the real house pattern, which is `site-command-simulation.tsx` +
+   the `.site-*` classes in the 1Çatı `globals.css` — NOT `isometric-erp-world
+   .tsx`. That older file hand-places four towers at hardcoded percentages as
+   2D `skewY` fakes sitting beside the rotated plate rather than inside it, so
+   it has no grid formula and does not tolerate more than a few buildings. The
+   `.site-*` version uses a real `preserve-3d` context with `translateZ` for
+   depth, which is why it takes eight.
+
+   Geometry is passed in from JSX as custom properties (`--iso-x`, `--iso-y`,
+   `--iso-h`) exactly as the reference does. Depth ordering comes from
+   `translateZ` plus back-to-front source order — NOT `z-index`, which fights
+   `preserve-3d` and produces different results per browser.
+   -------------------------------------------------------------------------- */
+
+@layer utilities {
+  .azura-iso-scene {
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  /* The sea sits BEHIND the plot, at the horizon. Putting it in front reads as
+     standing in the water looking back at the buildings. */
+  .azura-iso-sea {
+    position: absolute;
+    inset: -6% -14% 62% -14%;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sea-shallow) 55%, transparent),
+      color-mix(in srgb, var(--sea-deep) 75%, transparent)
+    );
+    transform: rotateX(64deg) rotateZ(-8deg) translateY(40px);
+    transform-origin: center;
+  }
+
+  .azura-iso-ground {
+    position: absolute;
+    inset: 14% 6% 16%;
+    border-radius: 18px;
+    background:
+      linear-gradient(
+        transparent 0 calc(100% - 1px),
+        color-mix(in srgb, var(--primary) 12%, transparent) 100%
+      ),
+      color-mix(in srgb, var(--primary) 6%, transparent);
+    background-size: 34px 34px;
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+    transform: rotateX(64deg) rotateZ(-8deg) translateY(30px);
+    transform-origin: center;
+  }
+
+  /* The block field and the ground use different rotateX (58 vs 64) so the
+     buildings sit into the plate with a little parallax rather than lying
+     flat on it. */
+  .azura-iso-field {
+    position: absolute;
+    inset: 0;
+    transform: rotateX(58deg) rotateZ(-8deg) translateY(24px);
+    transform-style: preserve-3d;
+  }
+
+  .azura-iso-slot {
+    position: absolute;
+    left: calc(10% + var(--iso-x));
+    top: calc(20% + var(--iso-y));
+    width: 64px;
+    height: 116px;
+    transform-style: preserve-3d;
+  }
+
+  /* THE COUNTER-ROTATION IS WHAT MAKES A BUILDING A BUILDING.
+     A child of a plate rotated `rotateX(58deg)` is foreshortened INTO that
+     plate: give it `height: 90px` and it renders as a flat tile lying on the
+     ground, which is exactly what the first version looked like. Rotating it
+     back by the same 58deg about its BASE stands it upright facing the camera
+     while its footprint stays where the grid put it. The label uses the same
+     inverse for the same reason. */
+  .azura-iso-block {
+    position: absolute;
+    bottom: 16px;
+    left: 10px;
+    width: 44px;
+    height: var(--iso-h);
+    padding: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-content: end;
+    gap: 4px;
+    border-radius: 7px 7px 2px 2px;
+    border: 1px solid color-mix(in srgb, var(--primary) 38%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 34%, transparent),
+      color-mix(in srgb, var(--sea-deep) 42%, transparent)
+    );
+    box-shadow: 0 18px 40px color-mix(in srgb, var(--sea-deep) 30%, transparent);
+    transform-origin: bottom center;
+    transform: rotateX(-58deg) rotateZ(8deg) translateZ(2px);
+    transform-style: preserve-3d;
+  }
+
+  /* The hotel is the one warm volume — taller, sand rather than azure. */
+  .azura-iso-block[data-kind="hotel"] {
+    width: 58px;
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 42%, transparent),
+      color-mix(in srgb, var(--sand) 40%, transparent)
+    );
+  }
+
+  /* Fake side wall, so a flat rectangle reads as a volume. */
+  .azura-iso-block::before {
+    content: "";
+    position: absolute;
+    inset: 6px -7px -6px auto;
+    width: 7px;
+    border-radius: 0 7px 7px 0;
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+    transform: rotateY(84deg);
+    transform-origin: left;
+  }
+
+  .azura-iso-window {
+    height: 4px;
+    border-radius: 1px;
+    background: color-mix(in srgb, var(--sea-foam) 55%, transparent);
+  }
+
+  .azura-iso-shadow {
+    position: absolute;
+    bottom: 10px;
+    left: 8px;
+    width: 50px;
+    height: 14px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--sea-deep) 30%, transparent);
+    filter: blur(7px);
+    transform: translateZ(-12px);
+  }
+
+  /* Labels counter-rotate to face the camera — the exact inverse of
+     .azura-iso-field's rotation, or they lie down on the plate. */
+  .azura-iso-label {
+    position: absolute;
+    top: -6px;
+    left: 4px;
+    white-space: nowrap;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    background: color-mix(in srgb, var(--card) 90%, transparent);
+    padding: 1px 5px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--foreground);
+    transform: rotateX(-58deg) rotateZ(8deg) translateZ(6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .azura-iso-block {
+    animation: azura-iso-float 5.2s ease-in-out infinite;
+  }
+  .azura-iso-slot:nth-child(2n) .azura-iso-block {
+    animation-delay: 0.4s;
+  }
+  .azura-iso-slot:nth-child(3n) .azura-iso-block {
+    animation-delay: 0.8s;
+  }
+}
+
+/* A keyframe on a transformed element MUST restate the full transform, or the
+   projection is lost for the duration of the animation. */
+@keyframes azura-iso-float {
+  0%,
+  100% {
+    transform: rotateX(-58deg) rotateZ(8deg) translateZ(2px) translateY(0);
+  }
+  50% {
+    transform: rotateX(-58deg) rotateZ(8deg) translateZ(2px) translateY(-4px);
+  }
+}
+
+@keyframes azura-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes azura-tide {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(0, 2%, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes azura-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-inline: 2rem;
+    max-width: 1200px;
+  }
+}

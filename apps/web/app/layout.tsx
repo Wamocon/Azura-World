@@ -1,30 +1,39 @@
+import "./globals.css"
+
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 // ---------------------------------------------------------------------------
-// W1-D SEAM — global stylesheet.
+// W1-D SEAM — global stylesheet. ENABLED 2026-07-27 by W1-D.
 //
-// W1-D owns `apps/web/app/globals.css` (Tailwind v4, `@theme inline` tokens).
-// That file does not exist yet, so importing it here would fail the build.
-// W1-D must create the file and then enable EXACTLY this line, in this
-// position (before any component import, so the token layer is first in the
-// cascade):
-//
-// import "./globals.css"
-//
-// Nothing else in this file needs to change for styling to come online.
-// This is the one line W1-D may touch in a W0-A-owned file; see
-// HANDOFF/W0-A.md "Requests for other windows".
+// `apps/web/app/globals.css` now exists (Tailwind v4, `@theme inline` tokens)
+// and the import above is the single line W1-D was permitted to add to this
+// W0-A-owned file, in the position W0-A specified: before any component
+// import, so the token layer is first in the cascade.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// W1-D SEAM — providers.
+// W1-D SEAM — providers. FILLED 2026-07-27 by W1-D.
 //
-// Theme, motion (`prefers-reduced-motion`) and any client provider belong to
-// W1-D and wrap `{children}` inside <body>. This layout is a shell on purpose:
-// a provider added here before W1-D's design tokens exist would render an
-// unthemed flash on every route.
+// Two providers wrap every route, and only two:
+//
+//   ThemeProvider    next-themes, `attribute="class"`, which is what
+//                    globals.css's `@custom-variant dark` matches on. It must
+//                    be outermost so the class lands on <html> before paint.
+//   TooltipProvider  one shared delay timer for the whole app, which is what
+//                    makes the second tooltip in a toolbar open instantly.
+//
+// NOT mounted here, deliberately:
+//
+//   LenisProvider    smooth scroll belongs to the marketing surfaces, not to
+//                    the dashboard. Hijacking the wheel on a 656-row table
+//                    fights the user; W3-A mounts it around the landing route.
+//   MotionPreference no provider needed — `useReducedMotion` is backed by a
+//                    module-level store, so it works anywhere without one.
 // ---------------------------------------------------------------------------
+
+import { ThemeProvider } from "@/components/providers/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 /**
  * Azura World Residence & Hotel — Türkler, Alanya, Antalya, Türkiye.
@@ -55,7 +64,11 @@ export default function RootLayout({
     // `suppressHydrationWarning` is here for W1-D's theme provider, which sets
     // a `class`/`data-theme` attribute on <html> before React hydrates.
     <html lang="de" dir="ltr" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
