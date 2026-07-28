@@ -9,6 +9,41 @@ Machine-readable: [`quality/gate.json`](quality/gate.json) (includes full stdout
 Console transcripts: `quality/gate-console.txt` · `quality/traceability-console.txt`
 Probe transcripts: `quality/probes/*.txt`
 
+
+> ## ⚠ SUPERSEDING RE-RUN — 2026-07-28, after W2-B completed
+>
+> Both runs below were executed with the corrected gate (see the two self-corrections at the end
+> of this block). **Where any figure further down this document disagrees with this block, this
+> block is right.**
+>
+> | | `main` @ `bb9bf87` (+W4-D) | `main` + **W2-B** merged (preview) |
+> |---|---|---|
+> | blocking PASS | **9** | **10** |
+> | blocking FAIL | **2** | **2** |
+> | blocking NOT RUN | **8** | **7** |
+> | exit code | **1** | **1** |
+> | gate 3 Format | FAIL — **121** source files | FAIL — **145** source files |
+> | gate 7 OpenAPI | **NOT RUN** — absent on `main` | **PASS** — `13 pass · 0 fail · 23 exempt`, 33 paths · 49 operations |
+> | gate 18 Audit | FAIL — 8 high + 7 moderate | FAIL — 8 high + 7 moderate |
+>
+> **W2-B is COMPLETE but NOT MERGED.** `origin/main` is still `bb9bf87` and carries no
+> `scripts/validate-openapi.mjs`, so on `main` today gate 7 is honestly **NOT RUN**. The second
+> column is a local preview merge (`git merge --no-ff origin/feature/INTERNAL-107-w2b-api`) made
+> solely to exercise the gate; it was **not pushed**. It is what `main` becomes when W2-B lands.
+>
+> **Gate 7 passes with 23 of 36 checks EXEMPT.** 13 assertions executed, 13 passed, 0 failed, and
+> 23 exempted by declaration — each exemption naming the window that owns it (14 declared write
+> gaps, 9 public routes, 7 externally owned files). That is transparent by W2-B's design, but
+> "OpenAPI contract: PASS" alone would misrepresent it, so the gate table now prints the tally.
+>
+> **Two corrections to my own earlier reporting, both defects in this gate rather than in the tree:**
+> 1. Gate 3 first reported **"0 file(s) need formatting"** next to a red FAIL — prettier colourises
+>    its output and the counter matched a raw literal. Fixed with `stripAnsi()`.
+> 2. Gate 3 then reported **174 → 198 → 254** across three runs of an unchanged tree, because
+>    `apps/web` has no `.prettierignore` and the glob was walking `.next/`: **108 of 255 hits were
+>    build output**. Fixed with `--ignore-path ../../.gitignore`. The true figure is **121** on
+>    `main`. A number that moves when nothing changed is not measuring what it claims to.
+
 ---
 
 ## 1. Gate table — as printed
@@ -18,7 +53,7 @@ Probe transcripts: `quality/probes/*.txt`
 ────────────────────────────────────────────────────────────────────────────────────────────────
 1   Typecheck                          PASS     0     tsc --noEmit, 0 errors
 2   Lint                               PASS     0     eslint, 0 errors 0 warnings
-3   Format                             FAIL     1     174 file(s) need formatting
+3   Format                             FAIL     1     121 file(s) need formatting
 4   Build                              PASS     0     Compiled successfully in 18.9s
 5   i18n parity                        PASS     0     0 errors, 0 warnings, identical key sets
 6   Evidence integrity                 PASS     0     25 portal_listing + 631 modelled = 656 · no violations
@@ -49,11 +84,11 @@ csp 14. Everything else returned in under a second because it was NOT RUN.
 
 ## 2. The two failures, in full
 
-### Gate 3 — Format · exit 1 · 174 files
+### Gate 3 — Format · exit 1 · 121 source files
 
 `pnpm --dir apps/web exec prettier --check "**/*.{ts,tsx,mts,json,css}"`
 
-174 files under `apps/web` are not prettier-formatted. `.prettierrc` exists and
+121 source files under `apps/web` are not prettier-formatted. `.prettierrc` exists and
 `prettier` + `prettier-plugin-tailwindcss` are declared in `apps/web/package.json`, so the
 formatter was configured in W0-A and **`--check` has apparently never been run against the tree**.
 
@@ -66,8 +101,8 @@ windows, which is why W4-D did not do it unilaterally.
 *Self-correction worth recording:* the first run of this gate reported **"0 file(s) need
 formatting"** next to a red FAIL. prettier colourises its output, so `[warn]` arrives as
 `\x1b[33mwarn\x1b[39m` and the literal-match counter found nothing. A gate whose evidence
-contradicts its own verdict is worse than no gate; `stripAnsi()` was added and the real count is
-174.
+contradicts its own verdict is worse than no gate; `stripAnsi()` was added, and after the
+`.next` exclusion above the real count is **121**.
 
 ### Gate 18 — Dependency audit · exit 1 · 8 high + 7 moderate
 
@@ -113,7 +148,7 @@ by checking for the target file, not assumed.
 
 | Gate | Missing target | Owner | Status of that window |
 |---|---|---|---|
-| 7 OpenAPI | `scripts/validate-openapi.mjs`, `docs/api/openapi.yaml` | W2-B | **never started** — W1 deliberately declined the stretch |
+| 7 OpenAPI | `scripts/validate-openapi.mjs`, `docs/api/openapi.yaml` | W2-B | **COMPLETE but unmerged** — runs and passes on a preview merge; see the superseding block |
 | 9 pgTAP | Docker daemon (`docker info` exit 1) | environment | down for the entire run; **substitute recorded** |
 | 10 e2e chromium | `apps/web/playwright.config.ts` | W4-A | **never started** — `apps/web/e2e/` has 0 spec files |
 | 11 e2e mobile | same | W4-A | same |

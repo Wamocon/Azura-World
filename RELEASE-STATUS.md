@@ -8,6 +8,41 @@ from verified facts, `[GAP]` not established. Every exit code below was read dir
 process. Nothing in this document was piped through `tail`, and nothing is quoted from a handoff
 without being re-run.
 
+
+> ## ⚠ SUPERSEDING RE-RUN — 2026-07-28, after W2-B completed
+>
+> Both runs below were executed with the corrected gate (see the two self-corrections at the end
+> of this block). **Where any figure further down this document disagrees with this block, this
+> block is right.**
+>
+> | | `main` @ `bb9bf87` (+W4-D) | `main` + **W2-B** merged (preview) |
+> |---|---|---|
+> | blocking PASS | **9** | **10** |
+> | blocking FAIL | **2** | **2** |
+> | blocking NOT RUN | **8** | **7** |
+> | exit code | **1** | **1** |
+> | gate 3 Format | FAIL — **121** source files | FAIL — **145** source files |
+> | gate 7 OpenAPI | **NOT RUN** — absent on `main` | **PASS** — `13 pass · 0 fail · 23 exempt`, 33 paths · 49 operations |
+> | gate 18 Audit | FAIL — 8 high + 7 moderate | FAIL — 8 high + 7 moderate |
+>
+> **W2-B is COMPLETE but NOT MERGED.** `origin/main` is still `bb9bf87` and carries no
+> `scripts/validate-openapi.mjs`, so on `main` today gate 7 is honestly **NOT RUN**. The second
+> column is a local preview merge (`git merge --no-ff origin/feature/INTERNAL-107-w2b-api`) made
+> solely to exercise the gate; it was **not pushed**. It is what `main` becomes when W2-B lands.
+>
+> **Gate 7 passes with 23 of 36 checks EXEMPT.** 13 assertions executed, 13 passed, 0 failed, and
+> 23 exempted by declaration — each exemption naming the window that owns it (14 declared write
+> gaps, 9 public routes, 7 externally owned files). That is transparent by W2-B's design, but
+> "OpenAPI contract: PASS" alone would misrepresent it, so the gate table now prints the tally.
+>
+> **Two corrections to my own earlier reporting, both defects in this gate rather than in the tree:**
+> 1. Gate 3 first reported **"0 file(s) need formatting"** next to a red FAIL — prettier colourises
+>    its output and the counter matched a raw literal. Fixed with `stripAnsi()`.
+> 2. Gate 3 then reported **174 → 198 → 254** across three runs of an unchanged tree, because
+>    `apps/web` has no `.prettierignore` and the glob was walking `.next/`: **108 of 255 hits were
+>    build output**. Fixed with `--ignore-path ../../.gitignore`. The true figure is **121** on
+>    `main`. A number that moves when nothing changed is not measuring what it claims to.
+
 ---
 
 ## 1. Kurzfassung
@@ -25,7 +60,7 @@ pgTAP assertions executed earlier by W1-A against the live cloud database.
 **What that does not add up to.** This is a **demo-ready evidence showcase, not a release-ready
 ERP.** Of 19 blocking gates, **9 pass, 2 fail and 8 could not run at all** — the windows that own
 end-to-end tests (W4-A), the layout/a11y/performance harness (W4-B), the security review (W4-C)
-and the API contract (W2-B) were never started, so those gates have no target to execute. Four of
+were never started, and the API contract (W2-B) is complete but unmerged, so those gates have no target to execute. Four of
 eight wave-3 surfaces exist and two of those are PARTIAL; finance, operations, governance and the
 public concierge do not exist. Nothing has been proven against a real authenticated session, no
 data has been proven to persist through the UI, and `pnpm audit` reports **8 high-severity
@@ -42,11 +77,11 @@ bypass in exactly the mechanism this app uses for its route guard.
 |---|---|---|---|---|
 | 1 | Typecheck | **PASS** | 0 | `tsc --noEmit`, whole app, no output |
 | 2 | Lint | **PASS** | 0 | `eslint`, 0 errors 0 warnings |
-| 3 | Format | **FAIL** | 1 | **174 files** fail `prettier --check`. Never enforced; not a code defect |
+| 3 | Format | **FAIL** | 1 | **121 source files** fail `prettier --check`. Never enforced; not a code defect |
 | 4 | Build | **PASS** | 0 | `next build --webpack`, compiled in 18.9s |
 | 5 | i18n parity | **PASS** | 0 | 576 keys × 4 locales, identical key sets, 0 warnings |
 | 6 | Evidence integrity | **PASS** | 0 | 1,354 facts · 25 portal_listing + 631 modelled = 656 · no violations |
-| 7 | OpenAPI contract | **NOT RUN** | — | `scripts/validate-openapi.mjs` absent. **W2-B never started** |
+| 7 | OpenAPI contract | **NOT RUN** | — | `scripts/validate-openapi.mjs` absent **on `main`**. W2-B is COMPLETE on its own branch and unmerged — §2a |
 | 8 | Unit tests | **PASS** | 0 | 24 tests · 24 pass · 0 fail — 2 suites, both repository-layer |
 | 9 | pgTAP | **NOT RUN** | — | Docker daemon down (`docker info` exit 1). **Substitute below** |
 | 10 | e2e chromium | **NOT RUN** | — | `apps/web/playwright.config.ts` absent, 0 spec files. **W4-A never started** |
@@ -86,7 +121,7 @@ are different claims:
 | W3-I simulation Playwright | 16 | 16 | 16 | overnight only; **not re-run** |
 | W3-C evidence-review | 100 | 100 | 100 | **dev only** — fails under `next start`, §3 |
 | **e2e matrix (W4-A)** | *unscoped* | **0** | **0** | **suite does not exist** |
-| **OpenAPI contract (W2-B)** | *unscoped* | **0** | **0** | **suite does not exist** |
+| **OpenAPI contract (W2-B)** | 36 | **13** | **13** | **23 exempt by declaration.** Runs only with W2-B merged — §2a |
 | **Layout / a11y / perf (W4-B)** | *unscoped* | **0** | **0** | **suites do not exist** |
 | **Security probe (W4-C)** | *unscoped* | **0** | **0** | **suite does not exist** |
 
@@ -174,8 +209,8 @@ a client demo with the reason recorded.* Remaining advisories: `postcss` ×3 and
 (transitive through next), `brace-expansion` (via eslint), `@hono/node-server` (via shadcn).
 `[GAP]` I did not verify whether #4 also lifts postcss/sharp.
 
-**② Gate 3 — 174 unformatted files.** `prettier --check` has evidently never been run. Fixing it is
-mechanical (`prettier --write`) but touches 174 files across every window's ownership, so it is one
+**② Gate 3 — 121 unformatted source files.** `prettier --check` has evidently never been run. Fixing it is
+mechanical (`prettier --write`) but touches 121 files across every window's ownership, so it is one
 person's single commit, not W4-D reaching across eight ownership boundaries. *Decision: run the
 sweep, or drop Format to non-blocking.*
 

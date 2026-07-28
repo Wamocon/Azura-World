@@ -150,7 +150,14 @@ const GATES = [
     name: "Format",
     blocking: true,
     fast: true,
-    cmd: 'pnpm --dir apps/web exec prettier --check "**/*.{ts,tsx,mts,json,css}"',
+    // `--ignore-path` is not optional here. `apps/web` has no `.prettierignore`,
+    // so without it the glob walks `.next/` and the gate counts BUILD OUTPUT as
+    // unformatted source: 108 of 255 hits on one run, and the total climbed
+    // 174 → 198 → 254 across three runs of the same tree purely because each
+    // build wrote more JSON. A gate whose number moves when nothing changed is
+    // not measuring the thing it claims to measure. The repo `.gitignore`
+    // already excludes `.next`, `node_modules`, `out` and `build`.
+    cmd: 'pnpm --dir apps/web exec prettier --check --ignore-path ../../.gitignore "**/*.{ts,tsx,mts,json,css}"',
     // prettier colours its output, so `[warn]` arrives as `\x1b[33mwarn\x1b[39m`.
     // Counting the raw literal reported 0 unformatted files next to a red gate,
     // which is exactly the kind of self-contradicting evidence this whole file
@@ -202,7 +209,17 @@ const GATES = [
     blocking: true,
     fast: true,
     cmd: "node scripts/validate-openapi.mjs",
-    precheck: missing("scripts/validate-openapi.mjs", "W2-B, never started"),
+    precheck: missing("scripts/validate-openapi.mjs", "W2-B"),
+    // A bare "PASS" would hide that this suite EXEMPTS a large share of its own
+    // checks by declaration — 23 of 36 on the run that first went green. The
+    // exemptions are each attributed to an owning window by W2-B, which is the
+    // honest design, but the count belongs in the gate table and not only in a
+    // log nobody opens.
+    metric: (o) => {
+      const shape = capture(o, /(\d+ paths · \d+ operations[^\n]*)/)
+      const tally = capture(o, /(\d+ pass · \d+ fail · \d+ exempt)/)
+      return [tally, shape].filter(Boolean).join(" · ") || "?"
+    },
   },
   {
     n: 8,
