@@ -125,12 +125,14 @@ async function readAdminPopulation(
     .select("id, role, is_active, company_id")
     .eq("role", "admin")
     .eq("is_active", true)
-  query = companyId === null
-    ? query.is("company_id", null)
-    : query.eq("company_id", companyId)
+  query =
+    companyId === null
+      ? query.is("company_id", null)
+      : query.eq("company_id", companyId)
 
   const { data, error } = await query
-  if (error !== null) throw new AdminCapabilityError(mapProfileWriteError(error))
+  if (error !== null)
+    throw new AdminCapabilityError(mapProfileWriteError(error))
   return (data ?? []).map((row: Record<string, unknown>) => ({
     id: String(row["id"] ?? ""),
     role: (typeof row["role"] === "string" ? row["role"] : "guest") as Role,
@@ -165,7 +167,8 @@ async function readProfile(
     .select(PROFILE_COLUMNS)
     .eq("id", profileId)
     .maybeSingle()
-  if (error !== null) throw new AdminCapabilityError(mapProfileWriteError(error))
+  if (error !== null)
+    throw new AdminCapabilityError(mapProfileWriteError(error))
   if (data === null) {
     // Same answer for "no such profile" and "outside your scope", for the
     // reason `getProfile` gives: telling a caller that a row it may not read
@@ -219,7 +222,8 @@ export async function createProfile(input: {
     .select(PROFILE_COLUMNS)
     .maybeSingle()
 
-  if (error !== null) throw new AdminCapabilityError(mapProfileWriteError(error))
+  if (error !== null)
+    throw new AdminCapabilityError(mapProfileWriteError(error))
   if (data === null) {
     throw new AdminCapabilityError(
       upstreamFailed("The person was not created. Nothing was saved.")
@@ -286,7 +290,8 @@ export async function updateProfileAuthority(input: {
     .select(PROFILE_COLUMNS)
     .maybeSingle()
 
-  if (error !== null) throw new AdminCapabilityError(mapProfileWriteError(error))
+  if (error !== null)
+    throw new AdminCapabilityError(mapProfileWriteError(error))
   if (data === null) {
     // Zero rows. Two causes, and they are distinguishable here because the row
     // was read a moment ago: a version mismatch means somebody else changed it
@@ -352,7 +357,8 @@ export async function deleteProfile(input: {
     .select("id")
     .maybeSingle()
 
-  if (error !== null) throw new AdminCapabilityError(mapProfileWriteError(error))
+  if (error !== null)
+    throw new AdminCapabilityError(mapProfileWriteError(error))
   if (data === null) {
     throw new AdminCapabilityError(
       forbidden("You cannot delete this person's record.")

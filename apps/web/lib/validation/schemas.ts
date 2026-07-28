@@ -257,10 +257,10 @@ export const updateProfileRoleSchema = z
     isActive: z.boolean().optional(),
     reason,
   })
-  .refine(
-    (value) => value.role !== undefined || value.isActive !== undefined,
-    { message: "Give a new role or a new active state.", path: ["role"] }
-  )
+  .refine((value) => value.role !== undefined || value.isActive !== undefined, {
+    message: "Give a new role or a new active state.",
+    path: ["role"],
+  })
 
 /**
  * Delete a person's record outright.
