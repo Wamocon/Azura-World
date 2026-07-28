@@ -13,6 +13,7 @@
     "db:test": "npx supabase test db",
     "harvest": "node scripts/harvest-azura.mjs",
     "dataset": "python scripts/build-azura-dataset.py",
+    "qa:csp": "node scripts/csp-probe.mjs",
     "qa:evidence": "node scripts/verify-evidence.mjs",
     "qa:layout": "node scripts/layout-audit.mjs",
     "qa:perf": "node scripts/perf.mjs",

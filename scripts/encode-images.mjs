@@ -53,7 +53,7 @@ const RASTER_KINDS = new Set(['image', 'svg'])
  * Encode one asset into every format/width that its source can honestly support.
  * Returns the emitted relative paths, grouped by format, plus the LQIP data URI.
  */
-export async function encodeAsset(asset, { outDir, urlPrefix, dryRun = false }) {
+export async function encodeAsset(asset, { outDir, urlPrefix, dryRun = false, fresh = false }) {
   const sharp = loadDep('sharp')
   const src = path.join(REPO, asset.originalPath)
   if (!existsSync(src)) return { skipped: 'original_missing', formats: { avif: [], webp: [], jpeg: [] }, lqip: null, bytes: 0 }
@@ -79,6 +79,7 @@ export async function encodeAsset(asset, { outDir, urlPrefix, dryRun = false }) 
 
   const formats = { avif: [], webp: [], jpeg: [] }
   let bytes = 0
+  let reused = 0
   if (!dryRun) await mkdir(outDir, { recursive: true })
 
   for (const w of widths) {
@@ -95,6 +96,19 @@ export async function encodeAsset(asset, { outDir, urlPrefix, dryRun = false }) 
       ['jpeg', 'jpg'],
     ]) {
       const file = path.join(outDir, `${asset.id}-${w}.${ext}`)
+      // Incremental by default. Ids are content-addressed (host + sha256), so an
+      // existing file for this id/width/format was produced from these exact
+      // bytes and is still valid. AVIF costs ~50x JPEG CPU; re-encoding 13,000
+      // variants because the dedupe changed is waste, not thoroughness.
+      if (!dryRun && !fresh && existsSync(file)) {
+        const st = await stat(file)
+        if (st.size > 0) {
+          bytes += st.size
+          reused++
+          formats[fmt].push(`${urlPrefix}/${asset.id}-${w}.${ext}`)
+          continue
+        }
+      }
       if (!dryRun) {
         const pipe = base()
         const out =
@@ -121,7 +135,7 @@ export async function encodeAsset(asset, { outDir, urlPrefix, dryRun = false }) 
     lqip = `data:image/webp;base64,${tiny.toString('base64')}`
   }
 
-  return { skipped: null, formats, lqip, bytes, widths, aspect: Number((srcW / srcH).toFixed(4)) }
+  return { skipped: null, formats, lqip, bytes, reused, widths, aspect: Number((srcW / srcH).toFixed(4)) }
 }
 
 async function dirSize(dir) {
@@ -143,6 +157,7 @@ async function dirSize(dir) {
 async function run() {
   const args = process.argv.slice(2)
   const dryRun = args.includes('--dry-run')
+  const fresh = args.includes('--fresh')
   const onlyArg = args.find((a) => a.startsWith('--only='))
   const only = onlyArg ? onlyArg.split('=')[1].split(',').filter(Boolean) : []
 
@@ -166,10 +181,17 @@ async function run() {
 
   // Clear only our own outputs, so a re-run cannot leave orphans behind while
   // still never touching a file another window owns.
+  const liveIds = new Set(assets.map((a) => a.id))
   if (!dryRun) {
     for (const d of [DIR.publicMedia, DIR.encoded]) {
       if (!existsSync(d)) continue
-      for (const f of await readdir(d)) if (/\.(avif|webp|jpg)$/.test(f)) await rm(path.join(d, f))
+      for (const f of await readdir(d)) {
+        if (!/\.(avif|webp|jpg)$/.test(f)) continue
+        // --fresh wipes everything; otherwise drop only ORPHANS — variants whose
+        // asset id is no longer in the manifest (e.g. folded away by dedupe).
+        const id = f.replace(/-\d+\.(avif|webp|jpg)$/, '')
+        if (fresh || !liveIds.has(id)) await rm(path.join(d, f))
+      }
     }
   }
 
@@ -187,7 +209,7 @@ async function run() {
       ? { outDir: DIR.publicMedia, urlPrefix: '/media', delivery: 'public' }
       : { outDir: DIR.encoded, urlPrefix: 'sources/media/encoded', delivery: 'internal' }
 
-    const r = await encodeAsset(asset, { ...target, dryRun })
+    const r = await encodeAsset(asset, { ...target, dryRun, fresh })
     if (r.skipped) {
       skipped.push({ id: asset.id, category: asset.category, reason: r.skipped })
       continue

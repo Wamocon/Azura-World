@@ -12,6 +12,14 @@
 // and the value is null — that is a deliberate outcome, not missing work.
 // The interfaces below mirror CONTRACTS.md §2 and must not drift from
 // apps/web/lib/contracts.ts (owned by W0-A).
+//
+// They are also the reason `satisfies` at the bottom is worth anything. Every
+// member here is a real shape: `project`, `blocks`, `hotel`, `reviews`,
+// `portalListings`, `amenities` and `coverage` were once `Record<string,
+// unknown>`, and inside such a member the contextual type of every leaf is
+// `unknown` — so `"tier": 4` widened to `number` and `"confidence": "confirmed"`
+// to `string`, and no nested AzuraSourcedFact type-checked at any call site.
+// Declaring the shapes is what keeps the literal unions alive in this file.
 
 export type AzuraConfidence =
   | "confirmed"
@@ -48,6 +56,19 @@ export type AzuraUnitLayout =
   | "1+1" | "2+1" | "3+1" | "4+1" | "5+1" | "6+1"
   | "penthouse" | "townhouse" | "villa" | "president_villa"
 
+/** One vocabulary, used by both AzuraUnit and AzuraBlock. */
+export type AzuraDataQuality =
+  | "portal_listing"
+  | "official"
+  | "modelled"
+  | "source_missing"
+
+/** project.buildStatus. Frozen with CONTRACTS.md §2 AzuraProject. */
+export type AzuraBuildStatus = "planned" | "under_construction" | "completed"
+
+/** A monthly rent must never enter the sale-price series — see F-002. */
+export type AzuraPriceKind = "sale" | "rent"
+
 export interface AzuraHarvestEntry {
   url: string
   publisher: string
@@ -71,7 +92,7 @@ export interface AzuraUnit {
   askingPrice: AzuraSourcedFact<AzuraMoney>
   competingPrices: Array<{ money: AzuraMoney; source: AzuraSourceRef; observedAt: string }>
   saleStatus: AzuraSourcedFact<"available" | "reserved" | "sold" | "unknown">
-  dataQuality: "portal_listing" | "official" | "modelled" | "source_missing"
+  dataQuality: AzuraDataQuality
 }
 
 export interface AzuraFinding {
@@ -85,24 +106,179 @@ export interface AzuraFinding {
   resolvedTo: unknown | null
 }
 
+export interface AzuraProjectContact {
+  phone: AzuraSourcedFact<string>
+  email: AzuraSourcedFact<string>
+  address: AzuraSourcedFact<string>
+}
+
+export interface AzuraSocialLink {
+  /** Whatever the emitting parser labelled the profile ("instagram", …). Free
+   *  text on purpose: it is a parser note, not a closed vocabulary. */
+  platform: string
+  url: string
+  source: AzuraSourceRef
+}
+
+export interface AzuraProject {
+  name: string
+  code: "AZW-TRK"
+  country: "Türkiye"
+  province: "Antalya"
+  city: "Alanya"
+  district: "Türkler"
+  developer: AzuraSourcedFact<string>
+  developerFoundedYear: AzuraSourcedFact<number>
+  plotAreaSqm: AzuraSourcedFact<number>
+  greenAreaSqm: AzuraSourcedFact<number>
+  buildingFootprintSqm: AzuraSourcedFact<number>
+  outdoorFacilityAreaSqm: AzuraSourcedFact<number>
+  residenceBlockCount: AzuraSourcedFact<number>
+  buildingCount: AzuraSourcedFact<number>
+  floorsPerBuilding: AzuraSourcedFact<number>
+  totalUnits: AzuraSourcedFact<number>
+  constructionStart: AzuraSourcedFact<string>
+  completionDate: AzuraSourcedFact<string>
+  buildStatus: AzuraSourcedFact<AzuraBuildStatus>
+  distanceToSeaM: AzuraSourcedFact<number>
+  distanceToAlanyaCentreKm: AzuraSourcedFact<number>
+  distanceToGazipasaAirportKm: AzuraSourcedFact<number>
+  distanceToAntalyaAirportKm: AzuraSourcedFact<number>
+  downPaymentPercent: AzuraSourcedFact<number>
+  contact: AzuraProjectContact
+  social: AzuraSocialLink[]
+}
+
+export interface AzuraHotel {
+  name: AzuraSourcedFact<string>
+  formerName: AzuraSourcedFact<string>
+  stars: AzuraSourcedFact<number>
+  roomCount: AzuraSourcedFact<number>
+  floors: AzuraSourcedFact<number>
+  openedYear: AzuraSourcedFact<number>
+  board: AzuraSourcedFact<string>
+  aquaparkSlides: AzuraSourcedFact<number>
+  distanceToBeachM: AzuraSourcedFact<number>
+  checkIn: AzuraSourcedFact<string>
+  checkOut: AzuraSourcedFact<string>
+  brandAffiliation: AzuraSourcedFact<string>
+}
+
+/** Block composition is not published by any source — see F-011. Every block
+ *  in this dataset is therefore dataQuality "modelled". */
+export interface AzuraBlock {
+  code: string
+  unitCount: number
+  dataQuality: AzuraDataQuality
+  note: string
+}
+
+export type AzuraReviewPlatform =
+  | "tripadvisor"
+  | "booking"
+  | "agoda"
+  | "onthebeach"
+  | "google"
+
+/** 6.7 means nothing until you know it is out of 10, so the scale travels with
+ *  the score and is never inferred from the size of the number. */
+export type AzuraScoreScale = 5 | 10
+
+export interface AzuraReviewQuote {
+  /** Verbatim. Never paraphrased, never truncated. */
+  text: string
+  /** null when the card's bubble rating could not be read positionally — a
+   *  per-category sub-rating misread as the overall would distort a real
+   *  person's review, so it is left null rather than guessed. */
+  rating: number | null
+  /** The page's literal published-date string, not normalised to ISO. */
+  date: string
+  url: string
+}
+
+/** Tripadvisor's own five buckets PLUS the three-way fold CONTRACTS §2 names.
+ *  Both are stored and nothing is discarded either way; the fold is a fact
+ *  about Tripadvisor's own scale, not a judgement about this hotel. A platform
+ *  that publishes only the fold emits the three required keys alone. */
+export interface AzuraReviewSentiment {
+  positive: number
+  mixed: number
+  negative: number
+  excellent?: number
+  good?: number
+  average?: number
+  poor?: number
+  terrible?: number
+}
+
+export interface AzuraReview {
+  /** The platform that PRODUCED the score, never the host that served it — a
+   *  syndicated widget filed under its serving host would launder one opinion
+   *  into two agreeing sources. */
+  platform: AzuraReviewPlatform
+  url: string
+  score: AzuraSourcedFact<number>
+  scoreScale: AzuraScoreScale
+  reviewCount: AzuraSourcedFact<number>
+  ranking: AzuraSourcedFact<string>
+  sentiment: AzuraReviewSentiment | null
+  notableQuotes: AzuraReviewQuote[]
+}
+
+export interface AzuraPortalListing {
+  publisher: string
+  url: string
+  fetchedAt: string
+  layout: AzuraUnitLayout | null
+  interiorM2: number | null
+  price: AzuraMoney | null
+  claimedBlockCount: number | null
+  claimedTotalUnits: number | null
+  claimedBuildStatus: string | null
+  isStale: boolean
+  /** The next two go beyond CONTRACTS §2 PortalListing. The builder has always
+   *  emitted them; they were simply invisible while this member was an open
+   *  record. Declared rather than dropped — dropping priceKind would let a
+   *  monthly rent look like a sale price, which is F-002's whole subject. */
+  priceKind: AzuraPriceKind
+  note: string | null
+}
+
+/** CONTRACT-GAP-02. `Amenity` is referenced by CONTRACTS.md §2 and defined
+ *  nowhere in it, and this builder hardcodes `"amenities": []` — no parser
+ *  output reaches the member. `never` is the observed shape and the honest
+ *  one: the day amenities are emitted, tsc demands the real shape be written
+ *  here instead of it being guessed today. */
+export type AzuraAmenity = never
+
+export interface AzuraCoverage {
+  sourcesTotal: number
+  sourcesValidated: number
+  sourcesTierLe3Validated: number
+  /** Sparse — only the confidences actually observed get a key. */
+  projectFactsByConfidence: Partial<Record<AzuraConfidence, number>>
+  unitObservations: number
+  parserFailures: number
+}
+
 export interface AzuraWorldDataset {
   generatedAt: string
   contractVersion: 1
   harvest: AzuraHarvestEntry[]
-  project: Record<string, unknown>
-  blocks: Array<Record<string, unknown>>
+  project: AzuraProject
+  blocks: AzuraBlock[]
   units: AzuraUnit[]
-  hotel: Record<string, unknown>
-  reviews: Array<Record<string, unknown>>
-  portalListings: Array<Record<string, unknown>>
-  amenities: Array<Record<string, unknown>>
+  hotel: AzuraHotel
+  reviews: AzuraReview[]
+  portalListings: AzuraPortalListing[]
+  amenities: AzuraAmenity[]
   findings: AzuraFinding[]
   unitSplit: { portalListing: number; modelled: number; total: number }
-  coverage: Record<string, unknown>
+  coverage: AzuraCoverage
 }
 
 export const azuraWorldDataset = {
-  "generatedAt": "2026-07-27T15:33:29Z",
+  "generatedAt": "2026-07-28T06:22:59Z",
   "contractVersion": 1,
   "harvest": [
     {

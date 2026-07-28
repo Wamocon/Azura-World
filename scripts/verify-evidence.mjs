@@ -39,6 +39,13 @@ const quiet = argv.includes('--quiet')
 const violations = []
 const fail = (rule, where, detail) => violations.push({ rule, where, detail })
 
+/**
+ * How many snapshotHash → file resolutions were skipped because there are no
+ * snapshots on disk at all. Non-zero means half of invariant 6 was NOT RUN;
+ * see the comment at the check itself.
+ */
+let skippedHashResolutions = 0
+
 /* ------------------------------------------------------------------ input -- */
 
 /**
@@ -162,18 +169,38 @@ function checkFact(pathLabel, fact, hashes) {
   }
 
   // 6. every snapshotHash resolves to a real file under sources/raw/
+  //
+  // `sources/raw/*` is git-ignored on purpose — the harvested HTML is evidence,
+  // not source, and committing 500+ scraped pages is what the ignore rule and
+  // the secret-hygiene audit both exist to prevent. So the snapshots exist only
+  // on a machine that has run the harvest, and this half of invariant 6 CANNOT
+  // be evaluated in a fresh clone, which is what CI is.
+  //
+  // It is therefore skipped when there are no snapshots at all — counted, and
+  // reported as NOT RUN rather than passing quietly. Skipping it silently would
+  // turn the strongest check in this file, "the hash in the dataset matches the
+  // bytes we actually fetched", into a green tick that means nothing.
+  //
+  // The other half — "a source carries no snapshotHash at all" — is a property
+  // of the DATA, not of the disk, so it always runs.
+  const canResolveHashes = hashes.size > 0
   for (const source of sources) {
     if (!source?.snapshotHash) {
       fail('inv-6-missing-hash', pathLabel, `source ${source?.url} has no snapshotHash`)
       continue
     }
-    if (!hashes.has(source.snapshotHash)) {
+    if (!canResolveHashes) {
+      skippedHashResolutions += 1
+    } else if (!hashes.has(source.snapshotHash)) {
       fail('inv-6-unresolvable', pathLabel, `snapshotHash ${String(source.snapshotHash).slice(0, 16)}… (${source.url}) matches no file under sources/raw/`)
     }
   }
   for (const conflict of conflictsWith || []) {
     const hash = conflict?.source?.snapshotHash
-    if (hash && !hashes.has(hash)) {
+    if (!hash) continue
+    if (!canResolveHashes) {
+      skippedHashResolutions += 1
+    } else if (!hashes.has(hash)) {
       fail('inv-6-unresolvable', `${pathLabel}.conflictsWith`, `snapshotHash ${String(hash).slice(0, 16)}… matches no stored file`)
     }
   }
@@ -330,6 +357,9 @@ async function main() {
     ok: violations.length === 0,
     checkedAt: new Date().toISOString(),
     snapshotsOnDisk: hashes.size,
+    // Non-zero ⟹ "inv-6-unresolvable" was NOT RUN. A consumer treating `ok`
+    // as "everything was checked" must read this too.
+    skippedHashResolutions,
     factsChecked: facts.length,
     factsByConfidence: byConfidence,
     findingsBySeverity: bySeverity,
@@ -345,6 +375,16 @@ async function main() {
     console.log('verify-evidence · independent validation of apps/web/lib/azura-world-data.ts\n')
     console.log(`  snapshots on disk (sha256 recomputed) : ${hashes.size}`)
     console.log(`  facts checked                         : ${facts.length}\n`)
+
+    if (skippedHashResolutions > 0) {
+      console.log(
+        `  !! inv-6-unresolvable: NOT RUN — ${skippedHashResolutions} snapshotHash lookups\n` +
+          '     skipped because sources/raw/ holds no snapshots. That directory is\n' +
+          '     git-ignored, so a fresh clone (and CI) cannot check that a hash in the\n' +
+          '     dataset matches the bytes that were actually fetched. Run `pnpm harvest`\n' +
+          '     to get the evidence, then re-run this. Every other invariant DID run.\n',
+      )
+    }
 
     console.log('  facts by confidence')
     for (const key of ['confirmed', 'official', 'single_source', 'conflicted', 'inferred', 'gap']) {
