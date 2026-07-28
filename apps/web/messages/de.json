@@ -876,7 +876,46 @@
         "inspected": "Geprüft",
         "outOfOrder": "Außer Betrieb"
       },
-      "bookingSources": "Buchungsquellen"
+      "bookingSources": "Buchungsquellen",
+      "seedNotice": "Diese Ansicht zeigt lokale Seed-Daten, keinen Live-Bestand.",
+      "facts": {
+        "name": "Aktueller Name",
+        "formerName": "Früherer Name",
+        "brand": "Kettenbindung",
+        "brandNotStated": "Von keiner Quelle aus 2026 genannt (F-018)",
+        "rooms": "Zimmer",
+        "stars": "Kategorie",
+        "floors": "Etagen",
+        "opened": "Eröffnet",
+        "board": "Verpflegung",
+        "aquapark": "Aquapark-Rutschen",
+        "checkIn": "Anreise ab",
+        "checkOut": "Abreise bis",
+        "beach": "Zum öffentlichen Strand"
+      },
+      "roomTable": {
+        "heading": "Zimmerstruktur",
+        "totalLabel": "Zimmer insgesamt",
+        "publishedSumLabel": "Summe der Zeilen",
+        "code": "Code",
+        "type": "Typ",
+        "rooms": "Zimmer",
+        "area": "Fläche",
+        "occupancy": "Max. Belegung",
+        "seaView": "Meerblick",
+        "yes": "Ja",
+        "no": "Nein",
+        "noBreakdownHeading": "Keine Aufteilung",
+        "mismatch": "Die Summe der veröffentlichten Zeilen weicht von der Gesamtzahl des Hotels ab. Beide Werte stehen hier; keiner wurde angepasst."
+      },
+      "occupancyPanel": {
+        "heading": "Belegung",
+        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte — genau danach wird eine Wettbewerbsanalyse gelesen."
+      },
+      "relationship": {
+        "heading": "Hotel und Wohnanlage",
+        "body": "Hotel und Wohnanlage teilen sich ein Grundstück, aber nicht ihre Kennzahlen. 188 Hotelzimmer stehen 656 Wohneinheiten gegenüber; die Entfernungen zum Wasser werden getrennt geführt, weil sie zwei verschiedene Strecken von zwei verschiedenen Ausgangspunkten messen — die Anlage zum Meer, das Hotel zum öffentlichen Strand (F-003). Zusammengefasst würden aus zwei belegten Angaben eine unbelegte."
+      }
     },
     "reviews": {
       "title": "Bewertungen",
@@ -897,6 +936,32 @@
         "title": "Titel",
         "language": "Sprache",
         "publishedAt": "Datum"
+      },
+      "seedNotice": "Diese Ansicht zeigt lokale Seed-Daten, keinen Live-Bestand.",
+      "noAverageNote": "Es gibt hier bewusst keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen — jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander.",
+      "table": {
+        "caption": "Bewertungen je Plattform, jeweils auf der veröffentlichten Skala",
+        "platform": "Plattform",
+        "publisher": "Ausgeliefert von",
+        "score": "Wertung",
+        "scale": "Skala",
+        "reviews": "Bewertungen",
+        "ranking": "Platzierung",
+        "fetchedAt": "Abgerufen",
+        "open": "Beim Portal öffnen",
+        "scaleUnknown": "Skala unbrauchbar",
+        "syndicated": "Weiterverbreitet",
+        "none": "Für dieses Haus wurde keine Bewertungsquelle erfasst."
+      },
+      "verdict": {
+        "heading": "Beide Enden der Skala",
+        "lowest": "niedrigste erfasste Wertung",
+        "highest": "höchste erfasste Wertung",
+        "notTranslated": "Originaltext, nicht übersetzt.",
+        "languageGap": "Sprache der Rezension: nicht erfasst — der Datensatz führt kein Sprachfeld, und eine geratene Sprache wäre derselbe Fehler wie eine Übersetzung.",
+        "titleGap": "Titel der Rezension: nicht erfasst — die Erhebung hat nur die Fließtexte gesichert.",
+        "open": "Rezension beim Portal öffnen",
+        "none": "Keine bewerteten Rezensionen."
       }
     }
   },

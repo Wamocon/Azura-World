@@ -876,7 +876,46 @@
         "inspected": "Kontrol edildi",
         "outOfOrder": "Devre dışı"
       },
-      "bookingSources": "Rezervasyon kaynakları"
+      "bookingSources": "Rezervasyon kaynakları",
+      "seedNotice": "Bu görünüm canlı envanteri değil, yerel örnek verileri gösterir.",
+      "facts": {
+        "name": "Güncel ad",
+        "formerName": "Önceki ad",
+        "brand": "Zincir bağlantısı",
+        "brandNotStated": "2026 tarihli hiçbir kaynak belirtmiyor (F-018)",
+        "rooms": "Oda",
+        "stars": "Kategori",
+        "floors": "Kat",
+        "opened": "Açılış",
+        "board": "Pansiyon",
+        "aquapark": "Aquapark kaydırağı",
+        "checkIn": "Giriş",
+        "checkOut": "Çıkış",
+        "beach": "Halk plajına uzaklık"
+      },
+      "roomTable": {
+        "heading": "Oda yapısı",
+        "totalLabel": "Toplam oda",
+        "publishedSumLabel": "Yayımlanan satırların toplamı",
+        "code": "Kod",
+        "type": "Tip",
+        "rooms": "Oda",
+        "area": "Alan",
+        "occupancy": "Azami kapasite",
+        "seaView": "Deniz manzarası",
+        "yes": "Evet",
+        "no": "Hayır",
+        "noBreakdownHeading": "Yayımlanmış dağılım yok",
+        "mismatch": "Yayımlanan satırların toplamı otelin kendi toplamından farklı. Her iki değer de burada; hiçbiri düzeltilmedi."
+      },
+      "occupancyPanel": {
+        "heading": "Doluluk",
+        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu — rekabet analizleri tam da bunun için okunur."
+      },
+      "relationship": {
+        "heading": "Otel ve konut sitesi",
+        "body": "Otel ve site aynı araziyi paylaşır, rakamlarını değil. 188 otel odasının yanında 656 konut birimi bulunur; suya olan mesafeler ayrı tutulur, çünkü iki farklı başlangıç noktasından iki farklı güzergâhı ölçerler — site denize, otel halk plajına (F-003). Birleştirildiğinde, belgelenmiş iki değer belgelenmemiş tek bir değere dönüşürdü."
+      }
     },
     "reviews": {
       "title": "Değerlendirmeler",
@@ -897,6 +936,32 @@
         "title": "Başlık",
         "language": "Dil",
         "publishedAt": "Tarih"
+      },
+      "seedNotice": "Bu görünüm canlı envanteri değil, yerel örnek verileri gösterir.",
+      "noAverageNote": "Burada bilinçli olarak genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez — ortaya çıkacak her sayının kaynağı olmazdı. Bu nedenle platformlar üst üste değil, yan yana durur.",
+      "table": {
+        "caption": "Platform başına puanlar, her biri yayımlandığı ölçekte",
+        "platform": "Platform",
+        "publisher": "Sunan",
+        "score": "Puan",
+        "scale": "Ölçek",
+        "reviews": "Değerlendirme",
+        "ranking": "Sıralama",
+        "fetchedAt": "Alındı",
+        "open": "Platformda aç",
+        "scaleUnknown": "Ölçek kullanılamaz",
+        "syndicated": "Yeniden yayımlanmış",
+        "none": "Bu mülk için değerlendirme kaynağı kaydedilmedi."
+      },
+      "verdict": {
+        "heading": "Ölçeğin iki ucu",
+        "lowest": "kaydedilen en düşük puan",
+        "highest": "kaydedilen en yüksek puan",
+        "notTranslated": "Özgün metin, çevrilmemiştir.",
+        "languageGap": "Değerlendirmenin dili: kaydedilmedi — veri kümesinde dil alanı yok ve tahmin edilen bir dil, çeviriyle aynı hatadır.",
+        "titleGap": "Değerlendirme başlığı: kaydedilmedi — derleme yalnızca metin gövdelerini aldı.",
+        "open": "Değerlendirmeyi platformda aç",
+        "none": "Puanlanmış değerlendirme bulunmuyor."
       }
     }
   },
