@@ -6,10 +6,11 @@ import { getUserProfile } from "@/lib/auth"
 import type { Locale, Role } from "@/lib/contracts"
 import { getDashboardSnapshot } from "@/lib/dashboard-repository"
 import type { DashboardSnapshot } from "@/lib/dashboard-data"
-import { fill, shellCopy } from "@/lib/dashboard-home-copy"
+import { buildProvenanceLabels, fill, shellCopy } from "@/lib/dashboard-home-copy"
 import { navGroupsForRole } from "@/lib/dashboard-routing"
 
 import { DashboardHomeLive } from "@/components/dashboard/home-live"
+import { TableDemo } from "@/components/dashboard/table-demo"
 import { KpiCard, type KpiCardLabels, type KpiState } from "@/components/dashboard/kpi-card"
 import {
   DashboardKpiGrid,
@@ -110,15 +111,21 @@ const KPIS_BY_ROLE: Record<Role, readonly KpiId[]> = {
 
 export default async function DashboardHomePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  // Next 16: `searchParams` is a Promise too (CONVENTIONS §1).
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { locale } = await params
+  const query = await searchParams
   setRequestLocale(locale)
 
   const profile = await getUserProfile()
   const copy = shellCopy(locale)
   const t = await getTranslations({ locale, namespace: "dashboard" })
+  // Root-namespaced, because `buildProvenanceLabels` asks for `evidence.*`.
+  const tRoot = await getTranslations({ locale })
 
   const result = await getDashboardSnapshot({
     role: profile.role,
@@ -138,6 +145,19 @@ export default async function DashboardHomePage({
   const cards = KPIS_BY_ROLE[profile.role]
   const groups = navGroupsForRole(profile.role)
 
+  /**
+   * Dev-only `<DataTable>` harness — `?w3b=table-demo`.
+   *
+   * W3-B's definition of done requires a 656-row table measured for DOM node
+   * count and all four states captured, and every module that will own a real
+   * table is being built in parallel and does not exist yet. Gated on
+   * `NODE_ENV` so it cannot reach a production build, and on an explicit query
+   * parameter so it never appears in normal use. Delete with the first real
+   * module table.
+   */
+  const showTableDemo =
+    process.env.NODE_ENV !== "production" && query["w3b"] === "table-demo"
+
   return (
     <>
       <DashboardPageHeader
@@ -152,6 +172,15 @@ export default async function DashboardHomePage({
           />
         }
       />
+
+      {showTableDemo ? (
+        <DashboardSection
+          title="DataTable — 656 Zeilen"
+          description="Nur Entwicklung. Synthetische Zeilen: 631 modelliert ohne Preisquelle, 25 mit Inserat."
+        >
+          <TableDemo locale={locale as Locale} provenanceLabels={buildProvenanceLabels(tRoot, locale)} />
+        </DashboardSection>
+      ) : null}
 
       {/* A role with nothing at all is a supported state, not a bug. No role in
           the current matrix reaches it — `child_guest` holds seven resources —

@@ -21,6 +21,7 @@
  * `undefined` rendered into the page.
  */
 
+import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
 import type { Locale } from "@/lib/contracts"
 
 import type { DashboardGroup } from "./dashboard-routing"
@@ -415,4 +416,73 @@ export function fill(
     const value = values[key]
     return value === undefined ? match : String(value)
   })
+}
+
+// ---------------------------------------------------------------------------
+// Provenance labels
+// ---------------------------------------------------------------------------
+
+/**
+ * Builds W1-D's `ProvenanceLabels` from W1-C's `evidence.*` catalogue.
+ *
+ * EVERY MODULE NEEDS THIS, so it lives in the shared contract rather than
+ * being reassembled per module — six windows hand-writing the same seventeen
+ * strings is six chances for one of them to say something subtly different
+ * about what a conflict means.
+ *
+ * It takes a translate function rather than calling `useTranslations` itself,
+ * so the same builder works from a Server Component (`getTranslations`) and a
+ * client one (`useTranslations`).
+ *
+ * The strings are W1-C's, not invented here — `evidence.confidence.*`,
+ * `evidence.conflict.*` and `evidence.label.*` already exist in all four
+ * locales. Only the source-tier names fall back to this module, because the
+ * catalogue has no key for them.
+ */
+export function buildProvenanceLabels(
+  t: (key: string) => string,
+  locale: string,
+): ProvenanceLabels {
+  const copy = shellCopy(locale)
+
+  const source = {
+    openSource: t("evidence.label.openSource"),
+    snapshot: t("evidence.label.snapshot"),
+    unreachable: t("evidence.sourceUnreachable"),
+    tier: {
+      official: t("evidence.confidence.official"),
+      developer: t("evidence.label.source"),
+      hotel: t("evidence.label.source"),
+      portal: t("evidence.label.source"),
+      review: t("evidence.label.source"),
+      press: t("evidence.label.source"),
+    },
+  }
+
+  return {
+    confidence: {
+      confirmed: t("evidence.confidence.confirmed"),
+      official: t("evidence.confidence.official"),
+      single_source: t("evidence.confidence.single_source"),
+      conflicted: t("evidence.confidence.conflicted"),
+      inferred: t("evidence.confidence.inferred"),
+      gap: t("evidence.confidence.gap"),
+    },
+    conflict: {
+      trigger: t("evidence.confidence.conflicted"),
+      heading: t("evidence.conflict.title"),
+      // `{count}` is W1-D's placeholder, not ICU — the components interpolate
+      // with their own `fill()` so they stay usable outside next-intl.
+      summary: `{count} · ${t("evidence.label.sources")}`,
+      displayed: t("evidence.conflict.displayedValue"),
+      unresolvedNote: t("evidence.conflict.description"),
+      close: copy.searchClose,
+      source,
+    },
+    source,
+    gap: t("evidence.confidence.gap"),
+    inferred: t("evidence.confidence.inferred"),
+    more: `+{count}`,
+    sources: t("evidence.label.sources"),
+  }
 }

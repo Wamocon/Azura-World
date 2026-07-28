@@ -166,6 +166,19 @@ export function GlobalSearch({
   // Not `useCallback`: `flat` is rebuilt each render, so the memo could never
   // be preserved, and memoising one keydown handler on one input buys nothing.
   const onKeyDown = (event: React.KeyboardEvent) => {
+    // Escape is handled HERE, not left to the dialog.
+    //
+    // `<input type="search">` consumes Escape to clear its own value, and
+    // Chromium does not let it reach the <dialog>, so the platform's
+    // close-on-Escape silently did not fire while the input had focus — which
+    // is every time, since the dialog focuses it on open. Measured, not
+    // guessed: the acceptance run reported `open=true` after Escape.
+    if (event.key === "Escape") {
+      event.preventDefault()
+      dialogRef.current?.close()
+      return
+    }
+
     if (flat.length === 0) return
 
     if (event.key === "ArrowDown") {
