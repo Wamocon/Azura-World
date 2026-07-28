@@ -433,3 +433,57 @@ S-001 → S-014, five closed, five awaiting a decision.
 
 Everything needed is in **`MORNING-BRIEF.md`**. Restart supervision with `/loop 2h …` if wave 3
 runs unattended.
+
+---
+
+## 22:43 — night 2, cycle 3
+
+All five windows finished and idle 4 hours. Gates on main all green:
+`typecheck 0 · lint 0 · build 0 · evidence 0 · i18n 0 · csp 0`. Zero secret or `sources/`
+violations across all six branches.
+
+### S-015 · CORRECTION to cycle 2 · the merge conflict set is larger than I reported
+
+At 20:43 I reported *"messages/*.json CLEAN across all 5"*. **That was wrong.** My simulation used
+`git merge-tree --messages`, which reports only the first conflict per branch, so it showed
+`NIGHT-LOG-2.md` and stopped. Re-run with `--name-only`, the real set is:
+
+| Path | Branches | Resolution |
+|---|---|---|
+| `HANDOFF/NIGHT-LOG-2.md` | n2, n3, n4, w3h | **Keep all lines.** Append-only log |
+| `apps/web/lib/dashboard-routing.ts` | n2, n3, n4 | **Keep every route entry from every branch.** Each window registered its own modules in W3-B's nav config |
+| `apps/web/messages/{de,en,ru,tr}.json` | n2, n3, n4, w3h | **Keep every namespace.** Each window owns a distinct `dashboard.<module>.*` sub-namespace |
+
+`n1-listings` and `w3g-dashboard` merge **CLEAN**.
+
+All three are **union** resolutions. No semantic conflict exists: no two windows claim the same
+route entry or the same message key. But they must be resolved additively, and a resolution that
+keeps only one side silently drops a whole module's nav entry or its entire translation
+namespace.
+
+**The backstop:** `check-i18n` rules 1 and 2 exit non-zero if a namespace is dropped, so a botched
+message merge cannot reach `main` quietly. **`dashboard-routing.ts` has no such backstop** — a
+dropped route entry there means a module simply vanishes from the sidebar with every gate still
+green. Diff the route count before and after: main has 2 module entries, the merged result must
+have 18.
+
+### Morning merge order
+
+```
+n1-listings → w3g-dashboard → n2-finance → n3-operations → n4-governance → w3h-auth
+```
+
+The two clean ones first, so the three-way conflicts land against a tree that already carries
+the most routes.
+
+### W3-E is PARTIAL, and the reasoning is sound
+
+> *"Every gap below is structural (a file another window owns, a table that does not exist, a
+> provider that is not wired), not unfinished work."*
+
+Six named gaps: no live updates, the API does not enforce the ticket state machine, `verified`
+has no state, the feed-token derivation is duplicated, reservations and handovers are absent from
+the calendar, and the SLA targets are ours rather than sourced. That last one is the honest kind
+of gap: it says the numbers are invented rather than presenting them as the client's policy.
+
+**Not a blocker for merging.** These are follow-ups, correctly named.
