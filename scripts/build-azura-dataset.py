@@ -837,9 +837,61 @@ TS_HEADER = """// GENERATED FILE — do not hand-edit.
 // and the value is null — that is a deliberate outcome, not missing work.
 // The interfaces below mirror CONTRACTS.md §2 and must not drift from
 // apps/web/lib/contracts.ts (owned by W0-A).
+//
+// They are also the reason `satisfies` at the bottom is worth anything. Every
+// member here is a real shape: `project`, `blocks`, `hotel`, `reviews`,
+// `portalListings`, `amenities` and `coverage` were once `Record<string,
+// unknown>`, and inside such a member the contextual type of every leaf is
+// `unknown` — so `"tier": 4` widened to `number` and `"confidence": "confirmed"`
+// to `string`, and no nested AzuraSourcedFact type-checked at any call site.
+// Declaring the shapes is what keeps the literal unions alive in this file.
 """
 
-TS_TYPES = """
+# The fact members of AzuraProject / AzuraHotel are GENERATED from these two
+# maps, which are the same maps main() loops over to build the objects. One
+# source of truth: a field cannot be emitted without a declaration, and a
+# declaration cannot outlive the field. The value type is the type of
+# SourcedFact.value — AzuraSourcedFact<T> already makes it `T | null`, so a
+# "gap" needs no separate declaration.
+PROJECT_FACT_TYPES: dict[str, str] = {
+    "developer": "string",
+    "developerFoundedYear": "number",
+    "plotAreaSqm": "number",
+    "greenAreaSqm": "number",
+    "buildingFootprintSqm": "number",
+    "outdoorFacilityAreaSqm": "number",
+    "residenceBlockCount": "number",
+    "buildingCount": "number",
+    "floorsPerBuilding": "number",
+    "totalUnits": "number",
+    "constructionStart": "string",
+    "completionDate": "string",
+    "buildStatus": "AzuraBuildStatus",
+    "distanceToSeaM": "number",
+    "distanceToAlanyaCentreKm": "number",
+    "distanceToGazipasaAirportKm": "number",
+    "distanceToAntalyaAirportKm": "number",
+    "downPaymentPercent": "number",
+}
+
+HOTEL_FACT_TYPES: dict[str, str] = {
+    "name": "string",
+    "formerName": "string",
+    "stars": "number",
+    "roomCount": "number",
+    "floors": "number",
+    "openedYear": "number",
+    "board": "string",
+    "aquaparkSlides": "number",
+    "distanceToBeachM": "number",
+    "checkIn": "string",
+    "checkOut": "string",
+    # CONTRACTS §2 writes this SourcedFact<string | null>; AzuraSourcedFact<T>
+    # already unions null into `value`, so <string> is the same type.
+    "brandAffiliation": "string",
+}
+
+_TS_TYPES_HEAD = """
 export type AzuraConfidence =
   | "confirmed"
   | "official"
@@ -875,6 +927,19 @@ export type AzuraUnitLayout =
   | "1+1" | "2+1" | "3+1" | "4+1" | "5+1" | "6+1"
   | "penthouse" | "townhouse" | "villa" | "president_villa"
 
+/** One vocabulary, used by both AzuraUnit and AzuraBlock. */
+export type AzuraDataQuality =
+  | "portal_listing"
+  | "official"
+  | "modelled"
+  | "source_missing"
+
+/** project.buildStatus. Frozen with CONTRACTS.md §2 AzuraProject. */
+export type AzuraBuildStatus = "planned" | "under_construction" | "completed"
+
+/** A monthly rent must never enter the sale-price series — see F-002. */
+export type AzuraPriceKind = "sale" | "rent"
+
 export interface AzuraHarvestEntry {
   url: string
   publisher: string
@@ -898,7 +963,7 @@ export interface AzuraUnit {
   askingPrice: AzuraSourcedFact<AzuraMoney>
   competingPrices: Array<{ money: AzuraMoney; source: AzuraSourceRef; observedAt: string }>
   saleStatus: AzuraSourcedFact<"available" | "reserved" | "sold" | "unknown">
-  dataQuality: "portal_listing" | "official" | "modelled" | "source_missing"
+  dataQuality: AzuraDataQuality
 }
 
 export interface AzuraFinding {
@@ -912,22 +977,248 @@ export interface AzuraFinding {
   resolvedTo: unknown | null
 }
 
+export interface AzuraProjectContact {
+  phone: AzuraSourcedFact<string>
+  email: AzuraSourcedFact<string>
+  address: AzuraSourcedFact<string>
+}
+
+export interface AzuraSocialLink {
+  /** Whatever the emitting parser labelled the profile ("instagram", …). Free
+   *  text on purpose: it is a parser note, not a closed vocabulary. */
+  platform: string
+  url: string
+  source: AzuraSourceRef
+}
+
+export interface AzuraProject {
+  name: string
+  code: "AZW-TRK"
+  country: "Türkiye"
+  province: "Antalya"
+  city: "Alanya"
+  district: "Türkler"
+"""
+
+_TS_TYPES_MID = """  contact: AzuraProjectContact
+  social: AzuraSocialLink[]
+}
+
+export interface AzuraHotel {
+"""
+
+_TS_TYPES_TAIL = """}
+
+/** Block composition is not published by any source — see F-011. Every block
+ *  in this dataset is therefore dataQuality "modelled". */
+export interface AzuraBlock {
+  code: string
+  unitCount: number
+  dataQuality: AzuraDataQuality
+  note: string
+}
+
+export type AzuraReviewPlatform =
+  | "tripadvisor"
+  | "booking"
+  | "agoda"
+  | "onthebeach"
+  | "google"
+
+/** 6.7 means nothing until you know it is out of 10, so the scale travels with
+ *  the score and is never inferred from the size of the number. */
+export type AzuraScoreScale = 5 | 10
+
+export interface AzuraReviewQuote {
+  /** Verbatim. Never paraphrased, never truncated. */
+  text: string
+  /** null when the card's bubble rating could not be read positionally — a
+   *  per-category sub-rating misread as the overall would distort a real
+   *  person's review, so it is left null rather than guessed. */
+  rating: number | null
+  /** The page's literal published-date string, not normalised to ISO. */
+  date: string
+  url: string
+}
+
+/** Tripadvisor's own five buckets PLUS the three-way fold CONTRACTS §2 names.
+ *  Both are stored and nothing is discarded either way; the fold is a fact
+ *  about Tripadvisor's own scale, not a judgement about this hotel. A platform
+ *  that publishes only the fold emits the three required keys alone. */
+export interface AzuraReviewSentiment {
+  positive: number
+  mixed: number
+  negative: number
+  excellent?: number
+  good?: number
+  average?: number
+  poor?: number
+  terrible?: number
+}
+
+export interface AzuraReview {
+  /** The platform that PRODUCED the score, never the host that served it — a
+   *  syndicated widget filed under its serving host would launder one opinion
+   *  into two agreeing sources. */
+  platform: AzuraReviewPlatform
+  url: string
+  score: AzuraSourcedFact<number>
+  scoreScale: AzuraScoreScale
+  reviewCount: AzuraSourcedFact<number>
+  ranking: AzuraSourcedFact<string>
+  sentiment: AzuraReviewSentiment | null
+  notableQuotes: AzuraReviewQuote[]
+}
+
+export interface AzuraPortalListing {
+  publisher: string
+  url: string
+  fetchedAt: string
+  layout: AzuraUnitLayout | null
+  interiorM2: number | null
+  price: AzuraMoney | null
+  claimedBlockCount: number | null
+  claimedTotalUnits: number | null
+  claimedBuildStatus: string | null
+  isStale: boolean
+  /** The next two go beyond CONTRACTS §2 PortalListing. The builder has always
+   *  emitted them; they were simply invisible while this member was an open
+   *  record. Declared rather than dropped — dropping priceKind would let a
+   *  monthly rent look like a sale price, which is F-002's whole subject. */
+  priceKind: AzuraPriceKind
+  note: string | null
+}
+
+/** CONTRACT-GAP-02. `Amenity` is referenced by CONTRACTS.md §2 and defined
+ *  nowhere in it, and this builder hardcodes `"amenities": []` — no parser
+ *  output reaches the member. `never` is the observed shape and the honest
+ *  one: the day amenities are emitted, tsc demands the real shape be written
+ *  here instead of it being guessed today. */
+export type AzuraAmenity = never
+
+export interface AzuraCoverage {
+  sourcesTotal: number
+  sourcesValidated: number
+  sourcesTierLe3Validated: number
+  /** Sparse — only the confidences actually observed get a key. */
+  projectFactsByConfidence: Partial<Record<AzuraConfidence, number>>
+  unitObservations: number
+  parserFailures: number
+}
+
 export interface AzuraWorldDataset {
   generatedAt: string
   contractVersion: 1
   harvest: AzuraHarvestEntry[]
-  project: Record<string, unknown>
-  blocks: Array<Record<string, unknown>>
+  project: AzuraProject
+  blocks: AzuraBlock[]
   units: AzuraUnit[]
-  hotel: Record<string, unknown>
-  reviews: Array<Record<string, unknown>>
-  portalListings: Array<Record<string, unknown>>
-  amenities: Array<Record<string, unknown>>
+  hotel: AzuraHotel
+  reviews: AzuraReview[]
+  portalListings: AzuraPortalListing[]
+  amenities: AzuraAmenity[]
   findings: AzuraFinding[]
   unitSplit: { portalListing: number; modelled: number; total: number }
-  coverage: Record<string, unknown>
+  coverage: AzuraCoverage
 }
 """
+
+
+CONFIDENCES = frozenset(
+    {"confirmed", "official", "single_source", "conflicted", "inferred", "gap"}
+)
+TIERS = frozenset({1, 2, 3, 4, 5, 6})
+BUILD_STATUSES = frozenset({"planned", "under_construction", "completed"})
+REVIEW_PLATFORMS = frozenset({"tripadvisor", "booking", "agoda", "onthebeach", "google"})
+SCORE_SCALES = frozenset({5, 10})
+PRICE_KINDS = frozenset({"sale", "rent"})
+CURRENCIES = frozenset({"EUR", "USD", "TRY", "GBP"})
+DATA_QUALITIES = frozenset({"portal_listing", "official", "modelled", "source_missing"})
+
+
+def vocabulary_problems(dataset: dict) -> list[str]:
+    """Re-check, in Python, every literal union the emitted TypeScript declares.
+
+    The generated file may not be hand-edited, so a value outside a frozen union
+    surfaces as a tsc error in a file nobody is allowed to fix, hundreds of lines
+    away from the parser that produced it. Naming it here instead is the same
+    stance safe_layout() already takes for units[].layout — this is the
+    whole-file version of it.
+    """
+    problems: list[str] = []
+
+    def note(where: str, field: str, value: Any) -> None:
+        problems.append(f"{where}.{field} = {value!r} is outside the frozen union")
+
+    def walk(path: str, node: Any) -> None:
+        if isinstance(node, dict):
+            if "tier" in node and isinstance(node.get("tier"), int):
+                if node["tier"] not in TIERS:
+                    note(path, "tier", node["tier"])
+            if "confidence" in node and "sources" in node:
+                if node["confidence"] not in CONFIDENCES:
+                    note(path, "confidence", node["confidence"])
+            for key, child in node.items():
+                walk(f"{path}.{key}" if path else key, child)
+        elif isinstance(node, list):
+            for index, child in enumerate(node):
+                walk(f"{path}[{index}]", child)
+
+    walk("", dataset)
+
+    status = dataset["project"]["buildStatus"]["value"]
+    if status is not None and status not in BUILD_STATUSES:
+        note("project.buildStatus", "value", status)
+
+    for index, review in enumerate(dataset["reviews"]):
+        where = f"reviews[{index}]"
+        if review["platform"] not in REVIEW_PLATFORMS:
+            note(where, "platform", review["platform"])
+        if review["scoreScale"] not in SCORE_SCALES:
+            note(where, "scoreScale", review["scoreScale"])
+
+    from azura_parsers.base import LAYOUTS
+
+    for index, listing in enumerate(dataset["portalListings"]):
+        where = f"portalListings[{index}]"
+        if listing["layout"] is not None and listing["layout"] not in LAYOUTS:
+            note(where, "layout", listing["layout"])
+        if listing["priceKind"] not in PRICE_KINDS:
+            note(where, "priceKind", listing["priceKind"])
+        price = listing["price"]
+        if price is not None and price["currency"] not in CURRENCIES:
+            note(where, "price.currency", price["currency"])
+
+    for index, unit in enumerate(dataset["units"]):
+        if unit["dataQuality"] not in DATA_QUALITIES:
+            note(f"units[{index}]", "dataQuality", unit["dataQuality"])
+
+    for index, block in enumerate(dataset["blocks"]):
+        if block["dataQuality"] not in DATA_QUALITIES:
+            note(f"blocks[{index}]", "dataQuality", block["dataQuality"])
+
+    if dataset["amenities"]:
+        problems.append(
+            "amenities is non-empty but AzuraAmenity is `never` (CONTRACT-GAP-02): "
+            "declare the real shape in _TS_TYPES_TAIL before emitting any"
+        )
+
+    return problems
+
+
+def _fact_members(spec: dict[str, str]) -> str:
+    return "".join(f"  {name}: AzuraSourcedFact<{ts}>\n" for name, ts in spec.items())
+
+
+def ts_types() -> str:
+    """The type block, with AzuraProject/AzuraHotel members generated in place."""
+    return (
+        _TS_TYPES_HEAD
+        + _fact_members(PROJECT_FACT_TYPES)
+        + _TS_TYPES_MID
+        + _fact_members(HOTEL_FACT_TYPES)
+        + _TS_TYPES_TAIL
+    )
 
 
 def emit_ts(dataset: dict) -> None:
@@ -941,7 +1232,7 @@ def emit_ts(dataset: dict) -> None:
     # on its own, and it is what keeps the frozen UnitLayout union enforced at
     # build time rather than discovered at render time.
     TS_OUT.write_text(
-        f"{TS_HEADER}{TS_TYPES}\nexport const azuraWorldDataset = {body} satisfies AzuraWorldDataset\n\n"
+        f"{TS_HEADER}{ts_types()}\nexport const azuraWorldDataset = {body} satisfies AzuraWorldDataset\n\n"
         "export const azuraWorldUnits: AzuraUnit[] = azuraWorldDataset.units\n"
         "export const azuraWorldFindings: AzuraFinding[] = azuraWorldDataset.findings\n\n"
         "export default azuraWorldDataset\n",
@@ -1086,18 +1377,12 @@ def emit_csv(dataset: dict) -> None:
 # -------------------------------------------------------------------- main --
 
 
-PROJECT_FIELDS = [
-    "developer", "developerFoundedYear", "plotAreaSqm", "greenAreaSqm",
-    "buildingFootprintSqm", "outdoorFacilityAreaSqm", "residenceBlockCount",
-    "buildingCount", "floorsPerBuilding", "totalUnits", "constructionStart",
-    "completionDate", "buildStatus", "distanceToSeaM", "distanceToAlanyaCentreKm",
-    "distanceToGazipasaAirportKm", "distanceToAntalyaAirportKm", "downPaymentPercent",
-]
+# Derived, not repeated: the emitted TypeScript declares exactly the fields this
+# loop builds, because both read the same map. Adding a field in one place and
+# forgetting the other used to be possible; now it is not.
+PROJECT_FIELDS = list(PROJECT_FACT_TYPES)
 
-HOTEL_FIELDS = [
-    "name", "formerName", "stars", "roomCount", "floors", "openedYear", "board",
-    "aquaparkSlides", "distanceToBeachM", "checkIn", "checkOut", "brandAffiliation",
-]
+HOTEL_FIELDS = list(HOTEL_FACT_TYPES)
 
 
 def main() -> int:
@@ -1621,6 +1906,12 @@ def main() -> int:
         },
     }
 
+    # Checked before the file is written, so the message names the parser rather
+    # than arriving later as a tsc error in a file nobody may hand-edit.
+    vocabulary = vocabulary_problems(dataset)
+    for problem in vocabulary:
+        say(f"  ! vocabulary: {problem}")
+
     emit_ts(dataset)
     emit_sql(dataset)
     emit_csv(dataset)
@@ -1648,6 +1939,8 @@ def main() -> int:
             problems.append(f"unit total {split['total']} != {TOTAL_UNITS_TARGET}")
         if parser_failures:
             problems.append(f"{len(parser_failures)} parser failure(s)")
+        if vocabulary:
+            problems.append(f"{len(vocabulary)} frozen-vocabulary violation(s)")
         if problems:
             print("STRICT: " + "; ".join(problems), file=sys.stderr)
             return 1
