@@ -1,0 +1,261 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "D:\\azura-w4a\\apps\\web\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--list",
+      "--project=production"
+    ],
+    "configFile": "D:\\azura-w4a\\apps\\web\\playwright.config.ts",
+    "rootDir": "D:/azura-w4a/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/azura-w4a/.tmp/playwright-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/azura-w4a/apps/web/e2e",
+        "testIgnore": [
+          "/production\\//"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "D:/azura-w4a/.tmp/playwright-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "D:/azura-w4a/apps/web/e2e",
+        "testIgnore": [
+          "/production\\//"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "D:/azura-w4a/.tmp/playwright-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "production",
+        "name": "production",
+        "testDir": "D:/azura-w4a/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/production\\//"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\azura-w4a\\quality\\e2e\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "production\\evidence-render.spec.ts",
+      "file": "production/evidence-render.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "the evidence cockpit against the production build",
+          "file": "production/evidence-render.spec.ts",
+          "line": 96,
+          "column": 6,
+          "specs": [
+            {
+              "title": "renders for a permitted role, with its evidence intact",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d06d3a96dabef84acd4c-134dd4e9fb0f91f4b04f",
+              "file": "production/evidence-render.spec.ts",
+              "line": 97,
+              "column": 3
+            },
+            {
+              "title": "still refuses a role that lacks evidence:view",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d06d3a96dabef84acd4c-a38c7c321829092d8f41",
+              "file": "production/evidence-render.spec.ts",
+              "line": 132,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "production\\production.spec.ts",
+      "file": "production/production.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "production build",
+          "file": "production/production.spec.ts",
+          "line": 41,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the access-profile cookie buys nothing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5c8a550208d634c1ed1d-2e859d505a05ec769ede",
+              "file": "production/production.spec.ts",
+              "line": 42,
+              "column": 3
+            },
+            {
+              "title": "every dashboard route redirects an anonymous caller to login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5c8a550208d634c1ed1d-a0d603a9b6c4193e0030",
+              "file": "production/production.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "W3-C's observation reproduces: the cockpit 307s without a session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5c8a550208d634c1ed1d-151ab0eafc63652e3e0a",
+              "file": "production/production.spec.ts",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "the public surfaces render in production",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "production",
+                  "projectName": "production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5c8a550208d634c1ed1d-9fdb67fdcf4843266af4",
+              "file": "production/production.spec.ts",
+              "line": 82,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-28T12:20:37.290Z",
+    "duration": 62.60299999999995,
+    "expected": 0,
+    "skipped": 6,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
