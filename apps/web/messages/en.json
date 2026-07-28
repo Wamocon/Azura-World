@@ -748,10 +748,12 @@
       }
     },
     "leads": {
-      "title": "Leads",
-      "lead": "Incoming enquiries and how far each has progressed.",
-      "count": "{count, plural, one {# lead} other {# leads}}",
-      "empty": "No leads.",
+      "title": "Enquiries",
+      "lead": "Incoming prospects and where each one stands.",
+      "count": "{count, plural, one {# enquiry} other {# enquiries}}",
+      "empty": "No enquiries.",
+      "seedNotice": "Demo data: a section of the collected enquiries is shown, not live data.",
+      "readOnlyNotice": "This page only shows enquiries. New ones cannot be saved yet, because the write path to the database is missing.",
       "columns": {
         "name": "Name",
         "channel": "Channel",
@@ -759,20 +761,117 @@
         "stage": "Stage",
         "owner": "Owner",
         "createdAt": "Received"
+      },
+      "summary": {
+        "heading": "Overview",
+        "count": "Enquiries",
+        "ofTotal": "of {total}",
+        "budget": "Stated budget",
+        "withoutBudget": "{count} not stated",
+        "noBudgets": "Not stated",
+        "currencyNote": "Budgets are shown in the currency the prospect named. They are kept apart per currency and never added into one total."
+      },
+      "list": {
+        "heading": "All enquiries",
+        "filterLabel": "Filter enquiries",
+        "filterAll": "All",
+        "clearFilters": "Clear filters",
+        "emptyByStatus": "No enquiry has the selected stage.",
+        "emptyBySource": "No enquiry came from that channel.",
+        "emptyCombination": "This combination of filters matches no enquiry."
+      },
+      "card": {
+        "budget": "Budget",
+        "noBudget": "Not stated",
+        "layout": "Layout wanted",
+        "noLayout": "Not stated",
+        "assigned": "Owned by",
+        "unassigned": "Nobody assigned",
+        "assignedUnnamed": "Assigned, name not visible to you",
+        "assignedUnknown": "Assigned, name not on record",
+        "score": "Score",
+        "noScore": "Not scored",
+        "nextAction": "Next step",
+        "noNextAction": "No date set",
+        "lastContact": "Last contact",
+        "neverContacted": "Not contacted yet",
+        "consentYes": "Marketing consent given",
+        "consentNo": "No marketing consent",
+        "lostReason": "Reason lost",
+        "note": "Note",
+        "channel": "Channel"
+      },
+      "status": {
+        "new": "New",
+        "contacted": "Contacted",
+        "qualified": "Qualified",
+        "viewing_booked": "Viewing arranged",
+        "offer_made": "Offer made",
+        "negotiating": "Negotiating",
+        "won": "Won",
+        "lost": "Lost",
+        "dormant": "Dormant"
+      },
+      "source": {
+        "website": "Website",
+        "portal": "Portal",
+        "referral": "Referral",
+        "walk_in": "Walk-in",
+        "phone": "Phone",
+        "email": "Email",
+        "social": "Social media",
+        "exhibition": "Trade fair",
+        "partner_agent": "Partner agent",
+        "unknown": "Unknown"
       }
     },
     "pipeline": {
       "title": "Buyer pipeline",
-      "lead": "From first contact to completion.",
+      "lead": "From first contact to handover of the keys.",
       "empty": "Nothing in the pipeline.",
-      "stages": {
-        "new": "New",
-        "qualified": "Qualified",
+      "seedNotice": "Demo data: a section of the collected entries is shown, not live data.",
+      "readOnlyNotice": "This page only shows the pipeline. An entry cannot be moved to the next stage yet, because the write path to the database is missing.",
+      "truncatedNotice": "The figures below are computed from {summarised} of {total} entries. Anything beyond that is not included.",
+      "summary": {
+        "heading": "Overview",
+        "entries": "Entries",
+        "dealTotals": "Agreed amounts",
+        "withoutDeal": "{count} with no amount",
+        "noDeals": "Not stated",
+        "currencyNote": "Amounts are shown in the currency they were agreed in. They are kept apart per currency and never added into one total."
+      },
+      "board": {
+        "heading": "Every stage",
+        "lead": "Every stage is shown, including the empty ones. An empty stage is a statement about the pipeline.",
+        "stageEmpty": "Nothing is at this stage right now.",
+        "averageProbability": "Avg. chance {value}%",
+        "noProbability": "No closing chance estimated"
+      },
+      "card": {
+        "deal": "Agreed amount",
+        "noDeal": "No amount yet",
+        "probability": "{value}% closing chance",
+        "probabilityUnset": "Closing chance not estimated",
+        "expectedClose": "Expected close",
+        "noExpectedClose": "No date",
+        "unit": "Apartment",
+        "noUnit": "No apartment assigned",
+        "inStage": "Days at this stage",
+        "cameFrom": "from {stage}",
+        "firstStage": "first stage",
+        "blocker": "Blocked by",
+        "missingLead": "Enquiry not found"
+      },
+      "stage": {
+        "enquiry": "Enquiry",
+        "qualification": "Qualification",
         "viewing": "Viewing",
-        "offer": "Offer",
+        "reservation": "Reservation",
         "contract": "Contract",
-        "closed": "Closed",
-        "lost": "Lost"
+        "payment": "Payment",
+        "title_deed": "Title deed",
+        "handover": "Handover",
+        "closed": "Closed"
       }
     },
     "finance": {

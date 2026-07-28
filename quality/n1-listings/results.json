@@ -273,5 +273,195 @@
     "section": "9 - English renders as English, not a German fallback",
     "label": "\"Alanya-Home\" is unchanged in English",
     "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "manager receives 200",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "all 7 seeded enquiries render",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the EUR budget (180.000) renders",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the USD budget (310.000) renders",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the TRY budget (9.500.000) renders",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the GBP budget (220.000) renders",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "budget totals are one figure PER currency, never one combined figure",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the lead with no budget is counted, not summed as 0",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "a lead with no budget says so in words",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the write gap is stated in words",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "the page ships no control that could fake a write",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "no raw uuid is shown to the reader",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "an unresolvable assignee says the name is not on record",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "it does NOT claim the viewer lacks permission to see the name",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "marketing consent is stated in BOTH directions, never only when granted",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "filtering to an empty status names the filter and offers to clear it",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "accountant holds no leads:view and receives NO personal data",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "staff holds no leads:view and receives NO personal data",
+    "passed": true
+  },
+  {
+    "section": "10 - leads: four currencies, never one total",
+    "label": "tenant holds no leads:view and receives NO personal data",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "manager receives 200",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "all nine stages render, in funnel order",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "the empty stages are rendered rather than dropped",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "all 6 seeded entries render",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "deal amount 305.000 renders",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "deal amount 176.000 renders",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "deal amount 215.000 renders",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "deal amount 258.000 renders",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "deals render in EUR, USD and GBP, each in its own currency",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "the two entries with no deal amount are counted, never summed as 0",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "a probability of 0 renders as 0 %, not as 'not estimated'",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "the previous stage renders translated, never as a raw enum member",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "the write gap is stated in words",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "the page ships no control that could fake a stage change",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "accountant holds no buyer_pipeline:view and receives NO pipeline data",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "staff holds no buyer_pipeline:view and receives NO pipeline data",
+    "passed": true
+  },
+  {
+    "section": "11 - buyer pipeline: nine stages, empty ones included",
+    "label": "owner holds no buyer_pipeline:view and receives NO pipeline data",
+    "passed": true
+  },
+  {
+    "section": "12 - leads and pipeline at 320px German",
+    "label": "leads: no horizontal page scroll at 320px in German",
+    "passed": true
+  },
+  {
+    "section": "12 - leads and pipeline at 320px German",
+    "label": "pipeline: no horizontal page scroll at 320px in German",
+    "passed": true
   }
 ]

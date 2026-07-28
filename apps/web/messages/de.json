@@ -752,6 +752,8 @@
       "lead": "Eingehende Interessenten und ihr Bearbeitungsstand.",
       "count": "{count, plural, one {# Anfrage} other {# Anfragen}}",
       "empty": "Keine Anfragen.",
+      "seedNotice": "Demodaten: Es wird ein Ausschnitt der erfassten Anfragen gezeigt, keine Live-Daten.",
+      "readOnlyNotice": "Diese Seite zeigt Anfragen nur an. Neue Anfragen lassen sich noch nicht speichern, weil der Schreibweg zur Datenbank fehlt.",
       "columns": {
         "name": "Name",
         "channel": "Kanal",
@@ -759,20 +761,117 @@
         "stage": "Stufe",
         "owner": "Betreuung",
         "createdAt": "Eingang"
+      },
+      "summary": {
+        "heading": "Überblick",
+        "count": "Anfragen",
+        "ofTotal": "von {total}",
+        "budget": "Genanntes Budget",
+        "withoutBudget": "{count} ohne Angabe",
+        "noBudgets": "Keine Angabe",
+        "currencyNote": "Budgets stehen in der Währung, die der Interessent genannt hat. Sie werden je Währung getrennt gezeigt und nie zu einer Summe verrechnet."
+      },
+      "list": {
+        "heading": "Alle Anfragen",
+        "filterLabel": "Anfragen filtern",
+        "filterAll": "Alle",
+        "clearFilters": "Filter zurücksetzen",
+        "emptyByStatus": "Kein Eintrag mit diesem Bearbeitungsstand.",
+        "emptyBySource": "Kein Eintrag aus diesem Kanal.",
+        "emptyCombination": "Diese Kombination von Filtern trifft auf keine Anfrage zu."
+      },
+      "card": {
+        "budget": "Genanntes Budget",
+        "noBudget": "Keine Angabe",
+        "layout": "Gesuchter Grundriss",
+        "noLayout": "Keine Angabe",
+        "assigned": "Betreut von",
+        "unassigned": "Niemand zugewiesen",
+        "assignedUnnamed": "Zugewiesen, Name nicht einsehbar",
+        "assignedUnknown": "Zugewiesen, Name nicht hinterlegt",
+        "score": "Bewertung",
+        "noScore": "Keine Angabe",
+        "nextAction": "Nächster Schritt",
+        "noNextAction": "Kein Termin gesetzt",
+        "lastContact": "Letzter Kontakt",
+        "neverContacted": "Noch kein Kontakt",
+        "consentYes": "Werbeeinwilligung liegt vor",
+        "consentNo": "Keine Werbeeinwilligung",
+        "lostReason": "Absagegrund",
+        "note": "Notiz",
+        "channel": "Kanal"
+      },
+      "status": {
+        "new": "Neu",
+        "contacted": "Kontaktiert",
+        "qualified": "Qualifiziert",
+        "viewing_booked": "Besichtigung gebucht",
+        "offer_made": "Angebot abgegeben",
+        "negotiating": "In Verhandlung",
+        "won": "Gewonnen",
+        "lost": "Verloren",
+        "dormant": "Ruht"
+      },
+      "source": {
+        "website": "Eigene Website",
+        "portal": "Portal",
+        "referral": "Empfehlung",
+        "walk_in": "Vor Ort",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "social": "Soziale Medien",
+        "exhibition": "Messe",
+        "partner_agent": "Partnermakler",
+        "unknown": "Unbekannt"
       }
     },
     "pipeline": {
       "title": "Käufer-Pipeline",
-      "lead": "Vom Erstkontakt bis zum Abschluss.",
+      "lead": "Vom Erstkontakt bis zur Schlüsselübergabe.",
       "empty": "Keine Vorgänge in der Pipeline.",
-      "stages": {
-        "new": "Neu",
-        "qualified": "Qualifiziert",
+      "seedNotice": "Demodaten: Es wird ein Ausschnitt der erfassten Vorgänge gezeigt, keine Live-Daten.",
+      "readOnlyNotice": "Diese Seite zeigt die Pipeline nur an. Ein Vorgang lässt sich noch nicht in die nächste Stufe verschieben, weil der Schreibweg zur Datenbank fehlt.",
+      "truncatedNotice": "Die Zahlen unten sind aus {summarised} von {total} Vorgängen berechnet. Alles darüber ist nicht enthalten.",
+      "summary": {
+        "heading": "Überblick",
+        "entries": "Vorgänge",
+        "dealTotals": "Vereinbarte Summen",
+        "withoutDeal": "{count} ohne Summe",
+        "noDeals": "Keine Angabe",
+        "currencyNote": "Summen stehen in der Währung, in der sie vereinbart wurden. Sie werden je Währung getrennt gezeigt und nie zu einer Summe verrechnet."
+      },
+      "board": {
+        "heading": "Alle Stufen",
+        "lead": "Jede Stufe wird gezeigt, auch die leeren. Eine leere Stufe ist eine Aussage über die Pipeline.",
+        "stageEmpty": "Auf dieser Stufe steht derzeit kein Vorgang.",
+        "averageProbability": "Ø Abschlusschance {value} %",
+        "noProbability": "Keine Abschlusschance geschätzt"
+      },
+      "card": {
+        "deal": "Vereinbarte Summe",
+        "noDeal": "Noch keine Summe",
+        "probability": "{value} % Abschlusschance",
+        "probabilityUnset": "Abschlusschance nicht geschätzt",
+        "expectedClose": "Geplanter Abschluss",
+        "noExpectedClose": "Kein Termin",
+        "unit": "Wohnung",
+        "noUnit": "Keine Wohnung zugeordnet",
+        "inStage": "Tage auf dieser Stufe",
+        "cameFrom": "aus {stage}",
+        "firstStage": "erste Stufe",
+        "blocker": "Blockiert durch",
+        "missingLead": "Anfrage nicht gefunden"
+      },
+      "stage": {
+        "enquiry": "Anfrage",
+        "qualification": "Qualifizierung",
         "viewing": "Besichtigung",
-        "offer": "Angebot",
+        "reservation": "Reservierung",
         "contract": "Vertrag",
-        "closed": "Abgeschlossen",
-        "lost": "Verloren"
+        "payment": "Zahlung",
+        "title_deed": "Grundbuch",
+        "handover": "Übergabe",
+        "closed": "Abgeschlossen"
       }
     },
     "finance": {

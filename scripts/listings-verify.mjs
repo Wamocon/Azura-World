@@ -1,5 +1,7 @@
 /**
- * /dashboard/listings, verified in a real browser.               Owner: N1
+ * The three N1 modules, verified in a real browser.              Owner: N1
+ *
+ * `/dashboard/listings`, `/dashboard/leads` and `/dashboard/buyer-pipeline`.
  *
  * The W3-C brief's definition of done for the portal-listings deliverable, run
  * rather than read. Everything here is asserted against a **production build**
@@ -35,6 +37,8 @@ const SHOTS = join(ROOT, "quality", "n1-listings");
 const PORT = Number(process.env["AZURA_VERIFY_PORT"] ?? 3291);
 const BASE = `http://127.0.0.1:${PORT}`;
 const LISTINGS = "/de/dashboard/listings";
+const LEADS = "/de/dashboard/leads";
+const PIPELINE = "/de/dashboard/buyer-pipeline";
 
 const requireFromWeb = createRequire(join(APP, "package.json"));
 const { chromium } = requireFromWeb("@playwright/test");
@@ -614,6 +618,274 @@ try {
   for (const name of ["Haspo Realty", "Housearch", "Alanya-Home"]) {
     check(`"${name}" is unchanged in English`, english.body.includes(name));
   }
+
+  // =========================================================================
+  group("10 - leads: four currencies, never one total");
+
+  const leads = await get(LEADS, "manager");
+  check("manager receives 200", leads.status === 200, `status ${leads.status}`);
+
+  const leadsPage = await context.newPage();
+  await leadsPage.goto(`${BASE}${LEADS}`, { waitUntil: "domcontentloaded" });
+  await leadsPage.waitForSelector("[data-slot='lead-card']");
+
+  const leadCards = await leadsPage.$$eval("[data-slot='lead-card']", (nodes) =>
+    nodes.map((node) => ({
+      status: node.getAttribute("data-lead-status"),
+      text: (node.textContent ?? "").replace(/\s+/g, " ").trim(),
+    })),
+  );
+  check(
+    "all 7 seeded enquiries render",
+    leadCards.length === 7,
+    `${leadCards.length}`,
+  );
+
+  // The honesty control for this module: four currencies among seven leads.
+  // Every one must appear in the currency the person actually named.
+  const leadsText = ((await leadsPage.textContent("body")) ?? "").replace(
+    /\s+/g,
+    " ",
+  );
+  for (const [currency, figure] of [
+    ["EUR", "180.000"],
+    ["USD", "310.000"],
+    ["TRY", "9.500.000"],
+    ["GBP", "220.000"],
+  ]) {
+    check(
+      `the ${currency} budget (${figure}) renders`,
+      leadsText.includes(figure),
+    );
+  }
+
+  const totalNodes = await leadsPage.$$eval(
+    "[data-slot='currency-totals'] [data-currency]",
+    (nodes) => nodes.map((node) => node.getAttribute("data-currency")),
+  );
+  check(
+    "budget totals are one figure PER currency, never one combined figure",
+    new Set(totalNodes).size === totalNodes.length && totalNodes.length >= 3,
+    totalNodes.join(", "),
+  );
+  check(
+    "the lead with no budget is counted, not summed as 0",
+    /1 ohne Angabe/.test(leadsText),
+  );
+  check(
+    "a lead with no budget says so in words",
+    leadCards.some((card) => /Keine Angabe/.test(card.text)),
+  );
+  // Two separate assertions, not one `&&`. The first version was compound and
+  // failed without saying which half broke - it was the button count, scoped to
+  // the whole document, which includes the SHELL's controls (sidebar collapse,
+  // global search, sign-out). Scoped to `main`, which is the page's own content.
+  check(
+    "the write gap is stated in words",
+    /lassen sich noch nicht speichern/.test(leadsText),
+  );
+  check(
+    "the page ships no control that could fake a write",
+    (await leadsPage.$$("main button, main [type='submit'], main form"))
+      .length === 0,
+    `${(await leadsPage.$$("main button, main [type='submit'], main form")).length} found in main`,
+  );
+  // The first served version printed the raw profile uuid at a property manager.
+  // Asserted on the SHAPE of a uuid rather than on one known id, so any future
+  // field that leaks an internal identifier fails here too.
+  const leadsVisible = await leadsPage.evaluate(() => document.body.innerText);
+  const uuids = [
+    ...leadsVisible.matchAll(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+    ),
+  ].map((match) => match[0]);
+  check(
+    "no raw uuid is shown to the reader",
+    uuids.length === 0,
+    uuids.length === 0 ? "0 found" : uuids.slice(0, 3).join(", "),
+  );
+  // The assignee never resolves in local-seed mode, and that is a REAL dataset
+  // defect rather than a UI one: `lead-data.ts` assigns to `0a1b2c3d-0001-…`
+  // profile ids while `governance-data.ts` seeds the directory with
+  // `b0000000-…`. So the assertion is on the honesty of the fallback, not on a
+  // name: the page must say the name is not on record, and must NOT say the
+  // viewer lacks permission - a manager holds `users:view` and would be sent to
+  // the wrong person for a fix.
+  check(
+    "an unresolvable assignee says the name is not on record",
+    /Name nicht hinterlegt/.test(leadsVisible),
+  );
+  check(
+    "it does NOT claim the viewer lacks permission to see the name",
+    !/Name nicht einsehbar/.test(leadsVisible),
+  );
+  check(
+    "marketing consent is stated in BOTH directions, never only when granted",
+    (await leadsPage.$$("[data-consent='granted']")).length > 0 &&
+      (await leadsPage.$$("[data-consent='withheld']")).length > 0,
+  );
+
+  await leadsPage.goto(`${BASE}${LEADS}?status=won`, {
+    waitUntil: "domcontentloaded",
+  });
+  const leadsEmpty = ((await leadsPage.textContent("body")) ?? "").replace(
+    /\s+/g,
+    " ",
+  );
+  check(
+    "filtering to an empty status names the filter and offers to clear it",
+    /Bearbeitungsstand/.test(leadsEmpty) &&
+      /Filter zurücksetzen/.test(leadsEmpty),
+  );
+
+  for (const role of ["accountant", "staff", "tenant"]) {
+    const response = await get(LEADS, role);
+    const leaked = ["Ivanov", "Yılmaz", "Schneider", "310.000"].filter(
+      (needle) => response.body.includes(needle),
+    );
+    check(
+      `${role} holds no leads:view and receives NO personal data`,
+      leaked.length === 0,
+      leaked.length === 0 ? "clean" : `leaked: ${leaked.join(", ")}`,
+    );
+  }
+
+  // =========================================================================
+  group("11 - buyer pipeline: nine stages, empty ones included");
+
+  const pipeline = await get(PIPELINE, "manager");
+  check(
+    "manager receives 200",
+    pipeline.status === 200,
+    `status ${pipeline.status}`,
+  );
+
+  const pipelinePage = await context.newPage();
+  await pipelinePage.goto(`${BASE}${PIPELINE}`, {
+    waitUntil: "domcontentloaded",
+  });
+  await pipelinePage.waitForSelector("[data-slot='pipeline-stage']");
+
+  const stages = await pipelinePage.$$eval(
+    "[data-slot='pipeline-stage']",
+    (nodes) =>
+      nodes.map((node) => ({
+        stage: node.getAttribute("data-stage"),
+        count: Number(node.getAttribute("data-stage-count")),
+      })),
+  );
+  check(
+    "all nine stages render, in funnel order",
+    stages.length === 9 &&
+      stages.map((s) => s.stage).join(",") ===
+        "enquiry,qualification,viewing,reservation,contract,payment,title_deed,handover,closed",
+    stages.map((s) => `${s.stage}:${s.count}`).join(" "),
+  );
+  check(
+    "the empty stages are rendered rather than dropped",
+    stages.filter((s) => s.count === 0).length === 3,
+    `${stages.filter((s) => s.count === 0).length} empty`,
+  );
+
+  const pipelineEntries = await pipelinePage.$$eval(
+    "[data-slot='pipeline-entry']",
+    (nodes) => nodes.length,
+  );
+  check(
+    "all 6 seeded entries render",
+    pipelineEntries === 6,
+    `${pipelineEntries}`,
+  );
+
+  const pipelineText = ((await pipelinePage.textContent("body")) ?? "").replace(
+    /\s+/g,
+    " ",
+  );
+  for (const figure of ["305.000", "176.000", "215.000", "258.000"]) {
+    check(`deal amount ${figure} renders`, pipelineText.includes(figure));
+  }
+  const pipelineCurrencies = await pipelinePage.$$eval(
+    "[data-slot='pipeline-entry'] [data-currency]",
+    (nodes) => [
+      ...new Set(nodes.map((node) => node.getAttribute("data-currency"))),
+    ],
+  );
+  check(
+    "deals render in EUR, USD and GBP, each in its own currency",
+    ["EUR", "USD", "GBP"].every((c) => pipelineCurrencies.includes(c)),
+    pipelineCurrencies.join(", "),
+  );
+  check(
+    "the two entries with no deal amount are counted, never summed as 0",
+    /2 ohne Summe/.test(pipelineText),
+  );
+
+  // 0 % ("this is lost") and null ("nobody estimated") are different facts.
+  check(
+    "a probability of 0 renders as 0 %, not as 'not estimated'",
+    /0 % Abschlusschance/.test(pipelineText),
+  );
+  check(
+    "the previous stage renders translated, never as a raw enum member",
+    /aus Reservierung/.test(pipelineText) &&
+      !/aus reservation|aus title_deed/.test(pipelineText),
+  );
+  check(
+    "the write gap is stated in words",
+    /lässt sich noch nicht in die nächste Stufe verschieben/.test(pipelineText),
+  );
+  check(
+    "the page ships no control that could fake a stage change",
+    (await pipelinePage.$$("main button, main [type='submit'], main form"))
+      .length === 0,
+    `${(await pipelinePage.$$("main button, main [type='submit'], main form")).length} found in main`,
+  );
+
+  for (const role of ["accountant", "staff", "owner"]) {
+    const response = await get(PIPELINE, role);
+    const leaked = ["Ivanov", "305.000", "Vertragsübersetzung"].filter(
+      (needle) => response.body.includes(needle),
+    );
+    check(
+      `${role} holds no buyer_pipeline:view and receives NO pipeline data`,
+      leaked.length === 0,
+      leaked.length === 0 ? "clean" : `leaked: ${leaked.join(", ")}`,
+    );
+  }
+
+  // =========================================================================
+  group("12 - leads and pipeline at 320px German");
+
+  for (const [name, path] of [
+    ["leads", LEADS],
+    ["pipeline", PIPELINE],
+  ]) {
+    await narrowPage.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
+    const box = await narrowPage.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    }));
+    check(
+      `${name}: no horizontal page scroll at 320px in German`,
+      box.scroll <= box.client,
+      `scrollWidth ${box.scroll} vs clientWidth ${box.client}`,
+    );
+    await narrowPage.screenshot({
+      path: join(SHOTS, `${name}-de-320.png`),
+      fullPage: true,
+    });
+  }
+
+  await leadsPage.goto(`${BASE}${LEADS}`, { waitUntil: "domcontentloaded" });
+  await leadsPage.waitForSelector("[data-slot='lead-card']");
+  await leadsPage.screenshot({
+    path: join(SHOTS, "leads-de-desktop.png"),
+    fullPage: true,
+  });
+  await pipelinePage.screenshot({
+    path: join(SHOTS, "pipeline-de-desktop.png"),
+    fullPage: true,
+  });
 
   // =========================================================================
   // Back to the unfiltered register before the screenshot. The first run

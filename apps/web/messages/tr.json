@@ -749,9 +749,11 @@
     },
     "leads": {
       "title": "Talepler",
-      "lead": "Gelen ilgililer ve bulundukları aşama.",
+      "lead": "Gelen ilgililer ve her birinin durumu.",
       "count": "{count, plural, other {# talep}}",
       "empty": "Talep yok.",
+      "seedNotice": "Demo veri: Toplanan taleplerin bir bölümü gösterilir, canlı veri değil.",
+      "readOnlyNotice": "Bu sayfa talepleri yalnızca gösterir. Yeni talep henüz kaydedilemiyor, çünkü veritabanına yazma yolu yok.",
       "columns": {
         "name": "Ad",
         "channel": "Kanal",
@@ -759,20 +761,117 @@
         "stage": "Aşama",
         "owner": "Sorumlu",
         "createdAt": "Geliş"
+      },
+      "summary": {
+        "heading": "Genel bakış",
+        "count": "Talep",
+        "ofTotal": "/ {total}",
+        "budget": "Belirtilen bütçe",
+        "withoutBudget": "{count} belirtilmemiş",
+        "noBudgets": "Belirtilmemiş",
+        "currencyNote": "Bütçeler ilgilinin belirttiği para biriminde gösterilir. Para birimine göre ayrı tutulur ve tek bir toplama katılmaz."
+      },
+      "list": {
+        "heading": "Tüm talepler",
+        "filterLabel": "Talepleri filtrele",
+        "filterAll": "Tümü",
+        "clearFilters": "Filtreleri temizle",
+        "emptyByStatus": "Seçilen aşama hiçbir talebe uymuyor.",
+        "emptyBySource": "Seçilen kanal hiçbir talebe uymuyor.",
+        "emptyCombination": "Bu filtre birleşimi hiçbir talebe uymuyor."
+      },
+      "card": {
+        "budget": "Bütçe",
+        "noBudget": "Belirtilmemiş",
+        "layout": "İstenen plan",
+        "noLayout": "Belirtilmemiş",
+        "assigned": "Sorumlu",
+        "unassigned": "Kimse atanmadı",
+        "assignedUnnamed": "Atandı, adı size görünmüyor",
+        "assignedUnknown": "Atandı, adı kayıtlı değil",
+        "score": "Puan",
+        "noScore": "Puanlanmadı",
+        "nextAction": "Sonraki adım",
+        "noNextAction": "Tarih yok",
+        "lastContact": "Son görüşme",
+        "neverContacted": "Henüz görüşülmedi",
+        "consentYes": "Pazarlama izni var",
+        "consentNo": "Pazarlama izni yok",
+        "lostReason": "Kayıp nedeni",
+        "note": "Not",
+        "channel": "Kanal"
+      },
+      "status": {
+        "new": "Yeni",
+        "contacted": "Görüşüldü",
+        "qualified": "Nitelikli",
+        "viewing_booked": "Gezi planlandı",
+        "offer_made": "Teklif verildi",
+        "negotiating": "Pazarlıkta",
+        "won": "Kazanıldı",
+        "lost": "Kaybedildi",
+        "dormant": "Beklemede"
+      },
+      "source": {
+        "website": "Web sitesi",
+        "portal": "Portal",
+        "referral": "Tavsiye",
+        "walk_in": "Yerinde",
+        "phone": "Telefon",
+        "email": "E-posta",
+        "social": "Sosyal medya",
+        "exhibition": "Fuar",
+        "partner_agent": "İş ortağı danışman",
+        "unknown": "Bilinmiyor"
       }
     },
     "pipeline": {
-      "title": "Alıcı süreci",
-      "lead": "İlk temastan tapuya kadar.",
-      "empty": "Süreçte kayıt yok.",
-      "stages": {
-        "new": "Yeni",
-        "qualified": "Nitelikli",
-        "viewing": "Gezme",
-        "offer": "Teklif",
+      "title": "Alıcı hattı",
+      "lead": "İlk temastan anahtar teslimine kadar.",
+      "empty": "Hatta kayıt yok.",
+      "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
+      "readOnlyNotice": "Bu sayfa hattı yalnızca gösterir. Bir kayıt henüz sonraki aşamaya taşınamıyor, çünkü veritabanına yazma yolu yok.",
+      "truncatedNotice": "Aşağıdaki sayılar {total} kaydın {summarised} tanesinden hesaplandı. Ötesi dahil değil.",
+      "summary": {
+        "heading": "Genel bakış",
+        "entries": "Kayıt",
+        "dealTotals": "Anlaşılan tutarlar",
+        "withoutDeal": "{count} tutarsız",
+        "noDeals": "Belirtilmemiş",
+        "currencyNote": "Tutarlar anlaşıldıkları para biriminde gösterilir. Para birimine göre ayrı tutulur ve tek bir toplama katılmaz."
+      },
+      "board": {
+        "heading": "Tüm aşamalar",
+        "lead": "Boş olanlar dahil her aşama gösterilir. Boş bir aşama, hat hakkında bir bilgidir.",
+        "stageEmpty": "Şu anda bu aşamada kayıt yok.",
+        "averageProbability": "Ort. kapanış şansı %{value}",
+        "noProbability": "Kapanış şansı tahmin edilmedi"
+      },
+      "card": {
+        "deal": "Anlaşılan tutar",
+        "noDeal": "Henüz tutar yok",
+        "probability": "%{value} kapanış şansı",
+        "probabilityUnset": "Kapanış şansı tahmin edilmedi",
+        "expectedClose": "Planlanan kapanış",
+        "noExpectedClose": "Tarih yok",
+        "unit": "Daire",
+        "noUnit": "Daire atanmadı",
+        "inStage": "Bu aşamadaki gün",
+        "cameFrom": "{stage} aşamasından",
+        "firstStage": "ilk aşama",
+        "blocker": "Engel",
+        "missingLead": "Talep bulunamadı"
+      },
+      "stage": {
+        "enquiry": "Talep",
+        "qualification": "Nitelendirme",
+        "viewing": "Gezi",
+        "reservation": "Rezervasyon",
         "contract": "Sözleşme",
-        "closed": "Tamamlandı",
-        "lost": "Kaybedildi"
+        "payment": "Ödeme",
+        "title_deed": "Tapu",
+        "handover": "Teslim",
+        "closed": "Kapandı"
       }
     },
     "finance": {
