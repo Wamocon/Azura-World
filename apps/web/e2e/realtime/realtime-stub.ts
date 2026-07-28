@@ -120,7 +120,13 @@ export async function stubRealtime(
 
       if (event === "heartbeat") {
         ws.send(
-          JSON.stringify([joinRef, ref, frameTopic, "phx_reply", { status: "ok", response: {} }])
+          JSON.stringify([
+            joinRef,
+            ref,
+            frameTopic,
+            "phx_reply",
+            { status: "ok", response: {} },
+          ])
         )
         return
       }
@@ -142,8 +148,9 @@ export async function stubRealtime(
         }
 
         topic = frameTopic
-        const config = (payload as { config?: { postgres_changes?: unknown[] } } | undefined)
-          ?.config
+        const config = (
+          payload as { config?: { postgres_changes?: unknown[] } } | undefined
+        )?.config
         const requested = config?.postgres_changes ?? []
         const echoed = requested.map((binding, index) => ({
           ...(binding as Record<string, unknown>),

@@ -49,7 +49,11 @@ const BURST = 40
 const URL = process.env["NEXT_PUBLIC_SUPABASE_URL"]
 const SERVICE_ROLE = process.env["SUPABASE_SERVICE_ROLE_KEY"]
 
-const configured = typeof URL === "string" && URL.length > 0 && typeof SERVICE_ROLE === "string" && SERVICE_ROLE.length > 0
+const configured =
+  typeof URL === "string" &&
+  URL.length > 0 &&
+  typeof SERVICE_ROLE === "string" &&
+  SERVICE_ROLE.length > 0
 
 async function rest(path: string, init: RequestInit = {}): Promise<Response> {
   return fetch(`${URL}/rest/v1/${path}`, {
@@ -73,7 +77,10 @@ async function countNotifications(): Promise<number> {
 }
 
 test.describe("Supabase Realtime — a real socket, a real burst", () => {
-  test.skip(!configured, "No Supabase project configured; this checkout cannot run the live proof.")
+  test.skip(
+    !configured,
+    "No Supabase project configured; this checkout cannot run the live proof."
+  )
   test.setTimeout(180_000)
 
   let profileId: string | undefined
@@ -82,14 +89,22 @@ test.describe("Supabase Realtime — a real socket, a real burst", () => {
     const response = await rest("profiles?select=id&limit=1")
     const rows = (await response.json()) as Array<{ id: string }>
     profileId = rows[0]?.id
-    expect(profileId, "the live project has no profiles row to attach a notification to").toBeTruthy()
+    expect(
+      profileId,
+      "the live project has no profiles row to attach a notification to"
+    ).toBeTruthy()
   })
 
   test("the table under test starts empty", async () => {
-    expect(await countNotifications(), "notifications is not empty — refusing to burst on top of real rows").toBe(0)
+    expect(
+      await countNotifications(),
+      "notifications is not empty — refusing to burst on top of real rows"
+    ).toBe(0)
   })
 
-  test("a channel reaches SUBSCRIBED, and 40 real inserts commit ONE render", async ({ page }) => {
+  test("a channel reaches SUBSCRIBED, and 40 real inserts commit ONE render", async ({
+    page,
+  }) => {
     const failures: string[] = []
     page.on("console", (m) => {
       if (m.type() === "error") failures.push(m.text())
@@ -103,12 +118,14 @@ test.describe("Supabase Realtime — a real socket, a real burst", () => {
     //    which is indistinguishable from a feature nobody built.
     await expect(
       page.getByTestId("mode"),
-      "the channel never reached realtime — is `notifications` in supabase_realtime?",
+      "the channel never reached realtime — is `notifications` in supabase_realtime?"
     ).toHaveText("realtime", { timeout: 45_000 })
 
     // 2. Zero the counters so the burst is measured as a clean delta.
     await page.evaluate(() => window.__azuraHarness?.reset())
-    const before = await page.evaluate(() => window.__azuraHarness?.counters() ?? null)
+    const before = await page.evaluate(
+      () => window.__azuraHarness?.counters() ?? null
+    )
     expect(before, "the harness exposed no counters").not.toBeNull()
 
     // 3. Forty inserts as fast as PostgREST will take them, in one request so
@@ -126,37 +143,48 @@ test.describe("Supabase Realtime — a real socket, a real burst", () => {
       body: JSON.stringify(rows),
       headers: { Prefer: "return=minimal" },
     })
-    expect(insert.status, `insert failed: ${await insert.text()}`).toBeLessThan(300)
+    expect(insert.status, `insert failed: ${await insert.text()}`).toBeLessThan(
+      300
+    )
 
     // 4. Let the coalescing window close, then read the committed renders.
     //    The window is the hook's, not this test's — waiting longer only makes
     //    a failure more certain, never a pass more likely.
     await page.waitForTimeout(4_000)
-    const after = await page.evaluate(() => window.__azuraHarness?.counters() ?? null)
+    const after = await page.evaluate(
+      () => window.__azuraHarness?.counters() ?? null
+    )
     expect(after).not.toBeNull()
 
     const commits = (after!.commits ?? 0) - (before!.commits ?? 0)
     expect(
       commits,
-      `${BURST} real inserts produced ${commits} committed render(s); the coalescer should collapse them to 1`,
+      `${BURST} real inserts produced ${commits} committed render(s); the coalescer should collapse them to 1`
     ).toBe(1)
 
-    expect(failures, `console errors during the burst: ${failures.join(" | ")}`).toEqual([])
+    expect(
+      failures,
+      `console errors during the burst: ${failures.join(" | ")}`
+    ).toEqual([])
   })
 
   test.afterAll(async () => {
     if (!configured) return
     // Cleanup is asserted below, not merely attempted.
-    await rest("notifications?title=like.W2-D%20live%20burst*", { method: "DELETE" })
+    await rest("notifications?title=like.W2-D%20live%20burst*", {
+      method: "DELETE",
+    })
   })
 
   test("the project is left exactly as it was found", async () => {
     // A separate test rather than an afterAll assertion, so a failed cleanup is
     // a named red test instead of a warning nobody reads.
-    await rest("notifications?title=like.W2-D%20live%20burst*", { method: "DELETE" })
+    await rest("notifications?title=like.W2-D%20live%20burst*", {
+      method: "DELETE",
+    })
     expect(
       await countNotifications(),
-      "cleanup did not restore notifications to 0 — a shared cloud project has residue from this run",
+      "cleanup did not restore notifications to 0 — a shared cloud project has residue from this run"
     ).toBe(0)
   })
 })

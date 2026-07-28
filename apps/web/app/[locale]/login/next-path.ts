@@ -106,6 +106,8 @@ export function withoutLocalePrefix(path: string): string {
 export function localisedDestination(locale: string, path: string): string {
   const withoutLocale = withoutLocalePrefix(path)
   const normalised =
-    withoutLocale === "/" || withoutLocale === "" ? NEXT_FALLBACK : withoutLocale
+    withoutLocale === "/" || withoutLocale === ""
+      ? NEXT_FALLBACK
+      : withoutLocale
   return `/${locale}${normalised}`
 }

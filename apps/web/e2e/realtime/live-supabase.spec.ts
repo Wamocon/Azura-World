@@ -39,7 +39,9 @@ const HARNESS = "/de/dev/live-harness?tables=units"
 test.describe("Supabase Realtime — the live project", () => {
   test.setTimeout(90_000)
 
-  test("a channel subscribes to `units` and the mode becomes realtime", async ({ page }) => {
+  test("a channel subscribes to `units` and the mode becomes realtime", async ({
+    page,
+  }) => {
     const configured = await page.request
       .get("/api/site-management/dashboard")
       .then((response) => response.status() !== 503)
@@ -64,7 +66,9 @@ test.describe("Supabase Realtime — the live project", () => {
       opened.length === 0,
       "no Supabase project is configured in this environment (.env.local is gitignored), so there is nothing to connect to"
     )
-    console.log(`[live] realtime sockets dialled: ${opened.length} — ${opened[0] ?? ""}`)
+    console.log(
+      `[live] realtime sockets dialled: ${opened.length} — ${opened[0] ?? ""}`
+    )
 
     await expect(
       page.getByTestId("mode"),
@@ -73,7 +77,9 @@ test.describe("Supabase Realtime — the live project", () => {
 
     // A subscribe triggers exactly one refetch, however many tables the channel
     // carries — the gap-closing refetch described in `use-realtime-channel.ts`.
-    const state = await page.evaluate(() => window.__azuraHarness?.counters() ?? null)
+    const state = await page.evaluate(
+      () => window.__azuraHarness?.counters() ?? null
+    )
     expect(state).not.toBeNull()
     expect(state!.source).toBe("supabase")
     console.log(

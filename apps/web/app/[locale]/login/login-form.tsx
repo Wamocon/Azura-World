@@ -43,7 +43,10 @@ export function LoginForm({
     submitting: string
   }
 }): React.JSX.Element {
-  const [state, formAction, pending] = useActionState(signIn, initialLoginFormState)
+  const [state, formAction, pending] = useActionState(
+    signIn,
+    initialLoginFormState
+  )
   const hasError = state.status === "error" && state.message !== null
 
   return (
@@ -68,7 +71,9 @@ export function LoginForm({
           maxLength={320}
           defaultValue={state.email}
           aria-invalid={hasError ? true : undefined}
-          aria-describedby={hasError ? fieldDescriptionId("email", true) : undefined}
+          aria-describedby={
+            hasError ? fieldDescriptionId("email", true) : undefined
+          }
         />
       </Field>
 

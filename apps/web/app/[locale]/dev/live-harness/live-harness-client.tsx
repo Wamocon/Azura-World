@@ -91,8 +91,8 @@ export function LiveHarnessClient({
     <main className="mx-auto flex max-w-2xl flex-col gap-4 p-6 font-sans">
       <h1 className="text-xl font-semibold">Live snapshot harness</h1>
       <p className="text-sm text-neutral-600">
-        Development-only. Renders <code>useLiveSnapshot</code> so its effect wiring can be
-        observed from a browser.
+        Development-only. Renders <code>useLiveSnapshot</code> so its effect
+        wiring can be observed from a browser.
       </p>
 
       <button
@@ -143,7 +143,9 @@ function HarnessSubject({
    * `fetchedAt`, and a spec asserts that the badge's timestamp tracks this value
    * and not the browser clock.
    */
-  const fetcher = useCallback(async (): Promise<RepositoryResult<HarnessPayload>> => {
+  const fetcher = useCallback(async (): Promise<
+    RepositoryResult<HarnessPayload>
+  > => {
     fetches.current += 1
     // A real repository call fails when the browser is offline, and the hook's
     // catch is what keeps the last good data and its timestamp on screen. A
@@ -206,7 +208,11 @@ function HarnessSubject({
 
   return (
     <>
-      <SyncBadge mode={snapshot.mode} lastUpdated={snapshot.lastUpdated} locale={locale} />
+      <SyncBadge
+        mode={snapshot.mode}
+        lastUpdated={snapshot.lastUpdated}
+        locale={locale}
+      />
       <ConnectionBanner
         mode={snapshot.mode}
         isStale={snapshot.isStale}
@@ -221,7 +227,10 @@ function HarnessSubject({
         would break the moment W1-C rewords a string — and the mode is the thing
         under test, not the copy.
       */}
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm" data-testid="state">
+      <dl
+        className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm"
+        data-testid="state"
+      >
         <dt>mode</dt>
         <dd data-testid="mode">{snapshot.mode}</dd>
         <dt>source</dt>

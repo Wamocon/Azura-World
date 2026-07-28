@@ -70,7 +70,10 @@ test.describe("service worker — the caching boundary, executed", () => {
   // once `next dev` has to compile each route on first request.
   test.setTimeout(120_000)
 
-  test("registers, activates, and controls the page", async ({ page, baseURL }) => {
+  test("registers, activates, and controls the page", async ({
+    page,
+    baseURL,
+  }) => {
     await page.goto(localised("/", "de"))
 
     const state = await page.evaluate(async () => {
@@ -81,7 +84,8 @@ test.describe("service worker — the caching boundary, executed", () => {
       // rather than here.
       return {
         scope: registration.scope,
-        hasActive: registration.active !== null || registration.waiting !== null,
+        hasActive:
+          registration.active !== null || registration.waiting !== null,
       }
     })
 
@@ -92,18 +96,24 @@ test.describe("service worker — the caching boundary, executed", () => {
     expect(state.scope).toBe(`${baseURL ?? ""}/`)
 
     await page.reload()
-    const controlled = await page.evaluate(() => navigator.serviceWorker.controller !== null)
+    const controlled = await page.evaluate(
+      () => navigator.serviceWorker.controller !== null
+    )
     expect(controlled, "the page is controlled after a reload").toBe(true)
   })
 
-  test("no protected URL is ever written to Cache Storage", async ({ page }) => {
+  test("no protected URL is ever written to Cache Storage", async ({
+    page,
+  }) => {
     await page.goto(localised("/", "de"))
     await page.evaluate(async () => {
       await navigator.serviceWorker.register("/sw.js")
       await navigator.serviceWorker.ready
     })
     await page.reload()
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null)
+    await page.waitForFunction(
+      () => navigator.serviceWorker.controller !== null
+    )
 
     // Public routes first, so the cache is genuinely populated. A test that
     // found an empty cache because the worker never cached anything would prove
@@ -125,7 +135,9 @@ test.describe("service worker — the caching boundary, executed", () => {
       "/api/site-management/dashboard",
     ]
     for (const target of protectedTargets) {
-      await page.goto(target, { waitUntil: "domcontentloaded" }).catch(() => undefined)
+      await page
+        .goto(target, { waitUntil: "domcontentloaded" })
+        .catch(() => undefined)
     }
 
     // Give the worker's `cache.put()` calls — which run in `waitUntil`, after
@@ -155,7 +167,9 @@ test.describe("service worker — the caching boundary, executed", () => {
     ).toBeGreaterThan(0)
 
     for (const { label, pattern } of FORBIDDEN_IN_CACHE) {
-      const leaked = urls.filter((url) => pattern.test(new URL(url).pathname + new URL(url).search))
+      const leaked = urls.filter((url) =>
+        pattern.test(new URL(url).pathname + new URL(url).search)
+      )
       expect(
         leaked,
         `${label} URLs found in Cache Storage — this is the data leak tasks/W2-D §5 forbids:\n${leaked.join("\n")}`
@@ -169,7 +183,9 @@ test.describe("service worker — the caching boundary, executed", () => {
     // would be a serious miss for anything else, so every such entry is required
     // to be a hashed build asset. A cached dashboard *document* — the actual
     // leak — cannot satisfy this.
-    const dashboardish = urls.filter((url) => new URL(url).pathname.includes("dashboard"))
+    const dashboardish = urls.filter((url) =>
+      new URL(url).pathname.includes("dashboard")
+    )
     for (const url of dashboardish) {
       const path = new URL(url).pathname
       expect(
@@ -185,7 +201,10 @@ test.describe("service worker — the caching boundary, executed", () => {
     )
     console.log(
       `[sw] caches=${JSON.stringify(cached.names)} entries=${urls.length}\n` +
-        urls.map((url) => `  ${new URL(url).pathname}`).sort().join("\n")
+        urls
+          .map((url) => `  ${new URL(url).pathname}`)
+          .sort()
+          .join("\n")
     )
   })
 
@@ -198,42 +217,56 @@ test.describe("service worker — the caching boundary, executed", () => {
       await navigator.serviceWorker.ready
     })
     await page.reload()
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null)
+    await page.waitForFunction(
+      () => navigator.serviceWorker.controller !== null
+    )
     await page.waitForTimeout(1_000)
 
     const names = await page.evaluate(() => caches.keys())
     // A versioned name is what makes the `activate` handler's cleanup possible.
     // Without it a user is stuck on a stale bundle with no way to be upgraded.
-    expect(names.every((name) => name.startsWith("azura-v")), `cache names: ${names.join(", ")}`).toBe(
-      true
-    )
+    expect(
+      names.every((name) => name.startsWith("azura-v")),
+      `cache names: ${names.join(", ")}`
+    ).toBe(true)
 
     const hasOffline = await page.evaluate(async () => {
       const match = await caches.match("/offline.html")
       return match !== undefined
     })
-    expect(hasOffline, "/offline.html is precached, or an offline navigation has nothing to show").toBe(
-      true
-    )
+    expect(
+      hasOffline,
+      "/offline.html is precached, or an offline navigation has nothing to show"
+    ).toBe(true)
   })
 
-  test("no background sync, no periodic sync, no push, no IndexedDB", async ({ page }) => {
+  test("no background sync, no periodic sync, no push, no IndexedDB", async ({
+    page,
+  }) => {
     // The absence of an offline mutation queue is a deliberate design decision
     // (`tasks/W2-D` §5, `HANDOFF/W2-D.md`), and it is asserted rather than
     // merely stated so that nobody can add half of one later without a test
     // going red. A half-working sync queue loses writes silently, which is worse
     // than refusing them while offline.
-    const source = await page.request.get("/sw.js").then((response) => response.text())
+    const source = await page.request
+      .get("/sw.js")
+      .then((response) => response.text())
 
-    expect(source, "a sync handler would imply an offline mutation queue").not.toMatch(
-      /addEventListener\(\s*["']sync["']/
-    )
+    expect(
+      source,
+      "a sync handler would imply an offline mutation queue"
+    ).not.toMatch(/addEventListener\(\s*["']sync["']/)
     expect(source).not.toMatch(/addEventListener\(\s*["']periodicsync["']/)
     expect(source).not.toMatch(/addEventListener\(\s*["']push["']/)
-    expect(source, "IndexedDB in the worker would imply queued writes").not.toMatch(/indexedDB/)
+    expect(
+      source,
+      "IndexedDB in the worker would imply queued writes"
+    ).not.toMatch(/indexedDB/)
     // `skipWaiting()` is allowed inside the `message` handler — that is the
     // user-initiated upgrade path — but never unconditionally on install, which
     // hot-swaps the bundle under an open form.
-    expect(source).not.toMatch(/addEventListener\(\s*["']install["'][\s\S]{0,200}?skipWaiting\(\)/)
+    expect(source).not.toMatch(
+      /addEventListener\(\s*["']install["'][\s\S]{0,200}?skipWaiting\(\)/
+    )
   })
 })

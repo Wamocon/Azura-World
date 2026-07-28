@@ -34,11 +34,15 @@ async function counters(page: Page) {
 test.describe("useLiveSnapshot — the four modes, rendered in a browser", () => {
   test.setTimeout(90_000)
 
-  test("realtime: a completed socket handshake reports Live", async ({ page }) => {
+  test("realtime: a completed socket handshake reports Live", async ({
+    page,
+  }) => {
     await stubRealtime(page)
     await page.goto(HARNESS)
 
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
     await expect(page.getByTestId("source")).toHaveText("supabase")
 
     // `subscribing` must not be shown as Live. The mode only claims realtime
@@ -53,14 +57,18 @@ test.describe("useLiveSnapshot — the four modes, rendered in a browser", () =>
   }) => {
     const socket = await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
 
     socket.refuseFromNowOn()
     await socket.drop()
 
     // `CLOSED` → `polling`, per `resolveLiveMode`. The reconnect timer is
     // running underneath; the badge must not keep claiming Live while it is.
-    await expect(page.getByTestId("mode")).toHaveText("polling", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("polling", {
+      timeout: 30_000,
+    })
   })
 
   test("static: a local-seed result does not poll at all", async ({ page }) => {
@@ -80,7 +88,9 @@ test.describe("useLiveSnapshot — the four modes, rendered in a browser", () =>
     })
 
     await page.goto(`${HARNESS}?source=local-seed&poll=500&tables=`)
-    await expect(page.getByTestId("mode")).toHaveText("static", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("static", {
+      timeout: 30_000,
+    })
 
     const before = await counters(page)
     expect(before, "harness did not expose counters").not.toBeNull()
@@ -97,10 +107,15 @@ test.describe("useLiveSnapshot — the four modes, rendered in a browser", () =>
     expect(apiRequests, "static issued an API request").toBe(0)
   })
 
-  test("offline: last-updated is preserved, not cleared", async ({ page, context }) => {
+  test("offline: last-updated is preserved, not cleared", async ({
+    page,
+    context,
+  }) => {
     await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
 
     // Wait for the fetch count to stop moving before reading the timestamp.
     // The subscribe-gap refetch lands shortly after `realtime` is reported, and
@@ -118,31 +133,43 @@ test.describe("useLiveSnapshot — the four modes, rendered in a browser", () =>
       )
       .toBe("settled")
 
-    const lastUpdatedBefore = await page.getByTestId("last-updated").textContent()
+    const lastUpdatedBefore = await page
+      .getByTestId("last-updated")
+      .textContent()
     expect(lastUpdatedBefore).not.toBe("null")
 
     await context.setOffline(true)
     await page.evaluate(() => window.dispatchEvent(new Event("offline")))
 
-    await expect(page.getByTestId("mode")).toHaveText("offline", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("offline", {
+      timeout: 30_000,
+    })
 
     // The point of the check: going offline must not blank the timestamp. A
     // surface that forgets when its data is from is worse than one showing old
     // data with an honest age.
-    await expect(page.getByTestId("last-updated")).toHaveText(lastUpdatedBefore ?? "")
+    await expect(page.getByTestId("last-updated")).toHaveText(
+      lastUpdatedBefore ?? ""
+    )
 
     // The failed refetch is surfaced rather than swallowed, and the data stays
     // on screen beside it. Silently showing stale data with no error is the
     // failure mode this whole feature exists to avoid.
-    await expect(page.getByTestId("error")).toHaveText("persistence_unavailable")
+    await expect(page.getByTestId("error")).toHaveText(
+      "persistence_unavailable"
+    )
 
     await context.setOffline(false)
   })
 
-  test("unmount: the channel is torn down and nothing further is scheduled", async ({ page }) => {
+  test("unmount: the channel is torn down and nothing further is scheduled", async ({
+    page,
+  }) => {
     const socket = await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
 
     const socketsAtMount = socket.connectionTimes.length
 

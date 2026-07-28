@@ -80,7 +80,7 @@ export function AccessProfilePicker({
     >
       <h2
         id="qa-mode-heading"
-        className="text-sm font-semibold uppercase tracking-[0.08em] text-destructive"
+        className="text-sm font-semibold tracking-[0.08em] text-destructive uppercase"
       >
         {labels.heading}
       </h2>

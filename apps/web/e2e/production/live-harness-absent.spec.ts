@@ -41,7 +41,9 @@ test.describe("production — the live harness is not reachable", () => {
     })
   }
 
-  test("no realtime socket is opened from the harness path in production", async ({ page }) => {
+  test("no realtime socket is opened from the harness path in production", async ({
+    page,
+  }) => {
     const sockets: string[] = []
     page.on("websocket", (ws) => {
       if (ws.url().includes("/realtime/v1/websocket")) sockets.push(ws.url())

@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { SourceChip, type SourceChipLabels } from "@/components/evidence/source-chip"
+import {
+  SourceChip,
+  type SourceChipLabels,
+} from "@/components/evidence/source-chip"
 import { Button } from "@/components/ui/button"
 import type { AiResponse, Locale, SourceRef } from "@/lib/contracts"
 
@@ -126,7 +129,14 @@ export function SiteConcierge({
       const id = crypto.randomUUID()
       setExchanges((current) => [
         ...current,
-        { id, question: trimmed, answer: null, streamed: "", error: null, feedback: null },
+        {
+          id,
+          question: trimmed,
+          answer: null,
+          streamed: "",
+          error: null,
+          feedback: null,
+        },
       ])
       setDraft("")
       setPending(true)
@@ -136,7 +146,9 @@ export function SiteConcierge({
 
       const settle = (patch: Partial<Exchange>): void => {
         setExchanges((current) =>
-          current.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry))
+          current.map((entry) =>
+            entry.id === id ? { ...entry, ...patch } : entry
+          )
         )
       }
 
@@ -196,7 +208,8 @@ export function SiteConcierge({
         // An abort is the user's own decision, not a failure to report. The
         // exchange keeps whatever text arrived and is marked as incomplete by
         // having no `answer`, so nothing partial is ever presented as final.
-        if (caught instanceof DOMException && caught.name === "AbortError") return
+        if (caught instanceof DOMException && caught.name === "AbortError")
+          return
         settle({ error: labels.errors.unavailable })
       } finally {
         setPending(false)
@@ -207,7 +220,10 @@ export function SiteConcierge({
   )
 
   const rate = useCallback(
-    async (exchangeId: string, rating: "positive" | "negative"): Promise<void> => {
+    async (
+      exchangeId: string,
+      rating: "positive" | "negative"
+    ): Promise<void> => {
       setExchanges((current) =>
         current.map((entry) =>
           entry.id === exchangeId ? { ...entry, feedback: rating } : entry
@@ -233,7 +249,10 @@ export function SiteConcierge({
       className="flex w-full flex-col gap-6 rounded-2xl border border-border bg-card p-6"
     >
       <header className="flex flex-col gap-1.5">
-        <h2 id="concierge-title" className="font-display text-2xl text-foreground">
+        <h2
+          id="concierge-title"
+          className="font-display text-2xl text-foreground"
+        >
           {labels.title}
         </h2>
         <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
@@ -249,7 +268,7 @@ export function SiteConcierge({
                   type="button"
                   onClick={() => void ask(suggestion)}
                   disabled={pending}
-                  className="min-h-11 rounded-full border border-input px-4 py-2 text-left text-sm text-foreground transition-colors duration-[160ms] ease-[var(--ease-out)] hover:border-ring hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 disabled:opacity-50"
+                  className="min-h-11 rounded-full border border-input px-4 py-2 text-left text-sm text-foreground transition-colors duration-[160ms] ease-[var(--ease-out)] hover:border-ring hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none disabled:opacity-50"
                 >
                   {suggestion}
                 </button>
@@ -264,11 +283,15 @@ export function SiteConcierge({
         reader on every delta, which during a streamed answer means interrupting
         continuously — the reader would hear nothing else.
       */}
-      <ol aria-live="polite" aria-busy={pending} className="flex flex-col gap-6">
+      <ol
+        aria-live="polite"
+        aria-busy={pending}
+        className="flex flex-col gap-6"
+      >
         {exchanges.map((exchange) => (
           <li key={exchange.id} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
                 {labels.you}
               </p>
               {/* Rendered as text, never as markup. This string reached the page
@@ -278,12 +301,15 @@ export function SiteConcierge({
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
                 {labels.assistant}
               </p>
 
               {exchange.error !== null ? (
-                <p role="alert" className="text-sm font-medium text-destructive">
+                <p
+                  role="alert"
+                  className="text-sm font-medium text-destructive"
+                >
                   {exchange.error}
                 </p>
               ) : exchange.answer !== null ? (
@@ -295,8 +321,10 @@ export function SiteConcierge({
                   feedback={exchange.feedback}
                 />
               ) : (
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-                  {exchange.streamed.length > 0 ? exchange.streamed : labels.thinking}
+                <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                  {exchange.streamed.length > 0
+                    ? exchange.streamed
+                    : labels.thinking}
                 </p>
               )}
             </div>
@@ -327,7 +355,7 @@ export function SiteConcierge({
           placeholder={labels.placeholder}
           maxLength={MAX_MESSAGE_CHARS}
           rows={3}
-          className="w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+          className="w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
         />
         <div className="flex flex-wrap items-center gap-2">
           <Button type="submit" disabled={pending || draft.trim().length === 0}>
@@ -343,17 +371,23 @@ export function SiteConcierge({
             </Button>
           ) : null}
           {exchanges.length > 0 && !pending ? (
-            <Button type="button" variant="ghost" onClick={() => setExchanges([])}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setExchanges([])}
+            >
               {labels.clear}
             </Button>
           ) : null}
-          <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+          <span className="ml-auto text-xs text-muted-foreground tabular-nums">
             {draft.length}/{MAX_MESSAGE_CHARS}
           </span>
         </div>
       </form>
 
-      <p className="text-xs leading-relaxed text-muted-foreground">{labels.disclaimer}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {labels.disclaimer}
+      </p>
     </section>
   )
 }
@@ -380,7 +414,7 @@ function AnswerBody({
 }): React.JSX.Element {
   return (
     <div className="flex flex-col gap-3">
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+      <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
         {answer.reply}
       </p>
 
@@ -392,11 +426,17 @@ function AnswerBody({
 
       {answer.citations.length > 0 ? (
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-medium text-muted-foreground">{labels.sourcesLabel}</p>
+          <p className="text-xs font-medium text-muted-foreground">
+            {labels.sourcesLabel}
+          </p>
           <ul className="flex flex-wrap gap-2">
             {dedupeByUrl(answer.citations).map((source) => (
               <li key={`${source.url}-${source.snapshotHash}`}>
-                <SourceChip source={source} locale={locale} labels={labels.source} />
+                <SourceChip
+                  source={source}
+                  locale={locale}
+                  labels={labels.source}
+                />
               </li>
             ))}
           </ul>
@@ -406,24 +446,28 @@ function AnswerBody({
       <div className="flex flex-wrap items-center gap-2">
         {feedback === null ? (
           <>
-            <span className="text-xs text-muted-foreground">{labels.feedback.question}</span>
+            <span className="text-xs text-muted-foreground">
+              {labels.feedback.question}
+            </span>
             <button
               type="button"
               onClick={() => onRate("positive")}
-              className="min-h-11 rounded-md px-2 text-xs font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              className="min-h-11 rounded-md px-2 text-xs font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
             >
               {labels.feedback.helpful}
             </button>
             <button
               type="button"
               onClick={() => onRate("negative")}
-              className="min-h-11 rounded-md px-2 text-xs font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              className="min-h-11 rounded-md px-2 text-xs font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
             >
               {labels.feedback.notHelpful}
             </button>
           </>
         ) : (
-          <span className="text-xs text-muted-foreground">{labels.feedback.thanks}</span>
+          <span className="text-xs text-muted-foreground">
+            {labels.feedback.thanks}
+          </span>
         )}
       </div>
     </div>

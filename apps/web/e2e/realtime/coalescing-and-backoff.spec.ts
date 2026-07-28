@@ -41,10 +41,14 @@ const HARNESS = "/de/dev/live-harness"
 test.describe("burst coalescing", () => {
   test.setTimeout(120_000)
 
-  test("40 updates in one burst cause exactly one refetch", async ({ page }) => {
+  test("40 updates in one burst cause exactly one refetch", async ({
+    page,
+  }) => {
     const socket = await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
 
     // Let the subscribe-time refetch settle first. One refetch on (re)subscribe
     // is deliberate — a gap while disconnected may have hidden changes — and is
@@ -58,7 +62,9 @@ test.describe("burst coalescing", () => {
     // is a real failure to coalesce, not an early read.
     await page.waitForTimeout(3_000)
 
-    const after = await page.evaluate(() => window.__azuraHarness?.counters() ?? null)
+    const after = await page.evaluate(
+      () => window.__azuraHarness?.counters() ?? null
+    )
     expect(after).not.toBeNull()
 
     expect(
@@ -75,13 +81,17 @@ test.describe("burst coalescing", () => {
       `40 frames produced ${after!.commits} commits; coalescing collapses the burst to one refetch, so this must stay far below 40`
     ).toBeLessThan(12)
 
-    console.log(`[coalesce] 40 frames -> ${after!.fetches} fetch, ${after!.commits} commits`)
+    console.log(
+      `[coalesce] 40 frames -> ${after!.fetches} fetch, ${after!.commits} commits`
+    )
   })
 
   test("a later burst is not swallowed by the first", async ({ page }) => {
     const socket = await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
     await page.waitForTimeout(2_000)
     await page.evaluate(() => window.__azuraHarness?.reset())
 
@@ -90,12 +100,19 @@ test.describe("burst coalescing", () => {
     await socket.push(20)
     await page.waitForTimeout(2_000)
 
-    const after = await page.evaluate(() => window.__azuraHarness?.counters() ?? null)
+    const after = await page.evaluate(
+      () => window.__azuraHarness?.counters() ?? null
+    )
     // Two quiet windows, two refetches. Coalescing must not become throttling
     // that drops the second burst — that is a silent stall wearing a
     // performance optimisation's name.
-    expect(after!.fetches, "two separated bursts must produce two refetches").toBe(2)
-    console.log(`[coalesce] 20+20 frames, separated -> ${after!.fetches} fetches`)
+    expect(
+      after!.fetches,
+      "two separated bursts must produce two refetches"
+    ).toBe(2)
+    console.log(
+      `[coalesce] 20+20 frames, separated -> ${after!.fetches} fetches`
+    )
   })
 })
 
@@ -113,7 +130,9 @@ test.describe("reconnect backoff", () => {
   // mean asserting something else.
   test.setTimeout(240_000)
 
-  test("a refused join retries at a bounded rate, never a tight loop", async ({ page }) => {
+  test("a refused join retries at a bounded rate, never a tight loop", async ({
+    page,
+  }) => {
     /**
      * **This test does not prove the 30 s cap, and the reason is the finding.**
      *
@@ -142,7 +161,9 @@ test.describe("reconnect backoff", () => {
 
     // Never reaches realtime — every join is rejected — so the mode stays
     // polling, which is the correct degradation and the part a user sees.
-    await expect(page.getByTestId("mode")).toHaveText("polling", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("polling", {
+      timeout: 30_000,
+    })
 
     const started = Date.now()
     await page.waitForTimeout(20_000)
@@ -155,7 +176,10 @@ test.describe("reconnect backoff", () => {
         `(${perSecond.toFixed(2)}/s); gaps (ms): ${gaps.join(", ")}`
     )
 
-    expect(gaps.length, "no retries were observed at all").toBeGreaterThanOrEqual(3)
+    expect(
+      gaps.length,
+      "no retries were observed at all"
+    ).toBeGreaterThanOrEqual(3)
 
     // Bounded rate. A genuine tight loop would be tens per second; this is the
     // assertion that would catch one.
@@ -166,7 +190,10 @@ test.describe("reconnect backoff", () => {
 
     // Nothing waits longer than the application's own declared ceiling either.
     for (const gap of gaps) {
-      expect(gap, `a retry gap exceeded the 30 s cap: ${gaps.join(", ")}`).toBeLessThan(36_000)
+      expect(
+        gap,
+        `a retry gap exceeded the 30 s cap: ${gaps.join(", ")}`
+      ).toBeLessThan(36_000)
     }
   })
 
@@ -192,32 +219,44 @@ test.describe("reconnect backoff", () => {
      */
     const socket = await stubRealtime(page)
     await page.goto(HARNESS)
-    await expect(page.getByTestId("mode")).toHaveText("realtime", { timeout: 30_000 })
+    await expect(page.getByTestId("mode")).toHaveText("realtime", {
+      timeout: 30_000,
+    })
 
     const baseline = socket.connectionTimes.length
     socket.refuseFromNowOn()
     await socket.drop()
 
     const deadline = Date.now() + 90_000
-    while (socket.connectionTimes.length < baseline + 6 && Date.now() < deadline) {
+    while (
+      socket.connectionTimes.length < baseline + 6 &&
+      Date.now() < deadline
+    ) {
       await page.waitForTimeout(1_000)
     }
 
     const gaps = gapsBetween(socket.connectionTimes.slice(baseline))
-    console.log(`[backoff] transport ladder, gaps between sockets (ms): ${gaps.join(", ")}`)
+    console.log(
+      `[backoff] transport ladder, gaps between sockets (ms): ${gaps.join(", ")}`
+    )
 
-    expect(gaps.length, "not enough transport reconnects observed").toBeGreaterThanOrEqual(3)
+    expect(
+      gaps.length,
+      "not enough transport reconnects observed"
+    ).toBeGreaterThanOrEqual(3)
     // Bounded, growing, and never a tight loop. The exact plateau belongs to
     // `supabase-js` and is reported rather than pinned, so a library upgrade
     // that changes it is a finding here and not a failure.
     for (const gap of gaps) {
-      expect(gap, `a transport reconnect exceeded the app cap: ${gaps.join(", ")}`).toBeLessThan(
-        36_000
-      )
+      expect(
+        gap,
+        `a transport reconnect exceeded the app cap: ${gaps.join(", ")}`
+      ).toBeLessThan(36_000)
     }
-    expect(Math.min(...gaps), `a transport reconnect was too fast: ${gaps.join(", ")}`).toBeGreaterThan(
-      400
-    )
+    expect(
+      Math.min(...gaps),
+      `a transport reconnect was too fast: ${gaps.join(", ")}`
+    ).toBeGreaterThan(400)
     expect(
       gaps[gaps.length - 1] ?? 0,
       `transport gaps did not grow: ${gaps.join(", ")}`
