@@ -1,0 +1,901 @@
+{
+  "harness": "perf",
+  "generatedAt": "2026-07-28T11:25:02.833Z",
+  "chromium": "C:\\Users\\Maanik Garg\\AppData\\Local\\ms-playwright\\chromium-1228\\chrome-win64\\chrome.exe",
+  "budgets": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "inpMs": 200,
+    "landingJsKb": 250,
+    "chunk3dKb": 260
+  },
+  "budgetSource": "CONVENTIONS §7 (3D chunk reset to 260KB by W-INT, S-010)",
+  "runsPerThrottledConfig": 3,
+  "blindSpots": [
+    "These are LAB numbers from one machine, not field data. Real users on real networks will differ; this catches regressions, it does not predict CrUX.",
+    "Throttling is CDP emulation (Slow 4G, 4x CPU), not a real network. It models bandwidth and latency, not packet loss, TLS negotiation cost or a congested radio.",
+    "INP is measured from SYNTHETIC clicks on the first few interactive elements, and reported as the MAXIMUM interaction latency rather than the p98 the real metric uses. A slow interaction this harness never clicks is invisible to it.",
+    "Cold cache means a fresh browser context, not a cleared OS or disk cache.",
+    "No Lighthouse score. `lighthouse` is not an installed dependency and `pnpm install` is W0-A's to run, so the CONVENTIONS §7 'Lighthouse a11y >= 95' budget is NOT checked here. scripts/a11y-audit.mjs checks the underlying rules directly instead.",
+    "Authenticated routes are not measured — the QA access-profile cookie is disabled under NODE_ENV=production, so /dashboard redirects to login.",
+    "The 3D chunk figure is STATIC analysis of the built chunks (gzip level 9 of every emitted chunk containing three.js/R3F markers). Actual network transfer differs slightly with the server's compression settings; both figures are reported.",
+    "The soak samples `performance.memory`, which is Chromium-only and coarse (it reports quantised heap sizes). It detects a large leak, not a slow one."
+  ],
+  "bundle": {
+    "chunkCount": 53,
+    "appGzipKb": 516.7,
+    "threeGzipKb": 227.4,
+    "threeFiles": [
+      {
+        "file": "b755399b.7b110217b1fc27d1.js",
+        "gzip": 99919,
+        "gzipKb": 97.6
+      },
+      {
+        "file": "666ce27d.bd374d30f2395b95.js",
+        "gzip": 87160,
+        "gzipKb": 85.1
+      },
+      {
+        "file": "b8182de4.1d022d0aefe0a3cb.js",
+        "gzip": 45761,
+        "gzipKb": 44.7
+      }
+    ],
+    "largestApp": [
+      {
+        "file": "1ecdc36f-341b97f008b9087d.js",
+        "gzip": 62740,
+        "gzipKb": 61.3
+      },
+      {
+        "file": "7534-6ee3c46f11ccf090.js",
+        "gzip": 61229,
+        "gzipKb": 59.8
+      },
+      {
+        "file": "framework-b7a73659ae4f90b6.js",
+        "gzip": 59396,
+        "gzipKb": 58
+      },
+      {
+        "file": "6362-34c254f096fe9e8d.js",
+        "gzip": 53941,
+        "gzipKb": 52.7
+      },
+      {
+        "file": "polyfills-42372ed130431b0a.js",
+        "gzip": 39520,
+        "gzipKb": 38.6
+      },
+      {
+        "file": "main-3acd8e7798053318.js",
+        "gzip": 38288,
+        "gzipKb": 37.4
+      }
+    ]
+  },
+  "results": {
+    "landing:desktop:cold": {
+      "runs": 1,
+      "lcpMs": 736,
+      "cls": 0.1244,
+      "inpMs": 40,
+      "ttfbMs": 263,
+      "jsBytes": 511910,
+      "totalBytes": 688931,
+      "requests": 32,
+      "layoutShifts": 4,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 2180
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 783
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 61673
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 63181
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 1351
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 8819
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 3531
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 27539
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 7504
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 1185
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 2592
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 12404
+        },
+        {
+          "file": "81f07721-bc8e943b37094fc6.js",
+          "bytes": 20077
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 11860
+        },
+        {
+          "file": "4280-bc066536a30a92ce.js",
+          "bytes": 6251
+        },
+        {
+          "file": "1752-2ce605728ea68642.js",
+          "bytes": 26255
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 4271
+        },
+        {
+          "file": "page-2b1a36243e4fd77d.js",
+          "bytes": 3713
+        },
+        {
+          "file": "1836-0b108809c463a637.js",
+          "bytes": 3413
+        },
+        {
+          "file": "666ce27d.bd374d30f2395b95.js",
+          "bytes": 87632
+        },
+        {
+          "file": "b755399b.7b110217b1fc27d1.js",
+          "bytes": 100720
+        },
+        {
+          "file": "b8182de4.1d022d0aefe0a3cb.js",
+          "bytes": 46169
+        },
+        {
+          "file": "9692.766e954362f496b7.js",
+          "bytes": 7228
+        },
+        {
+          "file": "6088.4c5efcdaf02ed6b7.js",
+          "bytes": 1579
+        }
+      ]
+    },
+    "landing:desktop:warm": {
+      "runs": 1,
+      "lcpMs": 168,
+      "cls": 0.1244,
+      "inpMs": 56,
+      "ttfbMs": 44,
+      "jsBytes": 0,
+      "totalBytes": 1235,
+      "requests": 31,
+      "layoutShifts": 4,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 0
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 0
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 0
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 0
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 0
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 0
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 0
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 0
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 0
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 0
+        },
+        {
+          "file": "81f07721-bc8e943b37094fc6.js",
+          "bytes": 0
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 0
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 0
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 0
+        },
+        {
+          "file": "4280-bc066536a30a92ce.js",
+          "bytes": 0
+        },
+        {
+          "file": "1752-2ce605728ea68642.js",
+          "bytes": 0
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 0
+        },
+        {
+          "file": "1836-0b108809c463a637.js",
+          "bytes": 0
+        },
+        {
+          "file": "page-2b1a36243e4fd77d.js",
+          "bytes": 0
+        },
+        {
+          "file": "666ce27d.bd374d30f2395b95.js",
+          "bytes": 0
+        },
+        {
+          "file": "b755399b.7b110217b1fc27d1.js",
+          "bytes": 0
+        },
+        {
+          "file": "b8182de4.1d022d0aefe0a3cb.js",
+          "bytes": 0
+        },
+        {
+          "file": "9692.766e954362f496b7.js",
+          "bytes": 0
+        },
+        {
+          "file": "6088.4c5efcdaf02ed6b7.js",
+          "bytes": 0
+        }
+      ]
+    },
+    "hotel:desktop:cold": {
+      "runs": 1,
+      "lcpMs": 188,
+      "cls": 0.0007,
+      "inpMs": 96,
+      "ttfbMs": 49,
+      "jsBytes": 210402,
+      "totalBytes": 290033,
+      "requests": 18,
+      "layoutShifts": 1,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 2180
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 63181
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 783
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 1351
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 61673
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 3531
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 8819
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 7504
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 27539
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 1185
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 2592
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 12404
+        },
+        {
+          "file": "page-3bef6d0defa37bc3.js",
+          "bytes": 1529
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 4271
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 11860
+        }
+      ]
+    },
+    "hotel:desktop:warm": {
+      "runs": 1,
+      "lcpMs": 112,
+      "cls": 0,
+      "inpMs": 48,
+      "ttfbMs": 28,
+      "jsBytes": 0,
+      "totalBytes": 0,
+      "requests": 18,
+      "layoutShifts": 0,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 0
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 0
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 0
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 0
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 0
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 0
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 0
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 0
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 0
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 0
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 0
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 0
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 0
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 0
+        },
+        {
+          "file": "page-3bef6d0defa37bc3.js",
+          "bytes": 0
+        }
+      ]
+    },
+    "landing:mobile:cold": {
+      "runs": 3,
+      "lcpMs": 1136,
+      "cls": 0.0008,
+      "inpMs": 72,
+      "ttfbMs": 59,
+      "jsBytes": 511910,
+      "totalBytes": 651087,
+      "requests": 31,
+      "layoutShifts": 3,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 2180
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 63181
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 61673
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 783
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 1351
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 8819
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 3531
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 27539
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 7504
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 1185
+        },
+        {
+          "file": "81f07721-bc8e943b37094fc6.js",
+          "bytes": 20077
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 12404
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 2592
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 11860
+        },
+        {
+          "file": "4280-bc066536a30a92ce.js",
+          "bytes": 6251
+        },
+        {
+          "file": "1752-2ce605728ea68642.js",
+          "bytes": 26255
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 4271
+        },
+        {
+          "file": "1836-0b108809c463a637.js",
+          "bytes": 3413
+        },
+        {
+          "file": "page-2b1a36243e4fd77d.js",
+          "bytes": 3713
+        },
+        {
+          "file": "666ce27d.bd374d30f2395b95.js",
+          "bytes": 87632
+        },
+        {
+          "file": "b755399b.7b110217b1fc27d1.js",
+          "bytes": 100720
+        },
+        {
+          "file": "b8182de4.1d022d0aefe0a3cb.js",
+          "bytes": 46169
+        },
+        {
+          "file": "9692.766e954362f496b7.js",
+          "bytes": 7228
+        },
+        {
+          "file": "6088.4c5efcdaf02ed6b7.js",
+          "bytes": 1579
+        }
+      ]
+    },
+    "landing:mobile:warm": {
+      "runs": 3,
+      "lcpMs": 820,
+      "cls": 0,
+      "inpMs": 64,
+      "ttfbMs": 37,
+      "jsBytes": 243328,
+      "totalBytes": 266015,
+      "requests": 31,
+      "layoutShifts": 0,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 0
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 0
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 0
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 0
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 0
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 0
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 0
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 0
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 0
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 0
+        },
+        {
+          "file": "81f07721-bc8e943b37094fc6.js",
+          "bytes": 0
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 0
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 0
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 0
+        },
+        {
+          "file": "4280-bc066536a30a92ce.js",
+          "bytes": 0
+        },
+        {
+          "file": "1752-2ce605728ea68642.js",
+          "bytes": 0
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 0
+        },
+        {
+          "file": "1836-0b108809c463a637.js",
+          "bytes": 0
+        },
+        {
+          "file": "page-2b1a36243e4fd77d.js",
+          "bytes": 0
+        },
+        {
+          "file": "666ce27d.bd374d30f2395b95.js",
+          "bytes": 87632
+        },
+        {
+          "file": "b755399b.7b110217b1fc27d1.js",
+          "bytes": 100720
+        },
+        {
+          "file": "b8182de4.1d022d0aefe0a3cb.js",
+          "bytes": 46169
+        },
+        {
+          "file": "9692.766e954362f496b7.js",
+          "bytes": 7228
+        },
+        {
+          "file": "6088.4c5efcdaf02ed6b7.js",
+          "bytes": 1579
+        }
+      ]
+    },
+    "hotel:mobile:cold": {
+      "runs": 3,
+      "lcpMs": 1084,
+      "cls": 0.0003,
+      "inpMs": 56,
+      "ttfbMs": 40,
+      "jsBytes": 210402,
+      "totalBytes": 290033,
+      "requests": 18,
+      "layoutShifts": 1,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 2180
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 63181
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 61673
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 783
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 1351
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 8819
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 3531
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 27539
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 7504
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 1185
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 12404
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 2592
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 11860
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 4271
+        },
+        {
+          "file": "page-3bef6d0defa37bc3.js",
+          "bytes": 1529
+        }
+      ]
+    },
+    "hotel:mobile:warm": {
+      "runs": 3,
+      "lcpMs": 368,
+      "cls": 0,
+      "inpMs": 56,
+      "ttfbMs": 28,
+      "jsBytes": 0,
+      "totalBytes": 0,
+      "requests": 18,
+      "layoutShifts": 0,
+      "jsResources": [
+        {
+          "file": "webpack-7867541e80e853ab.js",
+          "bytes": 0
+        },
+        {
+          "file": "1ecdc36f-341b97f008b9087d.js",
+          "bytes": 0
+        },
+        {
+          "file": "7534-6ee3c46f11ccf090.js",
+          "bytes": 0
+        },
+        {
+          "file": "main-app-93bf87ed6e756df7.js",
+          "bytes": 0
+        },
+        {
+          "file": "global-error-23d3e0c2adc833b7.js",
+          "bytes": 0
+        },
+        {
+          "file": "7411-abfab063dabb1609.js",
+          "bytes": 0
+        },
+        {
+          "file": "7551-481b7000c0f30851.js",
+          "bytes": 0
+        },
+        {
+          "file": "1328-d0fadbd133dbc894.js",
+          "bytes": 0
+        },
+        {
+          "file": "9609-09251d5d19b2760f.js",
+          "bytes": 0
+        },
+        {
+          "file": "layout-79f28a10338b115a.js",
+          "bytes": 0
+        },
+        {
+          "file": "4322-0d080cbbe04f6cb8.js",
+          "bytes": 0
+        },
+        {
+          "file": "74-699205cbc9ce1661.js",
+          "bytes": 0
+        },
+        {
+          "file": "2037-cc13fb3480351a17.js",
+          "bytes": 0
+        },
+        {
+          "file": "1301-d3666adbfc37e1a8.js",
+          "bytes": 0
+        },
+        {
+          "file": "page-3bef6d0defa37bc3.js",
+          "bytes": 0
+        }
+      ]
+    },
+    "landingJsExcluding3dKb": 270.9,
+    "landing3dTransferKb": 229,
+    "soak": {
+      "samples": [
+        {
+          "heap": 15632780,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237842732
+        },
+        {
+          "heap": 12561041,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237847737
+        },
+        {
+          "heap": 14440565,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237852741
+        },
+        {
+          "heap": 12381396,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237857752
+        },
+        {
+          "heap": 12386032,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237862761
+        },
+        {
+          "heap": 12547688,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237867767
+        },
+        {
+          "heap": 12826176,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237872782
+        },
+        {
+          "heap": 12829480,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237877786
+        },
+        {
+          "heap": 12802472,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237882797
+        },
+        {
+          "heap": 12788760,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237887799
+        },
+        {
+          "heap": 12875260,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237892810
+        },
+        {
+          "heap": 12866588,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237897813
+        },
+        {
+          "heap": 12812556,
+          "canvases": 1,
+          "nodes": 1006,
+          "t": 1785237902824
+        }
+      ],
+      "growthMb": -2.69,
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "canvases": [
+        1,
+        1
+      ]
+    }
+  },
+  "runtimeMs": 185444
+}
