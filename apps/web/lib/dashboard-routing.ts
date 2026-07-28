@@ -251,7 +251,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "tickets:view",
     group: "operations",
     resource: "tickets",
-    pending: true,
   },
   {
     href: "/dashboard/activities",
@@ -260,7 +259,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "activities:view",
     group: "operations",
     resource: "activities",
-    pending: true,
   },
   {
     href: "/dashboard/calendar",
@@ -269,7 +267,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "calendar:view",
     group: "operations",
     resource: "calendar",
-    pending: true,
   },
   {
     href: "/dashboard/communications",
@@ -278,7 +275,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "communications:view",
     group: "operations",
     resource: "communications",
-    pending: true,
   },
 
   // governance

@@ -734,7 +734,7 @@
     },
     "tickets": {
       "title": "Tickets",
-      "lead": "Service and maintenance cases.",
+      "lead": "Service and maintenance work.",
       "count": "{count, plural, one {# ticket} other {# tickets}}",
       "empty": "No tickets.",
       "newTicket": "New ticket",
@@ -745,53 +745,255 @@
         "urgent": "Urgent"
       },
       "status": {
+        "draft": "Draft",
         "open": "Open",
-        "inProgress": "In progress",
-        "waiting": "Waiting",
-        "resolved": "Resolved",
-        "closed": "Closed"
+        "assigned": "Assigned",
+        "in_progress": "In progress",
+        "blocked": "On hold",
+        "resolved": "Done",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
       },
       "columns": {
         "reference": "Number",
         "subject": "Subject",
-        "unit": "Unit",
+        "category": "Area",
+        "unit": "Apartment",
         "priority": "Priority",
         "status": "Status",
-        "assignee": "Assignee",
+        "sla": "Target",
+        "reportedAt": "Reported",
+        "assignee": "Owner",
         "createdAt": "Created",
-        "dueAt": "Due"
+        "dueAt": "Due",
+        "estimatedCost": "Estimated cost"
+      },
+      "filterLabel": "Filter by status",
+      "filterAll": "All",
+      "slaAssumption": "The response targets (urgent 4 hours, high 24 hours, normal 3 days, low 7 days) are an assumption made by this project. The operator has published no targets.",
+      "age": "open for {age}",
+      "hourUnit": "h",
+      "dayUnit": "days",
+      "unassigned": "Nobody assigned",
+      "modelledUnitNotice": "This ticket belongs to an apartment whose figures are calculated, not confirmed by a source. Do not treat it as a real work order.",
+      "actionsHeading": "Next step",
+      "noActions": "There is no next step on this ticket that you may take.",
+      "noteLabel": "Reason",
+      "notePlaceholder": "Briefly describe why.",
+      "noteRequired": "Please give a reason.",
+      "conflict": "Somebody else changed this ticket just now. The page has been reloaded. Please check the current state and repeat the step.",
+      "writeUnavailable": "The change was not saved. The database cannot be reached at the moment.",
+      "historyHeading": "History",
+      "historyEmpty": "No history yet.",
+      "systemActor": "System",
+      "transitionSummary": "{from} to {to}",
+      "evidenceHeading": "Photos and videos",
+      "evidenceEmpty": "No photos or videos on this ticket.",
+      "evidenceFileCount": "{count, plural, one {# file} other {# files}}",
+      "stats": {
+        "open": "Open tickets",
+        "breached": "Target missed",
+        "unassigned": "Nobody assigned",
+        "awaitingApproval": "Waiting for approval"
+      },
+      "routing": {
+        "heading": "Suggested team",
+        "explanation": "Area {category} goes to {team}.",
+        "escalated": "Escalated",
+        "advisory": "This is a suggestion. Whoever assigns the ticket can pick another team. Both are kept in the history.",
+        "escalationReasons": {
+          "critical_severity": "The severity is critical, so a manager is notified as well.",
+          "urgent_priority": "The priority is urgent, so a manager is notified as well."
+        },
+        "teams": {
+          "maintenance": "Maintenance",
+          "housekeeping": "Housekeeping",
+          "security": "Security",
+          "technical": "Technical",
+          "facilities": "Facilities",
+          "front_office": "Front desk",
+          "finance_desk": "Accounts"
+        }
+      },
+      "severity": {
+        "minor": "Minor",
+        "moderate": "Moderate",
+        "major": "Major",
+        "critical": "Critical"
+      },
+      "category": {
+        "maintenance": "Maintenance",
+        "cleaning": "Cleaning",
+        "security": "Security",
+        "technical": "Technical",
+        "amenity": "Facilities",
+        "billing": "Billing",
+        "concierge": "Front desk",
+        "inspection": "Inspection",
+        "complaint": "Complaint",
+        "other": "Other"
+      },
+      "eventKind": {
+        "created": "Created",
+        "status_changed": "Status changed",
+        "assigned": "Assigned",
+        "unassigned": "Assignment removed",
+        "comment": "Comment",
+        "escalated": "Escalated",
+        "sla_breached": "Target missed",
+        "cost_estimated": "Cost estimated",
+        "media_attached": "Photo or video attached",
+        "resolved": "Reported as done",
+        "reopened": "Reopened",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      },
+      "transitions": {
+        "submit": "Submit",
+        "assign": "Assign",
+        "start": "Start work",
+        "hold": "Put on hold",
+        "resume": "Resume",
+        "resolve": "Report as done",
+        "verify_and_close": "Check and close",
+        "reopen": "Reopen",
+        "reopen_closed": "Reopen",
+        "reject": "Reject",
+        "cancel": "Cancel this ticket",
+        "discard_draft": "Discard draft"
+      },
+      "sla": {
+        "none": "No target",
+        "on_track": "On track",
+        "due_soon": "Due soon",
+        "breached": "Target missed"
       }
     },
     "activities": {
       "title": "Activities",
-      "lead": "Chronological trail of everything that happened.",
-      "empty": "No activities.",
-      "loadMore": "Load older"
+      "lead": "The scheduled programme on site, with date, time and places.",
+      "empty": "No activities in the selected period.",
+      "loadMore": "Load older",
+      "timeZoneNote": "All times in the site's time zone ({zone}, UTC+3 all year).",
+      "filterLabel": "Filter by area",
+      "filterAll": "All",
+      "filterUpcomingOnly": "Upcoming only",
+      "filterIncludePast": "Include past",
+      "bookingUnavailable": {
+        "title": "Booking is not possible yet.",
+        "body": "The database has no table for bookings yet. So this page shows how many places exist, but not how many are taken. Showing a number nobody counted would be invented."
+      },
+      "stats": {
+        "upcoming": "Upcoming",
+        "scheduled": "Scheduled",
+        "cancelled": "Cancelled"
+      },
+      "status": {
+        "draft": "Draft",
+        "scheduled": "Scheduled",
+        "open": "Sign-up open",
+        "full": "Full",
+        "in_progress": "Running",
+        "completed": "Finished",
+        "cancelled": "Cancelled"
+      },
+      "category": {
+        "wellness": "Wellbeing",
+        "sports": "Sports",
+        "kids": "Children",
+        "social": "Community",
+        "excursion": "Excursion",
+        "dining": "Dining",
+        "maintenance_window": "Maintenance window",
+        "other": "Other"
+      },
+      "capacity": {
+        "occupancy": "{booked} of {capacity} places taken",
+        "remaining": "{free} free",
+        "full": "Full",
+        "uncapped": "No limit",
+        "unknown": "Occupancy not known",
+        "waitlist": "{n} on the waiting list",
+        "totalPlaces": "{capacity} places in total"
+      }
     },
     "calendar": {
       "title": "Calendar",
-      "lead": "Appointments, maintenance windows and occupancy.",
+      "lead": "Activities and ticket deadlines in one view.",
       "empty": "No appointments.",
       "today": "Today",
       "views": {
         "month": "Month",
         "week": "Week",
         "day": "Day",
-        "agenda": "Agenda"
+        "agenda": "List"
       },
-      "newEvent": "New appointment"
+      "newEvent": "Add appointment",
+      "timeZoneNote": "All times in the site's time zone ({zone}, UTC+3 all year).",
+      "previous": "Back",
+      "next": "Forward",
+      "viewLabel": "Choose view",
+      "periodLabel": "Change period",
+      "weekOf": "Week from {date}",
+      "emptyDay": "Nothing scheduled.",
+      "moreEntries": "{count, plural, one {# more entry} other {# more entries}}",
+      "kinds": {
+        "activity": "Activity",
+        "ticket_due": "Ticket deadline"
+      },
+      "feed": {
+        "heading": "Subscribe to this calendar",
+        "explanation": "You can subscribe in Outlook, Apple Calendar or Google Calendar. Appointments are sent as absolute times, so your calendar shows them in your own time zone, correctly in winter and in summer.",
+        "siteWideWarning": "Important: there is currently one single feed for the whole site, not one per person. Anyone holding the link sees the same list of appointments as management.",
+        "askAdmin": "Ask management for the link.",
+        "notConfigured": "The subscription is not set up. Without a stored access key the calendar returns nothing.",
+        "revocation": "Access is withdrawn by having management change the key. The old link then returns nothing."
+      }
     },
     "communications": {
       "title": "Messages",
-      "lead": "Inbound and outbound communication per case.",
-      "empty": "No messages found.",
+      "lead": "Incoming and outgoing communication per case.",
+      "empty": "No messages.",
       "compose": "New message",
       "channels": {
-        "email": "Email",
-        "sms": "SMS",
-        "whatsapp": "WhatsApp",
         "portal": "Portal",
-        "phone": "Phone"
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "phone": "Phone",
+        "walk_in": "In person",
+        "system": "System"
+      },
+      "noMessages": "There is nothing in this thread yet.",
+      "filterLabel": "Filter by status",
+      "filterAll": "All",
+      "unread": "{count, plural, one {# unread notification} other {# unread notifications}}",
+      "messageCount": "{count, plural, one {# message} other {# messages}}",
+      "internalNote": "Internal note",
+      "systemSender": "System",
+      "hasAttachment": "Has attachment",
+      "composeUnavailable": "There is no box to write in here, because no message could leave the building. It will appear once a provider is set up.",
+      "deliveryNotice": {
+        "title": "Not sent, no provider configured.",
+        "body": "No provider is set up for email, SMS or WhatsApp. Messages are stored and readable here, but nothing goes out. Do not rely on a recipient having been told."
+      },
+      "delivery": {
+        "not_configured": "Not sent, no provider configured",
+        "queued": "Waiting to be sent",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "failed": "Sending failed",
+        "internal_note": "Internal only"
+      },
+      "scopeUnknown": {
+        "title": "Your messages cannot be matched to you.",
+        "body": "This account has no apartment and no person on file, so the system cannot work out which threads are yours. It would rather show nothing than show somebody else's messages."
+      },
+      "status": {
+        "open": "Open",
+        "pending": "Waiting",
+        "resolved": "Done",
+        "closed": "Closed",
+        "archived": "Archived"
       }
     },
     "documents": {

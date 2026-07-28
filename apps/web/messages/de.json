@@ -745,32 +745,181 @@
         "urgent": "Dringend"
       },
       "status": {
+        "draft": "Entwurf",
         "open": "Offen",
-        "inProgress": "In Arbeit",
-        "waiting": "Wartet",
-        "resolved": "Gelöst",
-        "closed": "Geschlossen"
+        "assigned": "Zugewiesen",
+        "in_progress": "In Arbeit",
+        "blocked": "Wartet",
+        "resolved": "Erledigt",
+        "closed": "Abgeschlossen",
+        "cancelled": "Abgebrochen"
       },
       "columns": {
         "reference": "Nummer",
         "subject": "Betreff",
+        "category": "Bereich",
         "unit": "Wohnung",
         "priority": "Priorität",
         "status": "Status",
+        "sla": "Frist",
+        "reportedAt": "Gemeldet",
         "assignee": "Zuständig",
         "createdAt": "Erstellt",
-        "dueAt": "Fällig"
+        "dueAt": "Fällig",
+        "estimatedCost": "Geschätzte Kosten"
+      },
+      "filterLabel": "Nach Status filtern",
+      "filterAll": "Alle",
+      "slaAssumption": "Die Bearbeitungsfristen (dringend 4 Stunden, hoch 24 Stunden, normal 3 Tage, niedrig 7 Tage) sind eine Annahme dieses Projekts. Der Betreiber hat keine Fristen veröffentlicht.",
+      "age": "seit {age} offen",
+      "hourUnit": "Std.",
+      "dayUnit": "Tage",
+      "unassigned": "Niemand zugewiesen",
+      "modelledUnitNotice": "Dieses Ticket gehört zu einer Wohnung, deren Daten berechnet und nicht von einer Quelle bestätigt sind. Behandeln Sie es nicht als echten Arbeitsauftrag.",
+      "actionsHeading": "Nächster Schritt",
+      "noActions": "Für diesen Vorgang gibt es keinen nächsten Schritt, den Sie ausführen dürfen.",
+      "noteLabel": "Grund",
+      "notePlaceholder": "Kurz beschreiben, warum.",
+      "noteRequired": "Bitte einen Grund angeben.",
+      "conflict": "Jemand anderes hat diesen Vorgang gerade geändert. Die Seite wurde neu geladen. Bitte prüfen Sie den aktuellen Stand und wiederholen Sie den Schritt.",
+      "writeUnavailable": "Die Änderung wurde nicht gespeichert. Die Datenbank ist derzeit nicht erreichbar.",
+      "historyHeading": "Verlauf",
+      "historyEmpty": "Noch kein Verlauf.",
+      "systemActor": "System",
+      "transitionSummary": "{from} zu {to}",
+      "evidenceHeading": "Fotos und Videos",
+      "evidenceEmpty": "Keine Fotos oder Videos zu diesem Vorgang.",
+      "evidenceFileCount": "{count, plural, one {# Datei} other {# Dateien}}",
+      "stats": {
+        "open": "Offene Vorgänge",
+        "breached": "Frist überschritten",
+        "unassigned": "Ohne Zuständigen",
+        "awaitingApproval": "Warten auf Freigabe"
+      },
+      "routing": {
+        "heading": "Team-Vorschlag",
+        "explanation": "Bereich {category} geht an {team}.",
+        "escalated": "Eskaliert",
+        "advisory": "Das ist ein Vorschlag. Wer den Vorgang zuweist, kann ein anderes Team wählen. Beides wird im Verlauf festgehalten.",
+        "escalationReasons": {
+          "critical_severity": "Der Schweregrad ist kritisch, daher wird die Leitung mit informiert.",
+          "urgent_priority": "Die Priorität ist dringend, daher wird die Leitung mit informiert."
+        },
+        "teams": {
+          "maintenance": "Instandhaltung",
+          "housekeeping": "Reinigung",
+          "security": "Sicherheit",
+          "technical": "Technik",
+          "facilities": "Anlagen",
+          "front_office": "Empfang",
+          "finance_desk": "Buchhaltung"
+        }
+      },
+      "severity": {
+        "minor": "Gering",
+        "moderate": "Mittel",
+        "major": "Hoch",
+        "critical": "Kritisch"
+      },
+      "category": {
+        "maintenance": "Instandhaltung",
+        "cleaning": "Reinigung",
+        "security": "Sicherheit",
+        "technical": "Technik",
+        "amenity": "Anlagen",
+        "billing": "Abrechnung",
+        "concierge": "Empfang",
+        "inspection": "Begehung",
+        "complaint": "Beschwerde",
+        "other": "Sonstiges"
+      },
+      "eventKind": {
+        "created": "Angelegt",
+        "status_changed": "Status geändert",
+        "assigned": "Zugewiesen",
+        "unassigned": "Zuweisung entfernt",
+        "comment": "Kommentar",
+        "escalated": "Eskaliert",
+        "sla_breached": "Frist überschritten",
+        "cost_estimated": "Kosten geschätzt",
+        "media_attached": "Foto oder Video angehängt",
+        "resolved": "Als erledigt gemeldet",
+        "reopened": "Wieder geöffnet",
+        "closed": "Abgeschlossen",
+        "cancelled": "Abgebrochen"
+      },
+      "transitions": {
+        "submit": "Einreichen",
+        "assign": "Zuweisen",
+        "start": "Arbeit beginnen",
+        "hold": "Anhalten",
+        "resume": "Fortsetzen",
+        "resolve": "Als erledigt melden",
+        "verify_and_close": "Prüfen und schließen",
+        "reopen": "Wieder öffnen",
+        "reopen_closed": "Wieder öffnen",
+        "reject": "Ablehnen",
+        "cancel": "Vorgang abbrechen",
+        "discard_draft": "Entwurf verwerfen"
+      },
+      "sla": {
+        "none": "Keine Frist",
+        "on_track": "Im Zeitrahmen",
+        "due_soon": "Läuft bald ab",
+        "breached": "Frist überschritten"
       }
     },
     "activities": {
       "title": "Aktivitäten",
-      "lead": "Chronologischer Verlauf aller Vorgänge.",
-      "empty": "Keine Aktivitäten.",
-      "loadMore": "Ältere laden"
+      "lead": "Geplantes Programm auf der Anlage, mit Datum, Uhrzeit und Plätzen.",
+      "empty": "Keine Aktivitäten im gewählten Zeitraum.",
+      "loadMore": "Ältere laden",
+      "timeZoneNote": "Alle Zeiten in der Zeitzone der Anlage ({zone}, ganzjährig UTC+3).",
+      "filterLabel": "Bereich filtern",
+      "filterAll": "Alle",
+      "filterUpcomingOnly": "Nur kommende",
+      "filterIncludePast": "Auch vergangene",
+      "bookingUnavailable": {
+        "title": "Buchung ist noch nicht möglich.",
+        "body": "In der Datenbank gibt es noch keine Tabelle für Buchungen. Deshalb steht hier, wie viele Plätze es gibt, aber nicht, wie viele belegt sind. Eine Zahl zu zeigen, die niemand gezählt hat, wäre erfunden."
+      },
+      "stats": {
+        "upcoming": "Kommende",
+        "scheduled": "Geplant",
+        "cancelled": "Abgesagt"
+      },
+      "status": {
+        "draft": "Entwurf",
+        "scheduled": "Geplant",
+        "open": "Anmeldung offen",
+        "full": "Ausgebucht",
+        "in_progress": "Läuft",
+        "completed": "Beendet",
+        "cancelled": "Abgesagt"
+      },
+      "category": {
+        "wellness": "Wellness",
+        "sports": "Sport",
+        "kids": "Kinder",
+        "social": "Gemeinschaft",
+        "excursion": "Ausflug",
+        "dining": "Gastronomie",
+        "maintenance_window": "Wartungsfenster",
+        "other": "Sonstiges"
+      },
+      "capacity": {
+        "occupancy": "{booked} von {capacity} Plätzen belegt",
+        "remaining": "{free} frei",
+        "full": "Ausgebucht",
+        "uncapped": "Ohne Begrenzung",
+        "unknown": "Belegung nicht bekannt",
+        "waitlist": "{n} auf der Warteliste",
+        "totalPlaces": "{capacity} Plätze insgesamt"
+      }
     },
     "calendar": {
       "title": "Kalender",
-      "lead": "Termine, Wartungsfenster und Belegung.",
+      "lead": "Aktivitäten und Fristen aus Tickets in einer Ansicht.",
       "empty": "Keine Termine.",
       "today": "Heute",
       "views": {
@@ -779,7 +928,27 @@
         "day": "Tag",
         "agenda": "Liste"
       },
-      "newEvent": "Termin anlegen"
+      "newEvent": "Termin anlegen",
+      "timeZoneNote": "Alle Zeiten in der Zeitzone der Anlage ({zone}, ganzjährig UTC+3).",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "viewLabel": "Ansicht wählen",
+      "periodLabel": "Zeitraum wechseln",
+      "weekOf": "Woche ab {date}",
+      "emptyDay": "Nichts geplant.",
+      "moreEntries": "{count, plural, one {# weiterer Eintrag} other {# weitere Einträge}}",
+      "kinds": {
+        "activity": "Aktivität",
+        "ticket_due": "Ticket-Frist"
+      },
+      "feed": {
+        "heading": "Kalender abonnieren",
+        "explanation": "Sie können diesen Kalender in Outlook, Apple Kalender oder Google Kalender abonnieren. Die Termine werden mit absoluter Zeit übertragen, deshalb zeigt Ihr Kalender sie in Ihrer eigenen Zeitzone an, im Winter wie im Sommer korrekt.",
+        "siteWideWarning": "Wichtig: Es gibt derzeit einen einzigen Zugang für die ganze Anlage, nicht einen je Person. Wer den Link hat, sieht dieselbe Terminliste wie die Verwaltung.",
+        "askAdmin": "Den Link gibt die Verwaltung aus.",
+        "notConfigured": "Das Abonnement ist nicht eingerichtet. Ohne hinterlegten Zugangsschlüssel liefert der Kalender nichts.",
+        "revocation": "Der Zugang lässt sich zurückziehen, indem die Verwaltung den Schlüssel wechselt. Danach liefert der alte Link nichts mehr."
+      }
     },
     "communications": {
       "title": "Nachrichten",
@@ -787,11 +956,44 @@
       "empty": "Keine Nachrichten.",
       "compose": "Neue Nachricht",
       "channels": {
-        "email": "E-Mail",
-        "sms": "SMS",
-        "whatsapp": "WhatsApp",
         "portal": "Portal",
-        "phone": "Telefon"
+        "email": "E-Mail",
+        "whatsapp": "WhatsApp",
+        "phone": "Telefon",
+        "walk_in": "Persönlich",
+        "system": "System"
+      },
+      "noMessages": "In diesem Verlauf steht noch nichts.",
+      "filterLabel": "Nach Status filtern",
+      "filterAll": "Alle",
+      "unread": "{count, plural, one {# ungelesene Benachrichtigung} other {# ungelesene Benachrichtigungen}}",
+      "messageCount": "{count, plural, one {# Nachricht} other {# Nachrichten}}",
+      "internalNote": "Interne Notiz",
+      "systemSender": "System",
+      "hasAttachment": "Mit Anhang",
+      "composeUnavailable": "Es gibt hier kein Feld zum Schreiben, weil keine Nachricht das Haus verlassen könnte. Sobald ein Anbieter eingerichtet ist, kommt es dazu.",
+      "deliveryNotice": {
+        "title": "Nicht versendet, Anbieter nicht konfiguriert.",
+        "body": "Für E-Mail, SMS und WhatsApp ist kein Anbieter eingerichtet. Nachrichten werden gespeichert und sind hier lesbar, aber nichts geht nach außen. Gehen Sie nicht davon aus, dass jemand informiert wurde."
+      },
+      "delivery": {
+        "not_configured": "Nicht versendet, Anbieter nicht konfiguriert",
+        "queued": "Wartet auf Versand",
+        "sent": "Versendet",
+        "delivered": "Zugestellt",
+        "failed": "Versand gescheitert",
+        "internal_note": "Nur intern"
+      },
+      "scopeUnknown": {
+        "title": "Ihre Nachrichten lassen sich nicht zuordnen.",
+        "body": "Für dieses Konto ist keine Wohnung und keine Person hinterlegt, deshalb kann das System nicht feststellen, welche Verläufe Ihnen gehören. Es zeigt lieber nichts an, als fremde Nachrichten zu zeigen."
+      },
+      "status": {
+        "open": "Offen",
+        "pending": "Wartet",
+        "resolved": "Erledigt",
+        "closed": "Abgeschlossen",
+        "archived": "Archiviert"
       }
     },
     "documents": {

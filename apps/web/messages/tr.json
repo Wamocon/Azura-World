@@ -745,32 +745,181 @@
         "urgent": "Acil"
       },
       "status": {
+        "draft": "Taslak",
         "open": "Açık",
-        "inProgress": "İşlemde",
-        "waiting": "Beklemede",
-        "resolved": "Çözüldü",
-        "closed": "Kapandı"
+        "assigned": "Atandı",
+        "in_progress": "Devam ediyor",
+        "blocked": "Beklemede",
+        "resolved": "Tamamlandı",
+        "closed": "Kapatıldı",
+        "cancelled": "İptal edildi"
       },
       "columns": {
         "reference": "Numara",
         "subject": "Konu",
+        "category": "Alan",
         "unit": "Daire",
         "priority": "Öncelik",
         "status": "Durum",
+        "sla": "Süre",
+        "reportedAt": "Bildirildi",
         "assignee": "Sorumlu",
-        "createdAt": "Oluşturma",
-        "dueAt": "Termin"
+        "createdAt": "Oluşturuldu",
+        "dueAt": "Son tarih",
+        "estimatedCost": "Tahmini maliyet"
+      },
+      "filterLabel": "Duruma göre filtrele",
+      "filterAll": "Tümü",
+      "slaAssumption": "Yanıt süreleri (acil 4 saat, yüksek 24 saat, normal 3 gün, düşük 7 gün) bu projenin varsayımıdır. İşletmeci herhangi bir süre yayımlamadı.",
+      "age": "{age} süredir açık",
+      "hourUnit": "sa.",
+      "dayUnit": "gün",
+      "unassigned": "Kimse atanmadı",
+      "modelledUnitNotice": "Bu kayıt, verileri hesaplanmış ve bir kaynakla doğrulanmamış bir daireye ait. Gerçek bir iş emri gibi işlem yapmayın.",
+      "actionsHeading": "Sonraki adım",
+      "noActions": "Bu kayıtta yapabileceğiniz bir sonraki adım yok.",
+      "noteLabel": "Gerekçe",
+      "notePlaceholder": "Kısaca nedenini yazın.",
+      "noteRequired": "Lütfen bir gerekçe girin.",
+      "conflict": "Bu kaydı az önce başka biri değiştirdi. Sayfa yeniden yüklendi. Lütfen güncel durumu kontrol edip adımı tekrarlayın.",
+      "writeUnavailable": "Değişiklik kaydedilmedi. Veritabanına şu anda ulaşılamıyor.",
+      "historyHeading": "Geçmiş",
+      "historyEmpty": "Henüz geçmiş yok.",
+      "systemActor": "Sistem",
+      "transitionSummary": "{from} durumundan {to} durumuna",
+      "evidenceHeading": "Fotoğraflar ve videolar",
+      "evidenceEmpty": "Bu kayıtta fotoğraf veya video yok.",
+      "evidenceFileCount": "{count, plural, one {# dosya} other {# dosya}}",
+      "stats": {
+        "open": "Açık kayıtlar",
+        "breached": "Süre aşıldı",
+        "unassigned": "Sorumlusu yok",
+        "awaitingApproval": "Onay bekliyor"
+      },
+      "routing": {
+        "heading": "Önerilen ekip",
+        "explanation": "{category} alanı {team} ekibine gider.",
+        "escalated": "Yükseltildi",
+        "advisory": "Bu bir öneridir. Kaydı atayan kişi başka bir ekip seçebilir. İkisi de geçmişte saklanır.",
+        "escalationReasons": {
+          "critical_severity": "Önem derecesi kritik olduğu için yönetici de bilgilendirilir.",
+          "urgent_priority": "Öncelik acil olduğu için yönetici de bilgilendirilir."
+        },
+        "teams": {
+          "maintenance": "Bakım",
+          "housekeeping": "Kat hizmetleri",
+          "security": "Güvenlik",
+          "technical": "Teknik",
+          "facilities": "Tesisler",
+          "front_office": "Resepsiyon",
+          "finance_desk": "Muhasebe"
+        }
+      },
+      "severity": {
+        "minor": "Düşük",
+        "moderate": "Orta",
+        "major": "Yüksek",
+        "critical": "Kritik"
+      },
+      "category": {
+        "maintenance": "Bakım",
+        "cleaning": "Temizlik",
+        "security": "Güvenlik",
+        "technical": "Teknik",
+        "amenity": "Tesisler",
+        "billing": "Faturalama",
+        "concierge": "Resepsiyon",
+        "inspection": "Denetim",
+        "complaint": "Şikayet",
+        "other": "Diğer"
+      },
+      "eventKind": {
+        "created": "Oluşturuldu",
+        "status_changed": "Durum değişti",
+        "assigned": "Atandı",
+        "unassigned": "Atama kaldırıldı",
+        "comment": "Yorum",
+        "escalated": "Yükseltildi",
+        "sla_breached": "Süre aşıldı",
+        "cost_estimated": "Maliyet tahmin edildi",
+        "media_attached": "Fotoğraf veya video eklendi",
+        "resolved": "Tamamlandı olarak bildirildi",
+        "reopened": "Yeniden açıldı",
+        "closed": "Kapatıldı",
+        "cancelled": "İptal edildi"
+      },
+      "transitions": {
+        "submit": "Gönder",
+        "assign": "Ata",
+        "start": "İşe başla",
+        "hold": "Beklemeye al",
+        "resume": "Devam et",
+        "resolve": "Tamamlandı olarak bildir",
+        "verify_and_close": "Kontrol et ve kapat",
+        "reopen": "Yeniden aç",
+        "reopen_closed": "Yeniden aç",
+        "reject": "Reddet",
+        "cancel": "Kaydı iptal et",
+        "discard_draft": "Taslağı sil"
+      },
+      "sla": {
+        "none": "Süre yok",
+        "on_track": "Zamanında",
+        "due_soon": "Süresi doluyor",
+        "breached": "Süre aşıldı"
       }
     },
     "activities": {
       "title": "Etkinlikler",
-      "lead": "Olan biten her şeyin kronolojik izi.",
-      "empty": "Etkinlik yok.",
-      "loadMore": "Daha eskisini yükle"
+      "lead": "Tesisteki planlı program: tarih, saat ve kontenjan.",
+      "empty": "Seçilen dönemde etkinlik yok.",
+      "loadMore": "Daha eskisini yükle",
+      "timeZoneNote": "Tüm saatler tesisin saat diliminde ({zone}, yıl boyunca UTC+3).",
+      "filterLabel": "Alana göre filtrele",
+      "filterAll": "Tümü",
+      "filterUpcomingOnly": "Sadece yaklaşanlar",
+      "filterIncludePast": "Geçmişi de göster",
+      "bookingUnavailable": {
+        "title": "Kayıt henüz mümkün değil.",
+        "body": "Veritabanında henüz kayıtlar için bir tablo yok. Bu yüzden burada kaç yer olduğu yazıyor, kaçının dolu olduğu değil. Kimsenin saymadığı bir sayıyı göstermek uydurma olurdu."
+      },
+      "stats": {
+        "upcoming": "Yaklaşan",
+        "scheduled": "Planlandı",
+        "cancelled": "İptal"
+      },
+      "status": {
+        "draft": "Taslak",
+        "scheduled": "Planlandı",
+        "open": "Kayıt açık",
+        "full": "Doldu",
+        "in_progress": "Devam ediyor",
+        "completed": "Bitti",
+        "cancelled": "İptal edildi"
+      },
+      "category": {
+        "wellness": "Sağlıklı yaşam",
+        "sports": "Spor",
+        "kids": "Çocuk",
+        "social": "Sosyal",
+        "excursion": "Gezi",
+        "dining": "Yeme içme",
+        "maintenance_window": "Bakım aralığı",
+        "other": "Diğer"
+      },
+      "capacity": {
+        "occupancy": "{capacity} yerin {booked} tanesi dolu",
+        "remaining": "{free} boş",
+        "full": "Doldu",
+        "uncapped": "Sınırsız",
+        "unknown": "Doluluk bilinmiyor",
+        "waitlist": "Bekleme listesinde {n} kişi",
+        "totalPlaces": "Toplam {capacity} yer"
+      }
     },
     "calendar": {
       "title": "Takvim",
-      "lead": "Randevular, bakım pencereleri ve doluluk.",
+      "lead": "Etkinlikler ve kayıt süreleri tek görünümde.",
       "empty": "Randevu yok.",
       "today": "Bugün",
       "views": {
@@ -779,19 +928,72 @@
         "day": "Gün",
         "agenda": "Liste"
       },
-      "newEvent": "Yeni randevu"
+      "newEvent": "Randevu ekle",
+      "timeZoneNote": "Tüm saatler tesisin saat diliminde ({zone}, yıl boyunca UTC+3).",
+      "previous": "Geri",
+      "next": "İleri",
+      "viewLabel": "Görünüm seç",
+      "periodLabel": "Dönem değiştir",
+      "weekOf": "{date} haftası",
+      "emptyDay": "Planlanmış bir şey yok.",
+      "moreEntries": "{count, plural, one {# kayıt daha} other {# kayıt daha}}",
+      "kinds": {
+        "activity": "Etkinlik",
+        "ticket_due": "Kayıt süresi"
+      },
+      "feed": {
+        "heading": "Takvime abone ol",
+        "explanation": "Outlook, Apple Takvim veya Google Takvim ile abone olabilirsiniz. Randevular mutlak saatle gönderilir, bu yüzden takviminiz onları kendi saat diliminizde, kışın da yazın da doğru gösterir.",
+        "siteWideWarning": "Önemli: Şu anda kişi başına değil, tüm tesis için tek bir bağlantı var. Bağlantıya sahip olan, yönetimle aynı randevu listesini görür.",
+        "askAdmin": "Bağlantıyı yönetimden alabilirsiniz.",
+        "notConfigured": "Abonelik kurulmamış. Kayıtlı bir erişim anahtarı olmadan takvim hiçbir şey döndürmez.",
+        "revocation": "Erişim, yönetimin anahtarı değiştirmesiyle geri alınır. Bundan sonra eski bağlantı bir şey döndürmez."
+      }
     },
     "communications": {
       "title": "Mesajlar",
-      "lead": "Kayıt başına gelen ve giden iletişim.",
+      "lead": "Kayıt bazında gelen ve giden yazışmalar.",
       "empty": "Mesaj yok.",
       "compose": "Yeni mesaj",
       "channels": {
-        "email": "E-posta",
-        "sms": "SMS",
-        "whatsapp": "WhatsApp",
         "portal": "Portal",
-        "phone": "Telefon"
+        "email": "E-posta",
+        "whatsapp": "WhatsApp",
+        "phone": "Telefon",
+        "walk_in": "Yüz yüze",
+        "system": "Sistem"
+      },
+      "noMessages": "Bu yazışmada henüz bir şey yok.",
+      "filterLabel": "Duruma göre filtrele",
+      "filterAll": "Tümü",
+      "unread": "{count, plural, one {# okunmamış bildirim} other {# okunmamış bildirim}}",
+      "messageCount": "{count, plural, one {# mesaj} other {# mesaj}}",
+      "internalNote": "İç not",
+      "systemSender": "Sistem",
+      "hasAttachment": "Ek var",
+      "composeUnavailable": "Burada yazma alanı yok, çünkü hiçbir mesaj dışarı çıkamaz. Bir sağlayıcı kurulduğunda eklenecek.",
+      "deliveryNotice": {
+        "title": "Gönderilmedi, sağlayıcı tanımlı değil.",
+        "body": "E-posta, SMS ve WhatsApp için sağlayıcı tanımlı değil. Mesajlar kaydediliyor ve burada okunabiliyor, ama dışarı hiçbir şey gitmiyor. Alıcının bilgilendirildiğini varsaymayın."
+      },
+      "delivery": {
+        "not_configured": "Gönderilmedi, sağlayıcı tanımlı değil",
+        "queued": "Gönderim bekliyor",
+        "sent": "Gönderildi",
+        "delivered": "Ulaştı",
+        "failed": "Gönderim başarısız",
+        "internal_note": "Sadece iç kullanım"
+      },
+      "scopeUnknown": {
+        "title": "Mesajlarınız eşleştirilemiyor.",
+        "body": "Bu hesapta kayıtlı bir daire ve kişi yok, bu yüzden sistem hangi yazışmaların size ait olduğunu belirleyemiyor. Başkasının mesajını göstermektense hiçbir şey göstermemeyi tercih ediyor."
+      },
+      "status": {
+        "open": "Açık",
+        "pending": "Bekliyor",
+        "resolved": "Çözüldü",
+        "closed": "Kapatıldı",
+        "archived": "Arşivlendi"
       }
     },
     "documents": {
