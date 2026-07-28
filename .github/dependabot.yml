@@ -9,7 +9,15 @@ updates:
       # Pinned in CONVENTIONS.md §1 and proven in the reference repos.
       # Majors here are a deliberate decision, never an automated one.
       pinned-core:
-        patterns: ["next", "react", "react-dom", "three", "gsap", "tailwindcss"]
+        # `eslint-config-next` is in this group deliberately (W4-D, 2026-07-28).
+        # It is version-locked to `next` — CONVENTIONS §1 pins both at 16.2.6 —
+        # and dependabot opened PR #5 to move it to 16.2.12 on its own, which
+        # would have left the lint config a different minor from the framework
+        # it lints. Grouping them means dependabot can only ever propose the
+        # pair together, so the two cannot drift by construction rather than by
+        # someone remembering to check.
+        patterns:
+          ["next", "eslint-config-next", "react", "react-dom", "three", "gsap", "tailwindcss"]
         update-types: ["minor", "patch"]
     # S-007. The group above bounds what lands INSIDE the group; it does not
     # bound the ungrouped dev-dependencies, which is how PRs #8 (typescript
@@ -26,6 +34,21 @@ updates:
     # update-type the group excludes). Those are worth SEEING — a Next or React
     # major is a real decision — and they must be closed by hand until someone
     # takes the migration.
+    #
+    # W4-D, 2026-07-28 — verified state, so nobody re-litigates this:
+    # PRs #8, #7 and #6 are CLOSED, not open. The three `ignore` entries below
+    # are what stops them being reopened on the weekly schedule. Confirmed with
+    # `gh pr list --state open`: the open set is #1-#5, #10, #11.
+    #
+    # DO NOT close #4 as "a bump that breaks the pin". `pnpm audit` on the
+    # pinned tree reports 9 advisories against `next@16.2.6` — 4 high, 5
+    # moderate — every one of them `vulnerable: >=16.0.0 <16.2.11`, `patched:
+    # >=16.2.11`. One of the highs is a Middleware/Proxy bypass in the App
+    # Router, which is the exact mechanism `apps/web/proxy.ts` uses for the
+    # route guard. #4 moves next to 16.2.12 and is therefore the SECURITY FIX,
+    # not the problem. Taking it needs a CONVENTIONS §1 amendment because that
+    # file pins 16.2.6 exactly, and CONVENTIONS is frozen — so it is an owner
+    # decision, recorded in RELEASE-STATUS.md §5 rather than taken here.
     ignore:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]

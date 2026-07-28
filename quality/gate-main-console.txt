@@ -1,0 +1,48 @@
+[ 1/20] Typecheck … PASS — tsc --noEmit, 0 errors
+[ 2/20] Lint … PASS — eslint, 0 errors 0 warnings
+[ 3/20] Format … FAIL — 121 file(s) need formatting
+[ 4/20] Build … PASS — Compiled successfully in 8.7s
+[ 5/20] i18n parity … PASS — 0 errors, 0 warnings, identical key sets
+[ 6/20] Evidence integrity … PASS — 25 portal_listing + 631 modelled = 656 · no violations
+[ 7/20] OpenAPI contract … NOT RUN — scripts/validate-openapi.mjs does not exist — W2-B
+[ 8/20] Unit tests … PASS — 24 tests · 24 pass · 0 fail
+[ 9/20] pgTAP (supabase test db) … NOT RUN — Docker daemon unavailable (docker info exit 1) — supabase test db needs it
+[10/20] e2e chromium … NOT RUN — apps/web/playwright.config.ts does not exist — W4-A, never started
+[11/20] e2e mobile-chrome … NOT RUN — apps/web/playwright.config.ts does not exist — W4-A, never started
+[12/20] Layout audit … NOT RUN — scripts/layout-audit.mjs does not exist — W4-B, never started
+[13/20] Accessibility … NOT RUN — scripts/a11y.mjs does not exist — W4-B, never started — no qa:a11y script exists either
+[14/20] Performance (LCP/CLS/INP) … NOT RUN — scripts/perf.mjs does not exist — W4-B, never started
+[15/20] Security probe … NOT RUN — scripts/security-probe.mjs does not exist — W4-C, never started
+[16/20] Bundle budget … PASS — landing floor (excl. 3D) 166.2KB / 250KB · 3D chunks 227.4KB / 260KB across 3 file(s)
+[17/20] Secret scan … PASS — 374 tracked files · 0 env · 0 sources/raw|media · 0 secret-shaped
+[18/20] Dependency audit … FAIL — 15 vulnerabilities found
+[19/20] Evidence drift … NOT RUN — scripts/evidence-drift.mjs does not exist — W0-B, never written
+[20/20] CSP / prerender regression (qa:csp) … PASS — 30 pass · 0 fail
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#   Gate                               State    Exit  Evidence / reason
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+1   Typecheck                          PASS     0     tsc --noEmit, 0 errors
+2   Lint                               PASS     0     eslint, 0 errors 0 warnings
+3   Format                             FAIL     1     121 file(s) need formatting
+4   Build                              PASS     0     Compiled successfully in 8.7s
+5   i18n parity                        PASS     0     0 errors, 0 warnings, identical key sets
+6   Evidence integrity                 PASS     0     25 portal_listing + 631 modelled = 656 · no violations
+7   OpenAPI contract                   NOT RUN  -     scripts/validate-openapi.mjs does not exist — W2-B
+8   Unit tests                         PASS     0     24 tests · 24 pass · 0 fail
+9   pgTAP (supabase test db)           NOT RUN  -     Docker daemon unavailable (docker info exit 1) — supabase te
+10  e2e chromium                       NOT RUN  -     apps/web/playwright.config.ts does not exist — W4-A, never s
+11  e2e mobile-chrome                  NOT RUN  -     apps/web/playwright.config.ts does not exist — W4-A, never s
+12  Layout audit                       NOT RUN  -     scripts/layout-audit.mjs does not exist — W4-B, never starte
+13  Accessibility                      NOT RUN  -     scripts/a11y.mjs does not exist — W4-B, never started — no q
+14  Performance (LCP/CLS/INP)          NOT RUN  -     scripts/perf.mjs does not exist — W4-B, never started
+15  Security probe                     NOT RUN  -     scripts/security-probe.mjs does not exist — W4-C, never star
+16  Bundle budget                      PASS     -     landing floor (excl. 3D) 166.2KB / 250KB · 3D chunks 227.4KB
+17  Secret scan                        PASS     -     374 tracked files · 0 env · 0 sources/raw|media · 0 secret-s
+18  Dependency audit                   FAIL     1     15 vulnerabilities found
+19  Evidence drift (non-blocking)      NOT RUN  -     scripts/evidence-drift.mjs does not exist — W0-B, never writ
+20  CSP / prerender regression (qa:csp PASS     0     30 pass · 0 fail
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+blocking: 9 PASS · 2 FAIL · 8 NOT RUN   (non-blocking: 1)
+verdict : 2 blocking gate(s) FAILED
+exit    : 1  (0=certifiable 1=failed 2=cannot certify)
