@@ -10,7 +10,11 @@ import { fill, shellCopy } from "@/lib/dashboard-home-copy"
 import { navGroupsForRole } from "@/lib/dashboard-routing"
 
 import { DashboardHomeLive } from "@/components/dashboard/home-live"
-import { KpiCard, type KpiCardLabels, type KpiState } from "@/components/dashboard/kpi-card"
+import {
+  KpiCard,
+  type KpiCardLabels,
+  type KpiState,
+} from "@/components/dashboard/kpi-card"
 import {
   DashboardKpiGrid,
   DashboardPageHeader,
@@ -157,7 +161,10 @@ export default async function DashboardHomePage({
           the current matrix reaches it — `child_guest` holds seven resources —
           but a matrix edit could, and a blank page would read as a crash. */}
       {groups.length === 0 ? (
-        <EmptyState title={copy.noAccessTitle} description={copy.noAccessBody} />
+        <EmptyState
+          title={copy.noAccessTitle}
+          description={copy.noAccessBody}
+        />
       ) : (
         <div className="flex min-w-0 flex-col gap-8">
           <DashboardSection title={t("kpi.title")}>
@@ -183,10 +190,13 @@ export default async function DashboardHomePage({
 // ---------------------------------------------------------------------------
 
 /** Which snapshot panel each card reads, so restricted/failed can be resolved. */
-const PANEL_FOR_KPI: Record<KpiId, keyof Pick<
-  DashboardSnapshot,
-  "inventory" | "operations" | "finance" | "evidence" | "hotel"
->> = {
+const PANEL_FOR_KPI: Record<
+  KpiId,
+  keyof Pick<
+    DashboardSnapshot,
+    "inventory" | "operations" | "finance" | "evidence" | "hotel"
+  >
+> = {
   unitsTotal: "inventory",
   unitsModelled: "inventory",
   unitsPortal: "inventory",
@@ -264,13 +274,16 @@ function resolveKpi(
   id: KpiId,
   snapshot: DashboardSnapshot,
   copy: ReturnType<typeof shellCopy>,
-  locale: Locale,
+  locale: Locale
 ): { label: string; value: number | null; hint?: string } {
   const number = (value: number) => new Intl.NumberFormat(locale).format(value)
 
   switch (id) {
     case "unitsTotal":
-      return { label: copy.kpiUnitsTotal, value: snapshot.inventory?.totalUnits ?? null }
+      return {
+        label: copy.kpiUnitsTotal,
+        value: snapshot.inventory?.totalUnits ?? null,
+      }
 
     case "unitsModelled": {
       const inventory = snapshot.inventory
@@ -279,9 +292,13 @@ function resolveKpi(
         value: inventory?.modelledUnits ?? null,
         // 631 of 656 are modelled. Naming the denominator beside the number is
         // what stops it reading as a small exception.
-        ...(inventory === null || inventory === undefined || inventory.totalUnits === null
+        ...(inventory === null ||
+        inventory === undefined ||
+        inventory.totalUnits === null
           ? {}
-          : { hint: `${number(inventory.modelledUnits)} / ${number(inventory.totalUnits)}` }),
+          : {
+              hint: `${number(inventory.modelledUnits)} / ${number(inventory.totalUnits)}`,
+            }),
       }
     }
 
@@ -292,7 +309,10 @@ function resolveKpi(
       }
 
     case "openTickets":
-      return { label: copy.kpiOpenTickets, value: snapshot.operations?.totalTickets ?? null }
+      return {
+        label: copy.kpiOpenTickets,
+        value: snapshot.operations?.totalTickets ?? null,
+      }
 
     case "overdueTickets":
       return {
@@ -301,7 +321,10 @@ function resolveKpi(
       }
 
     case "findings":
-      return { label: copy.kpiFindings, value: snapshot.evidence?.totalFindings ?? null }
+      return {
+        label: copy.kpiFindings,
+        value: snapshot.evidence?.totalFindings ?? null,
+      }
 
     case "criticalFindings":
       return {
@@ -319,10 +342,16 @@ function resolveKpi(
       }
 
     case "sourcesValidated":
-      return { label: copy.kpiSourcesValidated, value: snapshot.evidence?.totalSources ?? null }
+      return {
+        label: copy.kpiSourcesValidated,
+        value: snapshot.evidence?.totalSources ?? null,
+      }
 
     case "hotelRooms":
-      return { label: copy.kpiHotelRooms, value: snapshot.hotel?.roomCount ?? null }
+      return {
+        label: copy.kpiHotelRooms,
+        value: snapshot.hotel?.roomCount ?? null,
+      }
 
     case "reviewSources":
       return {
@@ -331,6 +360,9 @@ function resolveKpi(
       }
 
     case "ledgerEntries":
-      return { label: copy.kpiLedgerEntries, value: snapshot.finance?.totalEntries ?? null }
+      return {
+        label: copy.kpiLedgerEntries,
+        value: snapshot.finance?.totalEntries ?? null,
+      }
   }
 }

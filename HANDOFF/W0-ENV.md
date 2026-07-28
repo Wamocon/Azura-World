@@ -1,4 +1,4 @@
-# HANDOFF — W0-ENV  Supabase environment verified
+# HANDOFF — W0-ENV Supabase environment verified
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -14,27 +14,27 @@ Window: pre-wave setup (not a numbered task)
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `node scripts/verify-supabase.mjs` | **PASS** | 22 pass · 0 fail · 2 warn · 1 skip, exit 0 |
-| Direct Postgres auth (`pg`, run out-of-tree) | **PASS** | connected, queried, privileges confirmed |
-| DNS + TCP reachability probe | **PASS** | direct host IPv6 111ms; pooler IPv4 91ms |
+| Command                                      | Result   | Evidence                                   |
+| -------------------------------------------- | -------- | ------------------------------------------ |
+| `node scripts/verify-supabase.mjs`           | **PASS** | 22 pass · 0 fail · 2 warn · 1 skip, exit 0 |
+| Direct Postgres auth (`pg`, run out-of-tree) | **PASS** | connected, queried, privileges confirmed   |
+| DNS + TCP reachability probe                 | **PASS** | direct host IPv6 111ms; pooler IPv4 91ms   |
 
 ## Verified environment — do not re-derive this
 
-| Fact | Value |
-|---|---|
-| Project ref | *(redacted — see `.env.local`)* |
-| Region | eu-central-1 (Frankfurt) |
-| **PostgreSQL** | **17.6** |
-| Connected as | `postgres`, `CREATE` privilege = true |
-| **public schema** | **0 tables — clean project, safe for migration 00** |
-| auth + storage internals | 31 tables (normal Supabase) |
-| Extensions present | `pg_stat_statements`, **`pgcrypto`**, `plpgsql`, `supabase_vault`, `uuid-ossp` |
-| Extensions **missing** | **`pg_trgm`** — W1-A migration 10 must `create extension` it |
-| Storage buckets | none yet — `azura-documents`, `azura-evidence` to be created, both **private** |
-| Auth providers | `email` only |
-| AI gateway | configured (Sokrates endpoint) |
+| Fact                     | Value                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| Project ref              | _(redacted — see `.env.local`)_                                                |
+| Region                   | eu-central-1 (Frankfurt)                                                       |
+| **PostgreSQL**           | **17.6**                                                                       |
+| Connected as             | `postgres`, `CREATE` privilege = true                                          |
+| **public schema**        | **0 tables — clean project, safe for migration 00**                            |
+| auth + storage internals | 31 tables (normal Supabase)                                                    |
+| Extensions present       | `pg_stat_statements`, **`pgcrypto`**, `plpgsql`, `supabase_vault`, `uuid-ossp` |
+| Extensions **missing**   | **`pg_trgm`** — W1-A migration 10 must `create extension` it                   |
+| Storage buckets          | none yet — `azura-documents`, `azura-evidence` to be created, both **private** |
+| Auth providers           | `email` only                                                                   |
+| AI gateway               | configured (Sokrates endpoint)                                                 |
 
 ## Decisions I made
 
@@ -62,12 +62,12 @@ anon key was always valid — `/auth/v1/health` returned 200 with it throughout.
 
 ## Requests for other windows
 
-| File | Owning task | What is needed |
-|---|---|---|
-| `supabase/migrations/…0000` | W1-A | `create extension if not exists pgcrypto` — already present, keep the guard |
-| `supabase/migrations/…0010` | W1-A | **`create extension if not exists pg_trgm`** — NOT installed, search indexes need it |
-| `scripts/setup-supabase.mjs` | W0-A | create both buckets **private**, with size + MIME limits |
-| `apps/web/lib/env.ts` | W0-A | validate exactly the variable set in `.env.example` — do not invent names |
+| File                         | Owning task | What is needed                                                                       |
+| ---------------------------- | ----------- | ------------------------------------------------------------------------------------ |
+| `supabase/migrations/…0000`  | W1-A        | `create extension if not exists pgcrypto` — already present, keep the guard          |
+| `supabase/migrations/…0010`  | W1-A        | **`create extension if not exists pg_trgm`** — NOT installed, search indexes need it |
+| `scripts/setup-supabase.mjs` | W0-A        | create both buckets **private**, with size + MIME limits                             |
+| `apps/web/lib/env.ts`        | W0-A        | validate exactly the variable set in `.env.example` — do not invent names            |
 
 ## Known gaps
 

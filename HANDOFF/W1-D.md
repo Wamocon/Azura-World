@@ -43,15 +43,15 @@ Completed: 2026-07-27
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| Scoped `tsc --noEmit` over W1-D files | **PASS** | exit 0. Config at `scratchpad/tsconfig.w1d.json`, includes `components/{ui,evidence,anim,three,providers}`, `lib/{cn,motion}`, `app/[locale]/kitchen-sink`. |
-| `pnpm --dir apps/web typecheck` (full tree) | **PASS** exit 0 | Was failing on W1-B/W1-C files mid-run; green once they landed. |
-| `pnpm --dir apps/web build` | **PASS** exit 0 | `✓ Compiled successfully` · all 4 locale routes emitted. Blocked earlier on W2-C's `ai-retrieval.ts:147`; green once they fixed it. |
-| `pnpm --dir apps/web lint` | **PASS** exit 0, 0 errors 0 warnings | Whole tree. The 5 errors the supervisor logged as S-002 were mine and are fixed — see HANDOFF/W3-I.md. |
-| PostCSS compile of `globals.css` | **PASS** | 61,766 B output; provenance utilities generate, alpha modifiers emit `color-mix(in oklab, var(--confidence-conflicted) 45%, transparent)` with a solid fallback. |
-| Contrast harness | **PASS — 0 gated failures** | 33 pairs × 2 themes. Full table in `DESIGN.md` §4. |
-| Playwright design review, Chromium | **PASS — 27/27** | Output below. |
+| Command                                     | Result                               | Evidence                                                                                                                                                         |
+| ------------------------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scoped `tsc --noEmit` over W1-D files       | **PASS**                             | exit 0. Config at `scratchpad/tsconfig.w1d.json`, includes `components/{ui,evidence,anim,three,providers}`, `lib/{cn,motion}`, `app/[locale]/kitchen-sink`.      |
+| `pnpm --dir apps/web typecheck` (full tree) | **PASS** exit 0                      | Was failing on W1-B/W1-C files mid-run; green once they landed.                                                                                                  |
+| `pnpm --dir apps/web build`                 | **PASS** exit 0                      | `✓ Compiled successfully` · all 4 locale routes emitted. Blocked earlier on W2-C's `ai-retrieval.ts:147`; green once they fixed it.                              |
+| `pnpm --dir apps/web lint`                  | **PASS** exit 0, 0 errors 0 warnings | Whole tree. The 5 errors the supervisor logged as S-002 were mine and are fixed — see HANDOFF/W3-I.md.                                                           |
+| PostCSS compile of `globals.css`            | **PASS**                             | 61,766 B output; provenance utilities generate, alpha modifiers emit `color-mix(in oklab, var(--confidence-conflicted) 45%, transparent)` with a solid fallback. |
+| Contrast harness                            | **PASS — 0 gated failures**          | 33 pairs × 2 themes. Full table in `DESIGN.md` §4.                                                                                                               |
+| Playwright design review, Chromium          | **PASS — 27/27**                     | Output below.                                                                                                                                                    |
 
 ### Playwright, `/de/kitchen-sink`, real Chromium
 
@@ -93,10 +93,10 @@ dark, and the open conflict popover.
 
 ### Blocked verifications — NOT RUN, with the reason
 
-*(Typecheck, lint and build were all blocked on other windows' files for most
+_(Typecheck, lint and build were all blocked on other windows' files for most
 of the run — W1-B's `auth.ts`/`rbac.ts`, W1-C's `i18n/request.ts`, W2-C's
 `ai-retrieval.ts:147`. All three are green as of the final pass; the scoped
-config above is what let W1-D be verified while they were red.)*
+config above is what let W1-D be verified while they were red.)_
 
 - **3D route chunk size is now MEASURED** — the build unblocked later in the
   night once W2-C fixed `ai-retrieval.ts`. See "Measured bundle sizes" above:
@@ -125,7 +125,7 @@ Two notes for later waves:
 ## Decisions I made
 
 1. **"Cinematic hero, forensic body" accepted, with an amendment.** The register
-   changes per *number*, not per *page position*. A disputed figure reads as
+   changes per _number_, not per _page position_. A disputed figure reads as
    disputed in the hero too, because that is where the most quotable numbers
    are. Rationale in `DESIGN.md` §1.
 2. **Conflicts are a popover, not a tooltip.** A real focusable button. Hover is
@@ -155,17 +155,17 @@ Two notes for later waves:
 
 ## Requests for other windows
 
-**1. Every W3-* window — the label API is strings, not callbacks.**
+_*1. Every W3-* window — the label API is strings, not callbacks._*
 
 `ProvenanceValue`, `SourceChipList` and `ConflictPopover` are `"use client"` and
 their callers are Server Components. React cannot serialise a function across
-that boundary — a `(count: number) => string` prop throws *"Functions cannot be
-passed directly to Client Components"* the first time a page renders one. So:
+that boundary — a `(count: number) => string` prop throws _"Functions cannot be
+passed directly to Client Components"_ the first time a page renders one. So:
 
 ```ts
-labels.conflict.summary  = "{count} Quellen, keine Auflösung"   // not (n) => …
-labels.more              = "+{count} weitere"                   // not (n) => …
-snapshotBasePath         = "/api/evidence/snapshot"             // not (hash) => …
+labels.conflict.summary = "{count} Quellen, keine Auflösung"; // not (n) => …
+labels.more = "+{count} weitere"; // not (n) => …
+snapshotBasePath = "/api/evidence/snapshot"; // not (hash) => …
 ```
 
 `Counter` takes `locale` + `formatOptions` for the same reason, not a formatter.
@@ -244,7 +244,7 @@ console: "Loading the script '.../chunks/0225uih-r_h93.js' violates the
           'nonce-1DHkEpV+/8gL66EvST+fqw==' 'strict-dynamic'"   (x every chunk)
 ```
 
-The page renders and *looks* correct, because the server-rendered HTML is fine.
+The page renders and _looks_ correct, because the server-rendered HTML is fine.
 Nothing is interactive.
 
 I fixed my own route (`force-dynamic`) and re-measured: canvas mounts, three
@@ -263,10 +263,10 @@ without a nonce. I did not touch `proxy.ts`; it is not mine.
 From a real `next build` + `next start`, recording actual transfer sizes in
 Chromium — not from reading the chunk directory.
 
-| | Measured (gz) | Budget | |
-|---|---|---|---|
-| Lazy 3D chunk | **236.4 KB** across 5 files | 150 KB | **OVER by 86 KB** |
-| `/de/kitchen-sink` initial JS | 297.3 KB across 11 files | — | dev-only route |
+|                               | Measured (gz)               | Budget |                   |
+| ----------------------------- | --------------------------- | ------ | ----------------- |
+| Lazy 3D chunk                 | **236.4 KB** across 5 files | 150 KB | **OVER by 86 KB** |
+| `/de/kitchen-sink` initial JS | 297.3 KB across 11 files    | —      | dev-only route    |
 
 **The 150 KB budget for the 3D chunk is not reachable with the pinned stack,
 and that is a stack fact rather than a coding one.** three.js 0.185 + R3F is

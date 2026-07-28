@@ -3,7 +3,10 @@ import type { ReactNode } from "react"
 
 import { cn } from "@/lib/cn"
 import { formatMoney } from "@/components/evidence/format"
-import { SourceChip, type SourceChipLabels } from "@/components/evidence/source-chip"
+import {
+  SourceChip,
+  type SourceChipLabels,
+} from "@/components/evidence/source-chip"
 import type { SourceRef } from "@/lib/contracts"
 
 import type { PriceObservation } from "./price-conflict-ladder"
@@ -117,7 +120,7 @@ export function PriceObservationTable({
     //                 invisible. `overflow: hidden` alone does NOT fix it;
     //                 measured both ways.
     //   `max-w-full`— belt and braces against a future grid ancestor.
-    <div className={cn("relative min-w-0 max-w-full", className)}>
+    <div className={cn("relative max-w-full min-w-0", className)}>
       {/* A scroll edge, not a divider (apple-design §12). Below `lg` the 44rem
           table is wider than the panel, and without a cue the clipped right-hand
           columns simply look absent. A soft fade says "there is more this way"
@@ -127,141 +130,175 @@ export function PriceObservationTable({
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-card to-transparent lg:hidden"
       />
-      <div className="azura-scrollbar-slim relative min-w-0 max-w-full overflow-x-auto">
-      <table className="w-full min-w-[44rem] border-collapse text-sm">
-        <caption className="sr-only">{labels.caption}</caption>
-        <thead>
-          <tr className="border-b border-border text-left">
-            <th scope="col" className="py-2 pr-4 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.price}
-            </th>
-            <th scope="col" className="py-2 pr-4 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.layout}
-            </th>
-            <th scope="col" className="py-2 pr-4 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.area}
-            </th>
-            <th scope="col" className="py-2 pr-4 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.publisher}
-            </th>
-            <th scope="col" className="py-2 pr-4 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.observed}
-            </th>
-            <th scope="col" className="py-2 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {labels.evidence}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((observation, index) => {
-            const source = sourcesByUrl?.get(observation.url)
-            return (
-              <tr
-                key={`${observation.url}-${observation.money.amount}-${index}`}
-                data-slot="observation-row"
-                data-stale={observation.stale}
-                className={cn(
-                  "border-b border-border/60 align-top",
-                  // Hover gated behind a real pointer. A touch device fires
-                  // hover on tap and the row would latch highlighted after the
-                  // finger leaves — Emil's checklist, and it is the difference
-                  // between a table that feels responsive and one that feels
-                  // stuck. `transition-colors`, never `transition: all`.
-                  "transition-colors duration-150 ease-[var(--ease-out)]",
-                  "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/40",
-                  observation.stale && "bg-quality-stale/[0.06]"
-                )}
+      <div className="azura-scrollbar-slim relative max-w-full min-w-0 overflow-x-auto">
+        <table className="w-full min-w-[44rem] border-collapse text-sm">
+          <caption className="sr-only">{labels.caption}</caption>
+          <thead>
+            <tr className="border-b border-border text-left">
+              <th
+                scope="col"
+                className="py-2 pr-4 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
               >
-                <td className="py-2.5 pr-4">
-                  <span className="flex flex-wrap items-center gap-2">
-                    {/* The figure is the row's subject, so it gets the display
+                {labels.price}
+              </th>
+              <th
+                scope="col"
+                className="py-2 pr-4 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
+              >
+                {labels.layout}
+              </th>
+              <th
+                scope="col"
+                className="py-2 pr-4 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
+              >
+                {labels.area}
+              </th>
+              <th
+                scope="col"
+                className="py-2 pr-4 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
+              >
+                {labels.publisher}
+              </th>
+              <th
+                scope="col"
+                className="py-2 pr-4 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
+              >
+                {labels.observed}
+              </th>
+              <th
+                scope="col"
+                className="py-2 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase"
+              >
+                {labels.evidence}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((observation, index) => {
+              const source = sourcesByUrl?.get(observation.url)
+              return (
+                <tr
+                  key={`${observation.url}-${observation.money.amount}-${index}`}
+                  data-slot="observation-row"
+                  data-stale={observation.stale}
+                  className={cn(
+                    "border-b border-border/60 align-top",
+                    // Hover gated behind a real pointer. A touch device fires
+                    // hover on tap and the row would latch highlighted after the
+                    // finger leaves — Emil's checklist, and it is the difference
+                    // between a table that feels responsive and one that feels
+                    // stuck. `transition-colors`, never `transition: all`.
+                    "transition-colors duration-150 ease-[var(--ease-out)]",
+                    "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/40",
+                    observation.stale && "bg-quality-stale/[0.06]"
+                  )}
+                >
+                  <td className="py-2.5 pr-4">
+                    <span className="flex flex-wrap items-center gap-2">
+                      {/* The figure is the row's subject, so it gets the display
                         face, a size step up, and the negative tracking that
                         keeps large numerals from reading loose. */}
-                    <span
-                      data-numeric
-                      className="font-display text-[0.9375rem] font-semibold tracking-[-0.01em]"
-                    >
-                      {formatMoney(observation.money, locale)}
+                      <span
+                        data-numeric
+                        className="font-display text-[0.9375rem] font-semibold tracking-[-0.01em]"
+                      >
+                        {formatMoney(observation.money, locale)}
+                      </span>
+                      {observation.stale ? (
+                        // Next to the price. Never a footnote.
+                        <span className="inline-flex min-h-6 items-center gap-1 rounded-md border border-quality-stale/45 bg-quality-stale/10 px-1.5 text-[0.6875rem] font-semibold tracking-[0.06em] text-quality-stale uppercase">
+                          {labels.stale}
+                        </span>
+                      ) : null}
                     </span>
-                    {observation.stale ? (
-                      // Next to the price. Never a footnote.
-                      <span className="inline-flex min-h-6 items-center gap-1 rounded-md border border-quality-stale/45 bg-quality-stale/10 px-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-quality-stale">
-                        {labels.stale}
+                    {observation.note !== null &&
+                    observation.note.length > 0 ? (
+                      <span className="mt-1 block max-w-[24rem] text-xs leading-relaxed text-muted-foreground">
+                        <span className="sr-only">{labels.note}: </span>
+                        {observation.note}
                       </span>
                     ) : null}
-                  </span>
-                  {observation.note !== null && observation.note.length > 0 ? (
-                    <span className="mt-1 block max-w-[24rem] text-xs leading-relaxed text-muted-foreground">
-                      <span className="sr-only">{labels.note}: </span>
-                      {observation.note}
-                    </span>
-                  ) : null}
-                </td>
-                <td className="py-2.5 pr-4 text-muted-foreground">
-                  {observation.layout ?? labels.layoutUnstated}
-                </td>
-                <td className="py-2.5 pr-4" data-numeric>
-                  {observation.interiorM2 === null ? (
-                    <span className="text-muted-foreground">{labels.areaUnstated}</span>
-                  ) : (
-                    `${new Intl.NumberFormat(locale).format(observation.interiorM2)} m²`
-                  )}
-                </td>
-                <td className="py-2.5 pr-4">{observation.publisher}</td>
-                <td className="py-2.5 pr-4 tabular-nums text-muted-foreground">
-                  <time dateTime={observation.fetchedAt}>
-                    {formatCollectedAt(observation.fetchedAt, locale)}
-                  </time>
-                </td>
-                <td className="py-2.5">
-                  {source !== undefined ? (
-                    <SourceChip
-                      source={source}
-                      locale={locale}
-                      labels={labels.source}
-                      {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-                    />
-                  ) : (
-                    // No `SourceRef` for this url, so there is no snapshot hash
-                    // to link. A fabricated hash would be far worse than a
-                    // missing archive link (invariant 6), so the row keeps its
-                    // live URL and simply has no archive icon.
-                    //
-                    // Given the SAME chip shape as a registered source, though:
-                    // the earlier version used a bare text link, and the visual
-                    // weight difference read as "this citation is weaker" when
-                    // the only real difference is whether we happen to hold a
-                    // snapshot of that exact URL.
-                    <span className="inline-flex min-h-6 max-w-full items-center gap-1.5 rounded-md border border-input bg-background px-2 py-0.5 text-xs text-muted-foreground">
-                      <a
-                        href={observation.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={`${labels.source.openSource}: ${observation.url}`}
-                        className={cn(
-                          "inline-flex min-h-6 min-w-0 items-center gap-1 rounded-sm font-medium",
-                          // Press feedback. The interface has to visibly hear
-                          // the tap before the navigation happens, or the delay
-                          // reads as a dead control.
-                          "transition-transform duration-100 ease-[var(--ease-out)] active:scale-[0.97] motion-reduce:active:scale-100",
-                          "outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-                        )}
-                      >
-                        <span className="truncate">{observation.publisher}</span>
-                        <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
-                      </a>
-                      <span aria-hidden="true" className="text-muted-foreground/60">
-                        ·
+                  </td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">
+                    {observation.layout ?? labels.layoutUnstated}
+                  </td>
+                  <td className="py-2.5 pr-4" data-numeric>
+                    {observation.interiorM2 === null ? (
+                      <span className="text-muted-foreground">
+                        {labels.areaUnstated}
                       </span>
-                      <time dateTime={observation.fetchedAt} className="shrink-0 tabular-nums">
-                        {formatCollectedAt(observation.fetchedAt, locale)}
-                      </time>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            )
-          })}
+                    ) : (
+                      `${new Intl.NumberFormat(locale).format(observation.interiorM2)} m²`
+                    )}
+                  </td>
+                  <td className="py-2.5 pr-4">{observation.publisher}</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground tabular-nums">
+                    <time dateTime={observation.fetchedAt}>
+                      {formatCollectedAt(observation.fetchedAt, locale)}
+                    </time>
+                  </td>
+                  <td className="py-2.5">
+                    {source !== undefined ? (
+                      <SourceChip
+                        source={source}
+                        locale={locale}
+                        labels={labels.source}
+                        {...(snapshotBasePath !== undefined
+                          ? { snapshotBasePath }
+                          : {})}
+                      />
+                    ) : (
+                      // No `SourceRef` for this url, so there is no snapshot hash
+                      // to link. A fabricated hash would be far worse than a
+                      // missing archive link (invariant 6), so the row keeps its
+                      // live URL and simply has no archive icon.
+                      //
+                      // Given the SAME chip shape as a registered source, though:
+                      // the earlier version used a bare text link, and the visual
+                      // weight difference read as "this citation is weaker" when
+                      // the only real difference is whether we happen to hold a
+                      // snapshot of that exact URL.
+                      <span className="inline-flex min-h-6 max-w-full items-center gap-1.5 rounded-md border border-input bg-background px-2 py-0.5 text-xs text-muted-foreground">
+                        <a
+                          href={observation.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`${labels.source.openSource}: ${observation.url}`}
+                          className={cn(
+                            "inline-flex min-h-6 min-w-0 items-center gap-1 rounded-sm font-medium",
+                            // Press feedback. The interface has to visibly hear
+                            // the tap before the navigation happens, or the delay
+                            // reads as a dead control.
+                            "transition-transform duration-100 ease-[var(--ease-out)] active:scale-[0.97] motion-reduce:active:scale-100",
+                            "outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          )}
+                        >
+                          <span className="truncate">
+                            {observation.publisher}
+                          </span>
+                          <ExternalLink
+                            className="size-3 shrink-0"
+                            aria-hidden="true"
+                          />
+                        </a>
+                        <span
+                          aria-hidden="true"
+                          className="text-muted-foreground/60"
+                        >
+                          ·
+                        </span>
+                        <time
+                          dateTime={observation.fetchedAt}
+                          className="shrink-0 tabular-nums"
+                        >
+                          {formatCollectedAt(observation.fetchedAt, locale)}
+                        </time>
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

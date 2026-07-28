@@ -1,4 +1,4 @@
-# HANDOFF — W0-A  Repository scaffold, tooling, contracts
+# HANDOFF — W0-A Repository scaffold, tooling, contracts
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -44,18 +44,18 @@ Commit: `4f592ab` on branch `main`
 Every command below was run from `D:\Azura World`, exit code captured explicitly into a variable
 (never behind a pipe), with `NO_COLOR=1` so the pasted output carries no escape sequences.
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm install` | **PASS** | exit 0, `Done in 1m 24s`, `pnpm-lock.yaml` written (238 KB) |
-| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, no diagnostics |
-| `pnpm --dir apps/web lint --max-warnings 0` | **PASS** | exit 0, 0 errors 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** | exit 0, `Compiled successfully in 3.7s` |
-| `pnpm --dir apps/web dev` | **PASS** | `Ready in 1329ms` on `http://127.0.0.1:3200` |
-| `node … scripts/smoke-contracts.mts` | **PASS** | exit 0, **33 pass · 0 fail** |
-| smoke test against a *sabotaged* `contracts.ts` | **PASS** | exit 1, **28 pass · 5 fail** — the test can fail |
-| `node scripts/verify-supabase.mjs` | **PASS** | exit 0, 25 pass · 0 fail · 3 warn |
-| `node scripts/setup-supabase.mjs --dry-run` | **PASS** | exit 0, 5 pass · 0 fail · 0 warn · 2 skip |
-| `git log --oneline` | **PASS** | `4f592ab INTERNAL-107 W0-A: repository scaffold…` |
+| Command                                         | Result   | Evidence                                                    |
+| ----------------------------------------------- | -------- | ----------------------------------------------------------- |
+| `pnpm install`                                  | **PASS** | exit 0, `Done in 1m 24s`, `pnpm-lock.yaml` written (238 KB) |
+| `pnpm --dir apps/web typecheck`                 | **PASS** | exit 0, no diagnostics                                      |
+| `pnpm --dir apps/web lint --max-warnings 0`     | **PASS** | exit 0, 0 errors 0 warnings                                 |
+| `pnpm --dir apps/web build`                     | **PASS** | exit 0, `Compiled successfully in 3.7s`                     |
+| `pnpm --dir apps/web dev`                       | **PASS** | `Ready in 1329ms` on `http://127.0.0.1:3200`                |
+| `node … scripts/smoke-contracts.mts`            | **PASS** | exit 0, **33 pass · 0 fail**                                |
+| smoke test against a _sabotaged_ `contracts.ts` | **PASS** | exit 1, **28 pass · 5 fail** — the test can fail            |
+| `node scripts/verify-supabase.mjs`              | **PASS** | exit 0, 25 pass · 0 fail · 3 warn                           |
+| `node scripts/setup-supabase.mjs --dry-run`     | **PASS** | exit 0, 5 pass · 0 fail · 0 warn · 2 skip                   |
+| `git log --oneline`                             | **PASS** | `4f592ab INTERNAL-107 W0-A: repository scaffold…`           |
 
 ### Gates
 
@@ -94,8 +94,8 @@ Route (pages)
 
 ### `assertFactInvariants` rejects all six invariants
 
-Required by the brief: *"a hand-written smoke test proving `assertFactInvariants` throws on each
-of the six invariant violations… A validator that never rejects is not a validator."*
+Required by the brief: _"a hand-written smoke test proving `assertFactInvariants` throws on each
+of the six invariant violations… A validator that never rejects is not a validator."_
 
 ```
 Azura World — contract invariant smoke test
@@ -224,13 +224,13 @@ Summary  25 pass · 0 fail · 3 warn · 0 skip
 
 ### NOT RUN — stated as such, not as "should pass"
 
-| Not run | Why |
-|---|---|
-| `pnpm setup:supabase` **without** `--dry-run` | Creates two buckets in the live cloud project. That is an outward-facing change to the user's Supabase project and is not in W0-A's definition of done. Dry-run verified the script end to end against the live Storage API. **Awaiting an explicit go-ahead.** |
-| `pnpm test:contract`, `qa:layout`, `qa:perf`, `quality:gate`, `db:test`, `test:e2e` | Their target scripts belong to W2-B / W4-B / W4-D / W1-A / W4-A and do not exist. Correct per the brief: "Scripts referencing files other windows own are expected to fail until those land. That is correct — do not stub them." |
-| `pnpm --dir apps/web format` (prettier) | Not a gate. `.prettierrc` points `tailwindStylesheet` at `app/globals.css`, which W1-D has not created; the plugin's behaviour with a missing stylesheet is unverified here. |
-| Real-browser CSP evaluation, especially the production `'strict-dynamic'` path | Headers were verified over HTTP; no browser has executed the page. W4-C / W5 should load a production build once. `[GAP]` |
-| `corepack enable` | `EPERM: … C:\Program Files\nodejs\pnpx` — needs an elevated shell. `corepack prepare pnpm@10.0.0 --activate` succeeded and pinned pnpm to 10.0.0, which is sufficient. |
+| Not run                                                                             | Why                                                                                                                                                                                                                                                             |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm setup:supabase` **without** `--dry-run`                                       | Creates two buckets in the live cloud project. That is an outward-facing change to the user's Supabase project and is not in W0-A's definition of done. Dry-run verified the script end to end against the live Storage API. **Awaiting an explicit go-ahead.** |
+| `pnpm test:contract`, `qa:layout`, `qa:perf`, `quality:gate`, `db:test`, `test:e2e` | Their target scripts belong to W2-B / W4-B / W4-D / W1-A / W4-A and do not exist. Correct per the brief: "Scripts referencing files other windows own are expected to fail until those land. That is correct — do not stub them."                               |
+| `pnpm --dir apps/web format` (prettier)                                             | Not a gate. `.prettierrc` points `tailwindStylesheet` at `app/globals.css`, which W1-D has not created; the plugin's behaviour with a missing stylesheet is unverified here.                                                                                    |
+| Real-browser CSP evaluation, especially the production `'strict-dynamic'` path      | Headers were verified over HTTP; no browser has executed the page. W4-C / W5 should load a production build once. `[GAP]`                                                                                                                                       |
+| `corepack enable`                                                                   | `EPERM: … C:\Program Files\nodejs\pnpx` — needs an elevated shell. `corepack prepare pnpm@10.0.0 --activate` succeeded and pinned pnpm to 10.0.0, which is sufficient.                                                                                          |
 
 ---
 
@@ -291,13 +291,13 @@ Identical semantics; avoids a redundant-constituent lint error.
 
 ### 3. `roleLevel` differs from the 1Çatı reference — CONTRACTS.md wins
 
-| Role | CONTRACTS.md §3 (transcribed) | `Cati/apps/web/lib/rbac.ts` |
-|---|---|---|
-| `guest` | 5 | 15 |
-| `service_provider` | 30 | 25 |
-| `child_owner` | 15 | 7 |
-| `child_tenant` | 8 | 6 |
-| `child_guest` | 3 | 5 |
+| Role               | CONTRACTS.md §3 (transcribed) | `Cati/apps/web/lib/rbac.ts` |
+| ------------------ | ----------------------------- | --------------------------- |
+| `guest`            | 5                             | 15                          |
+| `service_provider` | 30                            | 25                          |
+| `child_owner`      | 15                            | 7                           |
+| `child_tenant`     | 8                             | 6                           |
+| `child_guest`      | 3                             | 5                           |
 
 **W1-A and W1-B: import `roleLevel` from `lib/contracts.ts`. Do not copy the 1Çatı numbers.**
 Divergence here is a security hole that typechecks.
@@ -324,13 +324,13 @@ are final — build against them, and do not restructure the file.
 ```ts
 async function refreshSupabaseSession(
   request: NextRequest,
-  response: NextResponse
-): Promise<{ response: NextResponse; isAuthenticated: boolean }>
+  response: NextResponse,
+): Promise<{ response: NextResponse; isAuthenticated: boolean }>;
 
 function guardRoute(
   request: NextRequest,
-  ctx: { locale: Locale; pathWithoutLocale: string; isAuthenticated: boolean }
-): NextResponse | null
+  ctx: { locale: Locale; pathWithoutLocale: string; isAuthenticated: boolean },
+): NextResponse | null;
 ```
 
 Today they are no-ops that let the app run unauthenticated: nothing redirects. Points W1-B should
@@ -350,7 +350,7 @@ read in the seam comments before writing:
 **CSP is emitted per request from `proxy.ts`, not statically from `next.config.ts`.**
 CONVENTIONS §4 requires a CSP with no `unsafe-inline` for scripts. That is only achievable with a
 per-request nonce, which a static header cannot carry. `next.config.ts` therefore holds every
-*other* security header and deliberately omits `Content-Security-Policy`. **Adding a static CSP
+_other_ security header and deliberately omits `Content-Security-Policy`. **Adding a static CSP
 header to `next.config.ts` would override the nonce and break every script tag in production.**
 
 **`proxy.ts` does not match `/api/…`.** The brief specifies the matcher exactly
@@ -368,7 +368,7 @@ subagent proposed also accepting `"demo"` (mirroring 1Çatı's `demo-object-stor
 as invented — no Azura document says it. If a later window needs a second mode, amend
 `.env.example` and `lib/env.ts` together in one change.
 
-**An unfilled `.env.example` placeholder counts as *absent*, not as a fatal error.** A fresh
+**An unfilled `.env.example` placeholder counts as _absent_, not as a fatal error.** A fresh
 `cp .env.example .env.local` leaves `your-project-ref` / `:PASSWORD@` in the Supabase values.
 Treating those as configured would make `isSupabaseConfigured()` lie and every query fail;
 treating them as fatal would break the supported seed-fallback path the brief requires. They
@@ -388,25 +388,25 @@ window's files underneath them. Deviation recorded here rather than taken silent
 staged or untracked for its owner (SYSTEM-PROMPT §4.2).
 
 **Created the bare `supabase/` directory but nothing inside it.** The brief's skeleton lists
-`supabase/`, while its read-only section says do not create *anything under* `supabase/`. A
+`supabase/`, while its read-only section says do not create _anything under_ `supabase/`. A
 directory with no file in it satisfies both and is invisible to git.
 
 ---
 
 ## Requests for other windows
 
-| File | Owning task | What is needed |
-|---|---|---|
-| `apps/web/app/layout.tsx` | **W1-D** | Enable the one commented line `import "./globals.css"` at the marked `W1-D SEAM`. It is commented because importing a file that does not exist fails the build. Touch **only** that line. |
-| `apps/web/next.config.ts` | **W1-C** | Enable the commented `createNextIntlPlugin("./i18n/request.ts")` seam and change the final export to `withNextIntl(nextConfig)`. Locale *routing* is already live in `proxy.ts` and does not need the plugin; the plugin is only for `getRequestConfig`. Touch **only** the marked seam. |
-| `apps/web/proxy.ts` | **W1-B** | Fill the two `TODO(W1-B)` seams above. Do not restructure the file. |
-| `CONTRACTS.md` | **central / whoever amends** | Define `AzuraBlock` and `Amenity` (`CONTRACT-GAP-01`, `CONTRACT-GAP-02`) and bump `CONTRACT_VERSION`. |
-| `scripts/verify-evidence.mjs` | **W0-B** | Pass a real fs-backed `snapshotExists` into `assertFactInvariants`, or invariant 6 is only half-checked. |
-| migrations `…0000` / `…0010` | **W1-A** | `pgcrypto` present (keep the `if not exists` guard); **`pg_trgm` NOT installed** — must be created. Re-confirmed against the live database today. |
-| `apps/web/lib/rbac.ts` + role SQL | **W1-B / W1-A** | Import `roles` / `roleLevel` from `lib/contracts.ts`. Do not redeclare, and do not copy the 1Çatı numbers (table above). |
-| `.editorconfig`, `.githooks/`, `.github/`, `CONTRIBUTING.md`, `SECURITY.md` | **unowned** | These appeared in the tree during W0-A from another window. They are in nobody's ownership list in ORCHESTRATION §4. Someone should claim them — W4-D is the natural owner of `.github/workflows/`. |
-| `scripts/azura_parsers/__pycache__/*.pyc` | **W0-B** | A compiled Python artifact is currently tracked in git. It should be ignored, not committed. |
-| `sources/.gitkeep` | **W0-B** | I created it as part of the skeleton before `sources/` had real content. Now redundant — delete or keep, your call; I did not touch it after `sources/*` became yours. |
+| File                                                                        | Owning task                  | What is needed                                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/app/layout.tsx`                                                   | **W1-D**                     | Enable the one commented line `import "./globals.css"` at the marked `W1-D SEAM`. It is commented because importing a file that does not exist fails the build. Touch **only** that line.                                                                                                |
+| `apps/web/next.config.ts`                                                   | **W1-C**                     | Enable the commented `createNextIntlPlugin("./i18n/request.ts")` seam and change the final export to `withNextIntl(nextConfig)`. Locale _routing_ is already live in `proxy.ts` and does not need the plugin; the plugin is only for `getRequestConfig`. Touch **only** the marked seam. |
+| `apps/web/proxy.ts`                                                         | **W1-B**                     | Fill the two `TODO(W1-B)` seams above. Do not restructure the file.                                                                                                                                                                                                                      |
+| `CONTRACTS.md`                                                              | **central / whoever amends** | Define `AzuraBlock` and `Amenity` (`CONTRACT-GAP-01`, `CONTRACT-GAP-02`) and bump `CONTRACT_VERSION`.                                                                                                                                                                                    |
+| `scripts/verify-evidence.mjs`                                               | **W0-B**                     | Pass a real fs-backed `snapshotExists` into `assertFactInvariants`, or invariant 6 is only half-checked.                                                                                                                                                                                 |
+| migrations `…0000` / `…0010`                                                | **W1-A**                     | `pgcrypto` present (keep the `if not exists` guard); **`pg_trgm` NOT installed** — must be created. Re-confirmed against the live database today.                                                                                                                                        |
+| `apps/web/lib/rbac.ts` + role SQL                                           | **W1-B / W1-A**              | Import `roles` / `roleLevel` from `lib/contracts.ts`. Do not redeclare, and do not copy the 1Çatı numbers (table above).                                                                                                                                                                 |
+| `.editorconfig`, `.githooks/`, `.github/`, `CONTRIBUTING.md`, `SECURITY.md` | **unowned**                  | These appeared in the tree during W0-A from another window. They are in nobody's ownership list in ORCHESTRATION §4. Someone should claim them — W4-D is the natural owner of `.github/workflows/`.                                                                                      |
+| `scripts/azura_parsers/__pycache__/*.pyc`                                   | **W0-B**                     | A compiled Python artifact is currently tracked in git. It should be ignored, not committed.                                                                                                                                                                                             |
+| `sources/.gitkeep`                                                          | **W0-B**                     | I created it as part of the skeleton before `sources/` had real content. Now redundant — delete or keep, your call; I did not touch it after `sources/*` became yours.                                                                                                                   |
 
 ---
 

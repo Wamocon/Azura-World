@@ -54,7 +54,7 @@ function FactRow<T>({
 }) {
   return (
     <div className="flex flex-col gap-1.5 border-t border-border/60 py-4">
-      <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+      <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
         {label}
       </dt>
       <dd className="text-lg">
@@ -85,10 +85,7 @@ export function HotelFactGrid({
 }) {
   return (
     <dl
-      className={cn(
-        "grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3",
-        className,
-      )}
+      className={cn("grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3", className)}
     >
       <FactRow
         label={labels.stars}
@@ -208,7 +205,7 @@ export function DistanceDivergence({
       aria-labelledby="distance-divergence-heading"
       className={cn(
         "flex flex-col gap-5 rounded-lg border border-border bg-muted/30 p-6",
-        className,
+        className
       )}
     >
       <h3
@@ -220,7 +217,7 @@ export function DistanceDivergence({
 
       <dl className="grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {labels.residenceLabel}
           </dt>
           <dd className="text-2xl">
@@ -234,7 +231,7 @@ export function DistanceDivergence({
           </dd>
         </div>
         <div className="flex flex-col gap-1.5">
-          <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {labels.hotelLabel}
           </dt>
           <dd className="text-2xl">
@@ -249,10 +246,10 @@ export function DistanceDivergence({
         </div>
       </dl>
 
-      <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+      <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
         {labels.explanation}
       </p>
-      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
         {labels.findingRef}
       </p>
     </section>

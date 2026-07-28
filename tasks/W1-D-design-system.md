@@ -27,7 +27,7 @@ and the component that makes this project honest: the **provenance chip**, which
 number together with where it came from and whether sources agree.
 
 1Çatı is deep teal `#066B63` + gold `#B9822B` — warm, institutional, Turkish-market. Azura is
-*azure*: Mediterranean water, 300 m from the sea, a 5★ resort. Cool, luminous, coastal. If a
+_azure_: Mediterranean water, 300 m from the sea, a 5★ resort. Cool, luminous, coastal. If a
 screenshot of the two sits side by side, nobody should mistake one for the other.
 
 ---
@@ -60,17 +60,17 @@ HANDOFF/W1-D.md
   --font-display: "Playfair Display", Georgia, serif;
   color-scheme: light;
 
-  --background: #F6FAFC;
-  --foreground: #0A1620;
-  --primary:    #0E6B8C;   /* azure — the identity colour */
-  --accent:     #D98E3A;   /* warm sand, for CTAs only */
-  --ring:       #1594BE;
+  --background: #f6fafc;
+  --foreground: #0a1620;
+  --primary: #0e6b8c; /* azure — the identity colour */
+  --accent: #d98e3a; /* warm sand, for CTAs only */
+  --ring: #1594be;
   /* ...full token set: card, popover, secondary, muted, destructive, border, input, sidebar, chart-1..5 */
 }
 
 .dark {
-  --background: #04101A;
-  --primary:    #46C8E8;
+  --background: #04101a;
+  --primary: #46c8e8;
   /* ... */
 }
 ```
@@ -99,13 +99,13 @@ Every number in this app renders through these. They are why a competitor CATI i
 
 Visual rules, non-negotiable:
 
-| Confidence | Treatment |
-|---|---|
-| `confirmed` / `official` | Normal. Quiet source affordance on hover/focus. |
-| `single_source` | Subtle dotted underline. |
-| `conflicted` | **Amber badge, always visible, never hover-only.** Value shown as a range where possible. |
-| `inferred` | Italic + a "berechnet" marker. |
-| `gap` | Render **"—"** with "Nicht belegt". **Never render 0, never render blank.** |
+| Confidence               | Treatment                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| `confirmed` / `official` | Normal. Quiet source affordance on hover/focus.                                           |
+| `single_source`          | Subtle dotted underline.                                                                  |
+| `conflicted`             | **Amber badge, always visible, never hover-only.** Value shown as a range where possible. |
+| `inferred`               | Italic + a "berechnet" marker.                                                            |
+| `gap`                    | Render **"—"** with "Nicht belegt". **Never render 0, never render blank.**               |
 
 - A `modelled` unit is visually distinct from a `portal_listing` **at a glance, in the list, not
   only on the detail page.**
@@ -138,6 +138,7 @@ An abstract coastal massing model (7 blocks, sea plane, sun) for the landing her
 photoreal render — a confident abstraction reads better and loads in a fraction of the bytes.
 
 **Mandatory guards:**
+
 - Lazy-load behind an intersection observer. **Never blocks LCP.**
 - WebGL unavailable or `prefers-reduced-motion` → a static poster image. Not a blank box, not a
   spinner that never resolves.

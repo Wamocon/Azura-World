@@ -9,9 +9,9 @@
  * A bootstrap for the same reason as `scripts/validate-openapi.mjs`.
  */
 
-import { ensureTypeStripping } from "./ts-bootstrap.mjs"
+import { ensureTypeStripping } from "./ts-bootstrap.mjs";
 
-const relaunchedExitCode = await ensureTypeStripping(import.meta.url)
-if (relaunchedExitCode !== null) process.exit(relaunchedExitCode)
+const relaunchedExitCode = await ensureTypeStripping(import.meta.url);
+if (relaunchedExitCode !== null) process.exit(relaunchedExitCode);
 
-await import("./openapi-write.mjs")
+await import("./openapi-write.mjs");

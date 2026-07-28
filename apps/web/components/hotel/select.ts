@@ -108,7 +108,9 @@ function firstSource(review: AzuraReview): AzuraSourceRef | null {
  * Returns one group per producer. Ordering is deterministic — most reviews
  * first — so the page renders identically on every request.
  */
-export function groupByProducer(reviews: readonly AzuraReview[]): PlatformGroup[] {
+export function groupByProducer(
+  reviews: readonly AzuraReview[]
+): PlatformGroup[] {
   const byPlatform = new Map<AzuraReviewPlatform, PlatformCapture[]>()
 
   for (const review of reviews) {
@@ -184,9 +186,12 @@ export interface SplitVerdict {
  * distort a real person's review) but they are still counted and still
  * rendered in the full list.
  */
-export function splitVerdict(quotes: readonly AzuraReviewQuote[]): SplitVerdict {
+export function splitVerdict(
+  quotes: readonly AzuraReviewQuote[]
+): SplitVerdict {
   const rated = quotes.filter(
-    (quote): quote is AzuraReviewQuote & { rating: number } => quote.rating !== null,
+    (quote): quote is AzuraReviewQuote & { rating: number } =>
+      quote.rating !== null
   )
   const unratedCount = quotes.length - rated.length
 
@@ -207,7 +212,9 @@ export function splitVerdict(quotes: readonly AzuraReviewQuote[]): SplitVerdict 
   return {
     best,
     worst,
-    degenerate: rated.length === 1 || (best !== null && worst !== null && best.url === worst.url),
+    degenerate:
+      rated.length === 1 ||
+      (best !== null && worst !== null && best.url === worst.url),
     unratedCount,
   }
 }
@@ -217,10 +224,12 @@ export function splitVerdict(quotes: readonly AzuraReviewQuote[]): SplitVerdict 
  * past a wall of praise: worst first, then best, then the rest by rating
  * descending. The list is never filtered here — narrowing is the user's to do.
  */
-export function orderQuotes(quotes: readonly AzuraReviewQuote[]): AzuraReviewQuote[] {
+export function orderQuotes(
+  quotes: readonly AzuraReviewQuote[]
+): AzuraReviewQuote[] {
   const verdict = splitVerdict(quotes)
   const pinned = [verdict.worst, verdict.best].filter(
-    (quote): quote is AzuraReviewQuote => quote !== null,
+    (quote): quote is AzuraReviewQuote => quote !== null
   )
   const pinnedUrls = new Set(pinned.map((quote) => quote.url))
   const rest = quotes
@@ -283,11 +292,14 @@ const BUCKET_ORDER: SentimentBucket["key"][] = [
  * is true.
  */
 export function sentimentBreakdown(
-  sentiment: AzuraReviewSentiment | null,
+  sentiment: AzuraReviewSentiment | null
 ): SentimentBreakdown | null {
   if (sentiment === null) return null
 
-  const counts = BUCKET_ORDER.map((key) => ({ key, count: sentiment[key] ?? 0 }))
+  const counts = BUCKET_ORDER.map((key) => ({
+    key,
+    count: sentiment[key] ?? 0,
+  }))
   const graded = counts.reduce((sum, entry) => sum + entry.count, 0)
   const foldOnly = graded === 0
 
@@ -344,12 +356,15 @@ const BOOKING_HOSTS = ["booking.com", "agoda.com"]
  * between "we looked and were blocked" and "we did not look".
  */
 export function unrecoveredBookingSources(
-  harvest: readonly AzuraHarvestEntry[],
+  harvest: readonly AzuraHarvestEntry[]
 ): PlatformReachability[] {
   return harvest
     .filter((entry) => {
       const host = hostOf(entry.url)
-      return BOOKING_HOSTS.some((booking) => host.endsWith(booking)) && !entry.contentValidated
+      return (
+        BOOKING_HOSTS.some((booking) => host.endsWith(booking)) &&
+        !entry.contentValidated
+      )
     })
     .map((entry) => ({
       publisher: entry.publisher,
@@ -406,7 +421,7 @@ export function totalQuotes(reviews: readonly AzuraReview[]): number {
  */
 export function scoreAsDisplayFact(
   fact: AzuraSourcedFact<number>,
-  locale: string,
+  locale: string
 ): AzuraSourcedFact<string> {
   const format = (value: unknown): string =>
     typeof value === "number"

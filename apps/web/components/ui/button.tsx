@@ -26,8 +26,8 @@ import { cn } from "@/lib/cn"
  */
 const buttonVariants = cva(
   cn(
-    "group/button relative inline-flex shrink-0 select-none items-center justify-center gap-2",
-    "whitespace-nowrap rounded-lg border border-transparent bg-clip-padding",
+    "group/button relative inline-flex shrink-0 items-center justify-center gap-2 select-none",
+    "rounded-lg border border-transparent bg-clip-padding whitespace-nowrap",
     "text-sm font-semibold tracking-[0.005em]",
     "transition-[transform,background-color,border-color,color] duration-[160ms] ease-[var(--ease-out)]",
     "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",

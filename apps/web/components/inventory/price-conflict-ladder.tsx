@@ -129,7 +129,8 @@ export function railsByCurrency(
   const byCurrency = new Map<Money["currency"], PriceObservation[]>()
   for (const observation of observations) {
     const existing = byCurrency.get(observation.money.currency)
-    if (existing === undefined) byCurrency.set(observation.money.currency, [observation])
+    if (existing === undefined)
+      byCurrency.set(observation.money.currency, [observation])
     else existing.push(observation)
   }
 
@@ -142,7 +143,8 @@ export function railsByCurrency(
   }
   return rails.sort(
     (a, b) =>
-      (a.observations[0]?.money.amount ?? 0) - (b.observations[0]?.money.amount ?? 0)
+      (a.observations[0]?.money.amount ?? 0) -
+      (b.observations[0]?.money.amount ?? 0)
   )
 }
 
@@ -161,7 +163,9 @@ function LadderRail({
   locale: string
   labels: LadderLabels
 }): ReactNode {
-  const amounts = rail.observations.map((observation) => observation.money.amount)
+  const amounts = rail.observations.map(
+    (observation) => observation.money.amount
+  )
   const min = Math.min(...amounts)
   const max = Math.max(...amounts)
   const publishers = Array.from(
@@ -174,11 +178,15 @@ function LadderRail({
   const hasSpan = max > min && !negligible
 
   return (
-    <div className="flex flex-col gap-2" data-slot="ladder-rail" data-currency={rail.currency}>
+    <div
+      className="flex flex-col gap-2"
+      data-slot="ladder-rail"
+      data-currency={rail.currency}
+    >
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
           {rail.currency}
-          <span className="ml-2 font-normal normal-case tracking-normal">
+          <span className="ml-2 font-normal tracking-normal normal-case">
             {interpolate(labels.railSummary, {
               count: rail.observations.length,
               publishers: publishers.join(" · "),
@@ -186,7 +194,10 @@ function LadderRail({
           </span>
         </p>
         {hasSpan ? (
-          <p className="text-xs font-semibold text-confidence-conflicted" data-numeric>
+          <p
+            className="text-xs font-semibold text-confidence-conflicted"
+            data-numeric
+          >
             {interpolate(labels.spread, {
               ratio: new Intl.NumberFormat(locale, {
                 minimumFractionDigits: 1,
@@ -196,7 +207,9 @@ function LadderRail({
             })}
           </p>
         ) : rail.observations.length < 2 ? (
-          <p className="text-xs text-muted-foreground">{labels.singleObservation}</p>
+          <p className="text-xs text-muted-foreground">
+            {labels.singleObservation}
+          </p>
         ) : (
           <p className="text-xs font-medium text-muted-foreground">
             {interpolate(labels.negligible, {
@@ -213,8 +226,8 @@ function LadderRail({
       <div aria-hidden="true" className="relative h-11 select-none">
         <div className="absolute inset-x-0 top-5 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         {/* End caps, so an axis with one observation still reads as an axis. */}
-        <div className="absolute left-0 top-3 h-5 w-px bg-border" />
-        <div className="absolute right-0 top-3 h-5 w-px bg-border" />
+        <div className="absolute top-3 left-0 h-5 w-px bg-border" />
+        <div className="absolute top-3 right-0 h-5 w-px bg-border" />
 
         {rail.observations.map((observation, index) => {
           // A negligible spread clusters at the centre instead of being
@@ -252,7 +265,7 @@ function LadderRail({
                 transitionDelay: `${staggerDelay(index)}s`,
               }}
               className={cn(
-                "absolute top-1 -translate-x-1/2 origin-bottom",
+                "absolute top-1 origin-bottom -translate-x-1/2",
                 // The one motion moment on this screen, and it is the data
                 // landing: each tick grows out of the axis, in price order.
                 // Emil's frequency test permits it — a page-load animation, not
@@ -261,9 +274,9 @@ function LadderRail({
                 // main thread, interruptible, and needing no keyframe in
                 // globals.css, which this window does not own.
                 "transition-[opacity,transform] duration-500 ease-[var(--ease-out)]",
-                "opacity-100 scale-y-100 starting:opacity-0 starting:scale-y-[0.35]",
+                "scale-y-100 opacity-100 starting:scale-y-[0.35] starting:opacity-0",
                 // Reduced motion gets the finished frame, never a slower one.
-                "motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:scale-y-100",
+                "motion-reduce:scale-y-100 motion-reduce:opacity-100 motion-reduce:transition-none",
                 // Stale observations are a hollow, dashed, taller mark — a
                 // difference in SHAPE, not only in colour. One man in twelve
                 // cannot use the colour, and a screenshot in a report loses it

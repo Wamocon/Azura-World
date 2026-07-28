@@ -144,11 +144,11 @@ const LEAD_COLUMNS =
 /** The embedded lead. One query, not one query per row (W2-A brief: no N+1). */
 const PIPELINE_LEAD_EMBED = "leads(id, reference, full_name, status, locale)"
 
-const PIPELINE_COLUMNS =
-  `id, company_id, lead_id, unit_id, stage, previous_stage, entered_stage_at, expected_close, deal_amount, deal_currency, probability, owner_profile_id, blocker, metadata, version, created_at, updated_at, ${PIPELINE_LEAD_EMBED}`
+const PIPELINE_COLUMNS = `id, company_id, lead_id, unit_id, stage, previous_stage, entered_stage_at, expected_close, deal_amount, deal_currency, probability, owner_profile_id, blocker, metadata, version, created_at, updated_at, ${PIPELINE_LEAD_EMBED}`
 
 /** Only the columns the aggregate needs. A summary must not pull whole rows. */
-const PIPELINE_SUMMARY_COLUMNS = "stage, deal_amount, deal_currency, probability"
+const PIPELINE_SUMMARY_COLUMNS =
+  "stage, deal_amount, deal_currency, probability"
 
 const TRUNCATED_SUMMARY_REASON = `Pipeline summary computed from the first ${MAX_PAGE_SIZE} entries only. Counts and totals beyond that are not included; a Postgres-side aggregate (an RPC) is needed for an exact figure at this volume.`
 
@@ -345,7 +345,8 @@ async function queryLeads(
   let query = client.from("leads").select(LEAD_COLUMNS)
 
   if (opts.source !== undefined) query = query.eq("source", opts.source)
-  if (opts.assignedTo !== undefined) query = query.eq("assigned_to", opts.assignedTo)
+  if (opts.assignedTo !== undefined)
+    query = query.eq("assigned_to", opts.assignedTo)
   if (opts.unitId !== undefined) query = query.eq("unit_id", opts.unitId)
   if (opts.siteId !== undefined) query = query.eq("site_id", opts.siteId)
 
@@ -392,7 +393,11 @@ export async function getLead(
     async (client) => {
       if (!permitted) return null
       const row = unwrap<unknown>(
-        await client.from("leads").select(LEAD_COLUMNS).eq("id", id).maybeSingle(),
+        await client
+          .from("leads")
+          .select(LEAD_COLUMNS)
+          .eq("id", id)
+          .maybeSingle(),
         null
       )
       return row === null ? null : mapLead(row)
@@ -503,7 +508,9 @@ function summarise(
 
   const stages = pipelineStages.map((stage): PipelineStageSummary => {
     const bucket = byStage.get(stage) ?? []
-    const deals = bucket.flatMap((input) => (input.deal === null ? [] : [input.deal]))
+    const deals = bucket.flatMap((input) =>
+      input.deal === null ? [] : [input.deal]
+    )
     const probabilities = bucket.flatMap((input) =>
       input.probability === null ? [] : [input.probability]
     )
@@ -517,7 +524,9 @@ function summarise(
     }
   })
 
-  const allDeals = inputs.flatMap((input) => (input.deal === null ? [] : [input.deal]))
+  const allDeals = inputs.flatMap((input) =>
+    input.deal === null ? [] : [input.deal]
+  )
   const allProbabilities = inputs.flatMap((input) =>
     input.probability === null ? [] : [input.probability]
   )
@@ -607,17 +616,17 @@ export async function getPipelineSummary(
         limit: MAX_PAGE_SIZE,
         offset: 0,
       })
-      const inputs = entries.map(
-        (entry): SummaryInput => ({
-          stage: entry.stage,
-          deal: entry.deal,
-          probability: entry.probability,
-        })
-      )
+      const inputs = entries.map((entry): SummaryInput => ({
+        stage: entry.stage,
+        deal: entry.deal,
+        probability: entry.probability,
+      }))
       return summarise(inputs, inputs.length, asOf)
     },
     "leads.pipelineSummary"
   )
 
-  return result.data.truncated ? degraded(result, TRUNCATED_SUMMARY_REASON) : result
+  return result.data.truncated
+    ? degraded(result, TRUNCATED_SUMMARY_REASON)
+    : result
 }

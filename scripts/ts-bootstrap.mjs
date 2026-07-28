@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process"
-import { fileURLToPath } from "node:url"
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 /**
  * Re-exec the current script with the flags needed to import TypeScript.
@@ -23,10 +23,10 @@ import { fileURLToPath } from "node:url"
  * process that immediately finds the flags already present and returns null.
  */
 
-const REQUIRED_FLAGS = ["--experimental-strip-types"]
+const REQUIRED_FLAGS = ["--experimental-strip-types"];
 
 function hasFlags() {
-  return REQUIRED_FLAGS.every((flag) => process.execArgv.includes(flag))
+  return REQUIRED_FLAGS.every((flag) => process.execArgv.includes(flag));
 }
 
 /**
@@ -34,10 +34,12 @@ function hasFlags() {
  * current process already has what it needs and should carry on.
  */
 export async function ensureTypeStripping(entryUrl) {
-  if (hasFlags()) return null
+  if (hasFlags()) return null;
 
-  const entry = fileURLToPath(entryUrl)
-  const register = fileURLToPath(new URL("./register-ts-resolve.mjs", import.meta.url))
+  const entry = fileURLToPath(entryUrl);
+  const register = fileURLToPath(
+    new URL("./register-ts-resolve.mjs", import.meta.url),
+  );
 
   const child = spawn(
     process.execPath,
@@ -59,13 +61,13 @@ export async function ensureTypeStripping(entryUrl) {
         // this only quiets the notice about it.
         NODE_NO_WARNINGS: "1",
       },
-    }
-  )
+    },
+  );
 
-  void register
+  void register;
 
   return await new Promise((resolve) => {
-    child.on("close", (code) => resolve(code ?? 1))
-    child.on("error", () => resolve(1))
-  })
+    child.on("close", (code) => resolve(code ?? 1));
+    child.on("error", () => resolve(1));
+  });
 }

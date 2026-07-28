@@ -72,7 +72,14 @@ const HANDOFF: Phrase = {
 }
 
 function numberFormat(locale: Locale): Intl.NumberFormat {
-  const tag = locale === "de" ? "de-DE" : locale === "tr" ? "tr-TR" : locale === "ru" ? "ru-RU" : "en-GB"
+  const tag =
+    locale === "de"
+      ? "de-DE"
+      : locale === "tr"
+        ? "tr-TR"
+        : locale === "ru"
+          ? "ru-RU"
+          : "en-GB"
   return new Intl.NumberFormat(tag)
 }
 
@@ -110,7 +117,10 @@ function renderScalar(
   }
   if (typeof value === "object") {
     const money = value as { amount?: unknown; currency?: unknown }
-    if (typeof money.amount === "number" && typeof money.currency === "string") {
+    if (
+      typeof money.amount === "number" &&
+      typeof money.currency === "string"
+    ) {
       return `${numberFormat(locale).format(money.amount)} ${money.currency}`
     }
     return JSON.stringify(value)
@@ -298,7 +308,9 @@ export function describePriceSpread(
       ` ${SPREAD_DERIVED[locale]}.`
   }
 
-  const staleNote = prices.some((p) => p.isStale) ? ` ${PRICE_STALE[locale]}` : ""
+  const staleNote = prices.some((p) => p.isStale)
+    ? ` ${PRICE_STALE[locale]}`
+    : ""
 
   // Two publishers quoting different numbers for the same project IS a
   // disagreement, and it is named as one before the list is read. Leading with
@@ -367,7 +379,10 @@ const FINDINGS_LEAD: Phrase = {
   ru: "Зафиксированные противоречия",
 }
 
-function describeFindings(findings: readonly Finding[], locale: Locale): string {
+function describeFindings(
+  findings: readonly Finding[],
+  locale: Locale
+): string {
   if (findings.length === 0) return ""
   const items = findings.map((f) => {
     const head = `${f.id} (${f.severity}): ${f.message.split(". ")[0] ?? f.message}`
@@ -416,7 +431,8 @@ export function buildDeterministicAnswer(
 
   if (parts.length === 0) return NO_ANSWER[locale]
 
-  const citationCount = new Set(retrieval.citations.map((c) => c.publisher)).size
+  const citationCount = new Set(retrieval.citations.map((c) => c.publisher))
+    .size
   parts.push(
     `[${citationCount} ${citationCount === 1 ? SOURCE_WORD[locale] : SOURCES_WORD[locale]}]`
   )

@@ -12,12 +12,12 @@ you must not try.** Four windows sharing one branch would collide anyway.
 
 **Each window works on its own branch and pushes that branch. Nothing merges tonight.**
 
-| Window | Branch |
-|---|---|
-| 1 | `feature/INTERNAL-107-w1a-w2a-data` |
-| 2 | `feature/INTERNAL-107-w1b-w2c-auth-ai` |
-| 3 | `feature/INTERNAL-107-w1c-w0d-i18n-media` |
-| 4 | `feature/INTERNAL-107-w1d-w3i-design` |
+| Window | Branch                                    |
+| ------ | ----------------------------------------- |
+| 1      | `feature/INTERNAL-107-w1a-w2a-data`       |
+| 2      | `feature/INTERNAL-107-w1b-w2c-auth-ai`    |
+| 3      | `feature/INTERNAL-107-w1c-w0d-i18n-media` |
+| 4      | `feature/INTERNAL-107-w1d-w3i-design`     |
 
 ```bash
 git fetch origin && git checkout -b <your-branch> origin/main
@@ -49,34 +49,42 @@ Each window runs its tasks **in order**, in one window, without waiting for anyo
 tasks share a domain deliberately: the window that wrote the schema is the best one to write the
 repositories against it.
 
-### Window 1 — Data spine *(critical path — the longest chain, most valuable)*
+### Window 1 — Data spine _(critical path — the longest chain, most valuable)_
+
 ```
 tasks/W1-A-database-schema.md   →   tasks/W2-A-repositories.md
 ```
+
 Everything in waves 2 and 3 waits on this. If only one window survives the night, make it this one.
 
 **Carry in:** Supabase is live and **empty** (0 public tables, Postgres 17.6). `pgcrypto` is
 installed; **`pg_trgm` is NOT** — migration 10 must create it. Details in `HANDOFF/W0-ENV.md`.
 
 ### Window 2 — Auth, RBAC, AI
+
 ```
 tasks/W1-B-auth-rbac.md   →   tasks/W2-C-ai-layer.md
 ```
+
 W2-C needs the dataset (exists, 33,562 lines) and RBAC (yours), **not** the repositories — so it
 does not block on Window 1.
 
 ### Window 3 — i18n, then finish media
+
 ```
 tasks/W1-C-i18n.md   →   finish tasks/W0-D-media-harvest.md
 ```
+
 W0-D is ~85% done: 995 files harvested, `media-manifest.ts` and `lqip.json` exist. Outstanding:
 run the encoder (only 1 file in `public/media`), the validation table, and **the handoff, which
 was never written**. Both halves are DB-independent.
 
 ### Window 4 — Design system, then the simulation layer
+
 ```
 tasks/W1-D-design-system.md   →   tasks/W3-I-immersion-simulation.md
 ```
+
 Read `DESIGN-RESEARCH.md` first. Load `emil-design-eng` and `apple-design`. Natural chain — W3-I
 composes exactly the primitives W1-D builds.
 

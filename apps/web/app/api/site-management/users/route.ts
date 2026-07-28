@@ -11,7 +11,10 @@ import {
   getGuardianships,
   getProfiles,
 } from "@/lib/governance-repository"
-import { createProfileSchema, updateProfileRoleSchema } from "@/lib/validation/schemas"
+import {
+  createProfileSchema,
+  updateProfileRoleSchema,
+} from "@/lib/validation/schemas"
 import { readBoolean, readEnum, readText } from "@/lib/validation/query"
 import { isValidRole } from "@/lib/rbac"
 
@@ -27,7 +30,10 @@ export const GET = createManifestHandler("getProfiles", {
     query,
   }): Promise<
     HandlerResult<
-      GuardianshipRecord[] | AuditEventRecord[] | AccessEventRecord[] | ProfileRecord[]
+      | GuardianshipRecord[]
+      | AuditEventRecord[]
+      | AccessEventRecord[]
+      | ProfileRecord[]
     >
   > => {
     const scope = {

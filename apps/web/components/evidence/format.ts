@@ -113,7 +113,9 @@ export function formatFactValue(
       return typeof value === "string" ? value : String(value)
 
     case "number":
-      return typeof value === "number" ? formatNumber(value, locale) : String(value)
+      return typeof value === "number"
+        ? formatNumber(value, locale)
+        : String(value)
 
     case "area":
       return typeof value === "number"
@@ -142,7 +144,9 @@ export function formatFactValue(
         : String(value)
 
     case "stars":
-      return typeof value === "number" ? `${formatNumber(value, locale, 1)} ★` : String(value)
+      return typeof value === "number"
+        ? `${formatNumber(value, locale, 1)} ★`
+        : String(value)
 
     case "date": {
       if (typeof value !== "string") return String(value)

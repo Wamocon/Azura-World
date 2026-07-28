@@ -227,10 +227,11 @@ export function buildUserPrompt(input: {
   groundedContext: string
   priorConversation?: string
 }): string {
-  const parts = [
-    `${contextHeader[input.locale]}\n${input.groundedContext}`,
-  ]
-  if (input.priorConversation !== undefined && input.priorConversation.length > 0) {
+  const parts = [`${contextHeader[input.locale]}\n${input.groundedContext}`]
+  if (
+    input.priorConversation !== undefined &&
+    input.priorConversation.length > 0
+  ) {
     parts.push(
       `${priorConversationHeader[input.locale]}\n${input.priorConversation}`
     )

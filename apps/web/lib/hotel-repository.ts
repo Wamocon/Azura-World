@@ -156,7 +156,9 @@ function mapHotelRoomRow(row: Record<string, unknown>): HotelRoomRecord {
 }
 
 /** Map a `review_sources` row. Exported for `lib/dashboard-repository.ts`. */
-export function mapReviewSourceRow(row: Record<string, unknown>): ReviewSourceRecord {
+export function mapReviewSourceRow(
+  row: Record<string, unknown>
+): ReviewSourceRecord {
   return {
     id: asString(row.id),
     hotelId: asString(row.hotel_id),
@@ -209,10 +211,13 @@ export interface PageOptions {
  */
 async function resolveHotelId(
   client: RepositoryClient,
-  code?: string,
+  code?: string
 ): Promise<string | null> {
   const query = client.from("hotels").select("id, code")
-  const filtered = code === undefined ? query.order("code", { ascending: true }) : query.eq("code", code)
+  const filtered =
+    code === undefined
+      ? query.order("code", { ascending: true })
+      : query.eq("code", code)
   const rows = unwrap<Record<string, unknown>[]>(await filtered.limit(1), [])
   // noUncheckedIndexedAccess: rows[0] is `Record<string, unknown> | undefined`.
   const first = rows[0]
@@ -238,15 +243,20 @@ export interface HotelQuery {
  * about what is in the database.
  */
 export async function getHotel(
-  opts: HotelQuery = {},
+  opts: HotelQuery = {}
 ): Promise<RepositoryResult<HotelRecord | null>> {
   const code = opts.code
   return withRepository<HotelRecord | null>(
     async (client) => {
       const query = client.from("hotels").select(HOTEL_COLUMNS)
       const filtered =
-        code === undefined ? query.order("code", { ascending: true }) : query.eq("code", code)
-      const rows = unwrap<Record<string, unknown>[]>(await filtered.limit(1), [])
+        code === undefined
+          ? query.order("code", { ascending: true })
+          : query.eq("code", code)
+      const rows = unwrap<Record<string, unknown>[]>(
+        await filtered.limit(1),
+        []
+      )
       const first = rows[0]
       return first === undefined ? null : mapHotelRow(first)
     },
@@ -254,7 +264,7 @@ export async function getHotel(
       if (code !== undefined && code !== SEED_HOTEL_CODE) return null
       return seedHotel()
     },
-    "hotel.getHotel",
+    "hotel.getHotel"
   )
 }
 
@@ -309,12 +319,14 @@ function buildBreakdown(rooms: HotelRoomRecord[]): HotelRoomBreakdown {
     breakdownPublished: true,
     note: null,
     publishedRoomTotal:
-      counted.length === 0 ? null : counted.reduce((sum, count) => sum + count, 0),
+      counted.length === 0
+        ? null
+        : counted.reduce((sum, count) => sum + count, 0),
   }
 }
 
 export async function getHotelRooms(
-  opts: HotelRoomQuery = {},
+  opts: HotelRoomQuery = {}
 ): Promise<RepositoryResult<HotelRoomBreakdown>> {
   const limit = clampLimit(opts.limit)
   const offset = clampOffset(opts.offset)
@@ -332,12 +344,12 @@ export async function getHotelRooms(
           .eq("hotel_id", resolved)
           .order("sort_order", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return buildBreakdown(rows.map(mapHotelRoomRow))
     },
     () => buildBreakdown(seedHotelRooms()),
-    "hotel.getHotelRooms",
+    "hotel.getHotelRooms"
   )
 }
 
@@ -360,7 +372,7 @@ export interface ReviewSourceQuery extends PageOptions {
  * agree on ordering and snapshots stay stable.
  */
 export async function getReviewSources(
-  opts: ReviewSourceQuery = {},
+  opts: ReviewSourceQuery = {}
 ): Promise<RepositoryResult<ReviewSourceRecord[]>> {
   const limit = clampLimit(opts.limit)
   const offset = clampOffset(opts.offset)
@@ -376,28 +388,31 @@ export async function getReviewSources(
         .from("review_sources")
         .select(REVIEW_SOURCE_COLUMNS)
         .eq("hotel_id", resolved)
-      const filtered = platform === undefined ? base : base.eq("platform", platform)
+      const filtered =
+        platform === undefined ? base : base.eq("platform", platform)
       const rows = unwrap<Record<string, unknown>[]>(
         await filtered
           .order("platform", { ascending: true })
           .order("url", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapReviewSourceRow)
     },
     () => {
       const all = sortReviewSources(seedReviewSources()).filter(
-        (source) => platform === undefined || source.platform === platform,
+        (source) => platform === undefined || source.platform === platform
       )
       return all.slice(offset, offset + limit)
     },
-    "hotel.getReviewSources",
+    "hotel.getReviewSources"
   )
 }
 
 /** `platform` then `url`, matching the Supabase ordering above. ASCII, so no collator. */
-function sortReviewSources(sources: ReviewSourceRecord[]): ReviewSourceRecord[] {
+function sortReviewSources(
+  sources: ReviewSourceRecord[]
+): ReviewSourceRecord[] {
   return [...sources].sort((a, b) => {
     if (a.platform !== b.platform) return a.platform < b.platform ? -1 : 1
     if (a.url === b.url) return 0
@@ -419,7 +434,7 @@ function sortReviewSources(sources: ReviewSourceRecord[]): ReviewSourceRecord[] 
  */
 export async function getReviewQuotes(
   reviewSourceId?: string,
-  opts: ReviewSourceQuery = {},
+  opts: ReviewSourceQuery = {}
 ): Promise<RepositoryResult<ReviewQuoteRecord[]>> {
   const limit = clampLimit(opts.limit)
   const offset = clampOffset(opts.offset)
@@ -442,7 +457,7 @@ export async function getReviewQuotes(
             .select("id")
             .eq("hotel_id", resolved)
             .limit(clampLimit(undefined)),
-          [],
+          []
         )
         const ids = sourceRows
           .map((row) => asNullableString(row.id))
@@ -458,13 +473,17 @@ export async function getReviewQuotes(
           .order("rating", { ascending: false })
           .order("url", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapReviewQuoteRow)
     },
     () => {
       const all = seedReviewQuotes()
-        .filter((quote) => reviewSourceId === undefined || quote.reviewSourceId === reviewSourceId)
+        .filter(
+          (quote) =>
+            reviewSourceId === undefined ||
+            quote.reviewSourceId === reviewSourceId
+        )
         .sort((a, b) => {
           const ratingA = a.rating ?? -1
           const ratingB = b.rating ?? -1
@@ -474,7 +493,7 @@ export async function getReviewQuotes(
         })
       return all.slice(offset, offset + limit)
     },
-    "hotel.getReviewQuotes",
+    "hotel.getReviewQuotes"
   )
 }
 
@@ -549,7 +568,7 @@ function rescale(score: number, from: 5 | 10, to: 5 | 10): number {
 
 function buildSummary(
   sources: ReviewSourceRecord[],
-  normalisedScale: 5 | 10,
+  normalisedScale: 5 | 10
 ): ReviewSummary {
   const ordered = sortReviewSources(sources)
 
@@ -564,7 +583,9 @@ function buildSummary(
     const siblings = byPlatform.get(source.platform) ?? []
     const scale = source.scoreScale
     const normalisedScore =
-      source.score === null || scale === null ? null : rescale(source.score, scale, normalisedScale)
+      source.score === null || scale === null
+        ? null
+        : rescale(source.score, scale, normalisedScale)
     return {
       url: source.url,
       platform: source.platform,
@@ -583,7 +604,8 @@ function buildSummary(
     }
   })
 
-  const duplicatePlatformGroups: Array<{ platform: string; urls: string[] }> = []
+  const duplicatePlatformGroups: Array<{ platform: string; urls: string[] }> =
+    []
   const basis: ReviewScoreEntry[] = []
 
   for (const [platform, bucket] of byPlatform) {
@@ -607,7 +629,9 @@ function buildSummary(
     if (entry !== undefined) basis.push(entry)
   }
 
-  duplicatePlatformGroups.sort((a, b) => (a.platform < b.platform ? -1 : a.platform > b.platform ? 1 : 0))
+  duplicatePlatformGroups.sort((a, b) =>
+    a.platform < b.platform ? -1 : a.platform > b.platform ? 1 : 0
+  )
   basis.sort((a, b) => (a.url < b.url ? -1 : a.url > b.url ? 1 : 0))
 
   const scored = basis
@@ -628,7 +652,9 @@ function buildSummary(
         : round2(scored.reduce((sum, score) => sum + score, 0) / scored.length),
     meanBasisUrls: basis.map((entry) => entry.url),
     distinctPlatformReviewCount:
-      counted.length === 0 ? null : counted.reduce((sum, count) => sum + count, 0),
+      counted.length === 0
+        ? null
+        : counted.reduce((sum, count) => sum + count, 0),
   }
 }
 
@@ -645,7 +671,7 @@ export interface ReviewSummaryQuery extends ReviewSourceQuery {
  * is the correct answer.
  */
 export async function getReviewSummary(
-  opts: ReviewSummaryQuery = {},
+  opts: ReviewSummaryQuery = {}
 ): Promise<RepositoryResult<ReviewSummary>> {
   const normaliseTo: 5 | 10 = opts.normaliseTo ?? 5
   const limit = clampLimit(opts.limit)
@@ -662,23 +688,24 @@ export async function getReviewSummary(
         .from("review_sources")
         .select(REVIEW_SOURCE_COLUMNS)
         .eq("hotel_id", resolved)
-      const filtered = platform === undefined ? base : base.eq("platform", platform)
+      const filtered =
+        platform === undefined ? base : base.eq("platform", platform)
       const rows = unwrap<Record<string, unknown>[]>(
         await filtered
           .order("platform", { ascending: true })
           .order("url", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return buildSummary(rows.map(mapReviewSourceRow), normaliseTo)
     },
     () =>
       buildSummary(
         seedReviewSources().filter(
-          (source) => platform === undefined || source.platform === platform,
+          (source) => platform === undefined || source.platform === platform
         ),
-        normaliseTo,
+        normaliseTo
       ),
-    "hotel.getReviewSummary",
+    "hotel.getReviewSummary"
   )
 }

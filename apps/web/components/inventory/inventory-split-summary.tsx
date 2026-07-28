@@ -1,6 +1,9 @@
 import { cn } from "@/lib/cn"
 import type { UnitDataQuality } from "@/lib/inventory-data"
-import { UnitProvenanceBadge, type UnitProvenanceLabels } from "./unit-provenance-badge"
+import {
+  UnitProvenanceBadge,
+  type UnitProvenanceLabels,
+} from "./unit-provenance-badge"
 
 /**
  * InventorySplitSummary.                                    Owner: W3-C
@@ -57,21 +60,28 @@ export function InventorySplitSummary({
   countLabel: (count: number) => string
   className?: string
 }) {
-  const present = DISPLAY_ORDER.filter((quality) => (byDataQuality[quality] ?? 0) > 0)
+  const present = DISPLAY_ORDER.filter(
+    (quality) => (byDataQuality[quality] ?? 0) > 0
+  )
 
   return (
     <section
       aria-labelledby="inventory-split-heading"
       className={cn(
         "rounded-xl border border-border bg-background/50 p-4 sm:p-5",
-        className,
+        className
       )}
     >
-      <h2 id="inventory-split-heading" className="text-sm font-semibold text-foreground">
+      <h2
+        id="inventory-split-heading"
+        className="text-sm font-semibold text-foreground"
+      >
         {heading}
       </h2>
 
-      <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-muted-foreground">{caption}</p>
+      <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-muted-foreground">
+        {caption}
+      </p>
 
       {total > 0 ? (
         <>
@@ -86,7 +96,9 @@ export function InventorySplitSummary({
               <div
                 key={quality}
                 className={SEGMENT_TONE[quality]}
-                style={{ width: `${((byDataQuality[quality] ?? 0) / total) * 100}%` }}
+                style={{
+                  width: `${((byDataQuality[quality] ?? 0) / total) * 100}%`,
+                }}
               />
             ))}
           </div>
@@ -99,7 +111,7 @@ export function InventorySplitSummary({
                 <div key={quality} className="flex items-center gap-2">
                   <dt className="sr-only">{labels[quality]}</dt>
                   <UnitProvenanceBadge dataQuality={quality} labels={labels} />
-                  <dd className="text-sm tabular-nums text-foreground">
+                  <dd className="text-sm text-foreground tabular-nums">
                     {countLabel(count)}
                     <span className="ml-1.5 text-muted-foreground">
                       {/* One decimal: 25/656 is 3.8%, and rounding that to 4%

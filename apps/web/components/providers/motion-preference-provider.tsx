@@ -24,11 +24,7 @@
 
 import { useSyncExternalStore, type ReactNode } from "react"
 
-import {
-  motionTier,
-  REDUCED_MOTION_QUERY,
-  type MotionTier,
-} from "@/lib/motion"
+import { motionTier, REDUCED_MOTION_QUERY, type MotionTier } from "@/lib/motion"
 
 // ---------------------------------------------------------------------------
 // Shared store

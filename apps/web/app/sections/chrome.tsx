@@ -24,7 +24,11 @@ import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
 import { SNAPSHOT_BASE_PATH } from "@/components/azura/labels"
 import { generatedAt, project } from "@/components/azura/landing-data"
 
-export async function TopBar({ locale }: { locale: string }): Promise<ReactNode> {
+export async function TopBar({
+  locale,
+}: {
+  locale: string
+}): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
   return (
     <div className="border-b border-border/60 bg-secondary/60">
@@ -48,7 +52,11 @@ export async function TopBar({ locale }: { locale: string }): Promise<ReactNode>
  * strip consuming a fixed band (apple-design §12). `azura-glass` carries the
  * blur and drops it under `prefers-reduced-transparency`.
  */
-export async function Navbar({ locale }: { locale: string }): Promise<ReactNode> {
+export async function Navbar({
+  locale,
+}: {
+  locale: string
+}): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
   const items = [
     { href: "/#what", label: t("nav.project") },
@@ -64,7 +72,8 @@ export async function Navbar({ locale }: { locale: string }): Promise<ReactNode>
           href="/#top"
           className="azura-tap-compact inline-flex items-center font-display text-[1.0625rem] leading-none tracking-[-0.01em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
         >
-          Azura&nbsp;World&nbsp;<span className="text-muted-foreground">CATI</span>
+          Azura&nbsp;World&nbsp;
+          <span className="text-muted-foreground">CATI</span>
         </Link>
 
         <nav aria-label={t("nav.project")} className="hidden md:block">
@@ -132,7 +141,7 @@ export async function Footer({
       <Container className="flex flex-col gap-10">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div className="flex min-w-0 flex-col gap-3">
-            <h2 className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <h2 className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
               {t("footer.contactHeading")}
             </h2>
             <p className="text-[0.9375rem] leading-[1.6]">
@@ -156,7 +165,7 @@ export async function Footer({
           </div>
 
           <div className="flex min-w-0 flex-col gap-3">
-            <h2 className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <h2 className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
               {t("footer.sourcesHeading")}
             </h2>
             <SourceChipList
@@ -176,7 +185,7 @@ export async function Footer({
           </div>
 
           <div className="flex min-w-0 flex-col gap-3">
-            <h2 className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <h2 className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
               {t("footer.aboutHeading")}
             </h2>
             <p className="max-w-[42ch] text-[0.875rem] leading-[1.6] text-muted-foreground">

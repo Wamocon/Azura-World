@@ -66,14 +66,14 @@ test("configured Supabase that fails throws a mapped ApiError and never serves s
           return SEED
         },
         "test.throws",
-        configured,
+        configured
       ),
     (error: unknown) => {
       assert.ok(error instanceof RepositoryError, "throws a RepositoryError")
       assert.equal(error.apiError.code, "forbidden", "42501 maps to forbidden")
       assert.equal(error.apiError.retryable, false)
       return true
-    },
+    }
   )
 
   // The whole point: an outage must not be disguised as plausible seed data.
@@ -83,24 +83,51 @@ test("configured Supabase that fails throws a mapped ApiError and never serves s
 test("the mapped ApiError never leaks the Postgres message to the client", () => {
   const raw = "permission denied for table finance_ledger_entries"
   const mapped = toApiError({ code: "42501", message: raw }, "test.leak")
-  assert.ok(!mapped.message.includes("finance_ledger_entries"), "no table name in the message")
-  assert.ok(!mapped.message.includes(raw), "no raw Postgres text in the message")
+  assert.ok(
+    !mapped.message.includes("finance_ledger_entries"),
+    "no table name in the message"
+  )
+  assert.ok(
+    !mapped.message.includes(raw),
+    "no raw Postgres text in the message"
+  )
 })
 
 test("Postgres error codes map onto the frozen ApiError union", () => {
-  assert.equal(toApiError({ code: "42501", message: "" }, "t").code, "forbidden")
+  assert.equal(
+    toApiError({ code: "42501", message: "" }, "t").code,
+    "forbidden"
+  )
   assert.equal(toApiError({ code: "23505", message: "" }, "t").code, "conflict")
-  assert.equal(toApiError({ code: "23514", message: "" }, "t").code, "validation_failed")
-  assert.equal(toApiError({ code: "23503", message: "" }, "t").code, "validation_failed")
-  assert.equal(toApiError({ code: "PGRST116", message: "" }, "t").code, "not_found")
+  assert.equal(
+    toApiError({ code: "23514", message: "" }, "t").code,
+    "validation_failed"
+  )
+  assert.equal(
+    toApiError({ code: "23503", message: "" }, "t").code,
+    "validation_failed"
+  )
+  assert.equal(
+    toApiError({ code: "PGRST116", message: "" }, "t").code,
+    "not_found"
+  )
   // 22023: the search RPC rejects an over-long query. It is the caller's input that is
   // wrong, so it must not come back as a retryable 503.
-  assert.equal(toApiError({ code: "22023", message: "" }, "t").code, "validation_failed")
+  assert.equal(
+    toApiError({ code: "22023", message: "" }, "t").code,
+    "validation_failed"
+  )
   assert.equal(toApiError({ code: "22023", message: "" }, "t").retryable, false)
-  assert.equal(toApiError({ code: "42P01", message: "" }, "t").code, "persistence_unavailable")
+  assert.equal(
+    toApiError({ code: "42P01", message: "" }, "t").code,
+    "persistence_unavailable"
+  )
   assert.equal(toApiError({ code: "40001", message: "" }, "t").retryable, true)
   // An unrecognised failure is an outage, never a 500 for the caller.
-  assert.equal(toApiError(new Error("boom"), "t").code, "persistence_unavailable")
+  assert.equal(
+    toApiError(new Error("boom"), "t").code,
+    "persistence_unavailable"
+  )
 })
 
 // ---------------------------------------------------------------------------
@@ -117,13 +144,21 @@ test("configured Supabase returning zero rows reports source=supabase and does N
       return SEED
     },
     "test.empty",
-    configured,
+    configured
   )
 
-  assert.equal(result.source, "supabase", "an empty table is still the database talking")
+  assert.equal(
+    result.source,
+    "supabase",
+    "an empty table is still the database talking"
+  )
   assert.deepEqual(result.data, [], "the empty result is preserved")
   assert.equal(fallbackCalled, false, "the seed fallback was NOT invoked")
-  assert.equal(result.degradedReason, undefined, "an empty result is not degraded")
+  assert.equal(
+    result.degradedReason,
+    undefined,
+    "an empty result is not degraded"
+  )
 })
 
 // ---------------------------------------------------------------------------
@@ -137,28 +172,44 @@ test("unconfigured Supabase falls back to local-seed and labels the reason", asy
     },
     () => SEED,
     "test.unconfigured",
-    unconfigured,
+    unconfigured
   )
 
   assert.equal(result.source, "local-seed")
   assert.deepEqual(result.data, SEED)
-  assert.ok(result.degradedReason, "a local-seed fallback always explains itself")
+  assert.ok(
+    result.degradedReason,
+    "a local-seed fallback always explains itself"
+  )
 })
 
 test("every result carries source and fetchedAt", async () => {
   const results: RepositoryResult<unknown>[] = [
-    await runRepository(async () => ["x"], () => SEED, "t", configured),
-    await runRepository(async () => ["x"], () => SEED, "t", unconfigured),
+    await runRepository(
+      async () => ["x"],
+      () => SEED,
+      "t",
+      configured
+    ),
+    await runRepository(
+      async () => ["x"],
+      () => SEED,
+      "t",
+      unconfigured
+    ),
     seedResult(["x"]),
   ]
 
   for (const result of results) {
     assert.ok(
       result.source === "supabase" || result.source === "local-seed",
-      "source is one of the two contract values",
+      "source is one of the two contract values"
     )
     assert.ok(result.fetchedAt, "fetchedAt is present")
-    assert.doesNotThrow(() => new Date(result.fetchedAt).toISOString(), "fetchedAt is a real ISO instant")
+    assert.doesNotThrow(
+      () => new Date(result.fetchedAt).toISOString(),
+      "fetchedAt is a real ISO instant"
+    )
   }
 })
 
@@ -174,16 +225,20 @@ test("a configured environment whose client cannot be built is an outage, not a 
           return SEED
         },
         "test.nullclient",
-        { isConfigured: () => true, getClient: async () => null },
+        { isConfigured: () => true, getClient: async () => null }
       ),
     (error: unknown) => {
       assert.ok(error instanceof RepositoryError)
       assert.equal(error.apiError.code, "persistence_unavailable")
       return true
-    },
+    }
   )
 
-  assert.equal(fallbackCalled, false, "a broken client does not silently serve seed data")
+  assert.equal(
+    fallbackCalled,
+    false,
+    "a broken client does not silently serve seed data"
+  )
 })
 
 // ---------------------------------------------------------------------------
@@ -193,8 +248,16 @@ test("a configured environment whose client cannot be built is an outage, not a 
 test("seedIso is deterministic and independent of the wall clock", () => {
   assert.equal(seedIso(0), seedIso(0), "two calls agree")
   assert.equal(seedIso(0, 9), "2026-07-27T09:00:00.000Z", "anchored, not now()")
-  assert.equal(seedIso(-1, 9), "2026-07-26T09:00:00.000Z", "negative offsets go backwards")
-  assert.equal(seedIso(1, 13), "2026-07-28T13:00:00.000Z", "the hour is honoured")
+  assert.equal(
+    seedIso(-1, 9),
+    "2026-07-26T09:00:00.000Z",
+    "negative offsets go backwards"
+  )
+  assert.equal(
+    seedIso(1, 13),
+    "2026-07-28T13:00:00.000Z",
+    "the hour is honoured"
+  )
 })
 
 // ---------------------------------------------------------------------------
@@ -217,10 +280,17 @@ test("null stays null and never becomes 0 — a price of 0 is a bug, null is an 
 })
 
 test("asMoney refuses an amount without a currency rather than inventing one", () => {
-  assert.deepEqual(asMoney("112000.00", "EUR"), { amount: 112000, currency: "EUR" })
+  assert.deepEqual(asMoney("112000.00", "EUR"), {
+    amount: 112000,
+    currency: "EUR",
+  })
   assert.equal(asMoney("112000.00", null), null, "no currency means no Money")
   assert.equal(asMoney(null, "EUR"), null, "no amount means no Money")
-  assert.equal(asMoney("112000.00", "XYZ"), null, "an unknown currency is rejected, not defaulted")
+  assert.equal(
+    asMoney("112000.00", "XYZ"),
+    null,
+    "an unknown currency is rejected, not defaulted"
+  )
 })
 
 test("totals are computed per currency and never summed across them", () => {
@@ -259,9 +329,15 @@ test("degraded() names what failed without discarding what succeeded", () => {
   const marked = degraded(base, "finance panel unavailable")
 
   assert.deepEqual(marked.data, ["panel-a"], "the successful data survives")
-  assert.ok(marked.degradedReason?.includes("finance panel"), "the failure is named")
+  assert.ok(
+    marked.degradedReason?.includes("finance panel"),
+    "the failure is named"
+  )
 
   const twice = degraded(marked, "tickets panel unavailable")
   assert.ok(twice.degradedReason?.includes("finance panel"))
-  assert.ok(twice.degradedReason?.includes("tickets panel"), "reasons accumulate rather than overwrite")
+  assert.ok(
+    twice.degradedReason?.includes("tickets panel"),
+    "reasons accumulate rather than overwrite"
+  )
 })

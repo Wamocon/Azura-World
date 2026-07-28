@@ -17,6 +17,6 @@
  *        scripts/rbac-probe.mts
  */
 
-import { register } from "node:module"
+import { register } from "node:module";
 
-register("./ts-resolve-hooks.mjs", import.meta.url)
+register("./ts-resolve-hooks.mjs", import.meta.url);

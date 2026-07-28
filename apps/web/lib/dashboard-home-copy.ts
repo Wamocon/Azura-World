@@ -165,7 +165,8 @@ const de: DashboardShellCopy = {
   searchOpen: "Suche öffnen",
   searchClose: "Schließen",
   searchEmptyTitle: "Keine Treffer",
-  searchEmptyBody: "Versuchen Sie eine Einheitenkennung, einen Blockcode oder einen Namen.",
+  searchEmptyBody:
+    "Versuchen Sie eine Einheitenkennung, einen Blockcode oder einen Namen.",
   searchTyping: "Mindestens zwei Zeichen eingeben.",
 }
 
@@ -395,12 +396,13 @@ const ru: DashboardShellCopy = {
  * CONTRACTS §7 becomes a compile error here rather than an `undefined`
  * rendered into the page.
  */
-export const dashboardShellCopy: Record<Locale, DashboardShellCopy> = Object.freeze({
-  de,
-  en,
-  tr,
-  ru,
-})
+export const dashboardShellCopy: Record<Locale, DashboardShellCopy> =
+  Object.freeze({
+    de,
+    en,
+    tr,
+    ru,
+  })
 
 /** German for anything unrecognised. CONTRACTS §7 makes `de` the default. */
 export function shellCopy(locale: string): DashboardShellCopy {
@@ -410,7 +412,7 @@ export function shellCopy(locale: string): DashboardShellCopy {
 /** `{name}`-style interpolation. The catalogue's ICU syntax is W1-C's, not ours. */
 export function fill(
   template: string,
-  values: Record<string, string | number>,
+  values: Record<string, string | number>
 ): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => {
     const value = values[key]
@@ -441,7 +443,7 @@ export function fill(
  */
 export function buildProvenanceLabels(
   t: (key: string) => string,
-  locale: string,
+  locale: string
 ): ProvenanceLabels {
   const copy = shellCopy(locale)
 

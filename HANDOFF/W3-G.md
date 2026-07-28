@@ -1,4 +1,4 @@
-# HANDOFF — W3-G  Hotel & review intelligence
+# HANDOFF — W3-G Hotel & review intelligence
 
 STATUS: PARTIAL
 Completed: 2026-07-28
@@ -28,29 +28,29 @@ belong, and those wait on W3-B.
 
 ## 2. Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | exit 0 |
-| `pnpm --dir apps/web lint` | **PASS** | exit 0 |
-| `pnpm --dir apps/web build` | **PASS** | exit 0 · `├ ƒ /[locale]/hotel` — Dynamic, not prerendered |
-| `pnpm qa:csp` | **PASS** | exit 0 · **21 pass · 0 fail** |
-| `node scripts/check-i18n.mjs` | **PASS** | exit 0 · 0 errors, 6 warnings (§9) |
-| `next start` + curl, 4 locales | **PASS** | de/en/tr/ru all **200** |
-| Chromium, 5 variants | **PASS** | **0 CSP violations** on every one |
+| Command                         | Result   | Evidence                                                  |
+| ------------------------------- | -------- | --------------------------------------------------------- |
+| `pnpm --dir apps/web typecheck` | **PASS** | exit 0                                                    |
+| `pnpm --dir apps/web lint`      | **PASS** | exit 0                                                    |
+| `pnpm --dir apps/web build`     | **PASS** | exit 0 · `├ ƒ /[locale]/hotel` — Dynamic, not prerendered |
+| `pnpm qa:csp`                   | **PASS** | exit 0 · **21 pass · 0 fail**                             |
+| `node scripts/check-i18n.mjs`   | **PASS** | exit 0 · 0 errors, 6 warnings (§9)                        |
+| `next start` + curl, 4 locales  | **PASS** | de/en/tr/ru all **200**                                   |
+| Chromium, 5 variants            | **PASS** | **0 CSP violations** on every one                         |
 
 ### Acceptance evidence, against the brief's own list
 
-| # | Required | Result |
-|---|---|---|
-| 1 | Public page, four locales, all figures with provenance | de/en/tr/ru → 200. Every figure renders through `ProvenanceValue`; no bare numeric literal in the module |
-| 2 | Rebrand rendered: current primary, former explained, source cited | `<h1>` is "Azura World Hotel". "Wyndham Alanya" appears **only** under a "Früherer Name" label, in the rebrand body, and as the publisher name `Wyndham Alanya (antalyacoast)`. Sources cited as chips (OnTheBeach, Tripadvisor, both dated) + "BEFUND F-007" |
-| 3 | Each platform on its own scale, **no cross-platform average — grep proof** | §4 |
-| 4 | Default view showing both a positive and a negative quote, screenshotted | `quality/w3g/01-verdict-desktop.png`. Live DOM: `verdictCards: 2`, `tones: ["negative","positive"]`, `widths: [536,536]` desktop / `[280,280]` at 320px |
-| 5 | Unreachable platform → status shown, not blank | Agoda `Weitergeleitet`; three Booking.com URLs `Kein Inhalt geliefert`, each with its URL and attempt date |
-| 6 | A review containing HTML → rendered as text, no injection | §5 |
-| 7 | Beach distance: hotel 1 km and residence 300 m shown separately with explanation | "Anlage → Meer" **200 m – 500 m** (conflicted, 5 sources) vs "Hotel → öffentlicher Strand" **1.000 m**, with the explanation and "BEFUND F-003" |
-| 8 | `gap` renders "Nicht belegt" | 2 gap facts (ranking on OnTheBeach and on the Booking capture) render the em dash + "Nicht belegt" |
-| 9 | Permission matrix: `reviews:view` enforced; `guest` gets the public page only | **NOT DONE** — see §7. This page is public by design and enforces nothing; the gated surface is `/dashboard/reviews`, which is not built |
+| #   | Required                                                                         | Result                                                                                                                                                                                                                                                        |
+| --- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Public page, four locales, all figures with provenance                           | de/en/tr/ru → 200. Every figure renders through `ProvenanceValue`; no bare numeric literal in the module                                                                                                                                                      |
+| 2   | Rebrand rendered: current primary, former explained, source cited                | `<h1>` is "Azura World Hotel". "Wyndham Alanya" appears **only** under a "Früherer Name" label, in the rebrand body, and as the publisher name `Wyndham Alanya (antalyacoast)`. Sources cited as chips (OnTheBeach, Tripadvisor, both dated) + "BEFUND F-007" |
+| 3   | Each platform on its own scale, **no cross-platform average — grep proof**       | §4                                                                                                                                                                                                                                                            |
+| 4   | Default view showing both a positive and a negative quote, screenshotted         | `quality/w3g/01-verdict-desktop.png`. Live DOM: `verdictCards: 2`, `tones: ["negative","positive"]`, `widths: [536,536]` desktop / `[280,280]` at 320px                                                                                                       |
+| 5   | Unreachable platform → status shown, not blank                                   | Agoda `Weitergeleitet`; three Booking.com URLs `Kein Inhalt geliefert`, each with its URL and attempt date                                                                                                                                                    |
+| 6   | A review containing HTML → rendered as text, no injection                        | §5                                                                                                                                                                                                                                                            |
+| 7   | Beach distance: hotel 1 km and residence 300 m shown separately with explanation | "Anlage → Meer" **200 m – 500 m** (conflicted, 5 sources) vs "Hotel → öffentlicher Strand" **1.000 m**, with the explanation and "BEFUND F-003"                                                                                                               |
+| 8   | `gap` renders "Nicht belegt"                                                     | 2 gap facts (ranking on OnTheBeach and on the Booking capture) render the em dash + "Nicht belegt"                                                                                                                                                            |
+| 9   | Permission matrix: `reviews:view` enforced; `guest` gets the public page only    | **NOT DONE** — see §7. This page is public by design and enforces nothing; the gated surface is `/dashboard/reviews`, which is not built                                                                                                                      |
 
 ---
 
@@ -61,11 +61,11 @@ belong, and those wait on W3-B.
 
 The dataset says something else:
 
-| Capture | Score | Reviews | Ranking |
-|---|---|---|---|
-| `tripadvisor.com` (direct, first-party) | **4.6 / 5** | **359** | `#10 of 33 hotels in Turkler` |
-| `onthebeach.co.uk` (Tripadvisor widget, same location id 33144231) | 4.6 / 5 | 357 | — (`gap`) |
-| `wyndham.antalyacoast.com` (Booking.com badge) | 6.7 / 10 | 10 | — (`gap`) |
+| Capture                                                            | Score       | Reviews | Ranking                       |
+| ------------------------------------------------------------------ | ----------- | ------- | ----------------------------- |
+| `tripadvisor.com` (direct, first-party)                            | **4.6 / 5** | **359** | `#10 of 33 hotels in Turkler` |
+| `onthebeach.co.uk` (Tripadvisor widget, same location id 33144231) | 4.6 / 5     | 357     | — (`gap`)                     |
+| `wyndham.antalyacoast.com` (Booking.com badge)                     | 6.7 / 10    | 10      | — (`gap`)                     |
 
 **The page renders 4.6, because that is the figure carrying a source and a snapshot
 hash.** 4.0 appears in no fetched source in the dataset. Rendering 4.0 would have meant
@@ -94,7 +94,7 @@ select.ts:365  return reviews.reduce((sum, review) => sum + review.notableQuotes
 ```
 
 The first sums the five sentiment **bucket counts of one platform** to get that
-platform's graded total — the denominator for proportions *within* that platform. The
+platform's graded total — the denominator for proportions _within_ that platform. The
 second counts **quote rows**. Neither touches a score, and neither spans two platforms.
 
 The rule is structural rather than remembered. `PlatformGroup` carries `score` and
@@ -113,9 +113,9 @@ location id. Filed under its serving host it would have looked like a second ind
 host agreeing — which under CONTRACTS §1 invariant 3 is exactly what promotes a fact to
 `confirmed`. One opinion would have been laundered into corroboration.
 
-It renders inside the Tripadvisor card, under: *"Dieselbe Wertung wird von weiteren
+It renders inside the Tripadvisor card, under: _"Dieselbe Wertung wird von weiteren
 Seiten ausgeliefert. Das ist keine zweite, unabhängige Bewertung — es ist dieselbe Zahl
-mit einem anderen Logo davor."* Visible, and visibly not a second score.
+mit einem anderen Logo davor."_ Visible, and visibly not a second score.
 
 ---
 
@@ -124,9 +124,11 @@ mit einem anderen Logo davor."* Visible, and visibly not a second score.
 `SplitVerdict` receives the **full** quote list and derives both ends itself:
 
 ```ts
-const byRating = [...rated].sort((a, b) => a.rating - b.rating || a.url.localeCompare(b.url))
-const worst = byRating[0]
-const best  = byRating[byRating.length - 1]
+const byRating = [...rated].sort(
+  (a, b) => a.rating - b.rating || a.url.localeCompare(b.url),
+);
+const worst = byRating[0];
+const best = byRating[byRating.length - 1];
 ```
 
 There is no input ordering, no filter state and no prop that yields two positive quotes.
@@ -157,13 +159,13 @@ carries an always-visible "Originaltext, nicht übersetzt".
 
 ## 6. Platforms recovered, and sentiment
 
-| Platform | Recovered? | Figures |
-|---|---|---|
-| **Tripadvisor** | yes, first-party, `contentValidated: true` | 4.6/5 · 359 reviews · `#10 of 33 hotels in Turkler` · full distribution |
-| **OnTheBeach** | yes, but it is a Tripadvisor widget (F-016) | 4.6/5 · 357 · ranking `gap` |
+| Platform        | Recovered?                                               | Figures                                                                     |
+| --------------- | -------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Tripadvisor** | yes, first-party, `contentValidated: true`               | 4.6/5 · 359 reviews · `#10 of 33 hotels in Turkler` · full distribution     |
+| **OnTheBeach**  | yes, but it is a Tripadvisor widget (F-016)              | 4.6/5 · 357 · ranking `gap`                                                 |
 | **Booking.com** | **badge only** — its own three URLs all `expect_missing` | 6.7/10 · 10 reviews, served from `wyndham.antalyacoast.com` · ranking `gap` |
-| **Agoda** | **no** — `redirected`, `contentValidated: false` | — |
-| **Google** | never attempted | not in the dataset at all |
+| **Agoda**       | **no** — `redirected`, `contentValidated: false`         | —                                                                           |
+| **Google**      | never attempted                                          | not in the dataset at all                                                   |
 
 Booking.com appears **twice** on the page — once as a recovered badge score, once in the
 unrecovered list — and that looked like a contradiction, so the page now explains it in
@@ -222,8 +224,8 @@ that a production server run is a precondition for claiming a page works.
 `formatFetchedAt` is exported from `components/evidence/source-chip.tsx`, which carries
 `"use client"` for the component beside it. The function is pure — no React, no browser
 API — but the module is a client module, so calling it from a Server Component throws:
-*"Attempted to call formatFetchedAt() from the server but formatFetchedAt is on the
-client."* Worked around with a local `formatFetchedDate` of identical behaviour; the
+_"Attempted to call formatFetchedAt() from the server but formatFetchedAt is on the
+client."_ Worked around with a local `formatFetchedDate` of identical behaviour; the
 proper fix is a request in §9.
 
 **2. `ProvenanceValue format="number"` rounds, and it silently improved the hotel's
@@ -249,14 +251,14 @@ intact.
 
 ## 9. Requests for other windows
 
-| File | Owner | What is needed |
-|---|---|---|
-| `apps/web/components/evidence/format.ts` | **W1-D** | `formatNumber` defaults to 0 fraction digits and `format="number"` never overrides it, so **every fractional fact renders rounded**. 4.6 → "5". Needs either a `maximumFractionDigits` passthrough on `ProvenanceValue` or a `score` format. My `scoreAsDisplayFact()` is a local workaround and should be deleted once this lands. |
-| `apps/web/components/evidence/source-chip.tsx` | **W1-D** | `formatFetchedAt` is pure but exported from a `"use client"` module, so no Server Component can call it — it throws at request time and passes every static gate. Move it to `components/evidence/format.ts` (already server-safe) and re-export; then my duplicate `formatFetchedDate` goes away. |
-| `apps/web/lib/proper-nouns.json` | **W1-C** | Add `"Agoda"` and `"OnTheBeach"`. The file already lists Tripadvisor, Booking.com and Google — these two are simply the first use. Until then `check-i18n` reports **6 warnings** (it was 0 before this branch); the gate still passes. I did not edit it (SYSTEM-PROMPT §4.1). |
-| `apps/web/messages/*.json` → `evidence.tier.*` | **W1-C** | `SourceChipLabels.tier` needs six tier names and `evidence.tier.*` does not exist, so they live under `hotel.provenance.tier.*`. Every surface rendering a `SourceChip` will need them; the second consumer will either duplicate my block or import from a hotel module. Better home is `evidence.tier.*`. |
-| `SOURCES.md` §4 | **W0-B** | §3 above — the recorded 4.0/358 does not match the harvested 4.6/359. One of them needs to win, and the page currently follows the harvest because that is the figure with a snapshot. |
-| `quality/w3g/*` | **W4-B** | Three screenshots committed into a `w3g/`-namespaced subdirectory of your tree, because the brief requires screenshotted evidence and I own no path for binaries. Move or delete them if that is unwelcome; nothing references them but this file. |
+| File                                           | Owner    | What is needed                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/components/evidence/format.ts`       | **W1-D** | `formatNumber` defaults to 0 fraction digits and `format="number"` never overrides it, so **every fractional fact renders rounded**. 4.6 → "5". Needs either a `maximumFractionDigits` passthrough on `ProvenanceValue` or a `score` format. My `scoreAsDisplayFact()` is a local workaround and should be deleted once this lands. |
+| `apps/web/components/evidence/source-chip.tsx` | **W1-D** | `formatFetchedAt` is pure but exported from a `"use client"` module, so no Server Component can call it — it throws at request time and passes every static gate. Move it to `components/evidence/format.ts` (already server-safe) and re-export; then my duplicate `formatFetchedDate` goes away.                                  |
+| `apps/web/lib/proper-nouns.json`               | **W1-C** | Add `"Agoda"` and `"OnTheBeach"`. The file already lists Tripadvisor, Booking.com and Google — these two are simply the first use. Until then `check-i18n` reports **6 warnings** (it was 0 before this branch); the gate still passes. I did not edit it (SYSTEM-PROMPT §4.1).                                                     |
+| `apps/web/messages/*.json` → `evidence.tier.*` | **W1-C** | `SourceChipLabels.tier` needs six tier names and `evidence.tier.*` does not exist, so they live under `hotel.provenance.tier.*`. Every surface rendering a `SourceChip` will need them; the second consumer will either duplicate my block or import from a hotel module. Better home is `evidence.tier.*`.                         |
+| `SOURCES.md` §4                                | **W0-B** | §3 above — the recorded 4.0/358 does not match the harvested 4.6/359. One of them needs to win, and the page currently follows the harvest because that is the figure with a snapshot.                                                                                                                                              |
+| `quality/w3g/*`                                | **W4-B** | Three screenshots committed into a `w3g/`-namespaced subdirectory of your tree, because the brief requires screenshotted evidence and I own no path for binaries. Move or delete them if that is unwelcome; nothing references them but this file.                                                                                  |
 
 ---
 
@@ -269,15 +271,15 @@ intact.
   person's review with a guessed language is the same class of error as translating it.
   Every card says "not translated"; none claims which language it is in. Fixing this
   properly means W0-B capturing the language attribute at harvest.
-- `[GAP]` **Review titles are not in the dataset.** The brief quotes *"A Five-Star Hotel
-  in Name Only: Misleading, Unsafe, and Unprofessional"* as the negative extreme; the
+- `[GAP]` **Review titles are not in the dataset.** The brief quotes _"A Five-Star Hotel
+  in Name Only: Misleading, Unsafe, and Unprofessional"_ as the negative extreme; the
   harvest recovered review **bodies** only. The rendered worst quote is the 1/5 body
-  beginning *"Regrettably, a holiday in this hotel left an extremely unpleasant
-  draught."* The extremes are real; the specific title is not available to render.
+  beginning _"Regrettably, a holiday in this hotel left an extremely unpleasant
+  draught."_ The extremes are real; the specific title is not available to render.
 - **`[V]` STAFF NAMES ARE IN THE DATASET, IN THE MOST PROMINENT QUOTE ON THE PAGE.**
-  The brief is explicit: *"A quote naming a staff member → the dataset should not carry
+  The brief is explicit: _"A quote naming a staff member → the dataset should not carry
   identifiable staff names. Redact at ingestion if present; this is a real person, not a
-  data point."* The 5/5 review — the one `SplitVerdict` renders as the positive extreme,
+  data point."_ The 5/5 review — the one `SplitVerdict` renders as the positive extreme,
   above the fold of the review section — reads:
 
   > "…we had an sen child and **sanemsii** and **Tulane** and **Han** were sen trained
@@ -295,6 +297,7 @@ intact.
   (`scripts/build-azura-dataset.py`), and it is a decision about a real person rather
   than a formatting preference. Verbatim quoting and not naming employees are both
   correct rules; where they collide, someone senior should choose.
+
 - `[GAP]` **`hotel.distanceToBeachM` renders as "1.000 m" while the prose says "1 km".**
   Both are correct and both are sourced; the `metres` format is what the dataset's unit
   implies. Slightly inelegant, not wrong.

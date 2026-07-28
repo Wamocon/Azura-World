@@ -1,4 +1,4 @@
-# HANDOFF — W4-D  Quality gates, traceability, release report
+# HANDOFF — W4-D Quality gates, traceability, release report
 
 STATUS: COMPLETE
 Completed: 2026-07-28
@@ -15,16 +15,16 @@ Branch: `feature/INTERNAL-107-w4d-gates` · Worktree: `D:\azura-w4d` · From `ma
 
 ## 1. What was built
 
-| File | What it is |
-|---|---|
-| `scripts/quality-gate.mjs` | The 19 gates + CSP as #20. Tri-state exit. Nothing piped |
-| `scripts/traceability.mjs` | The named acceptance-criteria test that did not exist |
-| `.github/workflows/quality.yml` | Gates 1–8 on PR, full gate + traceability on `main` |
-| `TRACEABILITY.md` | Four ACs → named passing tests, and what that proof does not cover |
-| `RELEASE-STATUS.md` | The honesty register |
-| `QUALITY-REPORT.md` | Full output archive |
-| `.github/dependabot.yml` | `eslint-config-next` grouped with `next` so they cannot drift |
-| `quality/*.json`, `quality/probes/*.txt` | Machine-readable evidence for every claim above |
+| File                                     | What it is                                                         |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| `scripts/quality-gate.mjs`               | The 19 gates + CSP as #20. Tri-state exit. Nothing piped           |
+| `scripts/traceability.mjs`               | The named acceptance-criteria test that did not exist              |
+| `.github/workflows/quality.yml`          | Gates 1–8 on PR, full gate + traceability on `main`                |
+| `TRACEABILITY.md`                        | Four ACs → named passing tests, and what that proof does not cover |
+| `RELEASE-STATUS.md`                      | The honesty register                                               |
+| `QUALITY-REPORT.md`                      | Full output archive                                                |
+| `.github/dependabot.yml`                 | `eslint-config-next` grouped with `next` so they cannot drift      |
+| `quality/*.json`, `quality/probes/*.txt` | Machine-readable evidence for every claim above                    |
 
 ---
 
@@ -34,30 +34,30 @@ Branch: `feature/INTERNAL-107-w4d-gates` · Worktree: `D:\azura-w4d` · From `ma
 today. I ran it twice rather than pick one story: the left column is the truth about `main`, the
 right is what `main` becomes when W2-B lands. The preview merge was local and **not pushed**.
 
-| # | Gate | on `main` | +W2-B | Evidence |
-|---|---|---|---|---|
-| 1 | Typecheck | **PASS** 0 | **PASS** 0 | `tsc --noEmit`, no output |
-| 2 | Lint | **PASS** 0 | **PASS** 0 | 0 errors, 0 warnings |
-| 3 | Format | **FAIL** 1 | **FAIL** 1 | **121** / 145 source files fail `prettier --check` |
-| 4 | Build | **PASS** 0 | **PASS** 0 | `next build --webpack` |
-| 5 | i18n parity | **PASS** 0 | **PASS** 0 | identical key sets, 0 warnings |
-| 6 | Evidence integrity | **PASS** 0 | **PASS** 0 | 1,354 facts · 25 portal + 631 modelled = 656 · no violations |
-| 7 | OpenAPI contract | **NOT RUN** | **PASS** 0 | `13 pass · 0 fail · 23 exempt` · 33 paths · 49 ops |
-| 8 | Unit tests | **PASS** 0 | **PASS** 0 | 24 tests · 24 pass · 0 fail |
-| 9 | pgTAP | **NOT RUN** | **NOT RUN** | Docker down (`docker info` exit 1). Substitute in §4 |
-| 10 | e2e chromium | **NOT RUN** | **NOT RUN** | no `playwright.config.ts`, 0 specs — W4-A never started |
-| 11 | e2e mobile-chrome | **NOT RUN** | **NOT RUN** | same |
-| 12 | Layout audit | **NOT RUN** | **NOT RUN** | `scripts/layout-audit.mjs` absent — W4-B never started |
-| 13 | Accessibility | **NOT RUN** | **NOT RUN** | `scripts/a11y.mjs` absent; no `qa:a11y` script exists |
-| 14 | Performance | **NOT RUN** | **NOT RUN** | `scripts/perf.mjs` absent |
-| 15 | Security probe | **NOT RUN** | **NOT RUN** | `scripts/security-probe.mjs` absent — W4-C never started |
-| 16 | Bundle budget | **PASS** | **PASS** | landing floor 166.2KB/250KB · 3D 227.4KB/260KB |
-| 17 | Secret scan | **PASS** | **PASS** | 374 / 418 tracked files · 0 env · 0 `sources/raw\|media` |
-| 18 | Dependency audit | **FAIL** 1 | **FAIL** 1 | **8 high + 7 moderate** |
-| 19 | Evidence drift *(non-blocking)* | **NOT RUN** | **NOT RUN** | `scripts/evidence-drift.mjs` never written — W0-B |
-| 20 | CSP / prerender *(added, W-INT §9)* | **PASS** 0 | **PASS** 0 | 30 pass · 0 fail |
+| #   | Gate                                | on `main`   | +W2-B       | Evidence                                                     |
+| --- | ----------------------------------- | ----------- | ----------- | ------------------------------------------------------------ |
+| 1   | Typecheck                           | **PASS** 0  | **PASS** 0  | `tsc --noEmit`, no output                                    |
+| 2   | Lint                                | **PASS** 0  | **PASS** 0  | 0 errors, 0 warnings                                         |
+| 3   | Format                              | **FAIL** 1  | **FAIL** 1  | **121** / 145 source files fail `prettier --check`           |
+| 4   | Build                               | **PASS** 0  | **PASS** 0  | `next build --webpack`                                       |
+| 5   | i18n parity                         | **PASS** 0  | **PASS** 0  | identical key sets, 0 warnings                               |
+| 6   | Evidence integrity                  | **PASS** 0  | **PASS** 0  | 1,354 facts · 25 portal + 631 modelled = 656 · no violations |
+| 7   | OpenAPI contract                    | **NOT RUN** | **PASS** 0  | `13 pass · 0 fail · 23 exempt` · 33 paths · 49 ops           |
+| 8   | Unit tests                          | **PASS** 0  | **PASS** 0  | 24 tests · 24 pass · 0 fail                                  |
+| 9   | pgTAP                               | **NOT RUN** | **NOT RUN** | Docker down (`docker info` exit 1). Substitute in §4         |
+| 10  | e2e chromium                        | **NOT RUN** | **NOT RUN** | no `playwright.config.ts`, 0 specs — W4-A never started      |
+| 11  | e2e mobile-chrome                   | **NOT RUN** | **NOT RUN** | same                                                         |
+| 12  | Layout audit                        | **NOT RUN** | **NOT RUN** | `scripts/layout-audit.mjs` absent — W4-B never started       |
+| 13  | Accessibility                       | **NOT RUN** | **NOT RUN** | `scripts/a11y.mjs` absent; no `qa:a11y` script exists        |
+| 14  | Performance                         | **NOT RUN** | **NOT RUN** | `scripts/perf.mjs` absent                                    |
+| 15  | Security probe                      | **NOT RUN** | **NOT RUN** | `scripts/security-probe.mjs` absent — W4-C never started     |
+| 16  | Bundle budget                       | **PASS**    | **PASS**    | landing floor 166.2KB/250KB · 3D 227.4KB/260KB               |
+| 17  | Secret scan                         | **PASS**    | **PASS**    | 374 / 418 tracked files · 0 env · 0 `sources/raw\|media`     |
+| 18  | Dependency audit                    | **FAIL** 1  | **FAIL** 1  | **8 high + 7 moderate**                                      |
+| 19  | Evidence drift _(non-blocking)_     | **NOT RUN** | **NOT RUN** | `scripts/evidence-drift.mjs` never written — W0-B            |
+| 20  | CSP / prerender _(added, W-INT §9)_ | **PASS** 0  | **PASS** 0  | 30 pass · 0 fail                                             |
 
-**`main`: 9 PASS · 2 FAIL · 8 NOT RUN → exit 1.  +W2-B: 10 PASS · 2 FAIL · 7 NOT RUN → exit 1.**
+**`main`: 9 PASS · 2 FAIL · 8 NOT RUN → exit 1. +W2-B: 10 PASS · 2 FAIL · 7 NOT RUN → exit 1.**
 
 Exit is tri-state on purpose — `0` certifiable, `1` a blocking gate FAILED, `2` no failures but a
 blocking gate NOT RUN. "Did not fail" and "passed" are different claims and a release decision has
@@ -67,25 +67,25 @@ to tell them apart.
 
 ## 3. Test counts — defined vs executed vs passed
 
-| Suite | Defined | Executed | Passed | Note |
-|---|---|---|---|---|
-| Contract smoke | 33 | **33** | 33 | |
-| RBAC matrix | 157 | **157** | 157 | |
-| AI guardrails | 152 | **152** | 152 | 17/31 probes correctly **refused** — a pass, not a failure rate |
-| Realtime | 96 | **93** | 93 | **3 browser checks NOT RUN** — W2-D PARTIAL by design |
-| Dashboard role × route | 647 | **647** | 647 | 11 roles × 21 routes = 231 cells |
-| CSP / prerender | 30 | **30** | 30 | production build + `next start` + Chromium |
-| Unit | 24 | **24** | 24 | 2 suites, both repository-layer |
-| Traceability (new) | 15 | **15** | 15 | the four ACs |
-| **Re-run by W4-D today** | **1,154** | **1,151** | **1,151** | |
-| OpenAPI contract (W2-B) | 36 | **13** | **13** | **23 exempt by declaration**; only with W2-B merged |
-| pgTAP (W1-A substitute) | 366 | **366** | 366 | **not** re-run by me; **not** `supabase test db` |
-| W1-D design Playwright | 27 | 27 | 27 | overnight only, **not re-runnable** — no config exists |
-| W3-I simulation Playwright | 16 | 16 | 16 | overnight only, not re-run |
-| W3-C evidence-review | 100 | 100 | 100 | **dev only** — fails under `next start`, §5 |
-| **e2e matrix (W4-A)** | *unscoped* | **0** | **0** | suite does not exist |
-| **Layout / a11y / perf (W4-B)** | *unscoped* | **0** | **0** | suites do not exist |
-| **Security probe (W4-C)** | *unscoped* | **0** | **0** | suite does not exist |
+| Suite                           | Defined    | Executed  | Passed    | Note                                                            |
+| ------------------------------- | ---------- | --------- | --------- | --------------------------------------------------------------- |
+| Contract smoke                  | 33         | **33**    | 33        |                                                                 |
+| RBAC matrix                     | 157        | **157**   | 157       |                                                                 |
+| AI guardrails                   | 152        | **152**   | 152       | 17/31 probes correctly **refused** — a pass, not a failure rate |
+| Realtime                        | 96         | **93**    | 93        | **3 browser checks NOT RUN** — W2-D PARTIAL by design           |
+| Dashboard role × route          | 647        | **647**   | 647       | 11 roles × 21 routes = 231 cells                                |
+| CSP / prerender                 | 30         | **30**    | 30        | production build + `next start` + Chromium                      |
+| Unit                            | 24         | **24**    | 24        | 2 suites, both repository-layer                                 |
+| Traceability (new)              | 15         | **15**    | 15        | the four ACs                                                    |
+| **Re-run by W4-D today**        | **1,154**  | **1,151** | **1,151** |                                                                 |
+| OpenAPI contract (W2-B)         | 36         | **13**    | **13**    | **23 exempt by declaration**; only with W2-B merged             |
+| pgTAP (W1-A substitute)         | 366        | **366**   | 366       | **not** re-run by me; **not** `supabase test db`                |
+| W1-D design Playwright          | 27         | 27        | 27        | overnight only, **not re-runnable** — no config exists          |
+| W3-I simulation Playwright      | 16         | 16        | 16        | overnight only, not re-run                                      |
+| W3-C evidence-review            | 100        | 100       | 100       | **dev only** — fails under `next start`, §5                     |
+| **e2e matrix (W4-A)**           | _unscoped_ | **0**     | **0**     | suite does not exist                                            |
+| **Layout / a11y / perf (W4-B)** | _unscoped_ | **0**     | **0**     | suites do not exist                                             |
+| **Security probe (W4-C)**       | _unscoped_ | **0**     | **0**     | suite does not exist                                            |
 
 ---
 
@@ -99,7 +99,7 @@ W1-A's substitute: **pgTAP 1.3.3 against the live cloud DB inside `BEGIN..ROLLBA
 **every authenticated user passed every admin check**, plus a deactivated profile keeping its
 residency scope and `anon` unable to read `public.units` at all.
 
-It proves the policies behave correctly *on the database as it stands*. It does **not** prove a
+It proves the policies behave correctly _on the database as it stands_. It does **not** prove a
 from-scratch `supabase db reset` produces that database. Accepting 366/366 as evidence is
 reasonable; accepting it as gate 9 is not, and nothing here does.
 
@@ -109,16 +109,16 @@ reasonable; accepting it as gate 9 is not, and nothing here does.
 
 `node scripts/traceability.mjs` → **exit 0 · 15 pass · 0 fail**, against `next start`.
 
-| AC | Requirement | Status | Proven by |
-|---|---|---|---|
-| 1 | Ein CATI für Azura World erstellen | **MET** | `traceability.mjs` AC1.1–1.6 |
-| 2 | Die wichtigsten Quellen und Links berücksichtigen | **MET** | AC2.1–2.4 + `verify-evidence.mjs` |
-| 3 | Informationen aus Immobilien-Portalen einbeziehen | **MET** | AC3.1–3.2 |
-| 4 | Bewertungen und Hotel-Buchungsquellen einbeziehen | **MET** | AC4.1–4.3 |
+| AC  | Requirement                                       | Status  | Proven by                         |
+| --- | ------------------------------------------------- | ------- | --------------------------------- |
+| 1   | Ein CATI für Azura World erstellen                | **MET** | `traceability.mjs` AC1.1–1.6      |
+| 2   | Die wichtigsten Quellen und Links berücksichtigen | **MET** | AC2.1–2.4 + `verify-evidence.mjs` |
+| 3   | Informationen aus Immobilien-Portalen einbeziehen | **MET** | AC3.1–3.2                         |
+| 4   | Bewertungen und Hotel-Buchungsquellen einbeziehen | **MET** | AC4.1–4.3                         |
 
 **The brief's three named specs do not exist** — `apps/web/e2e/` has zero `*.spec.ts` and there is
 no `playwright.config.ts`. So every AC had **no named proving test at all**. Rather than record
-four unproven criteria, `scripts/traceability.mjs` *is* that test: 203 outbound source links on
+four unproven criteria, `scripts/traceability.mjs` _is_ that test: 203 outbound source links on
 `/de`, 5/6 portals cited, `25 portal_listing + 631 modelled = 656`, 4/4 review platforms on
 `/de/hotel` with Tripadvisor ×58.
 
@@ -164,7 +164,7 @@ Recorded because a gate whose evidence contradicts itself is worse than no gate.
    filename. It now reproduces W-INT's **227.4KB** independently, by a different method.
 4. **Gate 7 printed a bare PASS** while exempting 23 of 36 checks. It now prints the tally.
 5. **The pre-commit hook rejected my own commit** — `quality-gate.mjs` contains the secret-detector
-   alternation *as a pattern*. Fixed by assembling it from fragments rather than using
+   alternation _as a pattern_. Fixed by assembling it from fragments rather than using
    `--no-verify`. Note CI excludes `.github/workflows/*` and `.githooks/*` from that scan but **not
    `scripts/*`**, which is the divergence W-INT flagged in its §9 and it is still unreconciled.
 
@@ -173,10 +173,10 @@ Recorded because a gate whose evidence contradicts itself is worse than no gate.
 ## 8. Requests for other windows
 
 - **W4-A** — your e2e matrix is the single highest-leverage missing thing. Almost every "NOT
-  PROVEN" in `RELEASE-STATUS.md` §4 collapses to *"no browser test with a real session."* You also
+  PROVEN" in `RELEASE-STATUS.md` §4 collapses to _"no browser test with a real session."_ You also
   inherit W2-D's 3 browser checks and W3-C's "renders under `next start` with a session".
 - **W4-B** — gates 12, 13 and 14 are NOT RUN for want of `layout-audit.mjs`, `a11y.mjs` and
-  `perf.mjs`. `qa:perf` is also the only thing that can turn gate 16's *floor* into the browser's
+  `perf.mjs`. `qa:perf` is also the only thing that can turn gate 16's _floor_ into the browser's
   real transfer.
 - **W4-C** — gate 15 is NOT RUN. §6 above is the first thing to look at.
 - **W2-B** — merge it. Gate 7 passes on a preview merge; on `main` it is NOT RUN.

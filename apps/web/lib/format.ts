@@ -62,7 +62,10 @@ const numberFormatters = new Map<string, Intl.NumberFormat>()
 const dateFormatters = new Map<string, Intl.DateTimeFormat>()
 const collators = new Map<string, Intl.Collator>()
 
-function numberFormatter(locale: Locale, options: Intl.NumberFormatOptions): Intl.NumberFormat {
+function numberFormatter(
+  locale: Locale,
+  options: Intl.NumberFormatOptions
+): Intl.NumberFormat {
   const key = `${locale}|${JSON.stringify(options)}`
   const cached = numberFormatters.get(key)
   if (cached !== undefined) return cached
@@ -71,7 +74,10 @@ function numberFormatter(locale: Locale, options: Intl.NumberFormatOptions): Int
   return created
 }
 
-function dateFormatter(locale: Locale, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+function dateFormatter(
+  locale: Locale,
+  options: Intl.DateTimeFormatOptions
+): Intl.DateTimeFormat {
   const key = `${locale}|${JSON.stringify(options)}`
   const cached = dateFormatters.get(key)
   if (cached !== undefined) return cached
@@ -129,7 +135,11 @@ export function formatNumber(value: number, locale: Locale): string {
  * by 100 itself, and passing the already-multiplied number is the classic way
  * to ship "8700 %".
  */
-export function formatPercent(ratio: number, locale: Locale, fractionDigits = 0): string {
+export function formatPercent(
+  ratio: number,
+  locale: Locale,
+  fractionDigits = 0
+): string {
   return numberFormatter(locale, {
     style: "percent",
     minimumFractionDigits: fractionDigits,

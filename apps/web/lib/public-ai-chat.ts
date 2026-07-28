@@ -55,7 +55,8 @@ export interface PublicChatPayload extends AiResponse {
 }
 
 function asLocale(value: unknown): Locale {
-  return typeof value === "string" && (locales as readonly string[]).includes(value)
+  return typeof value === "string" &&
+    (locales as readonly string[]).includes(value)
     ? (value as Locale)
     : "de"
 }

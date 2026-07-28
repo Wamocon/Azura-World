@@ -1,0 +1,14 @@
+# Generated files. The generator owns their formatting; prettier must not.
+#
+# CONTRACTS §2 and SYSTEM-PROMPT §2.4: a generated file carries a header naming
+# its generator and saying do-not-hand-edit. Reformatting one makes the next
+# regeneration a spurious multi-thousand-line diff, and hides the real change
+# inside it. If the emitted formatting is genuinely wrong, fix the generator.
+lib/azura-world-data.ts
+lib/media-manifest.ts
+lib/lqip.json
+
+# Build output and dependencies. Also excluded via .gitignore, but prettier is
+# given an explicit --ignore-path by scripts/quality-gate.mjs and needs both.
+.next/
+node_modules/

@@ -1,4 +1,4 @@
-# HANDOFF — W3-B  Dashboard shell, navigation, KPI home
+# HANDOFF — W3-B Dashboard shell, navigation, KPI home
 
 STATUS: COMPLETE
 Contract published early: 2026-07-28 · Completed: 2026-07-28
@@ -40,13 +40,13 @@ lands, delete that one flag. That is the whole registration.
 
 ```ts
 export interface DashboardRoute {
-  href: string          // locale-less, e.g. "/dashboard/units"
-  labelKey: string      // e.g. "dashboard.units.title" — an existing W1-C key
-  icon: string          // lucide-react export name, resolved in the sidebar
-  permission: Permission // e.g. "units:view" — from CONTRACTS §3
-  group: DashboardGroup
-  resource: Resource
-  pending?: boolean
+  href: string; // locale-less, e.g. "/dashboard/units"
+  labelKey: string; // e.g. "dashboard.units.title" — an existing W1-C key
+  icon: string; // lucide-react export name, resolved in the sidebar
+  permission: Permission; // e.g. "units:view" — from CONTRACTS §3
+  group: DashboardGroup;
+  resource: Resource;
+  pending?: boolean;
 }
 ```
 
@@ -60,15 +60,15 @@ The client guard is defence in depth. **It is not your boundary.** Do this at
 the top of your Server Component:
 
 ```ts
-import { decideDashboardAccess } from "@/lib/dashboard-resource-access"
-import { getUserProfile } from "@/lib/auth"
+import { decideDashboardAccess } from "@/lib/dashboard-resource-access";
+import { getUserProfile } from "@/lib/auth";
 
-const profile = await getUserProfile()
+const profile = await getUserProfile();
 const decision = decideDashboardAccess(
   "/dashboard/units",
   profile.role,
   profile.authenticated,
-)
+);
 if (!decision.allowed) {
   // 403, NOT a redirect. See "Why 403" below.
 }
@@ -127,7 +127,7 @@ beside, so the user reads a reason and then loses it.
 ```
 
 A `fact` column hands the fact to W1-D's `ProvenanceValue`. **This is how
-provenance reaches every table in the app.** The extractor returns the *fact*,
+provenance reaches every table in the app.** The extractor returns the _fact_,
 not its value, so a module cannot print `fact.value` and silently drop the
 citation. A `gap` renders "—", never `0`; a conflict shows its amber badge in
 the row. CONTRACTS §8 lists "a number in JSX with no source" as a review
@@ -138,16 +138,16 @@ map a missing number to `0` before passing it in.**
 
 Other guarantees:
 
-| | |
-|---|---|
-| Virtualisation | Automatic above **100 rows** (`VIRTUALISE_ABOVE`). Measured: 656 rows render **25 `<tr>`**. |
-| Four states | `empty` and `error` are **required props** — a populated-only table cannot be written. |
-| Sort | Server-side. `onSortChange` emits intent; cycles asc → desc → unsorted. `aria-sort` is set. |
-| Pagination / filter | Server-side. This component never fetches and never sorts a full dataset. |
-| Column visibility | Persisted per user via `columnVisibilityKey`, through `useSyncExternalStore` — so it also syncs across tabs. Omit the key to disable. |
-| Selection | `selectedIds` / `onSelectionChange`. Bulk actions are withheld entirely when the role lacks their `permission`, never shown disabled. |
-| CSV export | `onExportCsv` is yours to implement — it must respect the **current filter**, which is why the component does not do it for you. Gated by `exportPermission`. |
-| Keyboard | Sortable headers are buttons; rows are focusable and Enter-activatable when `onRowActivate` is given. |
+|                     |                                                                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Virtualisation      | Automatic above **100 rows** (`VIRTUALISE_ABOVE`). Measured: 656 rows render **25 `<tr>`**.                                                                   |
+| Four states         | `empty` and `error` are **required props** — a populated-only table cannot be written.                                                                        |
+| Sort                | Server-side. `onSortChange` emits intent; cycles asc → desc → unsorted. `aria-sort` is set.                                                                   |
+| Pagination / filter | Server-side. This component never fetches and never sorts a full dataset.                                                                                     |
+| Column visibility   | Persisted per user via `columnVisibilityKey`, through `useSyncExternalStore` — so it also syncs across tabs. Omit the key to disable.                         |
+| Selection           | `selectedIds` / `onSelectionChange`. Bulk actions are withheld entirely when the role lacks their `permission`, never shown disabled.                         |
+| CSV export          | `onExportCsv` is yours to implement — it must respect the **current filter**, which is why the component does not do it for you. Gated by `exportPermission`. |
+| Keyboard            | Sortable headers are buttons; rows are focusable and Enter-activatable when `onRowActivate` is given.                                                         |
 
 **What it deliberately does not do: fetch.** You own your `useLiveSnapshot`,
 and therefore your channels, your polling and your sync badge — none of which
@@ -211,15 +211,15 @@ headings, the 403 body, table chrome, KPI labels) lives in
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** exit 0 | `tsc --noEmit`, whole tree, no output |
-| `pnpm --dir apps/web lint` | **PASS** exit 0 | `eslint`, whole tree, 0 errors 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** exit 0 | `/[locale]/dashboard` emits as **f (Dynamic)** — W-INT §4 satisfied |
-| `pnpm qa:dashboard` | **PASS** — **647 pass · 0 fail** | 11 roles × 21 routes = **231 cells**, enumerated |
-| `pnpm qa:csp` | **PASS** — **21 pass · 0 fail** | production build + `next start` + Chromium |
-| Browser acceptance, Chromium | **PASS** — **104 pass · 0 fail** | all 11 roles; output below |
-| End-to-end 403 on a forbidden deep link | **NOT PROVEN** | see "The one gap" |
+| Command                                 | Result                           | Evidence                                                            |
+| --------------------------------------- | -------------------------------- | ------------------------------------------------------------------- |
+| `pnpm --dir apps/web typecheck`         | **PASS** exit 0                  | `tsc --noEmit`, whole tree, no output                               |
+| `pnpm --dir apps/web lint`              | **PASS** exit 0                  | `eslint`, whole tree, 0 errors 0 warnings                           |
+| `pnpm --dir apps/web build`             | **PASS** exit 0                  | `/[locale]/dashboard` emits as **f (Dynamic)** — W-INT §4 satisfied |
+| `pnpm qa:dashboard`                     | **PASS** — **647 pass · 0 fail** | 11 roles × 21 routes = **231 cells**, enumerated                    |
+| `pnpm qa:csp`                           | **PASS** — **21 pass · 0 fail**  | production build + `next start` + Chromium                          |
+| Browser acceptance, Chromium            | **PASS** — **104 pass · 0 fail** | all 11 roles; output below                                          |
+| End-to-end 403 on a forbidden deep link | **NOT PROVEN**                   | see "The one gap"                                                   |
 
 ### `pnpm qa:dashboard` — the full matrix, enumerated not sampled
 
@@ -340,12 +340,12 @@ property the brief's no-redirect rule exists to protect.
 
 ## Requests for other windows
 
-| File | Owner | What is needed |
-|---|---|---|
-| `messages/*.json` | **W1-C** | `dashboard.deals.title` in all four locales — the only nav label with no key. The sidebar resolves labels through `t.has()`, so today it degrades to `"deals"` rather than throwing, but that is a fallback and not a translation. |
-| `app/api/site-management/search` | **W2-B** | Global search calls `GET /api/site-management/search?q=…` and expects `ApiResponse<{ hits: GlobalSearchHit[] }>` with `{ id, entity: "units"\|"tickets"\|"documents"\|"people", title, subtitle?, href }`. **Role scoping must happen server-side** — the client sends no role, by design. Until it exists the search shows its error state, which is deliberate: falling back to filtering a local list would make "no such unit" indistinguishable from "not loaded". |
-| `messages/*.json` | **W1-C** | Eventually, the ~40 keys now in `lib/dashboard-home-copy.ts` should migrate into the catalogue. They are there because editing four files you own while you are working in them collides (ORCHESTRATION §4), not because a second copy layer is desirable. |
-| `app/not-found.tsx`, `app/global-error.tsx` | **W0-A** | Switch `<a href="/de/">` to next-intl's `<Link>`. Not cosmetic: while those stay `<a>`, **no window can add a dynamic segment under `app/[locale]/dashboard/`** without turning them into lint errors. That is what blocked the shell's fallback route (see "The one gap"), and it will block the next person the same way. Two lines. |
+| File                                        | Owner    | What is needed                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `messages/*.json`                           | **W1-C** | `dashboard.deals.title` in all four locales — the only nav label with no key. The sidebar resolves labels through `t.has()`, so today it degrades to `"deals"` rather than throwing, but that is a fallback and not a translation.                                                                                                                                                                                                                                      |
+| `app/api/site-management/search`            | **W2-B** | Global search calls `GET /api/site-management/search?q=…` and expects `ApiResponse<{ hits: GlobalSearchHit[] }>` with `{ id, entity: "units"\|"tickets"\|"documents"\|"people", title, subtitle?, href }`. **Role scoping must happen server-side** — the client sends no role, by design. Until it exists the search shows its error state, which is deliberate: falling back to filtering a local list would make "no such unit" indistinguishable from "not loaded". |
+| `messages/*.json`                           | **W1-C** | Eventually, the ~40 keys now in `lib/dashboard-home-copy.ts` should migrate into the catalogue. They are there because editing four files you own while you are working in them collides (ORCHESTRATION §4), not because a second copy layer is desirable.                                                                                                                                                                                                              |
+| `app/not-found.tsx`, `app/global-error.tsx` | **W0-A** | Switch `<a href="/de/">` to next-intl's `<Link>`. Not cosmetic: while those stay `<a>`, **no window can add a dynamic segment under `app/[locale]/dashboard/`** without turning them into lint errors. That is what blocked the shell's fallback route (see "The one gap"), and it will block the next person the same way. Two lines.                                                                                                                                  |
 
 ---
 
@@ -356,20 +356,20 @@ profileId })` from `lib/dashboard-repository.ts`, which fans out internally
 with `Promise.allSettled` so one failing panel degrades that panel and not the
 page.
 
-| Card | Snapshot panel | Field |
-|---|---|---|
-| Wohneinheiten | `inventory` | `totalUnits` |
-| Davon modelliert | `inventory` | `modelledUnits` (hint shows `/ totalUnits`) |
-| Davon Portal-Inserate | `inventory` | `portalListingUnits` |
-| Offene Tickets | `operations` | `totalTickets` |
-| SLA überschritten | `operations` | `overdueTickets` |
-| Befunde | `evidence` | `totalFindings` |
-| Kritische Befunde | `evidence` | `findingsBySeverity.critical` |
-| Nicht belegte Angaben | `evidence` | `factsByConfidence.gap` (hint `/ totalFacts`) |
-| Geprüfte Quellen | `evidence` | `totalSources` |
-| Buchungen | `finance` | `totalEntries` |
-| Hotelzimmer | `hotel` | `roomCount` |
-| Bewertungsportale | `hotel` | `reviewSourceCount` |
+| Card                  | Snapshot panel | Field                                         |
+| --------------------- | -------------- | --------------------------------------------- |
+| Wohneinheiten         | `inventory`    | `totalUnits`                                  |
+| Davon modelliert      | `inventory`    | `modelledUnits` (hint shows `/ totalUnits`)   |
+| Davon Portal-Inserate | `inventory`    | `portalListingUnits`                          |
+| Offene Tickets        | `operations`   | `totalTickets`                                |
+| SLA überschritten     | `operations`   | `overdueTickets`                              |
+| Befunde               | `evidence`     | `totalFindings`                               |
+| Kritische Befunde     | `evidence`     | `findingsBySeverity.critical`                 |
+| Nicht belegte Angaben | `evidence`     | `factsByConfidence.gap` (hint `/ totalFacts`) |
+| Geprüfte Quellen      | `evidence`     | `totalSources`                                |
+| Buchungen             | `finance`      | `totalEntries`                                |
+| Hotelzimmer           | `hotel`        | `roomCount`                                   |
+| Bewertungsportale     | `hotel`        | `reviewSourceCount`                           |
 
 Which cards a role is offered is an **exhaustive `Record<Role, KpiId[]>`** in
 `dashboard/page.tsx`. Deliberately not the 1Çatı reference's if-chain: that
@@ -416,4 +416,3 @@ panel renders an em dash.
   It exists because the 656-row measurement and the four-state screenshots were
   required before any module that owns a real table exists. Delete it with the
   first real module table.
-

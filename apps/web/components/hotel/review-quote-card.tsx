@@ -102,18 +102,20 @@ export function ReviewQuoteCard({
         resolvedTone === "positive" && "border-l-confidence-confirmed",
         resolvedTone === "negative" && "border-l-confidence-conflicted",
         resolvedTone === "neutral" && "border-l-border",
-        className,
+        className
       )}
     >
       {eyebrow !== undefined ? (
-        <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
           {eyebrow}
         </p>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         {quote.rating === null ? (
-          <span className="text-sm text-muted-foreground">{labels.ratingUnknown}</span>
+          <span className="text-sm text-muted-foreground">
+            {labels.ratingUnknown}
+          </span>
         ) : (
           <span
             className="font-display text-lg text-foreground"
@@ -144,8 +146,8 @@ export function ReviewQuoteCard({
         id={bodyId}
         cite={quote.url}
         className={cn(
-          "grow whitespace-pre-line text-pretty text-sm leading-relaxed text-foreground/90",
-          clamped && "line-clamp-6",
+          "grow text-sm leading-relaxed text-pretty whitespace-pre-line text-foreground/90",
+          clamped && "line-clamp-6"
         )}
       >
         {quote.text}
@@ -161,7 +163,7 @@ export function ReviewQuoteCard({
             className={cn(
               "min-h-6 rounded-sm font-medium text-primary underline underline-offset-4",
               "transition-transform duration-150 ease-out active:scale-[0.97]",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             )}
           >
             {expanded ? labels.collapse : labels.expand}
@@ -175,7 +177,7 @@ export function ReviewQuoteCard({
           className={cn(
             "min-h-6 rounded-sm text-muted-foreground underline underline-offset-4",
             "transition-colors hover:text-foreground",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           )}
         >
           {labels.openReview}
@@ -186,7 +188,7 @@ export function ReviewQuoteCard({
           review needs to know we did not translate it — that is the point of
           the marker, and a marker behind a hover is invisible on touch.
         */}
-        <span className="ml-auto font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+        <span className="ml-auto font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
           {labels.notTranslated}
         </span>
       </figcaption>

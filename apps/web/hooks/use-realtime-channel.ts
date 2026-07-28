@@ -73,8 +73,7 @@ export function useRealtimeChannel(config: {
     .map((channel) => `${channel.table}:${channel.filter ?? "*"}`)
     .join("|")
 
-  const active =
-    config.enabled && isRealtimeConfigured() && tableKey.length > 0
+  const active = config.enabled && isRealtimeConfigured() && tableKey.length > 0
 
   useEffect(() => {
     if (!active) return
@@ -180,7 +179,9 @@ export function useRealtimeChannel(config: {
   }, [active, config.name, tableKey])
 
   // Derived, never assigned in the effect body. See the note on `socketStatus`.
-  const status: RealtimeStatus = !active ? "idle" : (socketStatus ?? "subscribing")
+  const status: RealtimeStatus = !active
+    ? "idle"
+    : (socketStatus ?? "subscribing")
 
   return { status, attempts }
 }

@@ -43,7 +43,12 @@ export interface QueryParam {
   name: string
   description: string
   schema:
-    | { type: "string"; enum?: readonly string[]; maxLength?: number; minLength?: number }
+    | {
+        type: "string"
+        enum?: readonly string[]
+        maxLength?: number
+        minLength?: number
+      }
     | { type: "integer"; minimum?: number; maximum?: number }
     | { type: "boolean" }
   required?: boolean
@@ -104,7 +109,8 @@ export interface RouteEntry {
 const PAGE_QUERY: readonly QueryParam[] = [
   {
     name: "limit",
-    description: "Page size. Clamped to [1, 500]; anything larger is clamped, not rejected.",
+    description:
+      "Page size. Clamped to [1, 500]; anything larger is clamped, not rejected.",
     schema: { type: "integer", minimum: 1, maximum: 500 },
   },
   {
@@ -184,7 +190,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         query: [
           {
             name: "view",
-            description: "`sources` returns the source list; `health` returns fetch health per source.",
+            description:
+              "`sources` returns the source list; `health` returns fetch health per source.",
             schema: { type: "string", enum: ["sources", "health"] },
           },
         ],
@@ -209,12 +216,18 @@ export const apiRoutes: readonly RouteEntry[] = [
           {
             name: "severity",
             description: "Filter to one severity.",
-            schema: { type: "string", enum: ["low", "medium", "high", "critical"] },
+            schema: {
+              type: "string",
+              enum: ["low", "medium", "high", "critical"],
+            },
           },
           {
             name: "status",
             description: "Filter to one lifecycle status.",
-            schema: { type: "string", enum: ["open", "acknowledged", "resolved", "dismissed"] },
+            schema: {
+              type: "string",
+              enum: ["open", "acknowledged", "resolved", "dismissed"],
+            },
           },
           ...PAGE_QUERY,
         ],
@@ -229,7 +242,10 @@ export const apiRoutes: readonly RouteEntry[] = [
         tag: "Evidence",
         permission: "evidence:manage",
         rateLimit: WRITE_LIMIT,
-        audit: { action: "evidence_finding.status_changed", entity: "evidence_findings" },
+        audit: {
+          action: "evidence_finding.status_changed",
+          entity: "evidence_findings",
+        },
         requiresPersistence: true,
         requestSchema: "updateFindingSchema",
         writeGap: gap("Changing a finding's status", W2A),
@@ -277,7 +293,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "dataQuality",
-            description: "`real` keeps only harvested listings; `modelled` keeps only generated records.",
+            description:
+              "`real` keeps only harvested listings; `modelled` keeps only generated records.",
             schema: { type: "string", enum: ["real", "modelled"] },
           },
           {
@@ -345,7 +362,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         query: [
           {
             name: "blockId",
-            description: "Return this block's floors rather than the block list.",
+            description:
+              "Return this block's floors rather than the block list.",
             schema: { type: "string", maxLength: 64 },
           },
           ...PAGE_QUERY,
@@ -449,7 +467,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "normaliseTo",
-            description: "With `view=summary`, the scale to express scores on. 5 or 10.",
+            description:
+              "With `view=summary`, the scale to express scores on. 5 or 10.",
             schema: { type: "integer", minimum: 5, maximum: 10 },
           },
           ...PAGE_QUERY,
@@ -468,7 +487,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         method: "GET",
         operationId: "getLeads",
         summary: "List sales leads.",
-        description: "Returns role-scoped leads. Staff see the leads assigned to them.",
+        description:
+          "Returns role-scoped leads. Staff see the leads assigned to them.",
         tag: "Sales",
         permission: "leads:view",
         rateLimit: READ_LIMIT,
@@ -552,7 +572,10 @@ export const apiRoutes: readonly RouteEntry[] = [
         tag: "Sales",
         permission: "buyer_pipeline:update",
         rateLimit: WRITE_LIMIT,
-        audit: { action: "pipeline_entry.stage_changed", entity: "buyer_pipeline_entries" },
+        audit: {
+          action: "pipeline_entry.stage_changed",
+          entity: "buyer_pipeline_entries",
+        },
         requiresPersistence: true,
         requestSchema: "updatePipelineSchema",
         writeGap: gap("Moving a pipeline entry", W2A),
@@ -673,7 +696,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         query: [
           {
             name: "lowBalanceOnly",
-            description: "Keep only wallets below their configured low-balance threshold.",
+            description:
+              "Keep only wallets below their configured low-balance threshold.",
             schema: { type: "boolean" },
           },
           {
@@ -708,7 +732,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "overdueOnly",
-            description: "Keep only invoices with a remaining balance and a past due date.",
+            description:
+              "Keep only invoices with a remaining balance and a past due date.",
             schema: { type: "boolean" },
           },
           {
@@ -761,7 +786,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "openOnly",
-            description: "Keep only tickets that are not resolved, closed or cancelled.",
+            description:
+              "Keep only tickets that are not resolved, closed or cancelled.",
             schema: { type: "boolean" },
           },
           {
@@ -771,7 +797,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "slaBreachedOnly",
-            description: "Keep only non-terminal tickets whose SLA due time has passed.",
+            description:
+              "Keep only non-terminal tickets whose SLA due time has passed.",
             schema: { type: "boolean" },
           },
           {
@@ -851,7 +878,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         method: "POST",
         operationId: "createActivity",
         summary: "Schedule an activity.",
-        description: "Not implemented: no repository write path exists for activities.",
+        description:
+          "Not implemented: no repository write path exists for activities.",
         tag: "Operations",
         permission: "activities:create",
         rateLimit: WRITE_LIMIT,
@@ -890,7 +918,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "isPublicIntake",
-            description: "Keep only reports from the public intake endpoint, or only internal ones.",
+            description:
+              "Keep only reports from the public intake endpoint, or only internal ones.",
             schema: { type: "boolean" },
           },
           ...PAGE_QUERY,
@@ -901,7 +930,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         method: "POST",
         operationId: "createMediaReport",
         summary: "File a media report.",
-        description: "Not implemented: no repository write path exists for media reports.",
+        description:
+          "Not implemented: no repository write path exists for media reports.",
         tag: "Operations",
         permission: "reports:create",
         rateLimit: WRITE_LIMIT,
@@ -932,7 +962,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         query: [
           {
             name: "view",
-            description: "`list` (default) or `signed-url`, which requires `id`.",
+            description:
+              "`list` (default) or `signed-url`, which requires `id`.",
             schema: { type: "string", enum: ["list", "signed-url"] },
           },
           {
@@ -998,7 +1029,8 @@ export const apiRoutes: readonly RouteEntry[] = [
           },
           {
             name: "humanDecisionRequired",
-            description: "With `view=checks`, narrow to the queue a human still has to clear.",
+            description:
+              "With `view=checks`, narrow to the queue a human still has to clear.",
             schema: { type: "boolean" },
           },
           ...PAGE_QUERY,
@@ -1026,7 +1058,10 @@ export const apiRoutes: readonly RouteEntry[] = [
           {
             name: "view",
             description: "`threads` (default), `messages`, or `notifications`.",
-            schema: { type: "string", enum: ["threads", "messages", "notifications"] },
+            schema: {
+              type: "string",
+              enum: ["threads", "messages", "notifications"],
+            },
           },
           {
             name: "threadId",
@@ -1051,7 +1086,8 @@ export const apiRoutes: readonly RouteEntry[] = [
         method: "POST",
         operationId: "createMessage",
         summary: "Post a message to a thread.",
-        description: "Not implemented: no repository write path exists for communications.",
+        description:
+          "Not implemented: no repository write path exists for communications.",
         tag: "Communications",
         permission: "communications:create",
         rateLimit: WRITE_LIMIT,
@@ -1082,12 +1118,17 @@ export const apiRoutes: readonly RouteEntry[] = [
         query: [
           {
             name: "view",
-            description: "`profiles` (default), `guardianships`, `audit`, or `access`.",
-            schema: { type: "string", enum: ["profiles", "guardianships", "audit", "access"] },
+            description:
+              "`profiles` (default), `guardianships`, `audit`, or `access`.",
+            schema: {
+              type: "string",
+              enum: ["profiles", "guardianships", "audit", "access"],
+            },
           },
           {
             name: "subjectRole",
-            description: "Filter profiles by the role stored on the row, not the caller's role.",
+            description:
+              "Filter profiles by the role stored on the row, not the caller's role.",
             schema: { type: "string", maxLength: 24 },
           },
           {
@@ -1325,7 +1366,10 @@ export const apiRoutes: readonly RouteEntry[] = [
         permission: null,
         publicJustification:
           "It is attached to the unauthenticated assistant above and accepts only a rating against an answer id — no free text, no identifiers.",
-        external: { owner: "W2-C (AI layer)", note: "Rate-limited by lib/ai-rate-limit.ts." },
+        external: {
+          owner: "W2-C (AI layer)",
+          note: "Rate-limited by lib/ai-rate-limit.ts.",
+        },
         responses: [200],
       },
     ],
@@ -1344,7 +1388,10 @@ export const apiRoutes: readonly RouteEntry[] = [
         permission: null,
         publicJustification:
           "Same surface and same guardrails as the non-streaming public assistant; only the response encoding differs.",
-        external: { owner: "W2-C (AI layer)", note: "Rate-limited by lib/ai-rate-limit.ts." },
+        external: {
+          owner: "W2-C (AI layer)",
+          note: "Rate-limited by lib/ai-rate-limit.ts.",
+        },
         responses: [200],
       },
     ],
@@ -1395,20 +1442,50 @@ export function isMutatingMethod(method: HttpMethod): boolean {
 
 /** Every tag used, in the order the generator should emit them. */
 export const apiTags: readonly { name: string; description: string }[] = [
-  { name: "Dashboard", description: "Role-scoped overview and cross-module search." },
-  { name: "Evidence", description: "Sources, findings and the dataset's own coverage report." },
+  {
+    name: "Dashboard",
+    description: "Role-scoped overview and cross-module search.",
+  },
+  {
+    name: "Evidence",
+    description: "Sources, findings and the dataset's own coverage report.",
+  },
   { name: "Inventory", description: "Site, blocks, floors and the 656 units." },
-  { name: "Listings", description: "Captured external portal listings and their disagreements." },
-  { name: "Hotel", description: "The hotel, its rooms and guest-review evidence." },
+  {
+    name: "Listings",
+    description: "Captured external portal listings and their disagreements.",
+  },
+  {
+    name: "Hotel",
+    description: "The hotel, its rooms and guest-review evidence.",
+  },
   { name: "Sales", description: "Leads and the buyer pipeline." },
-  { name: "Finance", description: "Ledger, wallets, vendor invoices and payments." },
-  { name: "Operations", description: "Service tickets, activities and media reports." },
-  { name: "Documents", description: "Document metadata and short-lived signed URLs." },
-  { name: "Communications", description: "Threads, messages and notifications." },
-  { name: "Governance", description: "Profiles, guardianships, audit and compliance." },
+  {
+    name: "Finance",
+    description: "Ledger, wallets, vendor invoices and payments.",
+  },
+  {
+    name: "Operations",
+    description: "Service tickets, activities and media reports.",
+  },
+  {
+    name: "Documents",
+    description: "Document metadata and short-lived signed URLs.",
+  },
+  {
+    name: "Communications",
+    description: "Threads, messages and notifications.",
+  },
+  {
+    name: "Governance",
+    description: "Profiles, guardianships, audit and compliance.",
+  },
   { name: "Commands", description: "The audited write endpoint." },
   { name: "Public", description: "Unauthenticated intake." },
   { name: "Calendar", description: "Token-scoped iCalendar feeds." },
   { name: "AI", description: "Retrieval-grounded assistants. Owned by W2-C." },
-  { name: "Meta", description: "The API's description of itself, and QA role switching." },
+  {
+    name: "Meta",
+    description: "The API's description of itself, and QA role switching.",
+  },
 ]

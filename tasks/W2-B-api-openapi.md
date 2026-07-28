@@ -41,12 +41,12 @@ Routes must not hand-roll the security sequence. One helper, applied uniformly:
 
 ```ts
 export function createHandler<TBody, TResult>(config: {
-  method: "GET" | "POST" | "PATCH" | "DELETE"
-  permission: Permission | null        // null = public, and you must justify it in a comment
-  schema?: ZodSchema<TBody>
-  rateLimit?: { windowMs: number; max: number }
-  handler: (ctx: HandlerContext<TBody>) => Promise<TResult>
-}): (req: Request) => Promise<Response>
+  method: "GET" | "POST" | "PATCH" | "DELETE";
+  permission: Permission | null; // null = public, and you must justify it in a comment
+  schema?: ZodSchema<TBody>;
+  rateLimit?: { windowMs: number; max: number };
+  handler: (ctx: HandlerContext<TBody>) => Promise<TResult>;
+}): (req: Request) => Promise<Response>;
 ```
 
 Executes, in this order — the order is the security property:
@@ -63,36 +63,36 @@ Executes, in this order — the order is the security property:
 
 ### 2. Route inventory
 
-| Path | Methods | Permission |
-|---|---|---|
-| `/api/site-management/dashboard` | GET | `dashboard:view` |
-| `/api/site-management/evidence` | GET | `evidence:view` |
-| `/api/site-management/evidence/findings` | GET, PATCH | `evidence:view` / `evidence:manage` |
-| `/api/site-management/evidence/coverage` | GET | `evidence:view` |
-| `/api/site-management/inventory/units` | GET | `units:view` |
-| `/api/site-management/inventory/units/[id]` | GET, PATCH | `units:view` / `units:update` |
-| `/api/site-management/inventory/blocks` | GET | `units:view` |
-| `/api/site-management/portal-listings` | GET | `listings:view` |
-| `/api/site-management/hotel` | GET | `hotel:view` |
-| `/api/site-management/reviews` | GET | `reviews:view` |
-| `/api/site-management/leads` | GET, POST | `leads:view` / `leads:create` |
-| `/api/site-management/buyer-pipeline` | GET, PATCH | `buyer_pipeline:*` |
-| `/api/site-management/finance` | GET | `finance:view` |
-| `/api/site-management/finance/payments` | GET, POST | `finance:view` / `finance:create` |
-| `/api/site-management/wallet` | GET | `wallet:view` |
-| `/api/site-management/vendor-invoices` | GET, POST | `vendor_invoices:*` |
-| `/api/site-management/tickets` | GET, POST, PATCH | `tickets:*` |
-| `/api/site-management/activities` | GET, POST | `activities:*` |
-| `/api/site-management/documents` | GET, POST | `documents:*` |
-| `/api/site-management/compliance` | GET | `compliance:view` |
-| `/api/site-management/communications` | GET, POST | `communications:*` |
-| `/api/site-management/reports` | GET, POST | `reports:*` |
-| `/api/site-management/users` | GET, POST, PATCH | `users:*` |
-| `/api/site-management/search` | GET | `dashboard:view` |
-| `/api/site-management/actions` | POST | varies — audit log write |
-| `/api/site-management/public/report` | POST | **null** — rate-limited, idempotency key required |
-| `/api/calendar/ics/[token]` | GET | token-scoped, no session |
-| `/api/openapi` | GET | null — serves the spec |
+| Path                                        | Methods          | Permission                                        |
+| ------------------------------------------- | ---------------- | ------------------------------------------------- |
+| `/api/site-management/dashboard`            | GET              | `dashboard:view`                                  |
+| `/api/site-management/evidence`             | GET              | `evidence:view`                                   |
+| `/api/site-management/evidence/findings`    | GET, PATCH       | `evidence:view` / `evidence:manage`               |
+| `/api/site-management/evidence/coverage`    | GET              | `evidence:view`                                   |
+| `/api/site-management/inventory/units`      | GET              | `units:view`                                      |
+| `/api/site-management/inventory/units/[id]` | GET, PATCH       | `units:view` / `units:update`                     |
+| `/api/site-management/inventory/blocks`     | GET              | `units:view`                                      |
+| `/api/site-management/portal-listings`      | GET              | `listings:view`                                   |
+| `/api/site-management/hotel`                | GET              | `hotel:view`                                      |
+| `/api/site-management/reviews`              | GET              | `reviews:view`                                    |
+| `/api/site-management/leads`                | GET, POST        | `leads:view` / `leads:create`                     |
+| `/api/site-management/buyer-pipeline`       | GET, PATCH       | `buyer_pipeline:*`                                |
+| `/api/site-management/finance`              | GET              | `finance:view`                                    |
+| `/api/site-management/finance/payments`     | GET, POST        | `finance:view` / `finance:create`                 |
+| `/api/site-management/wallet`               | GET              | `wallet:view`                                     |
+| `/api/site-management/vendor-invoices`      | GET, POST        | `vendor_invoices:*`                               |
+| `/api/site-management/tickets`              | GET, POST, PATCH | `tickets:*`                                       |
+| `/api/site-management/activities`           | GET, POST        | `activities:*`                                    |
+| `/api/site-management/documents`            | GET, POST        | `documents:*`                                     |
+| `/api/site-management/compliance`           | GET              | `compliance:view`                                 |
+| `/api/site-management/communications`       | GET, POST        | `communications:*`                                |
+| `/api/site-management/reports`              | GET, POST        | `reports:*`                                       |
+| `/api/site-management/users`                | GET, POST, PATCH | `users:*`                                         |
+| `/api/site-management/search`               | GET              | `dashboard:view`                                  |
+| `/api/site-management/actions`              | POST             | varies — audit log write                          |
+| `/api/site-management/public/report`        | POST             | **null** — rate-limited, idempotency key required |
+| `/api/calendar/ics/[token]`                 | GET              | token-scoped, no session                          |
+| `/api/openapi`                              | GET              | null — serves the spec                            |
 
 ### 3. `docs/api/openapi.yaml`
 
@@ -103,6 +103,7 @@ responses, which are the ones people actually need examples of.
 ### 4. `scripts/validate-openapi.mjs`
 
 Bidirectional, exits non-zero on any of:
+
 1. A route in the filesystem missing from the spec
 2. A path in the spec with no route file
 3. A method mismatch
@@ -119,9 +120,9 @@ Checks 6 and 7 are security gates wearing a contract-test costume. Keep them.
 
 - **Never 500 for a handled condition.** W4-C treats any reachable 500 as a High finding. Map
   everything: no persistence → 503; bad input → 422; forbidden → 403.
-- **503 must be honest.** When Supabase is unconfigured and the route *writes*, return 503 —
+- **503 must be honest.** When Supabase is unconfigured and the route _writes_, return 503 —
   do not pretend success against seed data. Reads may serve seed; writes may not.
-  The reference project is explicit: *"Seed- oder Prozessdaten sind kein Persistenznachweis."*
+  The reference project is explicit: _"Seed- oder Prozessdaten sind kein Persistenznachweis."_
 - **Idempotency** on every public mutation. Same key + same fingerprint → return the stored
   response byte-identically. Same key + different body → 409.
 - **Rate limiting** keyed on IP **and** a request fingerprint. IP alone is trivially defeated;

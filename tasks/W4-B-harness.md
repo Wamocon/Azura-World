@@ -12,9 +12,9 @@
 The automated checks that catch what e2e tests do not: layout breakage under long translations,
 performance regressions, evidence-integrity drift, and phase-level completeness.
 
-Ataberg's README is worth quoting on the value here — its layout harness *"found the header
+Ataberg's README is worth quoting on the value here — its layout harness _"found the header
 colliding with the hero in Russian, the filter panel shipping permanently open, and tap targets
-under 24px"* — **and** it is honest that the harness was fallible, exempting the header and
+under 24px"_ — **and** it is honest that the harness was fallible, exempting the header and
 ignoring `<select>`/`<svg>` so a screenshot caught what it missed. Build with the same
 scepticism: report what the harness cannot see.
 
@@ -40,6 +40,7 @@ HANDOFF/W4-B.md
 Widths: 320, 375, 414, 768, 1024, 1280, 1440, 1920.
 
 Detects:
+
 - Horizontal overflow — `scrollWidth > clientWidth` on `body` or any container
 - Element clipping — content wider than its box with `overflow: hidden`
 - Overlap between interactive elements (bounding-box intersection)
@@ -67,6 +68,7 @@ Include a cold-cache and a warm-cache pass; report both.
 ### 3. `evidence-drift.mjs`
 
 Re-harvests a sample of sources and diffs against the stored dataset. Reports:
+
 - A source that changed its stated figures since the last harvest
 - A source that became unreachable (or recovered)
 - A fact whose confidence would change on re-harvest
@@ -126,6 +128,7 @@ node scripts/evidence-drift.mjs --report-only
 Paste, for each: the summary, the exit code, and the **exemption list**.
 
 Required outcomes:
+
 - Layout: zero overflow/clipping/overlap violations at any width × locale × theme
 - Perf: every route within budget, cold and warm
 - a11y: zero serious/critical

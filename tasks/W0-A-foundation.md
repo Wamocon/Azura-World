@@ -80,10 +80,10 @@ Types, the `roles`/`resources`/`actions` const arrays, `roleLevel`, `locales`, `
 `CONTRACT_VERSION = 1`. Plus runtime guards other windows will need:
 
 ```ts
-export function isSourcedFact<T>(v: unknown): v is SourcedFact<T>
-export function assertFactInvariants<T>(f: SourcedFact<T>, path: string): void
-export function displayValue<T>(f: SourcedFact<T>): T | null
-export function tierWins(a: SourceRef, b: SourceRef): SourceRef
+export function isSourcedFact<T>(v: unknown): v is SourcedFact<T>;
+export function assertFactInvariants<T>(f: SourcedFact<T>, path: string): void;
+export function displayValue<T>(f: SourcedFact<T>): T | null;
+export function tierWins(a: SourceRef, b: SourceRef): SourceRef;
 ```
 
 `assertFactInvariants` enforces all six invariants in `CONTRACTS.md` §1 and throws with the

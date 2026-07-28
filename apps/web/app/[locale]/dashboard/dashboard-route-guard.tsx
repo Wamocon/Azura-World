@@ -51,7 +51,11 @@ export function DashboardRouteGuard({
 
   // `usePathname` from `@/app/navigation` is next-intl's, so it is already
   // locale-stripped — `/de/dashboard/units` arrives as `/dashboard/units`.
-  const decision = decideDashboardAccess(pathname, user.role, user.authenticated)
+  const decision = decideDashboardAccess(
+    pathname,
+    user.role,
+    user.authenticated
+  )
 
   if (mayViewDashboard && decision.allowed) {
     return <>{children}</>
@@ -70,7 +74,13 @@ export function DashboardRouteGuard({
     <section
       role="alert"
       data-testid="dashboard-403"
-      data-denial={mayViewDashboard ? decision.allowed === false ? decision.reason : "" : "forbidden"}
+      data-denial={
+        mayViewDashboard
+          ? decision.allowed === false
+            ? decision.reason
+            : ""
+          : "forbidden"
+      }
       className="mx-auto flex max-w-prose flex-col items-start gap-3 rounded-xl border border-confidence-conflicted/40 bg-surface-conflict p-5"
     >
       <ShieldAlert
@@ -89,7 +99,10 @@ export function DashboardRouteGuard({
       {fallback === null ? (
         <p className="text-sm text-muted-foreground">{copy.noAccessBody}</p>
       ) : (
-        <Button render={<Link href={fallback.href} locale={locale} />} size="sm">
+        <Button
+          render={<Link href={fallback.href} locale={locale} />}
+          size="sm"
+        >
           {copy.forbiddenAction}
         </Button>
       )}

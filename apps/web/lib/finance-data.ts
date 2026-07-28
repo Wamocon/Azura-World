@@ -145,10 +145,19 @@ export function seedUnitResidency(): UnitResidency[] {
  * profile and therefore to the guardian's units — a strict subset, never a
  * different horizon (CONTRACTS §3, additive-authority rule).
  */
-export function seedGuardianships(): Array<{ childProfileId: string; guardianProfileId: string }> {
+export function seedGuardianships(): Array<{
+  childProfileId: string
+  guardianProfileId: string
+}> {
   return [
-    { childProfileId: SEED_PROFILE_IDS.childOwner, guardianProfileId: SEED_PROFILE_IDS.owner },
-    { childProfileId: SEED_PROFILE_IDS.childTenant, guardianProfileId: SEED_PROFILE_IDS.tenant },
+    {
+      childProfileId: SEED_PROFILE_IDS.childOwner,
+      guardianProfileId: SEED_PROFILE_IDS.owner,
+    },
+    {
+      childProfileId: SEED_PROFILE_IDS.childTenant,
+      guardianProfileId: SEED_PROFILE_IDS.tenant,
+    },
   ]
 }
 
@@ -326,7 +335,10 @@ export interface PaymentTransaction {
 // quietly invents a currency when one is missing.
 // ---------------------------------------------------------------------------
 
-function money(amount: number | null, currency: CurrencyCode | null): Money | null {
+function money(
+  amount: number | null,
+  currency: CurrencyCode | null
+): Money | null {
   if (amount === null || currency === null) return null
   return { amount, currency }
 }
@@ -768,7 +780,9 @@ function withOutstanding(
   return {
     ...invoice,
     outstandingAmount:
-      totalAmount === null || paidAmount === null ? null : totalAmount - paidAmount,
+      totalAmount === null || paidAmount === null
+        ? null
+        : totalAmount - paidAmount,
   }
 }
 

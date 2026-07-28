@@ -32,4 +32,7 @@
  * which is a different and misleading claim.
  */
 
-export { searchOperationalRecords, type SearchHit } from "@/lib/evidence-repository"
+export {
+  searchOperationalRecords,
+  type SearchHit,
+} from "@/lib/evidence-repository"

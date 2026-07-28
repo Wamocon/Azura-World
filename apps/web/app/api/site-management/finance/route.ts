@@ -39,7 +39,9 @@ export const GET = createManifestHandler("getFinanceLedger", {
     const period = readId(query, "period")
     const currency = readEnum(query, "currency", currencies)
 
-    if (readEnum(query, "view", ["entries", "summary"] as const) === "summary") {
+    if (
+      readEnum(query, "view", ["entries", "summary"] as const) === "summary"
+    ) {
       const summary = await getFinanceSummary(access)
       return { data: summary.data, source: summary.source }
     }

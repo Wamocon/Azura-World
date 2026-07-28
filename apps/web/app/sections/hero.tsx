@@ -91,7 +91,7 @@ export async function HeroSection({
             <Sounding
               label={t("hero.figures.area")}
               note={sourceCount(project.plotAreaSqm.sources.length)}
-              className="border-b border-r border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
+              className="border-r border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
             >
               <ProvenanceValue
                 fact={project.plotAreaSqm}
@@ -105,7 +105,7 @@ export async function HeroSection({
             <Sounding
               label={t("hero.figures.blocks")}
               note={sourceCount(project.residenceBlockCount.sources.length)}
-              className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0 lg:border-r"
+              className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-r lg:border-b-0"
             >
               <ProvenanceValue
                 fact={project.residenceBlockCount}

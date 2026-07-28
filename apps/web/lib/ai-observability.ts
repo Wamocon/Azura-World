@@ -66,7 +66,11 @@ export interface AiTraceInput {
 /** Builds the trace from a concierge run. The only supported construction path. */
 export function traceFrom(
   surface: AiSurface,
-  identity: { profileId: string | null; companyId: string | null; role: Role | null },
+  identity: {
+    profileId: string | null
+    companyId: string | null
+    role: Role | null
+  },
   output: { response: AiResponse; trace: ConciergeTrace }
 ): AiTraceInput {
   return {

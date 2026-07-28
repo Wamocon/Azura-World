@@ -1,0 +1,22 @@
+# Repo-root prettier ignores.
+#
+# Generated files: the generator owns their formatting (SYSTEM-PROMPT §2.4).
+# Reformatting one turns the next regeneration into a spurious multi-thousand
+# line diff with the real change buried inside it.
+apps/web/lib/azura-world-data.ts
+apps/web/lib/media-manifest.ts
+apps/web/lib/lqip.json
+supabase/imports/
+docs/api/openapi.yaml
+
+# Harvested evidence and competitor media. Not ours, and not source.
+sources/
+
+# Generated QA artefacts. Also git-ignored; listed here so a local run that
+# still has them on disk does not try to rewrite them.
+quality/
+
+# Build output, dependencies, lockfiles.
+**/.next/
+**/node_modules/
+pnpm-lock.yaml

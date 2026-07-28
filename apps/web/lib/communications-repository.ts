@@ -385,20 +385,32 @@ function filterSeedThreads(
   const offset = clampOffset(opts.offset)
 
   const matched = threads.filter((thread) => {
-    if (scope.kind === "participant" && !matchesParticipantScope(thread, opts)) {
+    if (
+      scope.kind === "participant" &&
+      !matchesParticipantScope(thread, opts)
+    ) {
       return false
     }
     if (scope.kind === "company") {
-      if (opts.unitId !== undefined && thread.unitId !== opts.unitId) return false
-      if (opts.residentId !== undefined && thread.residentId !== opts.residentId) {
+      if (opts.unitId !== undefined && thread.unitId !== opts.unitId)
+        return false
+      if (
+        opts.residentId !== undefined &&
+        thread.residentId !== opts.residentId
+      ) {
         return false
       }
     }
     if (opts.siteId !== undefined && thread.siteId !== opts.siteId) return false
     if (statuses !== null && !statuses.includes(thread.status)) return false
-    if (opts.priority !== undefined && thread.priority !== opts.priority) return false
-    if (opts.channel !== undefined && thread.channel !== opts.channel) return false
-    if (opts.assignedTo !== undefined && thread.assignedTo !== opts.assignedTo) {
+    if (opts.priority !== undefined && thread.priority !== opts.priority)
+      return false
+    if (opts.channel !== undefined && thread.channel !== opts.channel)
+      return false
+    if (
+      opts.assignedTo !== undefined &&
+      thread.assignedTo !== opts.assignedTo
+    ) {
       return false
     }
     return true
@@ -446,7 +458,8 @@ async function queryThreads(
   if (opts.siteId !== undefined) query = query.eq("site_id", opts.siteId)
   if (opts.priority !== undefined) query = query.eq("priority", opts.priority)
   if (opts.channel !== undefined) query = query.eq("channel", opts.channel)
-  if (opts.assignedTo !== undefined) query = query.eq("assigned_to", opts.assignedTo)
+  if (opts.assignedTo !== undefined)
+    query = query.eq("assigned_to", opts.assignedTo)
 
   const statuses = requestedStatuses(opts.status)
   if (statuses !== null) query = query.in("status", [...statuses])
@@ -505,7 +518,11 @@ export async function getThread(
     async (client) => {
       if (scope.kind === "none") return null
       const row = unwrap<unknown>(
-        await client.from("threads").select(THREAD_COLUMNS).eq("id", id).maybeSingle(),
+        await client
+          .from("threads")
+          .select(THREAD_COLUMNS)
+          .eq("id", id)
+          .maybeSingle(),
         null
       )
       return row === null ? null : mapThread(row)
@@ -514,7 +531,10 @@ export async function getThread(
       if (scope.kind === "none") return null
       const thread = seedThreads().find((candidate) => candidate.id === id)
       if (thread === undefined) return null
-      if (scope.kind === "participant" && !matchesParticipantScope(thread, opts)) {
+      if (
+        scope.kind === "participant" &&
+        !matchesParticipantScope(thread, opts)
+      ) {
         return null
       }
       return thread
@@ -627,7 +647,8 @@ export async function getNotifications(
   opts: NotificationQueryOptions = {}
 ): Promise<RepositoryResult<NotificationRecord[]>> {
   const role = opts.role
-  const permitted = role === undefined || hasPermission(role, "communications:view")
+  const permitted =
+    role === undefined || hasPermission(role, "communications:view")
   const profileIds = notificationProfileIds(profileId, opts)
   const asOf = opts.asOf ?? nowIso()
   const includeExpired = opts.includeExpired === true
@@ -645,7 +666,8 @@ export async function getNotifications(
         .in("profile_id", profileIds)
 
       if (opts.unreadOnly === true) query = query.eq("is_read", false)
-      if (opts.severity !== undefined) query = query.eq("severity", opts.severity)
+      if (opts.severity !== undefined)
+        query = query.eq("severity", opts.severity)
       if (categories !== null) query = query.in("category", [...categories])
       if (!includeExpired) {
         // The timestamp is quoted and validated: `.` is a PostgREST operator
@@ -671,10 +693,16 @@ export async function getNotifications(
       const matched = seedNotifications().filter((notification) => {
         if (!profileIds.includes(notification.profileId)) return false
         if (opts.unreadOnly === true && notification.isRead) return false
-        if (opts.severity !== undefined && notification.severity !== opts.severity) {
+        if (
+          opts.severity !== undefined &&
+          notification.severity !== opts.severity
+        ) {
           return false
         }
-        if (categories !== null && !categories.includes(notification.category)) {
+        if (
+          categories !== null &&
+          !categories.includes(notification.category)
+        ) {
           return false
         }
         return notificationIsLive(notification, asOf, includeExpired)
@@ -699,7 +727,8 @@ export async function getUnreadNotificationCount(
   opts: NotificationQueryOptions = {}
 ): Promise<RepositoryResult<number>> {
   const role = opts.role
-  const permitted = role === undefined || hasPermission(role, "communications:view")
+  const permitted =
+    role === undefined || hasPermission(role, "communications:view")
   const profileIds = notificationProfileIds(profileId, opts)
   const asOf = opts.asOf ?? nowIso()
   const includeExpired = opts.includeExpired === true

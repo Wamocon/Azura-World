@@ -16,7 +16,8 @@ export const GET = createManifestHandler("getInventoryUnit", {
     // A unit outside the caller's scope comes back null, and so does one that
     // does not exist. Both answer 404, so the endpoint cannot be walked to
     // discover which unit ids are real.
-    if (result.data === null) throw new RepositoryError(notFound("That unit was not found."))
+    if (result.data === null)
+      throw new RepositoryError(notFound("That unit was not found."))
     return { data: result.data, source: result.source }
   },
 })

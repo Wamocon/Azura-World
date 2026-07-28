@@ -118,7 +118,8 @@ export async function loadConversationContext(params: {
       const row = data as { id?: unknown; running_summary?: unknown } | null
       if (row !== null && isUuid(row.id)) {
         conversationId = row.id
-        summary = typeof row.running_summary === "string" ? row.running_summary : ""
+        summary =
+          typeof row.running_summary === "string" ? row.running_summary : ""
       }
     }
 
@@ -136,7 +137,10 @@ export async function loadConversationContext(params: {
       .map((row) => {
         const record = row as { sender?: unknown; content?: unknown }
         return {
-          sender: record.sender === "assistant" ? ("assistant" as const) : ("user" as const),
+          sender:
+            record.sender === "assistant"
+              ? ("assistant" as const)
+              : ("user" as const),
           content: typeof record.content === "string" ? record.content : "",
         }
       })
@@ -261,7 +265,8 @@ async function maybeSummarize(
   const lines: string[] = []
   for (const row of older) {
     const record = row as { sender?: unknown; content?: unknown }
-    if (typeof record.content !== "string" || record.content.length === 0) continue
+    if (typeof record.content !== "string" || record.content.length === 0)
+      continue
     const who = record.sender === "assistant" ? "assistant" : "user"
     lines.push(`${who}: ${clip(record.content, SUMMARY_LINE_CHARS)}`)
   }

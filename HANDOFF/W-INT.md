@@ -1,4 +1,4 @@
-# HANDOFF — W-INT  Integration: merge, unblock, then hand off
+# HANDOFF — W-INT Integration: merge, unblock, then hand off
 
 STATUS: COMPLETE
 Completed: 2026-07-28
@@ -45,20 +45,20 @@ this file.
 All on `f373539`, the integration HEAD. **Every exit code was captured directly from the command,
 never through a pipe.**
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | `typecheck_EXIT=0` · `tsc --noEmit`, no output |
-| `pnpm --dir apps/web lint` | **PASS** | `lint_EXIT=0` · `eslint`, no output — 0 errors, 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** | `build_EXIT=0` · route table in §4 |
-| `node scripts/verify-evidence.mjs` | **PASS** | `evidence_EXIT=0` · 1354 facts, **25 portal_listing + 631 modelled = 656**, no violations |
-| `node scripts/check-i18n.mjs` | **PASS** | `check-i18n_EXIT=0` · 576 keys × 4 locales, identical key sets, 0 errors 0 warnings |
-| `pnpm smoke:contracts` | **PASS** | `smoke-contracts_EXIT=0` · 33 pass · 0 fail |
-| `node scripts/csp-probe.mjs` | **PASS** | `csp-probe_EXIT=0` · **21 pass · 0 fail** |
-| `scripts/rbac-probe.mts` | **PASS** | `EXIT=0` · 157 pass · 0 fail |
-| `scripts/ai-probe.mjs` | **PASS** | `EXIT=0` · 152 pass · 0 fail, 17/31 probes refused |
-| `scripts/realtime-probe.mts` | **PASS** | `EXIT=0` · 93 pass · 0 fail |
-| `python scripts/build-azura-dataset.py --strict` | **PASS** | exit 0, 0 vocabulary problems |
-| `npx supabase test db` | **NOT RUN** | see below |
+| Command                                          | Result      | Evidence                                                                                  |
+| ------------------------------------------------ | ----------- | ----------------------------------------------------------------------------------------- |
+| `pnpm --dir apps/web typecheck`                  | **PASS**    | `typecheck_EXIT=0` · `tsc --noEmit`, no output                                            |
+| `pnpm --dir apps/web lint`                       | **PASS**    | `lint_EXIT=0` · `eslint`, no output — 0 errors, 0 warnings                                |
+| `pnpm --dir apps/web build`                      | **PASS**    | `build_EXIT=0` · route table in §4                                                        |
+| `node scripts/verify-evidence.mjs`               | **PASS**    | `evidence_EXIT=0` · 1354 facts, **25 portal_listing + 631 modelled = 656**, no violations |
+| `node scripts/check-i18n.mjs`                    | **PASS**    | `check-i18n_EXIT=0` · 576 keys × 4 locales, identical key sets, 0 errors 0 warnings       |
+| `pnpm smoke:contracts`                           | **PASS**    | `smoke-contracts_EXIT=0` · 33 pass · 0 fail                                               |
+| `node scripts/csp-probe.mjs`                     | **PASS**    | `csp-probe_EXIT=0` · **21 pass · 0 fail**                                                 |
+| `scripts/rbac-probe.mts`                         | **PASS**    | `EXIT=0` · 157 pass · 0 fail                                                              |
+| `scripts/ai-probe.mjs`                           | **PASS**    | `EXIT=0` · 152 pass · 0 fail, 17/31 probes refused                                        |
+| `scripts/realtime-probe.mts`                     | **PASS**    | `EXIT=0` · 93 pass · 0 fail                                                               |
+| `python scripts/build-azura-dataset.py --strict` | **PASS**    | exit 0, 0 vocabulary problems                                                             |
+| `npx supabase test db`                           | **NOT RUN** | see below                                                                                 |
 
 **`supabase test db` — NOT RUN.** The Docker daemon is still unavailable on this machine:
 `docker info` → **exit 1**, `failed to connect to the docker API at
@@ -104,12 +104,12 @@ used once, inside the isolated worktree, on `scripts/check-i18n.mjs`.
 
 ### The conflicts were exactly the two predicted
 
-| # | Merge | Path | Resolution | Verified |
-|---|---|---|---|---|
-| 1 | w1b | `HANDOFF/NIGHT-LOG.md` | union via `git merge-file --union` | 0 lines missing from either side |
-| 2 | w1c | `HANDOFF/NIGHT-LOG.md` | union | 0 lines missing from either side |
-| 3 | w1d | `HANDOFF/NIGHT-LOG.md` | union | 0 lines missing from either side |
-| 4 | w1d | `scripts/check-i18n.mjs` | take W3's (`--ours`, already in tree) | 576 lines, byte-identical to `w1c-w0d-i18n-media`'s |
+| #   | Merge | Path                     | Resolution                            | Verified                                            |
+| --- | ----- | ------------------------ | ------------------------------------- | --------------------------------------------------- |
+| 1   | w1b   | `HANDOFF/NIGHT-LOG.md`   | union via `git merge-file --union`    | 0 lines missing from either side                    |
+| 2   | w1c   | `HANDOFF/NIGHT-LOG.md`   | union                                 | 0 lines missing from either side                    |
+| 3   | w1d   | `HANDOFF/NIGHT-LOG.md`   | union                                 | 0 lines missing from either side                    |
+| 4   | w1d   | `scripts/check-i18n.mjs` | take W3's (`--ours`, already in tree) | 576 lines, byte-identical to `w1c-w0d-i18n-media`'s |
 
 **No code, migration, message, component or config file conflicted.** 44 commits across four
 parallel windows and the only collisions were one shared log and one duplicated file.
@@ -122,12 +122,12 @@ assumed.
 
 ### Nothing was lost
 
-| Branch | tip is an ancestor of HEAD | files deleted vs branch |
-|---|---|---|
-| `w1a-w2a-data` | yes | 0 |
-| `w1b-w2c-auth-ai` | yes | 0 |
-| `w1c-w0d-i18n-media` | yes | 0 |
-| `w1d-w3i-design` | yes | 0 |
+| Branch               | tip is an ancestor of HEAD | files deleted vs branch |
+| -------------------- | -------------------------- | ----------------------- |
+| `w1a-w2a-data`       | yes                        | 0                       |
+| `w1b-w2c-auth-ai`    | yes                        | 0                       |
+| `w1c-w0d-i18n-media` | yes                        | 0                       |
+| `w1d-w3i-design`     | yes                        | 0                       |
 
 The S-003 contamination needed no action: `4d8d8ec` is merged along with everything else and its
 content is duplicated by `f9bc385`, which is harmless once both branches are in. No rebase, no
@@ -149,7 +149,7 @@ host allowlist. `proxy.ts` cannot bridge this: it runs before the response body 
 way to transform it.
 
 - **(a) static-safe CSP** — rejected. To serve a prerendered document you must drop the nonce
-  *and* allow `'unsafe-inline'`, because browsers ignore `'unsafe-inline'` whenever a nonce is
+  _and_ allow `'unsafe-inline'`, because browsers ignore `'unsafe-inline'` whenever a nonce is
   present and Next's inline flight-data scripts carry per-page content so they cannot be hashed.
   CONVENTIONS §4 forbids `unsafe-inline` for scripts, and it would be weakest exactly on the
   public marketing pages.
@@ -158,22 +158,22 @@ way to transform it.
   test.
 
 **Where it is enforced.** Not by asking every window to remember `export const dynamic`, which
-fails *open* — Next's default is static. `app/layout.tsx` reads `headers()`, a Dynamic API, so
+fails _open_ — Next's default is static. `app/layout.tsx` reads `headers()`, a Dynamic API, so
 every route beneath the root layout is dynamic by default and a wave-3 window that writes a plain
 `page.tsx` still ships a working page. `scripts/csp-probe.mjs` is the proof.
 
 ### Measured, `next build --webpack` + `next start`, Chromium
 
-| Route | | before | after |
-|---|---|---|---|
-| `/de/there-is-no-such-page` (prerendered `_not-found`) | script tags nonced | **0 / 15** | **15 / 15** |
-| | JS transferred | **0 B** | **172,812 B across 6 files** |
-| | React hydrated | **false** | **true** |
-| | CSP violations | **30** | **0** |
-| `/de/kitchen-sink` (already `force-dynamic`) | script tags nonced | 40 / 41 | **42 / 42** |
-| | JS transferred | 305,172 B / 10 files | 305,172 B / 10 files |
-| | React hydrated | true | true |
-| | CSP violations | **2** | **0** |
+| Route                                                  |                    | before               | after                        |
+| ------------------------------------------------------ | ------------------ | -------------------- | ---------------------------- |
+| `/de/there-is-no-such-page` (prerendered `_not-found`) | script tags nonced | **0 / 15**           | **15 / 15**                  |
+|                                                        | JS transferred     | **0 B**              | **172,812 B across 6 files** |
+|                                                        | React hydrated     | **false**            | **true**                     |
+|                                                        | CSP violations     | **30**               | **0**                        |
+| `/de/kitchen-sink` (already `force-dynamic`)           | script tags nonced | 40 / 41              | **42 / 42**                  |
+|                                                        | JS transferred     | 305,172 B / 10 files | 305,172 B / 10 files         |
+|                                                        | React hydrated     | true                 | true                         |
+|                                                        | CSP violations     | **2**                | **0**                        |
 
 Route table, before → after: `/_not-found` moved from `○ (Static)` to `ƒ (Dynamic)`.
 
@@ -255,7 +255,7 @@ And the three the merge itself surfaced:
 2. **The pre-commit secret hook and the CI secret scan use different patterns.** Merging
    `w1b-w2c-auth-ai` was blocked by `.githooks/pre-commit` on
    `scripts/rbac-probe.mts:396` — a `SUPABASE_DB_URL` fixture whose user, password and host were
-   literally `user`, `pw` and `host`, asserting that *any* data-plane variable makes the
+   literally `user`, `pw` and `host`, asserting that _any_ data-plane variable makes the
    access-profile guard throw in production. It is not a credential. It never fired on any branch because the windows committed through a private
    `GIT_INDEX_FILE`, which bypasses hooks, and **CI's scanner does not look for postgres URLs at
    all**. The merge commit was made `--no-verify` so it stayed a faithful merge, and `66171c8`
@@ -298,16 +298,16 @@ it — and which forces a real declaration the day one does.
 
 ## 7. Decisions I made
 
-| Decision | Why |
-|---|---|
-| Merge in a separate `git worktree`, then move the shared tree with `symbolic-ref` + mixed reset | The only approach that could not lose an untracked file. `git checkout`/`clean` were never run in the shared tree |
-| One integration branch and one PR, not four PRs | The four branches only make sense together — RBAC on one, repositories on another. Four PRs would each be individually unreviewable and only the last would be green |
-| S-009 option (b), enforced in the root layout rather than per route | Per-route `force-dynamic` fails *open*: Next's default is static, so forgetting it ships a dead page that passes every check. The root layout read makes the default correct |
-| Raise the 3D budget to 260KB gz rather than drop WebGL | The overage is three.js + R3F itself; drei was already tree-shaken (10 bytes). Dropping WebGL is a product decision, not an integration one, and it stays available |
-| Measure the 3D chunk myself | SYSTEM-PROMPT §3. I got **227.4KB gz** across 3 chunks by gzipping the built files; W1-D got **236.4KB** as real network transfer across 5. Both are far over 150KB, and the budget is set against the higher one |
-| Commit the merge of `w1b` with `--no-verify`, then fix the placeholder separately | A merge commit must not alter content, or it stops being a verifiable merge. §5.2 |
-| Track `MORNING-BRIEF.md`, `SUPERVISOR-NOTES.md`, `LANDING-CRAFT.md`, `tasks/W-INT-integration.md` | Every wave-3 window is told to read them and they were untracked. A fresh clone had none of them |
-| Switch the `gh` CLI's active account | It was on `Maanik23`, which has read-only access, so `gh pr close` failed. Switched to `Maanik-WMC` (admin). **This is persistent local CLI state — switch back with `gh auth switch --user Maanik23` if that was deliberate** |
+| Decision                                                                                          | Why                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Merge in a separate `git worktree`, then move the shared tree with `symbolic-ref` + mixed reset   | The only approach that could not lose an untracked file. `git checkout`/`clean` were never run in the shared tree                                                                                                              |
+| One integration branch and one PR, not four PRs                                                   | The four branches only make sense together — RBAC on one, repositories on another. Four PRs would each be individually unreviewable and only the last would be green                                                           |
+| S-009 option (b), enforced in the root layout rather than per route                               | Per-route `force-dynamic` fails _open_: Next's default is static, so forgetting it ships a dead page that passes every check. The root layout read makes the default correct                                                   |
+| Raise the 3D budget to 260KB gz rather than drop WebGL                                            | The overage is three.js + R3F itself; drei was already tree-shaken (10 bytes). Dropping WebGL is a product decision, not an integration one, and it stays available                                                            |
+| Measure the 3D chunk myself                                                                       | SYSTEM-PROMPT §3. I got **227.4KB gz** across 3 chunks by gzipping the built files; W1-D got **236.4KB** as real network transfer across 5. Both are far over 150KB, and the budget is set against the higher one              |
+| Commit the merge of `w1b` with `--no-verify`, then fix the placeholder separately                 | A merge commit must not alter content, or it stops being a verifiable merge. §5.2                                                                                                                                              |
+| Track `MORNING-BRIEF.md`, `SUPERVISOR-NOTES.md`, `LANDING-CRAFT.md`, `tasks/W-INT-integration.md` | Every wave-3 window is told to read them and they were untracked. A fresh clone had none of them                                                                                                                               |
+| Switch the `gh` CLI's active account                                                              | It was on `Maanik23`, which has read-only access, so `gh pr close` failed. Switched to `Maanik-WMC` (admin). **This is persistent local CLI state — switch back with `gh auth switch --user Maanik23` if that was deliberate** |
 
 ---
 
@@ -406,7 +406,7 @@ closed:
   Playwright directly. The merge did not change any file either suite covers.
 - `[GAP]` **The `qa:csp` gate has not run in CI.** It runs locally (21/0) and is not yet wired
   into `ci.yml` — that file's header reserves the full quality gate for W4-D. Until then, S-009
-  cannot come back silently *on a developer machine*, but nothing stops it on a PR.
+  cannot come back silently _on a developer machine_, but nothing stops it on a PR.
 
 ---
 
@@ -417,10 +417,10 @@ closed:
 
 CI on the head commit `3a2e29b`, all three jobs:
 
-| Job | Result | |
-|---|---|---|
-| `Secret scan` | **pass** | 7s — required check |
-| `Typecheck · Lint · Build` | **pass** | 1m28s — required check |
+| Job                             | Result   |                            |
+| ------------------------------- | -------- | -------------------------- |
+| `Secret scan`                   | **pass** | 7s — required check        |
+| `Typecheck · Lint · Build`      | **pass** | 1m28s — required check     |
 | `Contract & evidence integrity` | **pass** | 20s — not a required check |
 
 The first CI run on `f1a20af` failed `Contract & evidence integrity`. That is §5.0, it was

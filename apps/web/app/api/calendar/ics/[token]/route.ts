@@ -41,7 +41,9 @@ function tokenMatches(supplied: string, expected: string): boolean {
  * be rotated by changing the secret, and that reveals nothing about it.
  */
 function expectedFeedToken(secret: string): string {
-  return createHmac("sha256", secret).update("calendar-feed:activities").digest("hex")
+  return createHmac("sha256", secret)
+    .update("calendar-feed:activities")
+    .digest("hex")
 }
 
 /** Escapes the characters RFC 5545 §3.3.11 gives meaning to. */
@@ -109,6 +111,8 @@ export const GET = createManifestHandler("getCalendarFeed", {
   serialize: (lines) => ({
     body: `${lines.join("\r\n")}\r\n`,
     contentType: "text/calendar; charset=utf-8",
-    headers: { "Content-Disposition": 'attachment; filename="azura-activities.ics"' },
+    headers: {
+      "Content-Disposition": 'attachment; filename="azura-activities.ics"',
+    },
   }),
 })

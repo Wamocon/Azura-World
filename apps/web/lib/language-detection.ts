@@ -33,7 +33,8 @@ const greetingOnlyPattern =
  * text that appears in every question regardless of language, and leaving it in
  * pushes every short message towards `en`.
  */
-const brandTokenPattern = /azura(?:\s*world)?|cebeci(?:\s*group)?|wyndham|türkler|turkler/giu
+const brandTokenPattern =
+  /azura(?:\s*world)?|cebeci(?:\s*group)?|wyndham|türkler|turkler/giu
 
 function stripBrandTokens(message: string): string {
   return message.replace(brandTokenPattern, " ")
@@ -57,14 +58,20 @@ export function resolveChatUiLocale(
  * remaining three are scored on diacritics plus function words, and a tie
  * returns `null` rather than picking the first alphabetically.
  */
-export function detectExplicitChatLanguage(message: string): ChatLanguage | null {
+export function detectExplicitChatLanguage(
+  message: string
+): ChatLanguage | null {
   const text = stripBrandTokens(message).trim()
   if (text.length === 0 || greetingOnlyPattern.test(text)) return null
 
   // Cyrillic is unambiguous among de/en/tr/ru.
   if (/[\u0400-\u04ff]/u.test(text)) return "ru"
 
-  const scores: Record<Exclude<ChatLanguage, "ru">, number> = { de: 0, en: 0, tr: 0 }
+  const scores: Record<Exclude<ChatLanguage, "ru">, number> = {
+    de: 0,
+    en: 0,
+    tr: 0,
+  }
 
   // Diacritics are strong evidence but not decisive: a German keyboard produces
   // "ö" and "ü" too, which is why Turkish's weight comes mostly from ı/ğ/ş.
@@ -118,5 +125,7 @@ export function resolveChatLanguageFromMessage(
   message: string,
   fallbackLocale: string | null | undefined
 ): ChatLanguage {
-  return detectExplicitChatLanguage(message) ?? resolveChatUiLocale(fallbackLocale)
+  return (
+    detectExplicitChatLanguage(message) ?? resolveChatUiLocale(fallbackLocale)
+  )
 }

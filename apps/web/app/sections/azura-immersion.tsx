@@ -108,9 +108,9 @@ export function AzuraImmersionSection({
 
   return (
     <AuroraBackground className="w-full py-16">
-      <div className="container mx-auto flex min-w-0 max-w-6xl flex-col gap-14">
-        <header className="flex min-w-0 max-w-3xl flex-col gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+      <div className="container mx-auto flex max-w-6xl min-w-0 flex-col gap-14">
+        <header className="flex max-w-3xl min-w-0 flex-col gap-3">
+          <p className="text-xs font-semibold tracking-[0.14em] text-primary uppercase">
             {labels.eyebrow}
           </p>
           <KineticHeadline

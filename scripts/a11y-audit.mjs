@@ -35,10 +35,10 @@ import {
   startServer,
   urlFor,
   writeJson,
-} from "./qa-lib.mjs"
+} from "./qa-lib.mjs";
 
-const args = parseArgs(process.argv.slice(2))
-const PORT = Number(args.values.get("port") ?? 3290)
+const args = parseArgs(process.argv.slice(2));
+const PORT = Number(args.values.get("port") ?? 3290);
 
 const BLIND_SPOTS = [
   "THIS IS NOT axe-core. axe is not installed and `pnpm install` is W0-A's to run. This " +
@@ -53,7 +53,7 @@ const BLIND_SPOTS = [
   "No screen-reader pass. W1-D and W3-I both record that as an open [GAP]; nothing here " +
     "closes it, because an automated check cannot.",
   "Authenticated routes are not audited (QA access profiles are off under NODE_ENV=production).",
-]
+];
 
 const RULES = [
   "html-has-lang",
@@ -70,88 +70,126 @@ const RULES = [
   "focus-visible",
   "link-name",
   "skip-to-content",
-]
+];
 
 const AUDIT = (expectedLocale) => {
-  const findings = []
+  const findings = [];
   const add = (rule, impact, selector, detail) =>
-    findings.push({ rule, impact, selector, detail })
+    findings.push({ rule, impact, selector, detail });
 
   const describe = (el) => {
-    if (!el) return "?"
-    const id = el.id ? `#${el.id}` : ""
+    if (!el) return "?";
+    const id = el.id ? `#${el.id}` : "";
     const cls =
       typeof el.className === "string" && el.className
         ? `.${el.className.trim().split(/\s+/).slice(0, 2).join(".")}`
-        : ""
-    return `${el.tagName.toLowerCase()}${id}${cls}`
-  }
+        : "";
+    return `${el.tagName.toLowerCase()}${id}${cls}`;
+  };
   const visible = (el) => {
-    const s = getComputedStyle(el)
-    const r = el.getBoundingClientRect()
-    return s.display !== "none" && s.visibility !== "hidden" && r.width > 0 && r.height > 0
-  }
+    const s = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return (
+      s.display !== "none" &&
+      s.visibility !== "hidden" &&
+      r.width > 0 &&
+      r.height > 0
+    );
+  };
   const accessibleName = (el) => {
-    const aria = el.getAttribute("aria-label")
-    if (aria && aria.trim()) return aria.trim()
-    const labelledBy = el.getAttribute("aria-labelledby")
+    const aria = el.getAttribute("aria-label");
+    if (aria && aria.trim()) return aria.trim();
+    const labelledBy = el.getAttribute("aria-labelledby");
     if (labelledBy) {
       const text = labelledBy
         .split(/\s+/)
         .map((id) => document.getElementById(id)?.textContent ?? "")
         .join(" ")
-        .trim()
-      if (text) return text
+        .trim();
+      if (text) return text;
     }
-    const title = el.getAttribute("title")
-    if (title && title.trim()) return title.trim()
-    const text = (el.textContent ?? "").trim()
-    if (text) return text
-    const img = el.querySelector("img[alt]")
-    if (img && img.getAttribute("alt").trim()) return img.getAttribute("alt").trim()
-    return ""
-  }
+    const title = el.getAttribute("title");
+    if (title && title.trim()) return title.trim();
+    const text = (el.textContent ?? "").trim();
+    if (text) return text;
+    const img = el.querySelector("img[alt]");
+    if (img && img.getAttribute("alt").trim())
+      return img.getAttribute("alt").trim();
+    return "";
+  };
 
   // ---- document ------------------------------------------------------------
-  const lang = document.documentElement.getAttribute("lang")
-  if (!lang) add("html-has-lang", "serious", "html", "no lang attribute")
+  const lang = document.documentElement.getAttribute("lang");
+  if (!lang) add("html-has-lang", "serious", "html", "no lang attribute");
   else if (lang.split("-")[0] !== expectedLocale) {
     add(
       "html-lang-matches-route",
       "serious",
       "html",
       `lang="${lang}" but the route is /${expectedLocale}. A screen reader will pronounce this page with the wrong voice.`,
-    )
+    );
   }
 
   // ---- headings ------------------------------------------------------------
-  const h1s = [...document.querySelectorAll("h1")].filter(visible)
-  if (h1s.length === 0) add("single-h1", "serious", "document", "no visible <h1>")
-  else if (h1s.length > 1) add("single-h1", "moderate", "document", `${h1s.length} visible <h1> elements`)
+  const h1s = [...document.querySelectorAll("h1")].filter(visible);
+  if (h1s.length === 0)
+    add("single-h1", "serious", "document", "no visible <h1>");
+  else if (h1s.length > 1)
+    add(
+      "single-h1",
+      "moderate",
+      "document",
+      `${h1s.length} visible <h1> elements`,
+    );
 
-  const headings = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].filter(visible)
-  let previous = 0
+  const headings = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].filter(
+    visible,
+  );
+  let previous = 0;
   for (const heading of headings) {
-    const level = Number(heading.tagName[1])
+    const level = Number(heading.tagName[1]);
     if (previous !== 0 && level > previous + 1) {
-      add("heading-order", "moderate", describe(heading),
-        `jumps from h${previous} to h${level}: "${(heading.textContent ?? "").trim().slice(0, 40)}"`)
+      add(
+        "heading-order",
+        "moderate",
+        describe(heading),
+        `jumps from h${previous} to h${level}: "${(heading.textContent ?? "").trim().slice(0, 40)}"`,
+      );
     }
-    previous = level
+    previous = level;
   }
 
   // ---- landmarks -----------------------------------------------------------
-  const mains = [...document.querySelectorAll("main, [role=main]")].filter(visible)
-  if (mains.length === 0) add("landmark-main", "serious", "document", "no <main> landmark")
-  else if (mains.length > 1) add("landmark-unique", "moderate", "document", `${mains.length} main landmarks`)
+  const mains = [...document.querySelectorAll("main, [role=main]")].filter(
+    visible,
+  );
+  if (mains.length === 0)
+    add("landmark-main", "serious", "document", "no <main> landmark");
+  else if (mains.length > 1)
+    add(
+      "landmark-unique",
+      "moderate",
+      "document",
+      `${mains.length} main landmarks`,
+    );
 
-  for (const [selector, role] of [["nav", "navigation"], ["header", "banner"], ["footer", "contentinfo"]]) {
-    const nodes = [...document.querySelectorAll(selector)].filter(visible)
+  for (const [selector, role] of [
+    ["nav", "navigation"],
+    ["header", "banner"],
+    ["footer", "contentinfo"],
+  ]) {
+    const nodes = [...document.querySelectorAll(selector)].filter(visible);
     if (nodes.length > 1) {
-      const unnamed = nodes.filter((n) => !accessibleName(n) && !n.getAttribute("aria-label"))
+      const unnamed = nodes.filter(
+        (n) => !accessibleName(n) && !n.getAttribute("aria-label"),
+      );
       if (unnamed.length > 1) {
-        add("landmark-unique", "moderate", selector,
-          `${nodes.length} <${selector}> (${role}) landmarks and ${unnamed.length} have no accessible name to tell them apart`)
+        add(
+          "landmark-unique",
+          "moderate",
+          selector,
+          `${nodes.length} <${selector}> (${role}) landmarks and ${unnamed.length} have no accessible name to tell them apart`,
+        );
       }
     }
   }
@@ -159,143 +197,202 @@ const AUDIT = (expectedLocale) => {
   // ---- images --------------------------------------------------------------
   for (const img of document.querySelectorAll("img")) {
     if (!img.hasAttribute("alt")) {
-      add("image-alt", "critical", describe(img), `src=${(img.getAttribute("src") ?? "").slice(0, 60)}`)
+      add(
+        "image-alt",
+        "critical",
+        describe(img),
+        `src=${(img.getAttribute("src") ?? "").slice(0, 60)}`,
+      );
     }
   }
 
   // ---- controls ------------------------------------------------------------
   for (const el of document.querySelectorAll("button, [role=button]")) {
-    if (!visible(el)) continue
-    if (!accessibleName(el)) add("control-has-name", "critical", describe(el), "button has no accessible name")
+    if (!visible(el)) continue;
+    if (!accessibleName(el))
+      add(
+        "control-has-name",
+        "critical",
+        describe(el),
+        "button has no accessible name",
+      );
   }
   for (const el of document.querySelectorAll("a[href]")) {
-    if (!visible(el)) continue
-    if (!accessibleName(el)) add("link-name", "serious", describe(el), `href=${el.getAttribute("href")?.slice(0, 50)}`)
+    if (!visible(el)) continue;
+    if (!accessibleName(el))
+      add(
+        "link-name",
+        "serious",
+        describe(el),
+        `href=${el.getAttribute("href")?.slice(0, 50)}`,
+      );
   }
   for (const el of document.querySelectorAll("input, select, textarea")) {
-    if (!visible(el)) continue
-    const type = (el.getAttribute("type") ?? "").toLowerCase()
-    if (type === "hidden" || type === "submit" || type === "button") continue
-    const id = el.id
+    if (!visible(el)) continue;
+    const type = (el.getAttribute("type") ?? "").toLowerCase();
+    if (type === "hidden" || type === "submit" || type === "button") continue;
+    const id = el.id;
     const labelled =
       (id && document.querySelector(`label[for="${CSS.escape(id)}"]`)) ||
       el.closest("label") ||
       el.getAttribute("aria-label") ||
-      el.getAttribute("aria-labelledby")
-    if (!labelled) add("label-association", "critical", describe(el), `type=${type || el.tagName.toLowerCase()} has no label`)
+      el.getAttribute("aria-labelledby");
+    if (!labelled)
+      add(
+        "label-association",
+        "critical",
+        describe(el),
+        `type=${type || el.tagName.toLowerCase()} has no label`,
+      );
   }
 
   // ---- duplicate ids -------------------------------------------------------
-  const ids = new Map()
+  const ids = new Map();
   for (const el of document.querySelectorAll("[id]")) {
-    const id = el.id
-    ids.set(id, (ids.get(id) ?? 0) + 1)
+    const id = el.id;
+    ids.set(id, (ids.get(id) ?? 0) + 1);
   }
   for (const [id, count] of ids) {
-    if (count > 1) add("duplicate-id", "moderate", `#${id}`, `${count} elements share this id`)
+    if (count > 1)
+      add(
+        "duplicate-id",
+        "moderate",
+        `#${id}`,
+        `${count} elements share this id`,
+      );
   }
 
   // ---- list structure ------------------------------------------------------
   for (const list of document.querySelectorAll("ul, ol")) {
     for (const child of list.children) {
       if (!["LI", "SCRIPT", "TEMPLATE"].includes(child.tagName)) {
-        add("list-structure", "moderate", describe(list), `<${child.tagName.toLowerCase()}> is a direct child of a list`)
-        break
+        add(
+          "list-structure",
+          "moderate",
+          describe(list),
+          `<${child.tagName.toLowerCase()}> is a direct child of a list`,
+        );
+        break;
       }
     }
   }
 
   // ---- skip link -----------------------------------------------------------
-  const firstLink = document.querySelector("a[href^='#']")
+  const firstLink = document.querySelector("a[href^='#']");
   const hasSkip =
-    firstLink !== null && /skip|sprung|zum inhalt|content|inhalt|перейти|içeriğe/i.test(accessibleName(firstLink))
+    firstLink !== null &&
+    /skip|sprung|zum inhalt|content|inhalt|перейти|içeriğe/i.test(
+      accessibleName(firstLink),
+    );
   if (!hasSkip) {
-    add("skip-to-content", "moderate", "document",
-      "no skip-to-content link — a keyboard user tabs through the whole header on every page")
+    add(
+      "skip-to-content",
+      "moderate",
+      "document",
+      "no skip-to-content link — a keyboard user tabs through the whole header on every page",
+    );
   }
 
-  return findings
-}
+  return findings;
+};
 
 /** Focus visibility has to be measured with a real focus, not from CSS text. */
 const FOCUS_CHECK = () => {
-  const results = []
-  const candidates = [...document.querySelectorAll("a[href], button, input, select, textarea")]
+  const results = [];
+  const candidates = [
+    ...document.querySelectorAll("a[href], button, input, select, textarea"),
+  ]
     .filter((el) => {
-      const s = getComputedStyle(el)
-      const r = el.getBoundingClientRect()
-      return s.display !== "none" && s.visibility !== "hidden" && r.width > 0 && r.height > 0
+      const s = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      return (
+        s.display !== "none" &&
+        s.visibility !== "hidden" &&
+        r.width > 0 &&
+        r.height > 0
+      );
     })
-    .slice(0, 12)
+    .slice(0, 12);
 
   for (const el of candidates) {
-    const before = getComputedStyle(el)
+    const before = getComputedStyle(el);
     const snapshot = {
       outlineWidth: before.outlineWidth,
       outlineStyle: before.outlineStyle,
       boxShadow: before.boxShadow,
       borderColor: before.borderColor,
       backgroundColor: before.backgroundColor,
-    }
-    el.focus()
-    const after = getComputedStyle(el)
+    };
+    el.focus();
+    const after = getComputedStyle(el);
     const changed =
       after.outlineWidth !== snapshot.outlineWidth ||
       after.outlineStyle !== snapshot.outlineStyle ||
       after.boxShadow !== snapshot.boxShadow ||
       after.borderColor !== snapshot.borderColor ||
-      after.backgroundColor !== snapshot.backgroundColor
-    const hasOutline = after.outlineStyle !== "none" && parseFloat(after.outlineWidth) > 0
+      after.backgroundColor !== snapshot.backgroundColor;
+    const hasOutline =
+      after.outlineStyle !== "none" && parseFloat(after.outlineWidth) > 0;
     if (!changed && !hasOutline) {
       results.push({
         rule: "focus-visible",
         impact: "serious",
         selector: `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ""}`,
         detail: "focusing produced no visible change",
-      })
+      });
     }
-    el.blur()
+    el.blur();
   }
-  return results
-}
+  return results;
+};
 
 async function main() {
-  const reporter = createReporter("a11y-audit")
-  const dir = resultDir("a11y")
+  const reporter = createReporter("a11y-audit");
+  const dir = resultDir("a11y");
 
-  reporter.section("a11y-audit — structural rules, NOT axe-core")
-  console.log(`  rules: ${RULES.join(", ")}`)
-  const spots = reportBlindSpots(reporter, BLIND_SPOTS)
+  reporter.section("a11y-audit — structural rules, NOT axe-core");
+  console.log(`  rules: ${RULES.join(", ")}`);
+  const spots = reportBlindSpots(reporter, BLIND_SPOTS);
 
-  const server = startServer(PORT)
-  let browser
-  const findings = []
+  const server = startServer(PORT);
+  let browser;
+  const findings = [];
 
   try {
-    await server.ready()
-    const launched = await launchBrowser({})
-    browser = launched.browser
+    await server.ready();
+    const launched = await launchBrowser({});
+    browser = launched.browser;
 
     for (const theme of THEMES) {
-      const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: theme })
-      const page = await context.newPage()
+      const context = await browser.newContext({
+        viewport: { width: 1280, height: 900 },
+        colorScheme: theme,
+      });
+      const page = await context.newPage();
 
       for (const locale of LOCALES) {
         for (const route of publicRoutes()) {
-          const url = urlFor(server.base, locale, route)
-          let entries = []
+          const url = urlFor(server.base, locale, route);
+          let entries = [];
           try {
-            await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 })
-            await preparePage(page)
-            entries = await page.evaluate(AUDIT, locale)
-            entries = entries.concat(await page.evaluate(FOCUS_CHECK))
+            await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 });
+            await preparePage(page);
+            entries = await page.evaluate(AUDIT, locale);
+            entries = entries.concat(await page.evaluate(FOCUS_CHECK));
           } catch (error) {
-            reporter.check(`${locale}${route.path || "/"} ${theme}`, false, String(error).slice(0, 100))
-            continue
+            reporter.check(
+              `${locale}${route.path || "/"} ${theme}`,
+              false,
+              String(error).slice(0, 100),
+            );
+            continue;
           }
 
-          const serious = entries.filter((e) => e.impact === "serious" || e.impact === "critical")
-          for (const entry of entries) findings.push({ locale, theme, route: route.name, ...entry })
+          const serious = entries.filter(
+            (e) => e.impact === "serious" || e.impact === "critical",
+          );
+          for (const entry of entries)
+            findings.push({ locale, theme, route: route.name, ...entry });
 
           reporter.check(
             `${locale}${route.path || "/"} ${theme}`,
@@ -303,21 +400,25 @@ async function main() {
             entries.length === 0
               ? ""
               : `${serious.length} serious/critical, ${entries.length - serious.length} moderate`,
-          )
+          );
           for (const entry of serious.slice(0, 3)) {
-            console.log(`         [${entry.impact}] ${entry.rule} — ${entry.selector}: ${entry.detail}`)
+            console.log(
+              `         [${entry.impact}] ${entry.rule} — ${entry.selector}: ${entry.detail}`,
+            );
           }
         }
       }
-      await context.close()
+      await context.close();
     }
 
-    reporter.section("Summary by rule")
-    const byRule = {}
-    for (const f of findings) byRule[f.rule] = (byRule[f.rule] ?? 0) + 1
-    for (const [rule, count] of Object.entries(byRule).sort((a, b) => b[1] - a[1])) {
-      const impact = findings.find((f) => f.rule === rule).impact
-      console.log(`  ${String(count).padStart(4)}  [${impact}] ${rule}`)
+    reporter.section("Summary by rule");
+    const byRule = {};
+    for (const f of findings) byRule[f.rule] = (byRule[f.rule] ?? 0) + 1;
+    for (const [rule, count] of Object.entries(byRule).sort(
+      (a, b) => b[1] - a[1],
+    )) {
+      const impact = findings.find((f) => f.rule === rule).impact;
+      console.log(`  ${String(count).padStart(4)}  [${impact}] ${rule}`);
     }
 
     const path = writeJson(dir, "report.json", {
@@ -328,17 +429,17 @@ async function main() {
       blindSpots: spots,
       counts: byRule,
       findings,
-    })
-    console.log(`\n  report: ${path}`)
+    });
+    console.log(`\n  report: ${path}`);
   } finally {
-    if (browser) await browser.close()
-    server.stop()
+    if (browser) await browser.close();
+    server.stop();
   }
 
-  process.exit(reporter.summary())
+  process.exit(reporter.summary());
 }
 
 main().catch((error) => {
-  console.error(`\na11y-audit failed to run: ${error?.stack ?? error}`)
-  process.exit(2)
-})
+  console.error(`\na11y-audit failed to run: ${error?.stack ?? error}`);
+  process.exit(2);
+});

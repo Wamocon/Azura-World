@@ -1,4 +1,10 @@
-import { CircleSlash, ExternalLink, ShieldCheck, Sigma, type LucideIcon } from "lucide-react"
+import {
+  CircleSlash,
+  ExternalLink,
+  ShieldCheck,
+  Sigma,
+  type LucideIcon,
+} from "lucide-react"
 
 import { cn } from "@/lib/cn"
 import { Badge } from "@/components/ui/badge"
@@ -37,7 +43,10 @@ const ICONS: Record<UnitDataQuality, LucideIcon> = {
   source_missing: CircleSlash,
 }
 
-const VARIANTS: Record<UnitDataQuality, "confirmed" | "official" | "modelled" | "gap"> = {
+const VARIANTS: Record<
+  UnitDataQuality,
+  "confirmed" | "official" | "modelled" | "gap"
+> = {
   portal_listing: "confirmed",
   official: "official",
   modelled: "modelled",

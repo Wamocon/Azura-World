@@ -70,7 +70,9 @@ function flag(environment: EnvironmentRecord, name: string): boolean {
  * that is nonetheless serving real traffic, and a platform env var can be
  * `production` on a build that forgot to set `NODE_ENV`. Either one is enough.
  */
-export function isProductionEnvironment(environment: EnvironmentRecord): boolean {
+export function isProductionEnvironment(
+  environment: EnvironmentRecord
+): boolean {
   return (
     environment["NODE_ENV"] === "production" ||
     environment["VERCEL_ENV"] === "production" ||
@@ -86,11 +88,11 @@ export function isProductionEnvironment(environment: EnvironmentRecord): boolean
 export function hasSupabaseDataPlane(environment: EnvironmentRecord): boolean {
   return Boolean(
     environment["NEXT_PUBLIC_SUPABASE_URL"] ||
-      environment["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ||
-      environment["SUPABASE_URL"] ||
-      environment["SUPABASE_SERVICE_ROLE_KEY"] ||
-      environment["SUPABASE_DB_URL"] ||
-      environment["SUPABASE_PROJECT_REF"]
+    environment["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ||
+    environment["SUPABASE_URL"] ||
+    environment["SUPABASE_SERVICE_ROLE_KEY"] ||
+    environment["SUPABASE_DB_URL"] ||
+    environment["SUPABASE_PROJECT_REF"]
   )
 }
 
@@ -127,7 +129,9 @@ export class AccessProfileSafetyError extends Error {
  * to hit the login page. Exported so it can be exercised against synthetic
  * environments without spawning eleven processes.
  */
-export function assertAccessProfileSafety(environment: EnvironmentRecord): void {
+export function assertAccessProfileSafety(
+  environment: EnvironmentRecord
+): void {
   if (!isProductionEnvironment(environment)) return
   if (!flag(environment, "ENABLE_ACCESS_PROFILES")) return
   if (isProvablyIsolated(environment)) return
@@ -174,7 +178,7 @@ export function accessProfilesEnabledForEnvironment(
 
   const supabaseConfigured = Boolean(
     environment["NEXT_PUBLIC_SUPABASE_URL"] &&
-      environment["NEXT_PUBLIC_SUPABASE_ANON_KEY"]
+    environment["NEXT_PUBLIC_SUPABASE_ANON_KEY"]
   )
   if (!supabaseConfigured) return true
 

@@ -65,7 +65,10 @@ test.describe("role × route matrix", () => {
         // bounces an authenticated caller to login — CONVENTIONS §5 calls the
         // redirect loop the failure mode here.
         expect(status, "no server error").toBeLessThan(500)
-        expect(new URL(page.url()).pathname, "not redirected to login").not.toContain("/login")
+        expect(
+          new URL(page.url()).pathname,
+          "not redirected to login"
+        ).not.toContain("/login")
 
         if (!built) {
           // An unbuilt route answers 404 for EVERY role, permitted or not: Next
@@ -74,21 +77,37 @@ test.describe("role × route matrix", () => {
           // half is NOT proven on these nineteen routes, and the handoff counts
           // them separately rather than letting 231 stand as if each cell
           // proved a permission decision.
-          expect(status, "an unbuilt route answered something other than 404").toBe(404)
-          expect(await isForbiddenPanel(page), "a 404 page rendered the 403 panel").toBe(false)
+          expect(
+            status,
+            "an unbuilt route answered something other than 404"
+          ).toBe(404)
+          expect(
+            await isForbiddenPanel(page),
+            "a 404 page rendered the 403 panel"
+          ).toBe(false)
           return
         }
 
         const forbidden = await isForbiddenPanel(page)
 
         if (allowed) {
-          expect(forbidden, `${role} holds ${route.permission} and got the 403 panel`).toBe(false)
-          expect(await hasErrorBoundary(page), "error boundary rendered").toBe(false)
+          expect(
+            forbidden,
+            `${role} holds ${route.permission} and got the 403 panel`
+          ).toBe(false)
+          expect(await hasErrorBoundary(page), "error boundary rendered").toBe(
+            false
+          )
           await expect(page.locator("main").first()).toBeVisible()
         } else {
-          expect(forbidden, `${role} lacks ${route.permission} and was NOT refused`).toBe(true)
+          expect(
+            forbidden,
+            `${role} lacks ${route.permission} and was NOT refused`
+          ).toBe(true)
           // The refusal must also withhold the content, not merely cover it.
-          await expect(page.locator('[data-testid="dashboard-403"]')).toBeVisible()
+          await expect(
+            page.locator('[data-testid="dashboard-403"]')
+          ).toBeVisible()
         }
       })
     }
@@ -104,14 +123,17 @@ test.describe("role × route matrix", () => {
  */
 test.describe("navigation matches the permission table", () => {
   for (const role of roles) {
-    test(`${role}: every offered link is one this role may open`, async ({ page, context }) => {
+    test(`${role}: every offered link is one this role may open`, async ({
+      page,
+      context,
+    }) => {
       await loginAs(context, role)
       await visit(page, localised("/dashboard"))
 
       const hrefs = await page
         .locator('nav a[href*="/dashboard"]')
         .evaluateAll((nodes) =>
-          nodes.map((n) => new URL((n as HTMLAnchorElement).href).pathname),
+          nodes.map((n) => new URL((n as HTMLAnchorElement).href).pathname)
         )
 
       for (const href of hrefs) {
@@ -121,7 +143,7 @@ test.describe("navigation matches the permission table", () => {
         if (route === undefined) continue
         expect(
           hasPermission(role, route.permission),
-          `${role} was offered ${bare}, which needs ${route.permission}`,
+          `${role} was offered ${bare}, which needs ${route.permission}`
         ).toBe(true)
       }
     })

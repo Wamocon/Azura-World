@@ -30,7 +30,12 @@ type Exhaustive<Union extends string, Members extends readonly Union[]> = [
   ? Members
   : ["missing from the list:", Exclude<Union, Members[number]>]
 
-export const currencies = ["EUR", "USD", "TRY", "GBP"] as const satisfies readonly CurrencyCode[]
+export const currencies = [
+  "EUR",
+  "USD",
+  "TRY",
+  "GBP",
+] as const satisfies readonly CurrencyCode[]
 export type _CurrenciesComplete = Exhaustive<CurrencyCode, typeof currencies>
 
 export const findingSeverities = [
@@ -40,7 +45,10 @@ export const findingSeverities = [
   "low",
   "info",
 ] as const satisfies readonly Finding["severity"][]
-export type _SeveritiesComplete = Exhaustive<Finding["severity"], typeof findingSeverities>
+export type _SeveritiesComplete = Exhaustive<
+  Finding["severity"],
+  typeof findingSeverities
+>
 
 /**
  * Note `portal_listing` and `official` where a reader might expect "real".
@@ -56,7 +64,10 @@ export const unitDataQualities = [
   "modelled",
   "source_missing",
 ] as const satisfies readonly UnitDataQuality[]
-export type _DataQualitiesComplete = Exhaustive<UnitDataQuality, typeof unitDataQualities>
+export type _DataQualitiesComplete = Exhaustive<
+  UnitDataQuality,
+  typeof unitDataQualities
+>
 
 export const saleStatuses = [
   "available",

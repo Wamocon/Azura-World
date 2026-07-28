@@ -34,14 +34,20 @@ export const DEFAULT_LOCALE: Locale = "de"
  * reports the two counts separately rather than letting 462 stand as if every
  * cell exercised a screen.
  */
-export const BUILT_ROUTES: readonly string[] = ["/dashboard", "/dashboard/evidence"]
+export const BUILT_ROUTES: readonly string[] = [
+  "/dashboard",
+  "/dashboard/evidence",
+]
 
 export function isBuilt(route: DashboardRoute): boolean {
   return BUILT_ROUTES.includes(route.href)
 }
 
 /** A locale-prefixed path. `localePrefix: "always"`, so `/` alone is a redirect. */
-export function localised(path: string, locale: Locale = DEFAULT_LOCALE): string {
+export function localised(
+  path: string,
+  locale: Locale = DEFAULT_LOCALE
+): string {
   return `/${locale}${path}`
 }
 
@@ -59,7 +65,11 @@ export function localised(path: string, locale: Locale = DEFAULT_LOCALE): string
  * authorisation given an identity. That distinction is stated in the handoff
  * rather than left for a reader to infer from a green run.
  */
-export async function loginAs(context: BrowserContext, role: Role, port = 3200): Promise<void> {
+export async function loginAs(
+  context: BrowserContext,
+  role: Role,
+  port = 3200
+): Promise<void> {
   await context.clearCookies()
   await context.addCookies([
     {
@@ -89,7 +99,7 @@ export async function logout(context: BrowserContext): Promise<void> {
  */
 export async function visit(
   page: Page,
-  path: string,
+  path: string
 ): Promise<{ status: number; finalUrl: string; response: Response | null }> {
   const response = await page.goto(path, { waitUntil: "domcontentloaded" })
   return {

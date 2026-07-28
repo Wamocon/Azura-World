@@ -14,7 +14,7 @@
 ## Why this task exists
 
 The 1Çatı project ships a full **Marktanalyse** in four languages plus a Market-Research-Annex and
-a Source-Register. My original wave plan had **product** research (W0-B: what Azura World *is*)
+a Source-Register. My original wave plan had **product** research (W0-B: what Azura World _is_)
 but no **market** research (what the Alanya market looks like, what comparable projects cost, who
 buys). For a competitor CATI that gap matters more than it did for the original — the point of
 competitor intelligence is comparison, and comparison needs a baseline.
@@ -38,8 +38,8 @@ docs/market/Competitive-Set.md
 HANDOFF/W0-C.md
 ```
 
-Do not touch `SOURCES.md` — that is W0-B's, and it covers *project* sources. Yours is the
-*market* register. Cross-reference by source id; do not duplicate entries.
+Do not touch `SOURCES.md` — that is W0-B's, and it covers _project_ sources. Yours is the
+_market_ register. Cross-reference by source id; do not duplicate entries.
 
 ---
 
@@ -56,7 +56,7 @@ Sections:
 3. **The developer** — Cebeci Group A.Ş., est. 1982. Their portfolio is public and large:
    **26 projects** listed on cebecigroup.com, including Azura Deluxe Resort & SPA, Wyndham Hotel
    Alanya, Alanya Country Club, Cebeci Towers, Cebeci Vista, Arnelya Beach Residence. That
-   portfolio *is* the market position — describe it factually.
+   portfolio _is_ the market position — describe it factually.
 4. **The competitive set** — comparable Türkler/Avsallar/Konaklı residence-plus-hotel projects.
    **New Level Premium Avsallar is the natural comparator** (769 units, 52,000 m², 5★ hotel,
    900 m to beach, 3-year 10% rental guarantee) because 1Çatı already holds a verified dataset
@@ -97,10 +97,10 @@ assessment. Distinct from `SOURCES.md`, which registers project sources.
 
 Ataberg's `ANALYSIS.md` carries a warning worth copying verbatim in spirit:
 
-> *"I have **no verified conversion-rate benchmarks** for real-estate lead generation in 2026…
+> _"I have **no verified conversion-rate benchmarks** for real-estate lead generation in 2026…
 > Section 3's business criteria are therefore reasoned from the audit and competitor evidence,
 > not from cited industry benchmarks. **Do not present Section 3's business numbers to a client
-> as researched benchmarks.**"*
+> as researched benchmarks.**"_
 
 If you cannot source a market statistic — average €/m² in Alanya, foreign-buyer volumes, rental
 yields, absorption rates — then it is a `[GAP]`. A plausible-sounding yield figure in a document

@@ -422,7 +422,8 @@ function refAtSnapshot(sourceId: string, snapshotSha256: string): SourceRef {
 function latestSnapshot(record: SeedSourceRecord): SeedSnapshot | null {
   let latest: SeedSnapshot | null = null
   for (const snapshot of record.snapshots) {
-    if (latest === null || snapshot.fetchedAt > latest.fetchedAt) latest = snapshot
+    if (latest === null || snapshot.fetchedAt > latest.fetchedAt)
+      latest = snapshot
   }
   return latest
 }

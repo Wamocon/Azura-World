@@ -234,10 +234,14 @@ const serverEnvSchema = z
 
     // — Server-only secrets ————————————————————————————————————
     CALENDAR_FEED_TOKEN_SECRET: serverSecret("CALENDAR_FEED_TOKEN_SECRET"),
-    PUBLIC_REPORT_SECURITY_SECRET: serverSecret("PUBLIC_REPORT_SECURITY_SECRET"),
+    PUBLIC_REPORT_SECURITY_SECRET: serverSecret(
+      "PUBLIC_REPORT_SECURITY_SECRET"
+    ),
     REGISTRATION_IDENTITY_PEPPER: serverSecret("REGISTRATION_IDENTITY_PEPPER"),
     REGISTRATION_RECEIPT_PEPPER: serverSecret("REGISTRATION_RECEIPT_PEPPER"),
-    EVIDENCE_SNAPSHOT_HMAC_SECRET: serverSecret("EVIDENCE_SNAPSHOT_HMAC_SECRET"),
+    EVIDENCE_SNAPSHOT_HMAC_SECRET: serverSecret(
+      "EVIDENCE_SNAPSHOT_HMAC_SECRET"
+    ),
 
     // — AI gateway (OpenAI-compatible) ——————————————————————————
     // No invented defaults: an unconfigured gateway is a supported state and
@@ -403,7 +407,9 @@ export function isSupabaseConfigured(): boolean {
  * `source: "deterministic-fallback"`, never a 5xx.
  */
 export function isAiGatewayConfigured(): boolean {
-  return serverEnv.AI_API_URL !== undefined && serverEnv.AI_API_KEY !== undefined
+  return (
+    serverEnv.AI_API_URL !== undefined && serverEnv.AI_API_KEY !== undefined
+  )
 }
 
 /**

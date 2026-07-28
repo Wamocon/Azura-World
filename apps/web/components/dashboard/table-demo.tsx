@@ -63,7 +63,10 @@ const STATES = [
   { id: "loading", label: "Wird geladen" },
   { id: "empty", label: "Ohne Einträge" },
   { id: "error", label: "Nicht geladen" },
-] as const satisfies ReadonlyArray<{ id: "loading" | "error" | "empty" | "ready"; label: string }>
+] as const satisfies ReadonlyArray<{
+  id: "loading" | "error" | "empty" | "ready"
+  label: string
+}>
 
 /** Deterministic, so a screenshot and a node count are reproducible. */
 function demoRows(): DemoRow[] {
@@ -110,13 +113,28 @@ export function TableDemo({
 }): ReactNode {
   const copy = shellCopy(locale)
   const rows = useMemo(() => demoRows(), [])
-  const [state, setState] = useState<"loading" | "error" | "empty" | "ready">("ready")
+  const [state, setState] = useState<"loading" | "error" | "empty" | "ready">(
+    "ready"
+  )
   const [sort, setSort] = useState<DataTableSort | null>(null)
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set())
 
   const columns: ReadonlyArray<DataTableColumn<DemoRow>> = [
-    { kind: "text", id: "id", header: "Wohnung", value: (r) => r.id, sortable: true, width: "12rem" },
-    { kind: "text", id: "block", header: "Block", value: (r) => r.block, sortable: true },
+    {
+      kind: "text",
+      id: "id",
+      header: "Wohnung",
+      value: (r) => r.id,
+      sortable: true,
+      width: "12rem",
+    },
+    {
+      kind: "text",
+      id: "block",
+      header: "Block",
+      value: (r) => r.block,
+      sortable: true,
+    },
     { kind: "text", id: "layout", header: "Grundriss", value: (r) => r.layout },
     {
       kind: "number",
@@ -127,7 +145,13 @@ export function TableDemo({
     },
     // The column that matters: a SourcedFact rendered by W1-D, so 631 of the
     // 656 rows read "Keine Angabe" rather than showing a fabricated price.
-    { kind: "fact", id: "price", header: "Preis", fact: (r) => r.price, format: "money" },
+    {
+      kind: "fact",
+      id: "price",
+      header: "Preis",
+      fact: (r) => r.price,
+      format: "money",
+    },
   ]
 
   return (
@@ -149,8 +173,8 @@ export function TableDemo({
           </Button>
         ))}
         <span className="text-xs text-muted-foreground">
-          {rows.length} Beispielzeilen · ab {VIRTUALISE_ABOVE} Zeilen wird nur der
-          sichtbare Ausschnitt gerendert
+          {rows.length} Beispielzeilen · ab {VIRTUALISE_ABOVE} Zeilen wird nur
+          der sichtbare Ausschnitt gerendert
         </span>
       </div>
 
@@ -183,7 +207,10 @@ export function TableDemo({
           noValue: copy.tableNoValue,
         }}
         empty={
-          <EmptyState title={copy.tableEmptyTitle} description={copy.tableEmptyBody} />
+          <EmptyState
+            title={copy.tableEmptyTitle}
+            description={copy.tableEmptyBody}
+          />
         }
         error={
           <ErrorState

@@ -147,7 +147,7 @@ export function DashboardSidebar({
         ? t(route.labelKey)
         : (route.href.split("/").pop() ?? route.href)
     },
-    [t],
+    [t]
   )
 
   /**
@@ -161,7 +161,7 @@ export function DashboardSidebar({
   const renderNav = (isCollapsed: boolean) => (
     <nav
       aria-label={tShell("title")}
-      className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto azura-scrollbar-slim px-2 py-4"
+      className="azura-scrollbar-slim flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-2 py-4"
     >
       {groups.map((group) => (
         <div key={group.group} className="flex flex-col gap-1">
@@ -169,8 +169,8 @@ export function DashboardSidebar({
               nav keeps its accessible structure at every width. */}
           <h2
             className={cn(
-              "px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground",
-              isCollapsed && "sr-only",
+              "px-2 text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase",
+              isCollapsed && "sr-only"
             )}
           >
             {copy.groups[group.group]}
@@ -185,7 +185,8 @@ export function DashboardSidebar({
               const active =
                 route.href === "/dashboard"
                   ? pathname === route.href
-                  : pathname === route.href || pathname.startsWith(`${route.href}/`)
+                  : pathname === route.href ||
+                    pathname.startsWith(`${route.href}/`)
 
               return (
                 <li key={route.href}>
@@ -210,7 +211,7 @@ export function DashboardSidebar({
                       active
                         ? "bg-secondary font-semibold text-secondary-foreground"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      isCollapsed && "justify-center px-0",
+                      isCollapsed && "justify-center px-0"
                     )}
                   >
                     <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -245,7 +246,9 @@ export function DashboardSidebar({
           holds seven — but a future matrix edit could, and a blank rail reads
           as a crash. */}
       {groups.length === 0 ? (
-        <p className="px-2 text-sm text-muted-foreground">{copy.noAccessTitle}</p>
+        <p className="px-2 text-sm text-muted-foreground">
+          {copy.noAccessTitle}
+        </p>
       ) : null}
     </nav>
   )
@@ -263,9 +266,9 @@ export function DashboardSidebar({
         aria-controls="dashboard-mobile-nav"
         data-testid="dashboard-menu-toggle"
         className={cn(
-          "fixed left-4 top-3 z-50 inline-flex size-11 items-center justify-center rounded-lg",
+          "fixed top-3 left-4 z-50 inline-flex size-11 items-center justify-center rounded-lg",
           "border border-border bg-card text-foreground shadow-sm md:hidden",
-          "outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "outline-none focus-visible:ring-2 focus-visible:ring-ring"
         )}
       >
         <PanelLeftOpen className="size-5" aria-hidden="true" />
@@ -279,13 +282,13 @@ export function DashboardSidebar({
         className={cn(
           "sticky top-0 hidden h-svh shrink-0 flex-col border-r border-border bg-sidebar md:flex",
           "transition-[width] duration-200 ease-[var(--ease-out)] motion-reduce:transition-none",
-          collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
+          collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH
         )}
       >
         <div
           className={cn(
             "flex min-h-16 items-center gap-2 border-b border-border px-3",
-            collapsed && "justify-center px-0",
+            collapsed && "justify-center px-0"
           )}
         >
           {collapsed ? null : (
@@ -301,7 +304,7 @@ export function DashboardSidebar({
             className={cn(
               "inline-flex size-9 shrink-0 items-center justify-center rounded-md",
               "text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-              "outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "outline-none focus-visible:ring-2 focus-visible:ring-ring"
             )}
           >
             {collapsed ? (
@@ -335,7 +338,7 @@ export function DashboardSidebar({
         }}
         className={cn(
           "m-0 h-dvh max-h-none w-72 max-w-[calc(100vw-3rem)] border-0 bg-sidebar p-0 text-foreground",
-          "backdrop:bg-[color-mix(in_srgb,var(--sea-deep)_55%,transparent)] md:hidden",
+          "backdrop:bg-[color-mix(in_srgb,var(--sea-deep)_55%,transparent)] md:hidden"
         )}
       >
         <div className="flex h-full min-h-0 flex-col">
@@ -349,7 +352,7 @@ export function DashboardSidebar({
               className={cn(
                 "inline-flex size-11 items-center justify-center rounded-md text-muted-foreground",
                 "hover:bg-muted hover:text-foreground",
-                "outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "outline-none focus-visible:ring-2 focus-visible:ring-ring"
               )}
             >
               <X className="size-5" aria-hidden="true" />

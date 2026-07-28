@@ -11,11 +11,11 @@ Open your Supabase project, then:
 
 ### 1–3. Dashboard → Project Settings → **API**
 
-| `.env.local` key | What to copy | Notes |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | **Project URL** | `https://<ref>.supabase.co` |
+| `.env.local` key                | What to copy              | Notes                         |
+| ------------------------------- | ------------------------- | ----------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | **Project URL**           | `https://<ref>.supabase.co`   |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | **anon** / **public** key | Safe in the browser by design |
-| `SUPABASE_SERVICE_ROLE_KEY` | **service_role** key | ⚠️ see the warning below |
+| `SUPABASE_SERVICE_ROLE_KEY`     | **service_role** key      | ⚠️ see the warning below      |
 
 ### 4. `SUPABASE_PROJECT_REF`
 
@@ -78,16 +78,16 @@ Exit code is non-zero on any failure, so it works as a gate.
 
 With those five values in place:
 
-| Capability | How |
-|---|---|
-| Apply the full schema | `supabase link --project-ref` then `supabase db push` (W1-A's 14 migrations) |
-| Inspect and query any table | service-role REST, or direct `psql` via `SUPABASE_DB_URL` |
-| Generate TypeScript types | `supabase gen types typescript --linked` |
-| Create + configure storage buckets | `scripts/setup-supabase.mjs` (private, size limits, MIME allowlist) |
-| Seed the Azura dataset | `supabase/seed.sql` — 7 blocks, 656 units, 188 rooms, 23 sources, F-001…F-010 |
-| Run pgTAP | `supabase test db` — needs Docker locally |
-| Verify RLS adversarially | connect as each of the 11 roles and assert what they cannot reach |
-| Check migration drift | `supabase migration list --linked` (local vs deployed) |
+| Capability                         | How                                                                           |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| Apply the full schema              | `supabase link --project-ref` then `supabase db push` (W1-A's 14 migrations)  |
+| Inspect and query any table        | service-role REST, or direct `psql` via `SUPABASE_DB_URL`                     |
+| Generate TypeScript types          | `supabase gen types typescript --linked`                                      |
+| Create + configure storage buckets | `scripts/setup-supabase.mjs` (private, size limits, MIME allowlist)           |
+| Seed the Azura dataset             | `supabase/seed.sql` — 7 blocks, 656 units, 188 rooms, 23 sources, F-001…F-010 |
+| Run pgTAP                          | `supabase test db` — needs Docker locally                                     |
+| Verify RLS adversarially           | connect as each of the 11 roles and assert what they cannot reach             |
+| Check migration drift              | `supabase migration list --linked` (local vs deployed)                        |
 
 ---
 

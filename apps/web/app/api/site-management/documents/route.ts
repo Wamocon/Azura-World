@@ -21,7 +21,9 @@ export const GET = createManifestHandler("getDocuments", {
     offset,
     query,
   }): Promise<HandlerResult<SignedDocumentUrl | DocumentRecord[]>> => {
-    if (readEnum(query, "view", ["list", "signed-url"] as const) === "signed-url") {
+    if (
+      readEnum(query, "view", ["list", "signed-url"] as const) === "signed-url"
+    ) {
       const id = readId(query, "id")
       if (id === undefined) {
         throw new RepositoryError(

@@ -1,4 +1,4 @@
-# HANDOFF — W2-A  Repository layer
+# HANDOFF — W2-A Repository layer
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -23,33 +23,33 @@ were verified against the live database, not guessed.
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, whole tree |
-| `pnpm --dir apps/web lint` | **PASS** | exit 0, whole tree, 0 errors 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** | exit 0, `next build --webpack` |
-| `node --test` — both suites | **PASS** | 24 pass, 0 fail |
-| pgTAP, 7 files (from W1-A) | **PASS** | 366 pass, 0 fail |
+| Command                         | Result   | Evidence                                |
+| ------------------------------- | -------- | --------------------------------------- |
+| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, whole tree                      |
+| `pnpm --dir apps/web lint`      | **PASS** | exit 0, whole tree, 0 errors 0 warnings |
+| `pnpm --dir apps/web build`     | **PASS** | exit 0, `next build --webpack`          |
+| `node --test` — both suites     | **PASS** | 24 pass, 0 fail                         |
+| pgTAP, 7 files (from W1-A)      | **PASS** | 366 pass, 0 fail                        |
 
 ### The eight required tests, and where each lives
 
-| # | Requirement | Where | Result |
-|---|---|---|---|
-| 1 | Every function returns `source` — **enumerated programmatically** | `repository-contract.test.ts` | 60 reads across 12 modules, all conform |
-| 2 | Unconfigured → `local-seed` for all of them | `repository-contract.test.ts` | all 60, each with a `degradedReason` |
-| 3 | Configured + forced error → **throws** a mapped `ApiError`, does not fall back | `repository-base.test.ts` | throws `RepositoryError`; fallback provably not invoked |
-| 4 | Configured + empty → `source: "supabase"`, empty data, **no seed substitution** | `repository-base.test.ts` | fallback provably not invoked |
-| 5 | `owner` cannot retrieve another owner's unit | seed mode: `repository-contract.test.ts` · Supabase mode: `04-rls-negative.sql` | both pass |
-| 6 | `child_owner` retrieves a strict subset of `owner` | seed mode: `repository-contract.test.ts` · Supabase mode: `04-rls-negative.sql` | both pass |
-| 7 | Seed determinism — two calls, byte-identical JSON | `repository-contract.test.ts` | 53 builders verified |
-| 8 | `getEvidenceCoverage()` totals match the dataset's own counts | `repository-contract.test.ts` | totals and every breakdown reconcile |
+| #   | Requirement                                                                     | Where                                                                           | Result                                                  |
+| --- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | Every function returns `source` — **enumerated programmatically**               | `repository-contract.test.ts`                                                   | 60 reads across 12 modules, all conform                 |
+| 2   | Unconfigured → `local-seed` for all of them                                     | `repository-contract.test.ts`                                                   | all 60, each with a `degradedReason`                    |
+| 3   | Configured + forced error → **throws** a mapped `ApiError`, does not fall back  | `repository-base.test.ts`                                                       | throws `RepositoryError`; fallback provably not invoked |
+| 4   | Configured + empty → `source: "supabase"`, empty data, **no seed substitution** | `repository-base.test.ts`                                                       | fallback provably not invoked                           |
+| 5   | `owner` cannot retrieve another owner's unit                                    | seed mode: `repository-contract.test.ts` · Supabase mode: `04-rls-negative.sql` | both pass                                               |
+| 6   | `child_owner` retrieves a strict subset of `owner`                              | seed mode: `repository-contract.test.ts` · Supabase mode: `04-rls-negative.sql` | both pass                                               |
+| 7   | Seed determinism — two calls, byte-identical JSON                               | `repository-contract.test.ts`                                                   | 53 builders verified                                    |
+| 8   | `getEvidenceCoverage()` totals match the dataset's own counts                   | `repository-contract.test.ts`                                                   | totals and every breakdown reconcile                    |
 
 Tests 3 and 4 were written first, as the brief instructs.
 
 ### NOT RUN
 
-| Command | Status | Reason |
-|---|---|---|
+| Command                                                              | Status                 | Reason                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `node --test apps/web/lib/*.test.ts` — **the brief's exact command** | **NOT RUN as written** | It fails before running a test. Node cannot resolve the `@/` alias or an extensionless `.ts` import, and no TypeScript runner (`tsx`, `ts-node`, `esbuild`) is installed. Installing one means `pnpm install`, which is W0-A's and forbidden concurrently. The suites were run through a scratchpad resolution hook instead — same files, same assertions, real results. **See "Requests" for the one-line fix.** |
 
 ---
@@ -58,7 +58,7 @@ Tests 3 and 4 were written first, as the brief instructs.
 
 **1. A guest could reach an owner's private unit — in seed mode only.**
 `inventory-data.ts` marked a unit public iff `data_quality = 'portal_listing'`, but
-`supabase/seed.sql` *additionally* withholds the three units assigned to seeded residents.
+`supabase/seed.sql` _additionally_ withholds the three units assigned to seeded residents.
 The same unit was therefore public in seed mode and private in Supabase, so switching
 `source` changed what a guest could see. That is exactly the divergence the brief forbids
 when it requires seed objects "structurally identical to the Supabase shape, so swapping
@@ -127,12 +127,12 @@ mutations (`reverseLedgerEntry`, `settleVendorInvoice`, `updateTicketStatus`,
 
 Mean of 20 calls, Node 22.14, seed mode, after one warm-up:
 
-| Call | Time | Queries |
-|---|---|---|
+| Call                                        | Time        | Queries  |
+| ------------------------------------------- | ----------- | -------- |
 | `getDashboardSnapshot({ role: "manager" })` | **0.04 ms** | 0 (seed) |
-| `getUnits({ limit: 500 })` | 3.43 ms | 0 (seed) |
-| `getAvailabilityRollup()` | 2.31 ms | 0 (seed) |
-| `getEvidenceCoverage()` | 0.14 ms | 0 (seed) |
+| `getUnits({ limit: 500 })`                  | 3.43 ms     | 0 (seed) |
+| `getAvailabilityRollup()`                   | 2.31 ms     | 0 (seed) |
+| `getEvidenceCoverage()`                     | 0.14 ms     | 0 (seed) |
 
 Supabase-mode query counts, by construction rather than measurement `[I]`:
 `getEvidenceCoverage()` is a constant **11** queries — the 1,354-row fact table is counted
@@ -145,14 +145,14 @@ the 656-unit N+1 the brief warns about cannot occur. `getDashboardSnapshot()` fa
 
 ## Requests for other windows
 
-| File | Owning task | What is needed |
-|---|---|---|
-| `apps/web/tsconfig.json` | **W0-A** | Add `"allowImportingTsExtensions": true`. `noEmit` is already on, so it is safe. Without it there is no way to write a `.test.ts` that both `tsc` accepts and `node --test` can load, and the brief's own command `node --test apps/web/lib/*.test.ts` cannot run. One line. |
-| `apps/web/package.json` | **W0-A** | A `"test:unit"` script wiring the two suites, once the above lands. |
-| `apps/web/lib/rbac.ts` | **W1-B** | `staff` holds no `leads:*` or `buyer_pipeline:*` permission, but migration 14's RLS originally admitted staff. I **tightened the SQL to manager (70)** so RLS is not looser than RBAC. If sales agents are meant to be `staff`, add `leads:view` there and tell me to relax the policy — changing only one side re-opens the gap. Same question for `compliance:view`. |
-| `supabase/migrations/*` | **W1-A (me)** | Recorded rather than silently done: `getPipelineSummary`, `getFinanceSummary` and `getOperationsSummary` aggregate in TypeScript over one 500-row page because PostgREST cannot `GROUP BY`. They set `truncated` + a `degradedReason` when the exact count exceeds the page. An exact aggregate at volume needs a SQL view or RPC. Not built tonight. |
-| `docs/api/openapi.yaml` | **W2-B** | Finance and ticket **mutations are revoked for `authenticated`** by migrations 07 and 06 — the tables expect service-role RPCs that do not exist yet. `reverseLedgerEntry()`, `settleVendorInvoice()` and `updateTicketStatus()` are written and typed but will return `forbidden` (42501) until those RPCs land. They were deliberately **not** given a service-role client: that would bypass RLS from a request path. |
-| `apps/web/lib/database.types.ts` | **unowned** | Does not exist, so the Supabase client is untyped and every row is mapped from `unknown`. Safe, but `supabase gen types` needs an owner. Blocked tonight by Docker (see W1-A). |
+| File                             | Owning task   | What is needed                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/web/tsconfig.json`         | **W0-A**      | Add `"allowImportingTsExtensions": true`. `noEmit` is already on, so it is safe. Without it there is no way to write a `.test.ts` that both `tsc` accepts and `node --test` can load, and the brief's own command `node --test apps/web/lib/*.test.ts` cannot run. One line.                                                                                                                                             |
+| `apps/web/package.json`          | **W0-A**      | A `"test:unit"` script wiring the two suites, once the above lands.                                                                                                                                                                                                                                                                                                                                                      |
+| `apps/web/lib/rbac.ts`           | **W1-B**      | `staff` holds no `leads:*` or `buyer_pipeline:*` permission, but migration 14's RLS originally admitted staff. I **tightened the SQL to manager (70)** so RLS is not looser than RBAC. If sales agents are meant to be `staff`, add `leads:view` there and tell me to relax the policy — changing only one side re-opens the gap. Same question for `compliance:view`.                                                   |
+| `supabase/migrations/*`          | **W1-A (me)** | Recorded rather than silently done: `getPipelineSummary`, `getFinanceSummary` and `getOperationsSummary` aggregate in TypeScript over one 500-row page because PostgREST cannot `GROUP BY`. They set `truncated` + a `degradedReason` when the exact count exceeds the page. An exact aggregate at volume needs a SQL view or RPC. Not built tonight.                                                                    |
+| `docs/api/openapi.yaml`          | **W2-B**      | Finance and ticket **mutations are revoked for `authenticated`** by migrations 07 and 06 — the tables expect service-role RPCs that do not exist yet. `reverseLedgerEntry()`, `settleVendorInvoice()` and `updateTicketStatus()` are written and typed but will return `forbidden` (42501) until those RPCs land. They were deliberately **not** given a service-role client: that would bypass RLS from a request path. |
+| `apps/web/lib/database.types.ts` | **unowned**   | Does not exist, so the Supabase client is untyped and every row is mapped from `unknown`. Safe, but `supabase gen types` needs an owner. Blocked tonight by Docker (see W1-A).                                                                                                                                                                                                                                           |
 
 ---
 
@@ -177,7 +177,7 @@ the 656-unit N+1 the brief warns about cannot occur. `getDashboardSnapshot()` fa
   `azura-documents` and `azura-evidence` do not exist yet (W0-A's `setup-supabase.mjs` has
   only been dry-run). In seed mode it returns `null` with a reason rather than a fake link.
 - **`[I]` `getMessages()` drops `is_internal_note` for callers below staff, and when no role
-  is given.** RLS does *not* filter that column — migration 09 documents the gap — so this is
+  is given.** RLS does _not_ filter that column — migration 09 documents the gap — so this is
   the only thing standing between a resident and staff-only annotations. Do not add an
   override.
 - **`[I]` Repository role scoping duplicates RLS deliberately.** RLS is the boundary that

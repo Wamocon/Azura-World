@@ -101,7 +101,7 @@ export function SentimentDistribution({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+      <p className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
         {labels.heading}
       </p>
 
@@ -130,16 +130,24 @@ export function SentimentDistribution({
 
       <dl className="flex flex-wrap gap-x-5 gap-y-1.5">
         <div className="sr-only">
-          {labels.distributionOf.replace("{total}", number.format(breakdown.total))}
+          {labels.distributionOf.replace(
+            "{total}",
+            number.format(breakdown.total)
+          )}
         </div>
         {breakdown.buckets.map((bucket) => (
           <div key={bucket.key} className="flex items-center gap-2 text-sm">
             <span
               aria-hidden="true"
-              className={cn("size-2 shrink-0 rounded-full", TONE_CLASS[bucket.tone])}
+              className={cn(
+                "size-2 shrink-0 rounded-full",
+                TONE_CLASS[bucket.tone]
+              )}
             />
-            <dt className="text-muted-foreground">{labels.bucket[bucket.key]}</dt>
-            <dd data-numeric className="tabular-nums text-foreground">
+            <dt className="text-muted-foreground">
+              {labels.bucket[bucket.key]}
+            </dt>
+            <dd data-numeric className="text-foreground tabular-nums">
               {number.format(bucket.count)}
             </dd>
           </div>

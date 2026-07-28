@@ -429,11 +429,7 @@ export const permissionMatrix: Record<Role, readonly Permission[]> =
 
 /** The five roles CONTRACTS §3 adds below the canonical six. */
 export type AddedRole =
-  | "guest"
-  | "service_provider"
-  | "child_owner"
-  | "child_tenant"
-  | "child_guest"
+  "guest" | "service_provider" | "child_owner" | "child_tenant" | "child_guest"
 
 /**
  * Which canonical role each added role is a subset of. This is the map the
@@ -533,7 +529,9 @@ const permissionSets: Record<Role, ReadonlySet<string>> = Object.freeze({
 
 /** Narrows unknown input — a role from a cookie, a JWT claim or a form post. */
 export function isValidRole(value: unknown): value is Role {
-  return typeof value === "string" && (roles as readonly string[]).includes(value)
+  return (
+    typeof value === "string" && (roles as readonly string[]).includes(value)
+  )
 }
 
 /**

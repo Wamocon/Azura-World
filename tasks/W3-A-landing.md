@@ -39,19 +39,19 @@ Messages: append to `landing.*` only. Do not touch other namespaces.
 
 ## Sections
 
-| # | Section | Funnel stage | Content |
-|---|---|---|---|
-| 1 | `hero` | Attention | Name, one-line position, 3D coast maquette (W1-D), the three headline figures — **76.000 m² · 7 Blöcke · 656 Wohnungen** — each rendered through `ProvenanceValue` |
-| 2 | `why` | Interest | What Azura World is, factually. Developer, location, timeline. Sourced. |
-| 3 | `immersion` | Search | Masterplan: 7 blocks, hotel, beach at 300 m, distances. Explorable. |
-| 4 | `amenities` | Search | Amenity grid from the dataset, each attributed to the source that lists it |
-| 5 | `desire` | Desire | Differentiation: 5★ all-inclusive hotel on site, 188 rooms, 13-slide aquapark |
-| 6 | `evidence-band` | **Trust** | **The section that makes this project what it is.** See below. |
-| 7 | `action` | Action | Enquiry / access request |
-| 8 | `after` | Like/Loyalty | What the CATI gives an operator |
-| 9 | `share` | Share | Share + public report entry |
-| 10 | `love` | Love | Emotional close |
-| 11 | `footer` | — | Contact, legal, full source list |
+| #   | Section         | Funnel stage | Content                                                                                                                                                            |
+| --- | --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `hero`          | Attention    | Name, one-line position, 3D coast maquette (W1-D), the three headline figures — **76.000 m² · 7 Blöcke · 656 Wohnungen** — each rendered through `ProvenanceValue` |
+| 2   | `why`           | Interest     | What Azura World is, factually. Developer, location, timeline. Sourced.                                                                                            |
+| 3   | `immersion`     | Search       | Masterplan: 7 blocks, hotel, beach at 300 m, distances. Explorable.                                                                                                |
+| 4   | `amenities`     | Search       | Amenity grid from the dataset, each attributed to the source that lists it                                                                                         |
+| 5   | `desire`        | Desire       | Differentiation: 5★ all-inclusive hotel on site, 188 rooms, 13-slide aquapark                                                                                      |
+| 6   | `evidence-band` | **Trust**    | **The section that makes this project what it is.** See below.                                                                                                     |
+| 7   | `action`        | Action       | Enquiry / access request                                                                                                                                           |
+| 8   | `after`         | Like/Loyalty | What the CATI gives an operator                                                                                                                                    |
+| 9   | `share`         | Share        | Share + public report entry                                                                                                                                        |
+| 10  | `love`          | Love         | Emotional close                                                                                                                                                    |
+| 11  | `footer`        | —            | Contact, legal, full source list                                                                                                                                   |
 
 ### The evidence band — section 6
 
@@ -112,6 +112,7 @@ pnpm qa:perf            # LCP ≤ 2.5s throttled mobile, CLS ≤ 0.1, JS ≤ 250
 ```
 
 Plus, evidence pasted:
+
 1. Screenshots: 4 locales × {320, 768, 1440} px
 2. `prefers-reduced-motion` screenshot — nothing missing versus the animated version
 3. WebGL-disabled screenshot — poster renders

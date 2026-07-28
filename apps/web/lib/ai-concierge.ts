@@ -90,11 +90,7 @@ export interface ConciergeTrace {
   grounded: boolean
   gatewayAttempted: boolean
   gatewayOutcome:
-    | "ok"
-    | "not_attempted"
-    | "unconfigured"
-    | "error"
-    | "discarded_ungrounded"
+    "ok" | "not_attempted" | "unconfigured" | "error" | "discarded_ungrounded"
   gatewayError: string | null
   injectionSignal: boolean
   latencyMs: number
@@ -210,7 +206,11 @@ export async function runConcierge(
   // 3. + 4. Classification and the RBAC decision, together, so the decision can
   //    never be made against a different intent than the one classified.
   const decision = getAiAccessDecision(input.role, message)
-  const trace = { ...baseTrace, intent: decision.intent, permission: decision.permission }
+  const trace = {
+    ...baseTrace,
+    intent: decision.intent,
+    permission: decision.permission,
+  }
 
   if (!decision.allowed) {
     const kind = decision.refusalKind ?? "rbac_denied"
@@ -224,7 +224,11 @@ export async function runConcierge(
   }
 
   // 5. Retrieval.
-  const retrieval = retrieve({ intent: decision.intent, message, locale: language })
+  const retrieval = retrieve({
+    intent: decision.intent,
+    message,
+    locale: language,
+  })
   const citations: SourceRef[] = retrieval.citations
   const enriched = {
     ...trace,

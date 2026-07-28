@@ -29,7 +29,11 @@ import { gsap, ScrollTrigger, registerGsap } from "@/components/anim/gsap"
 
 import { useReducedMotion } from "./motion-preference-provider"
 
-export function LenisProvider({ children }: { children: ReactNode }): ReactNode {
+export function LenisProvider({
+  children,
+}: {
+  children: ReactNode
+}): ReactNode {
   const reducedMotion = useReducedMotion()
 
   if (reducedMotion) {

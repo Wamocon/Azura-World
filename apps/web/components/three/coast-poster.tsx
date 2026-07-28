@@ -27,17 +27,21 @@ import { cn } from "@/lib/cn"
  */
 
 /** Seven residence blocks + the hotel. x, width and height in viewBox units. */
-const BLOCKS: ReadonlyArray<{ x: number; w: number; h: number; hotel?: boolean }> =
-  [
-    { x: 46, w: 30, h: 54 },
-    { x: 84, w: 30, h: 68 },
-    { x: 122, w: 30, h: 46 },
-    { x: 160, w: 34, h: 92, hotel: true },
-    { x: 202, w: 30, h: 58 },
-    { x: 240, w: 30, h: 72 },
-    { x: 278, w: 30, h: 50 },
-    { x: 316, w: 30, h: 62 },
-  ]
+const BLOCKS: ReadonlyArray<{
+  x: number
+  w: number
+  h: number
+  hotel?: boolean
+}> = [
+  { x: 46, w: 30, h: 54 },
+  { x: 84, w: 30, h: 68 },
+  { x: 122, w: 30, h: 46 },
+  { x: 160, w: 34, h: 92, hotel: true },
+  { x: 202, w: 30, h: 58 },
+  { x: 240, w: 30, h: 72 },
+  { x: 278, w: 30, h: 50 },
+  { x: 316, w: 30, h: 62 },
+]
 
 export function CoastPoster({
   className,
@@ -90,7 +94,14 @@ export function CoastPoster({
       ))}
 
       {/* Beach. */}
-      <rect x="0" y="178" width="400" height="10" fill="var(--sand)" opacity="0.5" />
+      <rect
+        x="0"
+        y="178"
+        width="400"
+        height="10"
+        fill="var(--sand)"
+        opacity="0.5"
+      />
 
       {/* Massing. The hotel is taller and warmer; the seven residence blocks
           are the corroborated count (F-001 resolved to 7). */}
@@ -135,7 +146,14 @@ export function CoastPoster({
       ))}
 
       {/* Ground line. */}
-      <rect x="0" y="177" width="400" height="1.5" fill="var(--foreground)" opacity="0.12" />
+      <rect
+        x="0"
+        y="177"
+        width="400"
+        height="1.5"
+        fill="var(--foreground)"
+        opacity="0.12"
+      />
     </svg>
   )
 }

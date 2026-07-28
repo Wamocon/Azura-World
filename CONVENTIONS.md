@@ -7,23 +7,23 @@ repos. Do not float versions; do not introduce a second way to do something that
 
 ## 1. Pinned versions
 
-| Layer | Version | Why this one |
-|---|---|---|
-| Next.js | `16.2.6` | Matches 1Çatı. App Router + `proxy.ts` |
-| React / ReactDOM | `19.2.4` | Matches 1Çatı |
-| TypeScript | `^5` strict | `noUncheckedIndexedAccess` on — see §3 |
-| Tailwind | `^4` + `@tailwindcss/postcss` | CSS-first. **No `tailwind.config.js`** |
-| next-intl | `^4.13.0` | de·en·tr·ru |
-| Supabase | `@supabase/ssr ^0.12.0`, `supabase-js ^2.108.2` | |
-| Base UI | `@base-ui/react ^1.6.0` + `shadcn ^4.11.0` | 1Çatı's primitive layer |
-| Framer Motion | `^12.40.0` | micro-interactions |
-| GSAP | `^3.15.0` + `@gsap/react ^2.1.2` | ScrollTrigger, ScrambleText — free tier only |
-| Lenis | `^1.3.25` | smooth scroll (from NLP repo) |
-| three / R3F | `three ^0.185.1`, `@react-three/fiber ^9.6.1`, `drei ^10.7.7` | hero maquette only |
-| Icons | `lucide-react ^1.21.0` | **only** icon library |
-| Playwright | `@playwright/test ^1.61.0` | |
-| Zod | `^4.4.3` | every API input boundary |
-| pnpm / Node | `10.0.0` / `>= 20` | Corepack |
+| Layer            | Version                                                       | Why this one                                 |
+| ---------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| Next.js          | `16.2.6`                                                      | Matches 1Çatı. App Router + `proxy.ts`       |
+| React / ReactDOM | `19.2.4`                                                      | Matches 1Çatı                                |
+| TypeScript       | `^5` strict                                                   | `noUncheckedIndexedAccess` on — see §3       |
+| Tailwind         | `^4` + `@tailwindcss/postcss`                                 | CSS-first. **No `tailwind.config.js`**       |
+| next-intl        | `^4.13.0`                                                     | de·en·tr·ru                                  |
+| Supabase         | `@supabase/ssr ^0.12.0`, `supabase-js ^2.108.2`               |                                              |
+| Base UI          | `@base-ui/react ^1.6.0` + `shadcn ^4.11.0`                    | 1Çatı's primitive layer                      |
+| Framer Motion    | `^12.40.0`                                                    | micro-interactions                           |
+| GSAP             | `^3.15.0` + `@gsap/react ^2.1.2`                              | ScrollTrigger, ScrambleText — free tier only |
+| Lenis            | `^1.3.25`                                                     | smooth scroll (from NLP repo)                |
+| three / R3F      | `three ^0.185.1`, `@react-three/fiber ^9.6.1`, `drei ^10.7.7` | hero maquette only                           |
+| Icons            | `lucide-react ^1.21.0`                                        | **only** icon library                        |
+| Playwright       | `@playwright/test ^1.61.0`                                    |                                              |
+| Zod              | `^4.4.3`                                                      | every API input boundary                     |
+| pnpm / Node      | `10.0.0` / `>= 20`                                            | Corepack                                     |
 
 **Next.js 16 specifics:** `proxy.ts` replaces `middleware.ts` — do not create both.
 `params` is a Promise: `const { locale } = await params`. Build with `next build --webpack`
@@ -41,16 +41,16 @@ There is no JS config. Adding one breaks the build silently in dev and loudly in
 ```ts
 export async function getX(): Promise<RepositoryResult<X>> {
   if (!isSupabaseConfigured()) {
-    return { data: seedX(), source: "local-seed", fetchedAt: nowIso() }
+    return { data: seedX(), source: "local-seed", fetchedAt: nowIso() };
   }
-  const { data, error } = await client.from("x").select()
-  if (error) throw toApiError(error)      // configured but failing ⟹ real error, not a fallback
-  return { data: mapX(data), source: "supabase", fetchedAt: nowIso() }
+  const { data, error } = await client.from("x").select();
+  if (error) throw toApiError(error); // configured but failing ⟹ real error, not a fallback
+  return { data: mapX(data), source: "supabase", fetchedAt: nowIso() };
 }
 ```
 
-The distinction matters: *unconfigured* falls back silently and labels itself; *configured but
-broken* must surface. Collapsing the two hides outages behind plausible-looking seed data.
+The distinction matters: _unconfigured_ falls back silently and labels itself; _configured but
+broken_ must surface. Collapsing the two hides outages behind plausible-looking seed data.
 
 **Server Components by default.** `"use client"` only for state, effects, or browser APIs. A
 client component that only renders props is a bundle-size bug.
@@ -69,10 +69,10 @@ server-side even when the UI already hid the entry point.
 ```jsonc
 {
   "strict": true,
-  "noUncheckedIndexedAccess": true,   // arr[0] is T | undefined — handle it
+  "noUncheckedIndexedAccess": true, // arr[0] is T | undefined — handle it
   "exactOptionalPropertyTypes": true,
   "noImplicitOverride": true,
-  "verbatimModuleSyntax": true
+  "verbatimModuleSyntax": true,
 }
 ```
 
@@ -112,8 +112,9 @@ Additional standing rules:
 ## 5. Edge cases every window must handle
 
 **Data / provenance**
+
 - A source that returns HTTP 200 with a bot wall or soft-404 body → `contentValidated: false`.
-  *Validate the bytes, not the status line* — Ataberg shipped 51 of 154 "downloads" as 404 pages
+  _Validate the bytes, not the status line_ — Ataberg shipped 51 of 154 "downloads" as 404 pages
   wearing a `.jpg` extension.
 - Mixed currency (portals quote EUR and USD for the same unit) → never convert silently. Store
   `Money` with its currency; convert only at display, labelled, with the rate's date.
@@ -127,12 +128,14 @@ Additional standing rules:
 - `null` vs `0`: a price of `0` is a bug; a price of `null` is an honest gap. Never coerce.
 
 **Auth / RBAC**
+
 - Session expires mid-form → preserve input, re-auth, resume. Do not discard typed data.
 - A role with zero permitted resources must land on a coherent empty state, not a broken shell.
 - Deep link to a forbidden route → 403 page, not a redirect loop.
-- `child_*` roles inherit a *subset* — test that they cannot escalate via a guardian relation.
+- `child_*` roles inherit a _subset_ — test that they cannot escalate via a guardian relation.
 
 **UI**
+
 - `prefers-reduced-motion` → GSAP timelines and R3F must degrade to static, not just "less".
 - No WebGL (older devices, headless CI) → the 3D hero needs a poster fallback, not a blank box.
 - RTL is **not** required (no Arabic/Hebrew locale) — do not build for it.
@@ -140,7 +143,8 @@ Additional standing rules:
 - Tap targets ≥ 24px. Ataberg's layout harness caught real violations under this.
 
 **Runtime**
-- Supabase Realtime disconnects → fall back to 30s polling and *show* the degraded state.
+
+- Supabase Realtime disconnects → fall back to 30s polling and _show_ the degraded state.
 - Concurrent edits → optimistic concurrency with a version column; last-write-wins is a bug.
 - Long-running report generation → job + poll, not a blocking request.
 
@@ -163,14 +167,14 @@ Additional standing rules:
 WCAG 2.2 AA. Semantic landmarks, one `<h1>` per page, visible focus, `aria-live` on async
 regions, keyboard path through every workflow, contrast ≥ 4.5:1 in **both** themes.
 
-| Budget | Target |
-|---|---|
-| LCP (throttled mobile) | ≤ 2.5s |
-| CLS | ≤ 0.1 |
-| INP | ≤ 200ms |
+| Budget                                               | Target          |
+| ---------------------------------------------------- | --------------- |
+| LCP (throttled mobile)                               | ≤ 2.5s          |
+| CLS                                                  | ≤ 0.1           |
+| INP                                                  | ≤ 200ms         |
 | JS on landing route, **excluding the lazy 3D chunk** | ≤ 250KB gzipped |
-| Lazy 3D chunk (three.js + R3F), on its own | ≤ 260KB gzipped |
-| Lighthouse a11y | ≥ 95 |
+| Lazy 3D chunk (three.js + R3F), on its own           | ≤ 260KB gzipped |
+| Lighthouse a11y                                      | ≥ 95            |
 
 R3F is lazy-loaded behind an intersection observer and never blocks LCP.
 

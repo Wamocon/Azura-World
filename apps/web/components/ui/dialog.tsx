@@ -51,22 +51,22 @@ function DialogContent({
         className={cn(
           "fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--sea-deep)_55%,transparent)] backdrop-blur-sm",
           "transition-opacity duration-200 ease-[var(--ease-out)]",
-          "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
+          "data-[ending-style]:opacity-0 data-[starting-style]:opacity-0"
         )}
       />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
+          "fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
           "flex w-[calc(100vw-2rem)] max-w-lg flex-col gap-4",
           // A dialog taller than the viewport must scroll inside itself; at
           // 320px with German copy this is not a rare case.
-          "max-h-[calc(100dvh-2rem)] overflow-y-auto azura-scrollbar-slim",
+          "azura-scrollbar-slim max-h-[calc(100dvh-2rem)] overflow-y-auto",
           "rounded-xl border border-border bg-popover p-6 text-popover-foreground shadow-2xl",
           "transition-[transform,opacity] duration-200 ease-[var(--ease-out)]",
           "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
           "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",
-          "motion-reduce:transition-opacity motion-reduce:data-[starting-style]:scale-100 motion-reduce:data-[ending-style]:scale-100",
+          "motion-reduce:transition-opacity motion-reduce:data-[ending-style]:scale-100 motion-reduce:data-[starting-style]:scale-100",
           className
         )}
         {...props}
@@ -75,7 +75,7 @@ function DialogContent({
         <DialogPrimitive.Close
           aria-label={closeLabel}
           className={cn(
-            "absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-md",
+            "absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-md",
             "text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
             "outline-none focus-visible:ring-2 focus-visible:ring-ring"
           )}

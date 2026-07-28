@@ -1,6 +1,6 @@
 # W1-B — Auth, RBAC, Supabase clients
 
-**Wave:** 1 · **Depends on:** W0-A · **Blocks:** W2-*, W3-* · **Runs with:** W1-A, W1-C, W1-D
+**Wave:** 1 · **Depends on:** W0-A · **Blocks:** W2-_, W3-_ · **Runs with:** W1-A, W1-C, W1-D
 
 > Read `SYSTEM-PROMPT.md`, `CONVENTIONS.md`, `CONTRACTS.md` §3 first. Then read
 > `D:\Real Estate CRM\Cati\apps\web\lib\rbac.ts` and `lib\auth.ts` in full.
@@ -43,14 +43,26 @@ Import `roles`, `resources`, `actions`, `roleLevel` from `lib/contracts.ts`. **D
 them.** One source of truth.
 
 ```ts
-export const permissionMatrix: Record<Role, readonly Permission[]>
+export const permissionMatrix: Record<Role, readonly Permission[]>;
 
-export function hasPermission(role: Role, permission: Permission): boolean
-export function hasAnyPermission(role: Role, permissions: Permission[]): boolean
-export function getAccessibleResources(role: Role): Resource[]
-export function isAdmin(role: Role): boolean
-export function isManagerOrAbove(role: Role): boolean
-export function roleScope(role: Role): "company" | "site" | "finance" | "field" | "owned_unit" | "rented_unit" | "public"
+export function hasPermission(role: Role, permission: Permission): boolean;
+export function hasAnyPermission(
+  role: Role,
+  permissions: Permission[],
+): boolean;
+export function getAccessibleResources(role: Role): Resource[];
+export function isAdmin(role: Role): boolean;
+export function isManagerOrAbove(role: Role): boolean;
+export function roleScope(
+  role: Role,
+):
+  | "company"
+  | "site"
+  | "finance"
+  | "field"
+  | "owned_unit"
+  | "rented_unit"
+  | "public";
 ```
 
 **Additive-authority rule.** The five added roles (`guest`, `service_provider`, `child_*`) sit
@@ -64,9 +76,9 @@ Azura-specific one — the source/conflict cockpit.
 ### 2. `lib/auth.ts`
 
 ```ts
-export async function getUserProfile(): Promise<UserProfile>
-export function isSupabaseConfigured(): boolean
-export function isAccessProfileEnabled(): boolean
+export async function getUserProfile(): Promise<UserProfile>;
+export function isSupabaseConfigured(): boolean;
+export function isAccessProfileEnabled(): boolean;
 ```
 
 `getUserProfile()` resolution order, mirroring 1Çatı:
@@ -87,8 +99,8 @@ QA and it must be impossible to ship.
 isAccessProfileEnabled() =
   !isSupabaseConfigured() ||
   (env.ENABLE_ACCESS_PROFILES === "true" &&
-   env.AZURA_ALLOW_REMOTE_ACCESS_PROFILES === "true" &&
-   env.AZURA_DEMO_DATA_ISOLATED === "true")
+    env.AZURA_ALLOW_REMOTE_ACCESS_PROFILES === "true" &&
+    env.AZURA_DEMO_DATA_ISOLATED === "true");
 ```
 
 Add a **build-time guard**: if `NODE_ENV === "production"` **and** the three flags are set **and**
@@ -108,6 +120,7 @@ client bundle the build must break, not warn.
 ### 5. `proxy.ts` seams
 
 Fill W0-A's TODOs, in this order:
+
 1. next-intl locale routing (already there)
 2. Supabase session refresh — cookies written to **both** request and response
 3. Route guard: `/dashboard/*` protected; unauthenticated → `/{locale}/login`; authenticated

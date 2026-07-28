@@ -11,7 +11,6 @@ Evidence grading follows `SYSTEM-PROMPT.md` §3 — `[V]` verified by running it
 > criterion is met, the test that proves it is named and re-runnable. Where the proof is
 > narrower than the criterion, §3 says exactly how.
 
-
 > ## SUPERSEDES EVERYTHING BELOW — W-INT2 re-run on merged `main` @ `b5a0c83`, 2026-07-28
 >
 > Eight branches merged into `main` (w1c-w0d, w2b, w3c, w4b, w4c, w4d, wux, w4a). **All eight
@@ -24,12 +23,12 @@ Evidence grading follows `SYSTEM-PROMPT.md` §3 — `[V]` verified by running it
 > `scripts/a11y-audit.mjs`, so that gate had been reporting NOT RUN against a filename that never
 > existed.
 >
-> | | previous run | **merged `main`** |
-> |---|---|---|
-> | blocking PASS | 9 | **10** |
-> | blocking FAIL | 2 | **8** |
-> | blocking NOT RUN | 8 | **1** |
-> | exit | 1 | **1** |
+> |                  | previous run | **merged `main`** |
+> | ---------------- | ------------ | ----------------- |
+> | blocking PASS    | 9            | **10**            |
+> | blocking FAIL    | 2            | **8**             |
+> | blocking NOT RUN | 8            | **1**             |
+> | exit             | 1            | **1**             |
 >
 > **NOT RUN fell from 8 to 1.** The only remaining one is gate 9, pgTAP, because the Docker daemon
 > is still unavailable (`docker info` exit 1). W1-A's cloud substitute stands at 366/366 and is
@@ -41,20 +40,20 @@ Evidence grading follows `SYSTEM-PROMPT.md` §3 — `[V]` verified by running it
 >
 > ### The twelve named gates, exit codes captured directly from each process
 >
-> | Gate | Exit | Result |
-> |---|---|---|
-> | `typecheck` | **0** | PASS |
-> | `lint` | **0** | PASS, 0 errors 0 warnings |
-> | `build` | **0** | PASS, 43 routes, compiled in 15.6s |
-> | `verify-evidence` | **0** | PASS, 1,354 facts, 25 portal_listing + 631 modelled = 656, no violations |
-> | `check-i18n` | **0** | PASS, 831 keys x 4, identical key sets |
-> | `qa:csp` | **0** | PASS, 30 pass · 0 fail |
-> | `validate-openapi` | **0** | PASS, 13 pass · 0 fail · **23 exempt**, 33 paths · 49 operations |
-> | `layout-audit` | **1** | FAIL, **50 pass · 149 fail · 1,822 findings** |
-> | `a11y-audit` | **1** | FAIL, **6 pass · 18 fail** — 1 serious/critical on every locale of `/`, `/hotel`, `/kitchen-sink` |
-> | `perf` | **1** | FAIL, 9 pass · 3 fail — **CLS 0.1244 > 0.1** and **landing JS 264.7 KB gz > 250 KB** |
-> | `security-probe` | **1** | FAIL, **1 critical + 3 high** |
-> | `e2e` (chromium) | **1** | FAIL, **270 passed · 13 failed** |
+> | Gate               | Exit  | Result                                                                                            |
+> | ------------------ | ----- | ------------------------------------------------------------------------------------------------- |
+> | `typecheck`        | **0** | PASS                                                                                              |
+> | `lint`             | **0** | PASS, 0 errors 0 warnings                                                                         |
+> | `build`            | **0** | PASS, 43 routes, compiled in 15.6s                                                                |
+> | `verify-evidence`  | **0** | PASS, 1,354 facts, 25 portal_listing + 631 modelled = 656, no violations                          |
+> | `check-i18n`       | **0** | PASS, 831 keys x 4, identical key sets                                                            |
+> | `qa:csp`           | **0** | PASS, 30 pass · 0 fail                                                                            |
+> | `validate-openapi` | **0** | PASS, 13 pass · 0 fail · **23 exempt**, 33 paths · 49 operations                                  |
+> | `layout-audit`     | **1** | FAIL, **50 pass · 149 fail · 1,822 findings**                                                     |
+> | `a11y-audit`       | **1** | FAIL, **6 pass · 18 fail** — 1 serious/critical on every locale of `/`, `/hotel`, `/kitchen-sink` |
+> | `perf`             | **1** | FAIL, 9 pass · 3 fail — **CLS 0.1244 > 0.1** and **landing JS 264.7 KB gz > 250 KB**              |
+> | `security-probe`   | **1** | FAIL, **1 critical + 3 high**                                                                     |
+> | `e2e` (chromium)   | **1** | FAIL, **270 passed · 13 failed**                                                                  |
 >
 > `qa:csp` first reported 26 pass · 4 fail. That was **not** a merge regression: a stray
 > `next dev` (PID 37592) held port 3200, the probe attached to it and correctly refused to pass
@@ -75,12 +74,12 @@ Evidence grading follows `SYSTEM-PROMPT.md` §3 — `[V]` verified by running it
 
 ## 1. Summary
 
-| AC | Requirement (ticket, German) | Status | Proven by |
-|---|---|---|---|
-| **1** | Ein CATI für Azura World erstellen | **MET** `[V]` | `scripts/traceability.mjs` AC1.1–AC1.6 · 6/6 |
+| AC    | Requirement (ticket, German)                      | Status        | Proven by                                                                    |
+| ----- | ------------------------------------------------- | ------------- | ---------------------------------------------------------------------------- |
+| **1** | Ein CATI für Azura World erstellen                | **MET** `[V]` | `scripts/traceability.mjs` AC1.1–AC1.6 · 6/6                                 |
 | **2** | Die wichtigsten Quellen und Links berücksichtigen | **MET** `[V]` | `scripts/traceability.mjs` AC2.1–AC2.4 · 4/4 · `scripts/verify-evidence.mjs` |
-| **3** | Informationen aus Immobilien-Portalen einbeziehen | **MET** `[V]` | `scripts/traceability.mjs` AC3.1–AC3.2 · 2/2 |
-| **4** | Bewertungen und Hotel-Buchungsquellen einbeziehen | **MET** `[V]` | `scripts/traceability.mjs` AC4.1–AC4.3 · 3/3 |
+| **3** | Informationen aus Immobilien-Portalen einbeziehen | **MET** `[V]` | `scripts/traceability.mjs` AC3.1–AC3.2 · 2/2                                 |
+| **4** | Bewertungen und Hotel-Buchungsquellen einbeziehen | **MET** `[V]` | `scripts/traceability.mjs` AC4.1–AC4.3 · 3/3                                 |
 
 `node scripts/traceability.mjs` → **exit 0 · 15 pass · 0 fail.**
 
@@ -93,11 +92,11 @@ intended.** Read §3 before quoting this table.
 
 The W4-D brief names three e2e specs as the proving tests:
 
-| Brief's named test | Exists? |
-|---|---|
-| `e2e/evidence/sources.spec.ts` | **No** |
-| `e2e/inventory/listings.spec.ts` | **No** |
-| `e2e/hotel/reviews.spec.ts` | **No** |
+| Brief's named test               | Exists? |
+| -------------------------------- | ------- |
+| `e2e/evidence/sources.spec.ts`   | **No**  |
+| `e2e/inventory/listings.spec.ts` | **No**  |
+| `e2e/hotel/reviews.spec.ts`      | **No**  |
 
 `[V]` `apps/web/e2e/` contains **zero** `*.spec.ts` files and `apps/web/playwright.config.ts` does
 not exist. **W4-A was never started.** So on the tree as delivered, every acceptance criterion had
@@ -114,23 +113,23 @@ not proven for a client demo.
 
 ### Assertion detail — all 15, with measured evidence
 
-| Id | Assertion | Result | Evidence measured |
-|---|---|---|---|
-| AC1.1 | `/` redirects to default locale `/de` | PASS | HTTP 307 → `/de` |
-| AC1.2 | landing serves 200 from a production server | PASS | HTTP 200, 303,193 bytes |
-| AC1.3 | landing HTML is a real document, not an error shell | PASS | 303,193 bytes, no `__next_error__` |
-| AC1.4 | public hotel route serves 200 | PASS | HTTP 200, 187,492 bytes |
-| AC1.5 | protected route redirects to login, does not leak | PASS | HTTP 307 → `/de/login?next=%2Fdashboard` |
-| AC1.6 | unknown locale 404s, does not silently serve German | PASS | HTTP 404 |
-| AC2.1 | landing renders outbound source links | PASS | **203** `https://` occurrences |
-| AC2.2 | tier 1–2 sources cited on the landing page | PASS | `azuraworld.com`, `cebecigroup` |
-| AC2.3 | provenance vocabulary rendered — gaps shown, not hidden | PASS | `Nicht belegt`, `Quellen` present |
-| AC2.4 | evidence invariants hold across the dataset | PASS | `verify-evidence.mjs` exit 0, no violations, 1,354 facts |
-| AC3.1 | property portals cited on the landing page | PASS | **5/6**: terrarealestate, housearch, seaside-alanya, alanya-home, ivm-turkey |
-| AC3.2 | portal listings distinguished from modelled records | PASS | **25 portal_listing + 631 modelled = 656** |
-| AC4.1 | review/booking platforms cited on the hotel page | PASS | **4/4**: tripadvisor ×58, booking.com ×12, agoda ×4, onthebeach ×9 |
-| AC4.2 | hotel page links out to those sources | PASS | **148** `https://` occurrences |
-| AC4.3 | Tripadvisor cited repeatedly, not once in passing | PASS | 58 occurrences |
+| Id    | Assertion                                               | Result | Evidence measured                                                            |
+| ----- | ------------------------------------------------------- | ------ | ---------------------------------------------------------------------------- |
+| AC1.1 | `/` redirects to default locale `/de`                   | PASS   | HTTP 307 → `/de`                                                             |
+| AC1.2 | landing serves 200 from a production server             | PASS   | HTTP 200, 303,193 bytes                                                      |
+| AC1.3 | landing HTML is a real document, not an error shell     | PASS   | 303,193 bytes, no `__next_error__`                                           |
+| AC1.4 | public hotel route serves 200                           | PASS   | HTTP 200, 187,492 bytes                                                      |
+| AC1.5 | protected route redirects to login, does not leak       | PASS   | HTTP 307 → `/de/login?next=%2Fdashboard`                                     |
+| AC1.6 | unknown locale 404s, does not silently serve German     | PASS   | HTTP 404                                                                     |
+| AC2.1 | landing renders outbound source links                   | PASS   | **203** `https://` occurrences                                               |
+| AC2.2 | tier 1–2 sources cited on the landing page              | PASS   | `azuraworld.com`, `cebecigroup`                                              |
+| AC2.3 | provenance vocabulary rendered — gaps shown, not hidden | PASS   | `Nicht belegt`, `Quellen` present                                            |
+| AC2.4 | evidence invariants hold across the dataset             | PASS   | `verify-evidence.mjs` exit 0, no violations, 1,354 facts                     |
+| AC3.1 | property portals cited on the landing page              | PASS   | **5/6**: terrarealestate, housearch, seaside-alanya, alanya-home, ivm-turkey |
+| AC3.2 | portal listings distinguished from modelled records     | PASS   | **25 portal_listing + 631 modelled = 656**                                   |
+| AC4.1 | review/booking platforms cited on the hotel page        | PASS   | **4/4**: tripadvisor ×58, booking.com ×12, agoda ×4, onthebeach ×9           |
+| AC4.2 | hotel page links out to those sources                   | PASS   | **148** `https://` occurrences                                               |
+| AC4.3 | Tripadvisor cited repeatedly, not once in passing       | PASS   | 58 occurrences                                                               |
 
 ---
 
@@ -143,7 +142,7 @@ This is the section to read before repeating the word "met" to anyone.
 project's central honesty risk is a synthesised unit reading as a real listing, and that split is
 machine-checked, not promised.
 
-**What the probe proves:** the criteria are satisfied *in production output* — the sources are
+**What the probe proves:** the criteria are satisfied _in production output_ — the sources are
 cited, the links are real and outbound, portal records are distinguished from modelled ones, and
 the review platforms are on the hotel page with links.
 
@@ -166,8 +165,8 @@ the review platforms are on the hotel page with links.
   hydration works in production (30 assertions, React hydrated `true`, 0 CSP violations), so this
   is a narrow gap rather than an open question — but the traceability assertions themselves are
   string counts over markup.
-- `[I]` A citation count proves the source is *rendered*. It does not prove the figure next to it
-  is *correct*. Correctness of the underlying facts is `verify-evidence.mjs`'s job (invariants) and
+- `[I]` A citation count proves the source is _rendered_. It does not prove the figure next to it
+  is _correct_. Correctness of the underlying facts is `verify-evidence.mjs`'s job (invariants) and
   the harvest's (provenance) — see §5 on why "correct" has a ceiling here.
 
 ---
@@ -176,17 +175,17 @@ the review platforms are on the hotel page with links.
 
 Every one re-run by W4-D on this tree, exit codes captured directly from the process:
 
-| Suite | Command | Executed | Result |
-|---|---|---|---|
-| Contract smoke | `pnpm smoke:contracts` | 33 | **33 pass · 0 fail** exit 0 |
-| RBAC matrix | `scripts/rbac-probe.mts` | 157 | **157 pass · 0 fail** exit 0 |
-| AI guardrails | `scripts/ai-probe.mjs` | 152 | **152 pass · 0 fail** exit 0 · **17/31 probes refused** |
-| Realtime | `scripts/realtime-probe.mts` | 93 | **93 pass · 0 fail** exit 0 |
-| Dashboard matrix | `pnpm qa:dashboard` | 647 | **647 pass · 0 fail** exit 0 · 11 roles × 21 routes |
-| CSP / prerender | `pnpm qa:csp` | 30 | **30 pass · 0 fail** exit 0 |
-| Unit | `node --test` | 24 | **24 pass · 0 fail** exit 0 |
-| Traceability | `scripts/traceability.mjs` | 15 | **15 pass · 0 fail** exit 0 |
-| **Total executed** | | **1,151** | **1,151 pass · 0 fail** |
+| Suite              | Command                      | Executed  | Result                                                  |
+| ------------------ | ---------------------------- | --------- | ------------------------------------------------------- |
+| Contract smoke     | `pnpm smoke:contracts`       | 33        | **33 pass · 0 fail** exit 0                             |
+| RBAC matrix        | `scripts/rbac-probe.mts`     | 157       | **157 pass · 0 fail** exit 0                            |
+| AI guardrails      | `scripts/ai-probe.mjs`       | 152       | **152 pass · 0 fail** exit 0 · **17/31 probes refused** |
+| Realtime           | `scripts/realtime-probe.mts` | 93        | **93 pass · 0 fail** exit 0                             |
+| Dashboard matrix   | `pnpm qa:dashboard`          | 647       | **647 pass · 0 fail** exit 0 · 11 roles × 21 routes     |
+| CSP / prerender    | `pnpm qa:csp`                | 30        | **30 pass · 0 fail** exit 0                             |
+| Unit               | `node --test`                | 24        | **24 pass · 0 fail** exit 0                             |
+| Traceability       | `scripts/traceability.mjs`   | 15        | **15 pass · 0 fail** exit 0                             |
+| **Total executed** |                              | **1,151** | **1,151 pass · 0 fail**                                 |
 
 Plus **366 pgTAP assertions** executed by W1-A against the live cloud database — **not** re-run by
 W4-D, and **not** via `supabase test db`, which is NOT RUN because Docker is down. See
@@ -211,7 +210,7 @@ either.
 block count, unit count, area, date, distance or price.
 
 **So every structural number in this dataset rests on tier 4–6 portals** (finding **F-010**). AC2
-says *"die wichtigsten Quellen berücksichtigen"* — the most important sources are *considered*, and
+says _"die wichtigsten Quellen berücksichtigen"_ — the most important sources are _considered_, and
 their unavailability is recorded as a finding rather than hidden. That is the criterion honestly
 satisfied. It is **not** the same as those figures being authoritative, and no test in this
 repository can make it so. `RELEASE-STATUS.md` §6 carries this as a first-class limitation.

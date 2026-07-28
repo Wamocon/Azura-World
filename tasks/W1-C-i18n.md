@@ -14,8 +14,8 @@ Four locales with **German as default** — the ticket is German and 5 of 7 port
 German-language. Every W3-* window writes copy against your key structure, so the structure has
 to be right before wave 3 opens; renaming keys later touches eight windows at once.
 
-The honesty rule from the Ataberg rebuild applies here: *an English fallback is honest, a
-machine-translated string only looks finished.* Where you cannot produce good copy in a locale,
+The honesty rule from the Ataberg rebuild applies here: _an English fallback is honest, a
+machine-translated string only looks finished._ Where you cannot produce good copy in a locale,
 fall back visibly and record it — do not ship plausible-looking machine output.
 
 ---
@@ -39,9 +39,9 @@ HANDOFF/W1-C.md
 ### 1. Routing
 
 ```ts
-export const locales = ["de", "en", "tr", "ru"] as const
-export const defaultLocale = "de"
-export const localePrefix = "always"
+export const locales = ["de", "en", "tr", "ru"] as const;
+export const defaultLocale = "de";
+export const localePrefix = "always";
 ```
 
 Import from `lib/contracts.ts` — do not redeclare. `localePrefix: "always"` means every URL
@@ -73,17 +73,17 @@ your handoff so nobody rewrites `common.*`.
 The provenance UI needs precise wording in four languages. Get these right; they carry the
 project's credibility:
 
-| Key | de | en |
-|---|---|---|
-| `evidence.confidence.confirmed` | Bestätigt (mehrere Quellen) | Confirmed (multiple sources) |
-| `evidence.confidence.official` | Offizielle Angabe | Official statement |
-| `evidence.confidence.single_source` | Einzelquelle | Single source |
-| `evidence.confidence.conflicted` | **Quellen widersprechen sich** | **Sources disagree** |
-| `evidence.confidence.inferred` | Abgeleitet | Inferred |
-| `evidence.confidence.gap` | Nicht belegt | Not established |
-| `evidence.stale` | Veraltetes Inserat | Stale listing |
-| `evidence.modelled` | Modellierter Datensatz — kein reales Inserat | Modelled record — not a real listing |
-| `evidence.sourceUnreachable` | Quelle nicht erreichbar | Source unreachable |
+| Key                                 | de                                           | en                                   |
+| ----------------------------------- | -------------------------------------------- | ------------------------------------ |
+| `evidence.confidence.confirmed`     | Bestätigt (mehrere Quellen)                  | Confirmed (multiple sources)         |
+| `evidence.confidence.official`      | Offizielle Angabe                            | Official statement                   |
+| `evidence.confidence.single_source` | Einzelquelle                                 | Single source                        |
+| `evidence.confidence.conflicted`    | **Quellen widersprechen sich**               | **Sources disagree**                 |
+| `evidence.confidence.inferred`      | Abgeleitet                                   | Inferred                             |
+| `evidence.confidence.gap`           | Nicht belegt                                 | Not established                      |
+| `evidence.stale`                    | Veraltetes Inserat                           | Stale listing                        |
+| `evidence.modelled`                 | Modellierter Datensatz — kein reales Inserat | Modelled record — not a real listing |
+| `evidence.sourceUnreachable`        | Quelle nicht erreichbar                      | Source unreachable                   |
 
 `evidence.modelled` matters most: it is the string that stops a synthesised unit being read as a
 real listing. It must be unambiguous in all four languages.
@@ -91,11 +91,11 @@ real listing. It must be unambiguous in all four languages.
 ### 4. `lib/format.ts` — locale-correct formatting
 
 ```ts
-export function formatMoney(m: Money, locale: Locale): string
-export function formatArea(sqm: number, locale: Locale): string
-export function formatDate(iso: string, locale: Locale): string
-export function formatDistance(metres: number, locale: Locale): string
-export function collator(locale: Locale): Intl.Collator
+export function formatMoney(m: Money, locale: Locale): string;
+export function formatArea(sqm: number, locale: Locale): string;
+export function formatDate(iso: string, locale: Locale): string;
+export function formatDistance(metres: number, locale: Locale): string;
+export function collator(locale: Locale): Intl.Collator;
 ```
 
 - `Intl.NumberFormat` with `style: "currency"`, never string concatenation.
@@ -106,6 +106,7 @@ export function collator(locale: Locale): Intl.Collator
 ### 5. `scripts/check-i18n.mjs`
 
 Exits non-zero on:
+
 1. A key in `de.json` missing from any other locale
 2. A key present in a non-default locale but absent from `de.json` (orphan)
 3. An empty string value
@@ -158,6 +159,7 @@ node scripts/check-i18n.mjs        # exits 0
 ```
 
 Plus, output pasted:
+
 - All four message files present with **identical key sets** (print the count)
 - `/de`, `/en`, `/tr`, `/ru` all resolve; `/` redirects to `/de`
 - `/xx/dashboard` 404s rather than silently serving German

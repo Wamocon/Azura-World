@@ -35,11 +35,7 @@ export type LiveMode = "realtime" | "polling" | "static" | "offline"
 
 /** The channel's own view of itself, mapped from Supabase's subscribe status. */
 export type RealtimeStatus =
-  | "idle"
-  | "subscribing"
-  | "subscribed"
-  | "error"
-  | "closed"
+  "idle" | "subscribing" | "subscribed" | "error" | "closed"
 
 export interface LiveModeInput {
   online: boolean
@@ -65,7 +61,8 @@ export interface LiveModeInput {
  */
 export function resolveLiveMode(input: LiveModeInput): LiveMode {
   if (!input.online) return "offline"
-  if (!input.supabaseConfigured || input.source === "local-seed") return "static"
+  if (!input.supabaseConfigured || input.source === "local-seed")
+    return "static"
   if (input.realtimeStatus === "subscribed") return "realtime"
   return "polling"
 }
@@ -154,7 +151,10 @@ const BACKOFF_JITTER = 0.25
  * `attempt` is zero-based. Returns 1s, 2s, 4s, 8s, 16s, 30s, 30s, … before
  * jitter, so the cap is reached on the sixth attempt and never exceeded.
  */
-export function nextBackoffDelay(attempt: number, random: () => number = Math.random): number {
+export function nextBackoffDelay(
+  attempt: number,
+  random: () => number = Math.random
+): number {
   const exponential = BACKOFF_BASE_MS * 2 ** Math.max(0, attempt)
   const capped = Math.min(exponential, BACKOFF_CAP_MS)
   const jitter = capped * BACKOFF_JITTER * (random() * 2 - 1)

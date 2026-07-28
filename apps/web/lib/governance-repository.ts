@@ -178,7 +178,9 @@ function mapAccessEventRow(row: Record<string, unknown>): AccessEventRecord {
   }
 }
 
-function mapComplianceCheckRow(row: Record<string, unknown>): ComplianceCheckRecord {
+function mapComplianceCheckRow(
+  row: Record<string, unknown>
+): ComplianceCheckRecord {
   return {
     id: asString(row.id),
     companyId: asString(row.company_id),
@@ -222,7 +224,8 @@ export interface GovernanceQuery {
   offset?: number
 }
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
  * PostgREST's `.or()` takes a filter *string*, so a value interpolated into one
@@ -250,8 +253,13 @@ function canReadCompliance(role: Role | undefined): boolean {
   return role !== undefined && hasPermission(role, "compliance:view")
 }
 
-function restrictionReason(surface: string, role: Role | undefined, gate: string): string {
-  const who = role === undefined ? "an unauthenticated caller" : `role "${role}"`
+function restrictionReason(
+  surface: string,
+  role: Role | undefined,
+  gate: string
+): string {
+  const who =
+    role === undefined ? "an unauthenticated caller" : `role "${role}"`
   return `${surface} is scoped to ${gate}; ${who} sees no rows.`
 }
 
@@ -261,7 +269,7 @@ function restrictionReason(surface: string, role: Role | undefined, gate: string
  */
 async function selfAndWardIds(
   client: RepositoryClient,
-  profileId: string,
+  profileId: string
 ): Promise<string[]> {
   const rows = unwrap<Record<string, unknown>[]>(
     await client
@@ -270,7 +278,7 @@ async function selfAndWardIds(
       .eq("guardian_profile_id", profileId)
       .is("revoked_at", null)
       .limit(MAX_PAGE_SIZE),
-    [],
+    []
   )
   const wards = rows
     .map((row) => asNullableString(row.child_profile_id))
@@ -280,7 +288,9 @@ async function selfAndWardIds(
 
 function seedSelfAndWardIds(profileId: string): string[] {
   const wards = seedGuardianships()
-    .filter((link) => link.guardianProfileId === profileId && link.revokedAt === null)
+    .filter(
+      (link) => link.guardianProfileId === profileId && link.revokedAt === null
+    )
     .map((link) => link.childProfileId)
   return [profileId, ...wards]
 }
@@ -294,13 +304,19 @@ function seedSelfAndWardIds(profileId: string): string[] {
 // display edge (CONVENTIONS §5), not a database collation nobody pinned.
 // ---------------------------------------------------------------------------
 
-function byCreatedAtAsc(a: { createdAt: string; id: string }, b: { createdAt: string; id: string }): number {
+function byCreatedAtAsc(
+  a: { createdAt: string; id: string },
+  b: { createdAt: string; id: string }
+): number {
   if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? -1 : 1
   if (a.id === b.id) return 0
   return a.id < b.id ? -1 : 1
 }
 
-function byCreatedAtDesc(a: { createdAt: string; id: string }, b: { createdAt: string; id: string }): number {
+function byCreatedAtDesc(
+  a: { createdAt: string; id: string },
+  b: { createdAt: string; id: string }
+): number {
   return -byCreatedAtAsc(a, b)
 }
 
@@ -319,7 +335,7 @@ export interface ProfileQuery extends GovernanceQuery {
 }
 
 export async function getProfiles(
-  opts: ProfileQuery = {},
+  opts: ProfileQuery = {}
 ): Promise<RepositoryResult<ProfileRecord[]>> {
   const { role, subjectRole, isActive, companyId } = opts
   const profileId = isUuid(opts.profileId) ? opts.profileId : undefined
@@ -330,7 +346,11 @@ export async function getProfiles(
   const restriction = directory
     ? null
     : profileId === undefined
-      ? restrictionReason("The people directory", role, 'the "users:view" permission')
+      ? restrictionReason(
+          "The people directory",
+          role,
+          'the "users:view" permission'
+        )
       : `The people directory is scoped to "users:view"; role "${role ?? "anonymous"}" sees only its own profile and the children it currently guards.`
 
   const result = await withRepository<ProfileRecord[]>(
@@ -350,7 +370,7 @@ export async function getProfiles(
           .order("created_at", { ascending: true })
           .order("id", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapProfileRow)
     },
@@ -361,12 +381,15 @@ export async function getProfiles(
         const visible = new Set(seedSelfAndWardIds(profileId))
         rows = rows.filter((profile) => visible.has(profile.id))
       }
-      if (subjectRole !== undefined) rows = rows.filter((profile) => profile.role === subjectRole)
-      if (isActive !== undefined) rows = rows.filter((profile) => profile.isActive === isActive)
-      if (companyId !== undefined) rows = rows.filter((profile) => profile.companyId === companyId)
+      if (subjectRole !== undefined)
+        rows = rows.filter((profile) => profile.role === subjectRole)
+      if (isActive !== undefined)
+        rows = rows.filter((profile) => profile.isActive === isActive)
+      if (companyId !== undefined)
+        rows = rows.filter((profile) => profile.companyId === companyId)
       return rows.sort(byCreatedAtAsc).slice(offset, offset + limit)
     },
-    "governance.getProfiles",
+    "governance.getProfiles"
   )
 
   return restriction === null ? result : degraded(result, restriction)
@@ -382,7 +405,7 @@ export async function getProfiles(
  */
 export async function getProfile(
   id: string,
-  opts: GovernanceQuery = {},
+  opts: GovernanceQuery = {}
 ): Promise<RepositoryResult<ProfileRecord | null>> {
   const { role } = opts
   const profileId = isUuid(opts.profileId) ? opts.profileId : undefined
@@ -400,8 +423,12 @@ export async function getProfile(
         if (!visible.includes(id)) return null
       }
       const rows = unwrap<Record<string, unknown>[]>(
-        await client.from("profiles").select(PROFILE_COLUMNS).eq("id", id).limit(1),
-        [],
+        await client
+          .from("profiles")
+          .select(PROFILE_COLUMNS)
+          .eq("id", id)
+          .limit(1),
+        []
       )
       // noUncheckedIndexedAccess: `rows[0]` is `Record<string, unknown> | undefined`.
       const first = rows[0]
@@ -414,7 +441,7 @@ export async function getProfile(
       }
       return seedProfiles().find((profile) => profile.id === id) ?? null
     },
-    "governance.getProfile",
+    "governance.getProfile"
   )
 
   return restriction === null ? result : degraded(result, restriction)
@@ -433,11 +460,15 @@ export interface GuardianshipQuery extends GovernanceQuery {
 }
 
 export async function getGuardianships(
-  opts: GuardianshipQuery = {},
+  opts: GuardianshipQuery = {}
 ): Promise<RepositoryResult<GuardianshipRecord[]>> {
   const { role, status, includeRevoked } = opts
-  const guardianProfileId = isUuid(opts.guardianProfileId) ? opts.guardianProfileId : undefined
-  const childProfileId = isUuid(opts.childProfileId) ? opts.childProfileId : undefined
+  const guardianProfileId = isUuid(opts.guardianProfileId)
+    ? opts.guardianProfileId
+    : undefined
+  const childProfileId = isUuid(opts.childProfileId)
+    ? opts.childProfileId
+    : undefined
   const profileId = isUuid(opts.profileId) ? opts.profileId : undefined
   const limit = clampLimit(opts.limit)
   const offset = clampOffset(opts.offset)
@@ -458,11 +489,13 @@ export async function getGuardianships(
         // Either side of the relation. `profileId` is UUID-validated above,
         // because this filter is a string rather than a bound parameter.
         query = query.or(
-          `guardian_profile_id.eq.${profileId},child_profile_id.eq.${profileId}`,
+          `guardian_profile_id.eq.${profileId},child_profile_id.eq.${profileId}`
         )
       }
-      if (guardianProfileId !== undefined) query = query.eq("guardian_profile_id", guardianProfileId)
-      if (childProfileId !== undefined) query = query.eq("child_profile_id", childProfileId)
+      if (guardianProfileId !== undefined)
+        query = query.eq("guardian_profile_id", guardianProfileId)
+      if (childProfileId !== undefined)
+        query = query.eq("child_profile_id", childProfileId)
       if (status !== undefined) query = query.eq("status", status)
       if (includeRevoked !== true) query = query.is("revoked_at", null)
 
@@ -471,7 +504,7 @@ export async function getGuardianships(
           .order("created_at", { ascending: true })
           .order("id", { ascending: true })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapGuardianshipRow)
     },
@@ -480,20 +513,26 @@ export async function getGuardianships(
       if (!directory) {
         if (profileId === undefined) return []
         rows = rows.filter(
-          (link) => link.guardianProfileId === profileId || link.childProfileId === profileId,
+          (link) =>
+            link.guardianProfileId === profileId ||
+            link.childProfileId === profileId
         )
       }
       if (guardianProfileId !== undefined) {
-        rows = rows.filter((link) => link.guardianProfileId === guardianProfileId)
+        rows = rows.filter(
+          (link) => link.guardianProfileId === guardianProfileId
+        )
       }
       if (childProfileId !== undefined) {
         rows = rows.filter((link) => link.childProfileId === childProfileId)
       }
-      if (status !== undefined) rows = rows.filter((link) => link.status === status)
-      if (includeRevoked !== true) rows = rows.filter((link) => link.revokedAt === null)
+      if (status !== undefined)
+        rows = rows.filter((link) => link.status === status)
+      if (includeRevoked !== true)
+        rows = rows.filter((link) => link.revokedAt === null)
       return rows.sort(byCreatedAtAsc).slice(offset, offset + limit)
     },
-    "governance.getGuardianships",
+    "governance.getGuardianships"
   )
 
   return restriction === null ? result : degraded(result, restriction)
@@ -522,7 +561,7 @@ export interface AuditEventQuery extends GovernanceQuery {
  * `createServiceRoleClient()`, after the RBAC decision.
  */
 export async function getAuditEvents(
-  opts: AuditEventQuery = {},
+  opts: AuditEventQuery = {}
 ): Promise<RepositoryResult<AuditEventRecord[]>> {
   const { role, entityTable, entityId, action, actorProfileId, since } = opts
   const limit = clampLimit(opts.limit)
@@ -530,16 +569,22 @@ export async function getAuditEvents(
   const allowed = canReadGovernanceLog(role)
   const restriction = allowed
     ? null
-    : restrictionReason("The audit trail", role, "manager level and above (level 70)")
+    : restrictionReason(
+        "The audit trail",
+        role,
+        "manager level and above (level 70)"
+      )
 
   const result = await withRepository<AuditEventRecord[]>(
     async (client) => {
       if (!allowed) return []
       let query = client.from("audit_events").select(AUDIT_EVENT_COLUMNS)
-      if (entityTable !== undefined) query = query.eq("entity_table", entityTable)
+      if (entityTable !== undefined)
+        query = query.eq("entity_table", entityTable)
       if (entityId !== undefined) query = query.eq("entity_id", entityId)
       if (action !== undefined) query = query.eq("action", action)
-      if (actorProfileId !== undefined) query = query.eq("actor_profile_id", actorProfileId)
+      if (actorProfileId !== undefined)
+        query = query.eq("actor_profile_id", actorProfileId)
       if (since !== undefined) query = query.gte("created_at", since)
 
       const rows = unwrap<Record<string, unknown>[]>(
@@ -547,23 +592,27 @@ export async function getAuditEvents(
           .order("created_at", { ascending: false })
           .order("id", { ascending: false })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapAuditEventRow)
     },
     () => {
       if (!allowed) return []
       let rows = seedAuditEvents()
-      if (entityTable !== undefined) rows = rows.filter((row) => row.entityTable === entityTable)
-      if (entityId !== undefined) rows = rows.filter((row) => row.entityId === entityId)
-      if (action !== undefined) rows = rows.filter((row) => row.action === action)
+      if (entityTable !== undefined)
+        rows = rows.filter((row) => row.entityTable === entityTable)
+      if (entityId !== undefined)
+        rows = rows.filter((row) => row.entityId === entityId)
+      if (action !== undefined)
+        rows = rows.filter((row) => row.action === action)
       if (actorProfileId !== undefined) {
         rows = rows.filter((row) => row.actorProfileId === actorProfileId)
       }
-      if (since !== undefined) rows = rows.filter((row) => row.createdAt >= since)
+      if (since !== undefined)
+        rows = rows.filter((row) => row.createdAt >= since)
       return rows.sort(byCreatedAtDesc).slice(offset, offset + limit)
     },
-    "governance.getAuditEvents",
+    "governance.getAuditEvents"
   )
 
   return restriction === null ? result : degraded(result, restriction)
@@ -584,7 +633,7 @@ export interface AccessEventQuery extends GovernanceQuery {
 
 /** Append-only access log, newest first. Read-only for the same reason as audit. */
 export async function getAccessEvents(
-  opts: AccessEventQuery = {},
+  opts: AccessEventQuery = {}
 ): Promise<RepositoryResult<AccessEventRecord[]>> {
   const { role, eventType, decision, resource, actorProfileId, since } = opts
   const limit = clampLimit(opts.limit)
@@ -592,7 +641,11 @@ export async function getAccessEvents(
   const allowed = canReadGovernanceLog(role)
   const restriction = allowed
     ? null
-    : restrictionReason("The access log", role, "manager level and above (level 70)")
+    : restrictionReason(
+        "The access log",
+        role,
+        "manager level and above (level 70)"
+      )
 
   const result = await withRepository<AccessEventRecord[]>(
     async (client) => {
@@ -601,7 +654,8 @@ export async function getAccessEvents(
       if (eventType !== undefined) query = query.eq("event_type", eventType)
       if (decision !== undefined) query = query.eq("decision", decision)
       if (resource !== undefined) query = query.eq("resource", resource)
-      if (actorProfileId !== undefined) query = query.eq("actor_profile_id", actorProfileId)
+      if (actorProfileId !== undefined)
+        query = query.eq("actor_profile_id", actorProfileId)
       if (since !== undefined) query = query.gte("created_at", since)
 
       const rows = unwrap<Record<string, unknown>[]>(
@@ -609,23 +663,27 @@ export async function getAccessEvents(
           .order("created_at", { ascending: false })
           .order("id", { ascending: false })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapAccessEventRow)
     },
     () => {
       if (!allowed) return []
       let rows = seedAccessEvents()
-      if (eventType !== undefined) rows = rows.filter((row) => row.eventType === eventType)
-      if (decision !== undefined) rows = rows.filter((row) => row.decision === decision)
-      if (resource !== undefined) rows = rows.filter((row) => row.resource === resource)
+      if (eventType !== undefined)
+        rows = rows.filter((row) => row.eventType === eventType)
+      if (decision !== undefined)
+        rows = rows.filter((row) => row.decision === decision)
+      if (resource !== undefined)
+        rows = rows.filter((row) => row.resource === resource)
       if (actorProfileId !== undefined) {
         rows = rows.filter((row) => row.actorProfileId === actorProfileId)
       }
-      if (since !== undefined) rows = rows.filter((row) => row.createdAt >= since)
+      if (since !== undefined)
+        rows = rows.filter((row) => row.createdAt >= since)
       return rows.sort(byCreatedAtDesc).slice(offset, offset + limit)
     },
-    "governance.getAccessEvents",
+    "governance.getAccessEvents"
   )
 
   return restriction === null ? result : degraded(result, restriction)
@@ -656,7 +714,7 @@ export interface ComplianceCheckQuery extends GovernanceQuery {
  * check.
  */
 export async function getComplianceChecks(
-  opts: ComplianceCheckQuery = {},
+  opts: ComplianceCheckQuery = {}
 ): Promise<RepositoryResult<ComplianceCheckRecord[]>> {
   const {
     role,
@@ -674,15 +732,22 @@ export async function getComplianceChecks(
   const allowed = canReadCompliance(role)
   const restriction = allowed
     ? null
-    : restrictionReason("Compliance checks", role, 'the "compliance:view" permission')
+    : restrictionReason(
+        "Compliance checks",
+        role,
+        'the "compliance:view" permission'
+      )
 
   const result = await withRepository<ComplianceCheckRecord[]>(
     async (client) => {
       if (!allowed) return []
-      let query = client.from("compliance_checks").select(COMPLIANCE_CHECK_COLUMNS)
+      let query = client
+        .from("compliance_checks")
+        .select(COMPLIANCE_CHECK_COLUMNS)
       if (status !== undefined) query = query.eq("status", status)
       if (riskLevel !== undefined) query = query.eq("risk_level", riskLevel)
-      if (subjectType !== undefined) query = query.eq("subject_type", subjectType)
+      if (subjectType !== undefined)
+        query = query.eq("subject_type", subjectType)
       if (subjectId !== undefined) query = query.eq("subject_id", subjectId)
       if (checkType !== undefined) query = query.eq("check_type", checkType)
       if (humanDecisionRequired !== undefined) {
@@ -696,26 +761,35 @@ export async function getComplianceChecks(
           .order("created_at", { ascending: false })
           .order("id", { ascending: false })
           .range(offset, offset + limit - 1),
-        [],
+        []
       )
       return rows.map(mapComplianceCheckRow)
     },
     () => {
       if (!allowed) return []
       let rows = seedComplianceChecks()
-      if (status !== undefined) rows = rows.filter((row) => row.status === status)
-      if (riskLevel !== undefined) rows = rows.filter((row) => row.riskLevel === riskLevel)
-      if (subjectType !== undefined) rows = rows.filter((row) => row.subjectType === subjectType)
-      if (subjectId !== undefined) rows = rows.filter((row) => row.subjectId === subjectId)
-      if (checkType !== undefined) rows = rows.filter((row) => row.checkType === checkType)
+      if (status !== undefined)
+        rows = rows.filter((row) => row.status === status)
+      if (riskLevel !== undefined)
+        rows = rows.filter((row) => row.riskLevel === riskLevel)
+      if (subjectType !== undefined)
+        rows = rows.filter((row) => row.subjectType === subjectType)
+      if (subjectId !== undefined)
+        rows = rows.filter((row) => row.subjectId === subjectId)
+      if (checkType !== undefined)
+        rows = rows.filter((row) => row.checkType === checkType)
       if (humanDecisionRequired !== undefined) {
-        rows = rows.filter((row) => row.humanDecisionRequired === humanDecisionRequired)
+        rows = rows.filter(
+          (row) => row.humanDecisionRequired === humanDecisionRequired
+        )
       }
-      if (companyId !== undefined) rows = rows.filter((row) => row.companyId === companyId)
-      if (siteId !== undefined) rows = rows.filter((row) => row.siteId === siteId)
+      if (companyId !== undefined)
+        rows = rows.filter((row) => row.companyId === companyId)
+      if (siteId !== undefined)
+        rows = rows.filter((row) => row.siteId === siteId)
       return rows.sort(byCreatedAtDesc).slice(offset, offset + limit)
     },
-    "governance.getComplianceChecks",
+    "governance.getComplianceChecks"
   )
 
   return restriction === null ? result : degraded(result, restriction)

@@ -44,7 +44,11 @@
  */
 
 import { azuraWorldDataset } from "./azura-world-data"
-import { neutraliseRetrievedContent, normalizeForMatch, type AiIntent } from "./ai-guardrails"
+import {
+  neutraliseRetrievedContent,
+  normalizeForMatch,
+  type AiIntent,
+} from "./ai-guardrails"
 import { isSourcedFact } from "./contracts"
 import type {
   Confidence,
@@ -169,7 +173,18 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
     "project.totalUnits",
     l("Wohnungen gesamt", "Total units", "Toplam daire", "Всего квартир"),
     ["inventory", "project"],
-    ["wohnung", "einheit", "unit", "apartment", "daire", "квартир", "viele", "many", "kac", "сколько"]
+    [
+      "wohnung",
+      "einheit",
+      "unit",
+      "apartment",
+      "daire",
+      "квартир",
+      "viele",
+      "many",
+      "kac",
+      "сколько",
+    ]
   ),
   entry(
     "project.residenceBlockCount",
@@ -185,7 +200,12 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
   ),
   entry(
     "project.floorsPerBuilding",
-    l("Etagen je Gebäude", "Floors per building", "Bina başına kat", "Этажей в здании"),
+    l(
+      "Etagen je Gebäude",
+      "Floors per building",
+      "Bina başına kat",
+      "Этажей в здании"
+    ),
     ["project", "inventory"],
     ["etage", "stock", "floor", "kat", "этаж"]
   ),
@@ -205,21 +225,36 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
   ),
   entry(
     "project.buildingFootprintSqm",
-    l("Bebaute Fläche", "Building footprint", "Yapı taban alanı", "Площадь застройки"),
+    l(
+      "Bebaute Fläche",
+      "Building footprint",
+      "Yapı taban alanı",
+      "Площадь застройки"
+    ),
     ["project"],
     ["bebaut", "footprint", "taban", "застройк"],
     "m²"
   ),
   entry(
     "project.outdoorFacilityAreaSqm",
-    l("Außenanlagen", "Outdoor facilities", "Açık alan tesisleri", "Открытые зоны"),
+    l(
+      "Außenanlagen",
+      "Outdoor facilities",
+      "Açık alan tesisleri",
+      "Открытые зоны"
+    ),
     ["project"],
     ["aussenanlage", "outdoor", "acik alan", "открыт"],
     "m²"
   ),
   entry(
     "project.constructionStart",
-    l("Baubeginn", "Construction start", "İnşaat başlangıcı", "Начало строительства"),
+    l(
+      "Baubeginn",
+      "Construction start",
+      "İnşaat başlangıcı",
+      "Начало строительства"
+    ),
     ["project"],
     ["baubeginn", "construction", "insaat", "строительств", "begonnen"]
   ),
@@ -237,28 +272,48 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
   ),
   entry(
     "project.distanceToSeaM",
-    l("Entfernung zum Meer", "Distance to sea", "Denize mesafe", "Расстояние до моря"),
+    l(
+      "Entfernung zum Meer",
+      "Distance to sea",
+      "Denize mesafe",
+      "Расстояние до моря"
+    ),
     ["project"],
     ["meer", "strand", "sea", "beach", "deniz", "море", "пляж"],
     "m"
   ),
   entry(
     "project.distanceToAlanyaCentreKm",
-    l("Entfernung Alanya Zentrum", "Distance to Alanya centre", "Alanya merkeze mesafe", "До центра Алании"),
+    l(
+      "Entfernung Alanya Zentrum",
+      "Distance to Alanya centre",
+      "Alanya merkeze mesafe",
+      "До центра Алании"
+    ),
     ["project"],
     ["zentrum", "centre", "center", "merkez", "центр"],
     "km"
   ),
   entry(
     "project.distanceToGazipasaAirportKm",
-    l("Entfernung Flughafen Gazipaşa", "Distance to Gazipaşa airport", "Gazipaşa havalimanına mesafe", "До аэропорта Газипаша"),
+    l(
+      "Entfernung Flughafen Gazipaşa",
+      "Distance to Gazipaşa airport",
+      "Gazipaşa havalimanına mesafe",
+      "До аэропорта Газипаша"
+    ),
     ["project"],
     ["gazipasa", "flughafen", "airport", "havalimani", "аэропорт"],
     "km"
   ),
   entry(
     "project.distanceToAntalyaAirportKm",
-    l("Entfernung Flughafen Antalya", "Distance to Antalya airport", "Antalya havalimanına mesafe", "До аэропорта Анталья"),
+    l(
+      "Entfernung Flughafen Antalya",
+      "Distance to Antalya airport",
+      "Antalya havalimanına mesafe",
+      "До аэропорта Анталья"
+    ),
     ["project"],
     ["antalya", "flughafen", "airport", "havalimani", "аэропорт"],
     "km"
@@ -274,13 +329,33 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
     "project.developer",
     l("Bauträger", "Developer", "Geliştirici", "Застройщик"),
     ["developer", "project"],
-    ["bautrager", "entwickler", "developer", "cebeci", "gelistirici", "застройщик"]
+    [
+      "bautrager",
+      "entwickler",
+      "developer",
+      "cebeci",
+      "gelistirici",
+      "застройщик",
+    ]
   ),
   entry(
     "project.developerFoundedYear",
-    l("Bauträger gegründet", "Developer founded", "Kuruluş yılı", "Год основания"),
+    l(
+      "Bauträger gegründet",
+      "Developer founded",
+      "Kuruluş yılı",
+      "Год основания"
+    ),
     ["developer"],
-    ["gegrundet", "founded", "erfahrung", "experience", "kurulus", "основан", "лет"]
+    [
+      "gegrundet",
+      "founded",
+      "erfahrung",
+      "experience",
+      "kurulus",
+      "основан",
+      "лет",
+    ]
   ),
   entry(
     "project.contact.phone",
@@ -308,13 +383,33 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
   ),
   entry(
     "hotel.formerName",
-    l("Früherer Hotelname", "Former hotel name", "Önceki otel adı", "Прежнее название"),
+    l(
+      "Früherer Hotelname",
+      "Former hotel name",
+      "Önceki otel adı",
+      "Прежнее название"
+    ),
     ["hotel", "reviews"],
-    ["wyndham", "fruher", "former", "ex", "umbenannt", "rebrand", "eski", "прежн", "бывш"]
+    [
+      "wyndham",
+      "fruher",
+      "former",
+      "ex",
+      "umbenannt",
+      "rebrand",
+      "eski",
+      "прежн",
+      "бывш",
+    ]
   ),
   entry(
     "hotel.brandAffiliation",
-    l("Markenbindung", "Brand affiliation", "Marka bağlantısı", "Принадлежность к бренду"),
+    l(
+      "Markenbindung",
+      "Brand affiliation",
+      "Marka bağlantısı",
+      "Принадлежность к бренду"
+    ),
     ["hotel"],
     ["wyndham", "marke", "brand", "kette", "chain", "marka", "бренд", "сеть"]
   ),
@@ -350,13 +445,23 @@ const registryCandidates: ReadonlyArray<RegistryEntry | null> = [
   ),
   entry(
     "hotel.aquaparkSlides",
-    l("Rutschen im Aquapark", "Aquapark slides", "Aquapark kaydırağı", "Горок в аквапарке"),
+    l(
+      "Rutschen im Aquapark",
+      "Aquapark slides",
+      "Aquapark kaydırağı",
+      "Горок в аквапарке"
+    ),
     ["hotel"],
     ["rutsch", "slide", "aquapark", "kaydirak", "горк", "аквапарк"]
   ),
   entry(
     "hotel.distanceToBeachM",
-    l("Hotel zum Strand", "Hotel to beach", "Otelden plaja", "От отеля до пляжа"),
+    l(
+      "Hotel zum Strand",
+      "Hotel to beach",
+      "Otelden plaja",
+      "От отеля до пляжа"
+    ),
     ["hotel", "project"],
     ["strand", "beach", "plaj", "пляж"],
     "m"
@@ -413,7 +518,10 @@ function selectFacts(intent: AiIntent, text: string): RegistryEntry[] {
   // grounded in the letter and misleading in substance. No keyword hit means no
   // facts, which means `grounded === false`, which means the concierge refuses.
   // That is the correct answer to a question the evidence cannot address.
-  return scored.filter((s) => s.score > 0).map((s) => s.e).slice(0, MAX_FACTS)
+  return scored
+    .filter((s) => s.score > 0)
+    .map((s) => s.e)
+    .slice(0, MAX_FACTS)
 }
 
 const LAYOUT_RE = /\b([1-6])\s*\+\s*1\b/
@@ -481,7 +589,8 @@ function narrowListing(value: unknown): ListingRow | null {
     url: row["url"],
     fetchedAt: typeof row["fetchedAt"] === "string" ? row["fetchedAt"] : "",
     layout: typeof row["layout"] === "string" ? row["layout"] : null,
-    interiorM2: typeof row["interiorM2"] === "number" ? row["interiorM2"] : null,
+    interiorM2:
+      typeof row["interiorM2"] === "number" ? row["interiorM2"] : null,
     price: narrowMoney(row["price"]),
     isStale: row["isStale"] === true,
   }
@@ -544,7 +653,15 @@ function selectFindings(
     hotel: ["branding"],
     reviews: ["branding"],
     developer: ["structure", "branding"],
-    evidence: ["harvest", "structure", "pricing", "branding", "geography", "availability", "timeline"],
+    evidence: [
+      "harvest",
+      "structure",
+      "pricing",
+      "branding",
+      "geography",
+      "availability",
+      "timeline",
+    ],
     finance: ["pricing"],
   }
 
@@ -577,15 +694,20 @@ function selectFindings(
 // ---------------------------------------------------------------------------
 
 function renderValue(value: unknown, unit: string | null): string {
-  if (value === null || value === undefined) return "nicht belegt / not established"
+  if (value === null || value === undefined)
+    return "nicht belegt / not established"
   if (typeof value === "object") {
     const money = value as Partial<Money>
-    if (typeof money.amount === "number" && typeof money.currency === "string") {
+    if (
+      typeof money.amount === "number" &&
+      typeof money.currency === "string"
+    ) {
       return `${money.amount.toLocaleString("de-DE")} ${money.currency}`
     }
     return JSON.stringify(value)
   }
-  const base = typeof value === "number" ? value.toLocaleString("de-DE") : String(value)
+  const base =
+    typeof value === "number" ? value.toLocaleString("de-DE") : String(value)
   return unit === null ? base : `${base} ${unit}`
 }
 
@@ -633,8 +755,11 @@ function buildGroundedText(
   if (prices.length > 0) {
     lines.push("", "OBSERVED PRICES (verbatim portal listings, never averaged)")
     for (const price of prices) {
-      const size = price.interiorM2 === null ? "size not stated" : `${price.interiorM2} m²`
-      const stale = price.isStale ? " [listing contradicts a tier<=3 source: treat as possibly stale]" : ""
+      const size =
+        price.interiorM2 === null ? "size not stated" : `${price.interiorM2} m²`
+      const stale = price.isStale
+        ? " [listing contradicts a tier<=3 source: treat as possibly stale]"
+        : ""
       lines.push(
         `- ${price.layout ?? "layout not stated"}, ${size}: ${price.money.amount.toLocaleString("de-DE")} ${price.money.currency} — ${price.publisher} (${price.url})${stale}`
       )
@@ -670,7 +795,10 @@ function buildGroundedText(
   }
 
   if (findings.length > 0) {
-    lines.push("", "RECORDED FINDINGS (disagreements between sources, never silently resolved)")
+    lines.push(
+      "",
+      "RECORDED FINDINGS (disagreements between sources, never silently resolved)"
+    )
     for (const finding of findings) {
       lines.push(
         `- ${finding.id} [${finding.severity}/${finding.area}] ${finding.field}: ${finding.message}`
@@ -761,7 +889,8 @@ export function retrieve(input: {
 
   const wantsPrices =
     input.intent === "pricing" ||
-    (input.intent === "inventory" && /preis|price|fiyat|цена|kostet|cost/.test(text))
+    (input.intent === "inventory" &&
+      /preis|price|fiyat|цена|kostet|cost/.test(text))
   const prices = wantsPrices ? selectPrices(detectLayout(input.message)) : []
 
   const unitId = normaliseUnitId(input.message)

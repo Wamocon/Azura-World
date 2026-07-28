@@ -76,7 +76,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!body.ok) return apiFail(body.error, requestId)
 
     const record =
-      typeof body.value === "object" && body.value !== null && !Array.isArray(body.value)
+      typeof body.value === "object" &&
+      body.value !== null &&
+      !Array.isArray(body.value)
         ? (body.value as Record<string, unknown>)
         : {}
 

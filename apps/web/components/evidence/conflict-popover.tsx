@@ -103,7 +103,9 @@ export function ConflictPopover<T>({
       >
         <AlertTriangle className="size-3 shrink-0" aria-hidden="true" />
         <span>{labels.trigger}</span>
-        <span className="sr-only">{interpolate(labels.summary, { count: rows.length })}</span>
+        <span className="sr-only">
+          {interpolate(labels.summary, { count: rows.length })}
+        </span>
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -117,7 +119,7 @@ export function ConflictPopover<T>({
               "transition-[transform,opacity] duration-200 ease-[var(--ease-out)]",
               "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
               "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",
-              "motion-reduce:transition-opacity motion-reduce:data-[starting-style]:scale-100 motion-reduce:data-[ending-style]:scale-100"
+              "motion-reduce:transition-opacity motion-reduce:data-[ending-style]:scale-100 motion-reduce:data-[starting-style]:scale-100"
             )}
           >
             <div className="flex flex-col gap-1">
@@ -152,7 +154,7 @@ export function ConflictPopover<T>({
                       {formatValue(row.value)}
                     </span>
                     {row.displayed ? (
-                      <span className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-confidence-conflicted">
+                      <span className="shrink-0 text-[0.6875rem] font-semibold tracking-[0.06em] text-confidence-conflicted uppercase">
                         {labels.displayed}
                       </span>
                     ) : null}
@@ -161,7 +163,9 @@ export function ConflictPopover<T>({
                     source={row.source}
                     locale={locale}
                     labels={labels.source}
-                    {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
+                    {...(snapshotBasePath !== undefined
+                      ? { snapshotBasePath }
+                      : {})}
                   />
                 </li>
               ))}

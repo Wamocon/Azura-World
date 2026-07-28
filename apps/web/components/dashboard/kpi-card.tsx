@@ -90,8 +90,18 @@ export type KpiCardProps =
     })
 
 export function KpiCard(props: KpiCardProps): ReactNode {
-  const { label, state, labels, locale, mode, lastUpdated, truncated, hint, onRetry, className } =
-    props
+  const {
+    label,
+    state,
+    labels,
+    locale,
+    mode,
+    lastUpdated,
+    truncated,
+    hint,
+    onRetry,
+    className,
+  } = props
 
   return (
     <article
@@ -100,17 +110,21 @@ export function KpiCard(props: KpiCardProps): ReactNode {
       className={cn(
         "flex min-w-0 flex-col gap-2 rounded-xl border border-border bg-card p-4",
         state === "failed" && "border-destructive/40 bg-destructive/5",
-        className,
+        className
       )}
     >
       <div className="flex min-w-0 items-start justify-between gap-2">
-        <h3 className="min-w-0 truncate text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+        <h3 className="min-w-0 truncate text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase">
           {label}
         </h3>
         {/* Freshness sits on the card, not in the topbar: two cards on one page
             can legitimately be in different modes. */}
         {mode === undefined || state !== "ready" ? null : (
-          <SyncBadge mode={mode} lastUpdated={lastUpdated ?? null} locale={locale} />
+          <SyncBadge
+            mode={mode}
+            lastUpdated={lastUpdated ?? null}
+            locale={locale}
+          />
         )}
       </div>
 
@@ -129,7 +143,9 @@ export function KpiCard(props: KpiCardProps): ReactNode {
           </p>
         ) : props.kind === "fact" ? (
           props.fact === null ? (
-            <span className="font-display text-2xl font-semibold text-confidence-gap">—</span>
+            <span className="font-display text-2xl font-semibold text-confidence-gap">
+              —
+            </span>
           ) : (
             <ProvenanceValue
               fact={props.fact}
@@ -143,7 +159,9 @@ export function KpiCard(props: KpiCardProps): ReactNode {
           <span data-numeric className="font-display text-2xl font-semibold">
             {props.value === null
               ? "—"
-              : new Intl.NumberFormat(locale, props.formatOptions).format(props.value)}
+              : new Intl.NumberFormat(locale, props.formatOptions).format(
+                  props.value
+                )}
           </span>
         )}
       </div>

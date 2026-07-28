@@ -37,7 +37,10 @@ export const GET = createManifestHandler("getHotelReviews", {
       return { data: result.data, source: result.source }
     }
     if (view === "quotes") {
-      const result = await getReviewQuotes(readId(query, "reviewSourceId"), base)
+      const result = await getReviewQuotes(
+        readId(query, "reviewSourceId"),
+        base
+      )
       return { data: result.data, source: result.source }
     }
     const result = await getReviewSources(base)

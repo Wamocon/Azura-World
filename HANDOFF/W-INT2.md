@@ -1,4 +1,4 @@
-# HANDOFF — W-INT2  Second integration: eight branches into main
+# HANDOFF — W-INT2 Second integration: eight branches into main
 
 STATUS: COMPLETE
 Completed: 2026-07-28
@@ -15,16 +15,16 @@ Completed: 2026-07-28
 Simulated first with `git merge-tree --write-tree`, chaining throwaway `commit-tree` objects so
 the cumulative result was predicted without touching the working tree. **All eight CLEAN.**
 
-| # | Branch | Simulated | Actual |
-|---|---|---|---|
-| 1 | `w1c-w0d-i18n-media` | CLEAN | exit 0 |
-| 2 | `w2b-api` | CLEAN | exit 0 |
-| 3 | `w3c-inventory` | CLEAN | exit 0 |
-| 4 | `w4b-harness` | CLEAN | exit 0 |
-| 5 | `w4c-security` | CLEAN | exit 0 |
-| 6 | `w4d-gates` | CLEAN | exit 0 |
-| 7 | `wux-plain-language` | CLEAN | exit 0 |
-| 8 | `w4a-e2e` | CLEAN | exit 0 |
+| #   | Branch               | Simulated | Actual |
+| --- | -------------------- | --------- | ------ |
+| 1   | `w1c-w0d-i18n-media` | CLEAN     | exit 0 |
+| 2   | `w2b-api`            | CLEAN     | exit 0 |
+| 3   | `w3c-inventory`      | CLEAN     | exit 0 |
+| 4   | `w4b-harness`        | CLEAN     | exit 0 |
+| 5   | `w4c-security`       | CLEAN     | exit 0 |
+| 6   | `w4d-gates`          | CLEAN     | exit 0 |
+| 7   | `wux-plain-language` | CLEAN     | exit 0 |
+| 8   | `w4a-e2e`            | CLEAN     | exit 0 |
 
 **Zero conflicts, including the two that were expected.** `messages/*.json` did not conflict
 because the windows genuinely wrote disjoint regions: W3-C added one contiguous block inside
@@ -42,27 +42,27 @@ have a remote home.
 
 None of these was piped. Each ran as its own command and `$?` was captured on the next line.
 
-| Gate | Exit | Result |
-|---|---|---|
-| `typecheck` | **0** | PASS |
-| `lint` | **0** | PASS, 0 errors 0 warnings |
-| `build` | **0** | PASS, 43 routes, compiled in 15.6s |
-| `verify-evidence` | **0** | PASS, 1,354 facts · **25 portal_listing + 631 modelled = 656** · no violations |
-| `check-i18n` | **0** | PASS, **831 keys × 4**, identical key sets |
-| `qa:csp` | **0** | PASS, **30 pass · 0 fail** |
-| `validate-openapi` | **0** | PASS, **13 pass · 0 fail · 23 exempt** over 33 paths / 49 operations |
-| `layout-audit` | **1** | FAIL, **50 pass · 149 fail · 1,822 findings**, 192 page loads |
-| `a11y-audit` | **1** | FAIL, **6 pass · 18 fail** |
-| `perf` | **1** | FAIL, **9 pass · 3 fail** |
-| `security-probe` | **1** | FAIL, **1 critical · 3 high** |
-| `e2e` chromium | **1** | FAIL, **270 passed · 13 failed** |
+| Gate               | Exit  | Result                                                                         |
+| ------------------ | ----- | ------------------------------------------------------------------------------ |
+| `typecheck`        | **0** | PASS                                                                           |
+| `lint`             | **0** | PASS, 0 errors 0 warnings                                                      |
+| `build`            | **0** | PASS, 43 routes, compiled in 15.6s                                             |
+| `verify-evidence`  | **0** | PASS, 1,354 facts · **25 portal_listing + 631 modelled = 656** · no violations |
+| `check-i18n`       | **0** | PASS, **831 keys × 4**, identical key sets                                     |
+| `qa:csp`           | **0** | PASS, **30 pass · 0 fail**                                                     |
+| `validate-openapi` | **0** | PASS, **13 pass · 0 fail · 23 exempt** over 33 paths / 49 operations           |
+| `layout-audit`     | **1** | FAIL, **50 pass · 149 fail · 1,822 findings**, 192 page loads                  |
+| `a11y-audit`       | **1** | FAIL, **6 pass · 18 fail**                                                     |
+| `perf`             | **1** | FAIL, **9 pass · 3 fail**                                                      |
+| `security-probe`   | **1** | FAIL, **1 critical · 3 high**                                                  |
+| `e2e` chromium     | **1** | FAIL, **270 passed · 13 failed**                                               |
 
 **7 pass, 5 fail.**
 
 ### `qa:csp` — a false alarm worth recording
 
-It first reported **26 pass · 4 fail**, three of them *"NOT a production policy — is
-NODE_ENV=production?"*. Not a merge regression: a stray `next dev` (PID 37592, started 14:01) held
+It first reported **26 pass · 4 fail**, three of them _"NOT a production policy — is
+NODE_ENV=production?"_. Not a merge regression: a stray `next dev` (PID 37592, started 14:01) held
 port 3200, the probe's default, so it attached to a dev server and correctly **refused to pass
 itself** against a dev policy — exactly the self-protection W-INT built into it. Re-run with
 `--port 3220`: **30 pass · 0 fail, exit 0**. The gate runner now pins its own ports (3230–3233) so
@@ -74,11 +74,11 @@ this cannot recur.
 
 `node scripts/quality-gate.mjs` on `b5a0c83`: **10 PASS · 8 FAIL · 1 NOT RUN**, exit 1.
 
-| | previous run | merged `main` |
-|---|---|---|
-| blocking PASS | 9 | **10** |
-| blocking FAIL | 2 | **8** |
-| blocking NOT RUN | **8** | **1** |
+|                  | previous run | merged `main` |
+| ---------------- | ------------ | ------------- |
+| blocking PASS    | 9            | **10**        |
+| blocking FAIL    | 2            | **8**         |
+| blocking NOT RUN | **8**        | **1**         |
 
 **NOT RUN fell from 8 to 1.** The only survivor is gate 9, pgTAP: `docker info` still exits 1.
 W1-A's cloud substitute stands at **366 defined / 366 executed / 366 passed** and is still recorded
@@ -112,7 +112,8 @@ and access-control fault that no other gate could see, because typecheck cannot 
 database contains.
 
 Three highs, all **W0-B**, all in committed data:
-- **SEC-H03** F-002's narrative claims *"across four publishers"* while carrying **three**
+
+- **SEC-H03** F-002's narrative claims _"across four publishers"_ while carrying **three**
   `competingValues`.
 - **SEC-H04** F-002 states a ratio computed across **EUR and USD** — only possible via a conversion
   this product forbids.
@@ -131,7 +132,7 @@ Three highs, all **W0-B**, all in committed data:
 
 At least one serious/critical issue on **every locale** of `/`, `/hotel` and `/kitchen-sink`. Note
 W4-B's own caveat: this is **not axe-core** (not an installed dependency), it checks the underlying
-rules directly, and the CONVENTIONS §7 *"Lighthouse a11y ≥ 95"* budget is **not** checked at all.
+rules directly, and the CONVENTIONS §7 _"Lighthouse a11y ≥ 95"_ budget is **not** checked at all.
 
 ### `layout-audit` — 1,822 findings
 
@@ -141,7 +142,7 @@ below threshold), truncation, tap targets and clipping.
 ### `e2e` — 270 passed, 13 failed
 
 Failures cluster on routes that do not exist yet (`/dashboard/reports`, `/dashboard/units` marked
-*"route not built"* by the matrix itself), one landmark assertion (`/dashboard/evidence` renders
+_"route not built"_ by the matrix itself), one landmark assertion (`/dashboard/evidence` renders
 exactly one `<main>`), and one security assertion (a low role reaching the evidence cockpit's
 content).
 
@@ -149,13 +150,13 @@ content).
 
 ## 5. Decisions I made
 
-| Decision | Why |
-|---|---|
-| Simulate all eight cumulatively before merging | A per-branch simulation would have missed conflicts that only appear once an earlier branch is in the tree. Chaining `commit-tree` objects predicts the real sequence without touching the tree |
-| Merge in the shared tree at `D:\Azura World` rather than a scratch worktree | It was already on `main` and clean apart from two tracked files, which were stashed. W-INT needed a scratch worktree because the tree was on a feature branch with 78 untracked paths; that condition no longer held |
-| Stash `CLAUDE.md` rather than commit or discard it | Its working-tree change replaces the project file with the **generic global harness-config boilerplate**, and the same churn is present in the `w3c`, `w4d` and `wux` worktrees. It looks like tooling, not authorship. Stashed, recoverable, **not merged** |
-| Pin gate ports 3230–3233 | The CSP false alarm above. A gate that silently measures whatever server happens to hold a port is not a gate |
-| Report the six new FAILs rather than tune them green | They are the first real measurements this project has had of layout, a11y, performance, security and end-to-end behaviour. Making them pass is the next task, not this one |
+| Decision                                                                    | Why                                                                                                                                                                                                                                                          |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Simulate all eight cumulatively before merging                              | A per-branch simulation would have missed conflicts that only appear once an earlier branch is in the tree. Chaining `commit-tree` objects predicts the real sequence without touching the tree                                                              |
+| Merge in the shared tree at `D:\Azura World` rather than a scratch worktree | It was already on `main` and clean apart from two tracked files, which were stashed. W-INT needed a scratch worktree because the tree was on a feature branch with 78 untracked paths; that condition no longer held                                         |
+| Stash `CLAUDE.md` rather than commit or discard it                          | Its working-tree change replaces the project file with the **generic global harness-config boilerplate**, and the same churn is present in the `w3c`, `w4d` and `wux` worktrees. It looks like tooling, not authorship. Stashed, recoverable, **not merged** |
+| Pin gate ports 3230–3233                                                    | The CSP false alarm above. A gate that silently measures whatever server happens to hold a port is not a gate                                                                                                                                                |
+| Report the six new FAILs rather than tune them green                        | They are the first real measurements this project has had of layout, a11y, performance, security and end-to-end behaviour. Making them pass is the next task, not this one                                                                                   |
 
 ---
 

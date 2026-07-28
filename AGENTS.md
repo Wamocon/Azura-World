@@ -2,7 +2,7 @@
 
 > **Last verified: 2026-07-27**, immediately after W0-A completed.
 > **Code wins over docs.** Where this file and the repository disagree, the repository is right.
-> Read `CLAUDE.md` first for what the project *is*. This file is what you must not do.
+> Read `CLAUDE.md` first for what the project _is_. This file is what you must not do.
 > `SYSTEM-PROMPT.md` outranks both. A brief may make a rule stricter, never looser.
 
 ---
@@ -17,11 +17,11 @@ cite them (`§2.8`) in handoffs and reviews.
 - [ ] **1.** Every fact displayed to a user carries its source URL. `SourcedFact<T>` enforces it.
       Do not cast around the type.
 - [ ] **2.** Never silently resolve a source conflict. Both values, both URLs, and a `Finding`.
-      Official and developer sources win the *display* value; the losing value is still stored
+      Official and developer sources win the _display_ value; the losing value is still stored
       and still reachable on demand.
 - [ ] **3.** Never invent a number. Not in a fetched source ⟹ `null` + `confidence: "gap"` + a
       `note`. A missing price is honest; a plausible made-up price is fraud.
-- [ ] **4.** Generated files carry a header naming the generator and saying *do not hand-edit*.
+- [ ] **4.** Generated files carry a header naming the generator and saying _do not hand-edit_.
       Wrong output ⟹ fix the parser, never the file.
 
 ### Security
@@ -35,7 +35,7 @@ cite them (`§2.8`) in handoffs and reviews.
       and `serverEnv` from `lib/env.ts` throws if it is read in the browser.
 - [ ] **8.** RBAC decision happens **before** the model call, never after. A denied user must
       cause no outbound request.
-- [ ] **9.** The AI system prompt forbids the model from *executing* financial, access-control or
+- [ ] **9.** The AI system prompt forbids the model from _executing_ financial, access-control or
       permission changes. It recommends; a human approves. Never weaken the wording.
 - [ ] **10.** No secrets in code. `.env.example` holds placeholders only. Read configuration
       through `lib/env.ts` — `process.env.X` is banned everywhere except `next.config.ts` (the
@@ -61,15 +61,15 @@ cite them (`§2.8`) in handoffs and reviews.
 ## 2. Reporting: state only what you verified
 
 This is the rule that matters most. The reference project records it as a repeated past failure
-(`LESSONS-LEARNED.md`: *hiding test exit codes behind `tail`*).
+(`LESSONS-LEARNED.md`: _hiding test exit codes behind `tail`_).
 
 Grade every factual claim you write into documentation or a handoff:
 
-| Tag | Meaning |
-|---|---|
-| `[V]` | **Verified** — observed in code, command output, an HTTP response, or a primary source |
-| `[I]` | **Inference** — your reasoning from verified facts, labelled as reasoning |
-| `[GAP]` | **Not established** — verification did not happen. Leave it as a gap. |
+| Tag     | Meaning                                                                                |
+| ------- | -------------------------------------------------------------------------------------- |
+| `[V]`   | **Verified** — observed in code, command output, an HTTP response, or a primary source |
+| `[I]`   | **Inference** — your reasoning from verified facts, labelled as reasoning              |
+| `[GAP]` | **Not established** — verification did not happen. Leave it as a gap.                  |
 
 **Never fill a `[GAP]` with a plausible guess.** Ran a command? Quote the real output, failures
 included. Didn't run it? Write "NOT RUN" and the reason — never "should pass". A build that
@@ -133,11 +133,11 @@ will paste ANSI escape sequences into the document.
 Two W0-A-owned files carry a **marked seam** another window must fill. Touch only the marked
 region, and say so in your handoff:
 
-| File | Seam | Owner |
-|---|---|---|
-| `apps/web/proxy.ts` | `refreshSupabaseSession()` and `guardRoute()`, both `TODO(W1-B)` | W1-B |
-| `apps/web/app/layout.tsx` | the commented `import "./globals.css"` line | W1-D |
-| `apps/web/next.config.ts` | the commented `createNextIntlPlugin` seam | W1-C |
+| File                      | Seam                                                             | Owner |
+| ------------------------- | ---------------------------------------------------------------- | ----- |
+| `apps/web/proxy.ts`       | `refreshSupabaseSession()` and `guardRoute()`, both `TODO(W1-B)` | W1-B  |
+| `apps/web/app/layout.tsx` | the commented `import "./globals.css"` line                      | W1-D  |
+| `apps/web/next.config.ts` | the commented `createNextIntlPlugin` seam                        | W1-C  |
 
 ---
 
@@ -146,7 +146,7 @@ region, and say so in your handoff:
 A window is one task, not one thread. Fan out where subtasks are independent, then integrate the
 results yourself.
 
-1. **You own the files, not your subagents.** They return content, analysis or a diff; *you*
+1. **You own the files, not your subagents.** They return content, analysis or a diff; _you_
    write it. Two subagents writing one file collide exactly like two windows. Have them draft
    into a scratchpad outside the repo.
 2. **Fan out on research and generation, never on integration.** Six parsers in parallel is safe;
@@ -166,9 +166,9 @@ Never fan out anything with a global invariant: migration numbering, the OpenAPI
 ## 5. Definition of done (SYSTEM-PROMPT §5)
 
 - [ ] Every deliverable in the brief exists and does what the brief says
-- [ ] `pnpm --dir apps/web typecheck` → 0 errors *(paste the output)*
-- [ ] `pnpm --dir apps/web lint` → 0 errors, 0 warnings *(paste the output)*
-- [ ] The brief's task-specific verification commands pass *(paste the output)*
+- [ ] `pnpm --dir apps/web typecheck` → 0 errors _(paste the output)_
+- [ ] `pnpm --dir apps/web lint` → 0 errors, 0 warnings _(paste the output)_
+- [ ] The brief's task-specific verification commands pass _(paste the output)_
 - [ ] No file outside your ownership list was modified — verify with `git status`
 - [ ] `HANDOFF/<task-id>.md` written
 - [ ] Every edge case in your brief is handled, or listed as deliberately deferred with a reason
@@ -196,10 +196,10 @@ clear blocker is a useful deliverable; a silent partial is not.
   Store `Money` with its currency; convert only at display, labelled, with the rate's date.
 - **A price with no observation date** ⟹ `confidence: "single_source"` plus a `Finding`. A stale
   price presented as current is the most damaging error this project can make.
-- **Two URLs on one host are not two sources.** Invariant 3 requires *distinct hosts* for
+- **Two URLs on one host are not two sources.** Invariant 3 requires _distinct hosts_ for
   `"confirmed"`. `assertFactInvariants()` rejects same-host pairs; do not work around it.
 - **656 units in one table** ⟹ virtualise or paginate. Never render 656 DOM rows.
-- **`prefers-reduced-motion`** ⟹ GSAP timelines and R3F degrade to *static*, not to "less".
+- **`prefers-reduced-motion`** ⟹ GSAP timelines and R3F degrade to _static_, not to "less".
 - **No WebGL** (older devices, headless CI) ⟹ poster fallback, not a blank box.
 - **RTL is not required** — no Arabic or Hebrew locale. Do not build for it.
 - Four states for every data surface: empty, loading, error, partial. Not one.

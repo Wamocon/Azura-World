@@ -62,7 +62,7 @@ export function SimulationBanner({
     >
       <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
       <div className="flex min-w-0 flex-col gap-1">
-        <p className="text-xs font-bold uppercase tracking-[0.08em]">
+        <p className="text-xs font-bold tracking-[0.08em] uppercase">
           {strings.title}
         </p>
         <p className="text-xs leading-relaxed text-foreground/80">
@@ -89,7 +89,7 @@ export function SimulationChip({
       data-slot="simulation-chip"
       className={cn(
         "inline-flex min-h-6 shrink-0 items-center gap-1 rounded-md border border-simulation/50 bg-surface-simulation px-2",
-        "text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-simulation",
+        "text-[0.6875rem] font-bold tracking-[0.08em] text-simulation uppercase",
         className
       )}
     >

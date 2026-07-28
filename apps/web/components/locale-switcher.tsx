@@ -77,7 +77,10 @@ export interface LocaleSwitcherProps {
   compact?: boolean
 }
 
-export function LocaleSwitcher({ className, compact = false }: LocaleSwitcherProps) {
+export function LocaleSwitcher({
+  className,
+  compact = false,
+}: LocaleSwitcherProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -100,7 +103,7 @@ export function LocaleSwitcher({ className, compact = false }: LocaleSwitcherPro
     <div className={classes("relative flex shrink-0 items-center", className)}>
       <Globe2
         aria-hidden="true"
-        className="text-muted-foreground pointer-events-none absolute left-2 h-3.5 w-3.5"
+        className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-muted-foreground"
       />
       <select
         data-testid="locale-switcher"
@@ -112,9 +115,11 @@ export function LocaleSwitcher({ className, compact = false }: LocaleSwitcherPro
         title={ARIA_LABEL[activeLocale]}
         className={classes(
           // CONVENTIONS §7: tap target >= 24px. h-9 is 36px.
-          "border-border bg-card text-foreground hover:border-primary focus:border-primary focus:ring-primary/20 h-9 appearance-none rounded-lg border pl-7 text-xs font-semibold shadow-sm transition-colors focus:ring-2 focus:outline-none disabled:cursor-wait disabled:opacity-70",
+          "h-9 appearance-none rounded-lg border border-border bg-card pl-7 text-xs font-semibold text-foreground shadow-sm transition-colors hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-wait disabled:opacity-70",
           // Russian is the widest label; the non-compact width is sized for it.
-          compact ? "w-[68px] max-w-[68px] truncate pr-5 text-[11px]" : "w-[150px] pr-7"
+          compact
+            ? "w-[68px] max-w-[68px] truncate pr-5 text-[11px]"
+            : "w-[150px] pr-7"
         )}
       >
         {locales.map((locale) => (
@@ -125,7 +130,7 @@ export function LocaleSwitcher({ className, compact = false }: LocaleSwitcherPro
       </select>
       <ChevronDown
         aria-hidden="true"
-        className="text-muted-foreground pointer-events-none absolute right-1.5 h-3.5 w-3.5"
+        className="pointer-events-none absolute right-1.5 h-3.5 w-3.5 text-muted-foreground"
       />
     </div>
   )

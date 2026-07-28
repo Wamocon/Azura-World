@@ -75,7 +75,7 @@ function TooltipContent({
             // Once one tooltip is open, its neighbours skip both the delay and
             // the animation. Base UI sets `data-instant` for exactly this.
             "data-[instant]:duration-0",
-            "motion-reduce:transition-opacity motion-reduce:data-[starting-style]:scale-100 motion-reduce:data-[ending-style]:scale-100",
+            "motion-reduce:transition-opacity motion-reduce:data-[ending-style]:scale-100 motion-reduce:data-[starting-style]:scale-100",
             className
           )}
           {...props}

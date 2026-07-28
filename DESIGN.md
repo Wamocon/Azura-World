@@ -18,13 +18,13 @@ because every decision below follows from it:
 > Award-winning real-estate sites split into two camps: **conversion
 > infrastructure** (Zillow, Redfin — dense, fast, functional) and **brand
 > theatre** (Sotheby's, Compass — cinematic, slow, immersive). Azura World CATI
-> is neither, and that is the design problem. It is an *intelligence product
-> about* a brand-theatre property.
+> is neither, and that is the design problem. It is an _intelligence product
+> about_ a brand-theatre property.
 
 The proposed resolution was **"cinematic hero, forensic body"**. W1-D **accepts
 it, with one amendment**.
 
-The amendment: the register does not change *once, below the fold*. It changes
+The amendment: the register does not change _once, below the fold_. It changes
 **at the level of the individual number**. A confirmed figure is quiet and
 confident. A disputed one is loud, amber, and carries a control that opens
 nineteen competing values. That happens in the hero, in a table row, and in the
@@ -41,20 +41,20 @@ So: **the page is cinematic. The numbers are forensic. Everywhere.**
 
 ## 2. What makes this not 1Çatı
 
-The stated acceptance test: *a screenshot of Azura next to a screenshot of
-1Çatı, and nobody mistakes one for the other.*
+The stated acceptance test: _a screenshot of Azura next to a screenshot of
+1Çatı, and nobody mistakes one for the other._
 
-| | 1Çatı | Azura World |
-|---|---|---|
-| Primary | `#066B63` deep teal | `#0B5E7D` azure |
-| Accent | `#B9822B` gold | `#A75B12` warm sand — **CTAs only** |
-| Temperature | Warm, institutional | Cool, coastal, luminous |
-| Body face | Aptos (one face, everywhere) | Manrope |
-| Display face | **none** — no display face at all | **Playfair Display**, a serif |
-| Base radius | `0.625rem` | `0.875rem` — softer |
-| Dark mode | Written, then `forcedTheme="light"` — unreachable | Shipped and contrast-verified |
-| Chart tokens | Mapped in `@theme`, never defined → transparent | All five defined |
-| Provenance language | none — no equivalent exists | dotted underlines, amber conflict badges, source chips, em-dash gaps |
+|                     | 1Çatı                                             | Azura World                                                          |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------- |
+| Primary             | `#066B63` deep teal                               | `#0B5E7D` azure                                                      |
+| Accent              | `#B9822B` gold                                    | `#A75B12` warm sand — **CTAs only**                                  |
+| Temperature         | Warm, institutional                               | Cool, coastal, luminous                                              |
+| Body face           | Aptos (one face, everywhere)                      | Manrope                                                              |
+| Display face        | **none** — no display face at all                 | **Playfair Display**, a serif                                        |
+| Base radius         | `0.625rem`                                        | `0.875rem` — softer                                                  |
+| Dark mode           | Written, then `forcedTheme="light"` — unreachable | Shipped and contrast-verified                                        |
+| Chart tokens        | Mapped in `@theme`, never defined → transparent   | All five defined                                                     |
+| Provenance language | none — no equivalent exists                       | dotted underlines, amber conflict badges, source chips, em-dash gaps |
 
 The strongest differentiator is the last row, and it is not decorative. 1Çatı
 has no concept of a number that argues with itself. Azura's entire visual
@@ -83,36 +83,36 @@ name; `bg-[#0B5E7D]` in a W3-* surface is a review rejection.
 
 ### 3.1 Surface and text
 
-| Token | Light | Dark |
-|---|---|---|
-| `--background` | `#F4F9FB` | `#04101A` |
-| `--foreground` | `#08161F` | `#E8F3F8` |
-| `--card` / `--card-foreground` | `#FFFFFF` / `#08161F` | `#0A1B27` / `#E8F3F8` |
-| `--popover` / `--popover-foreground` | `#FFFFFF` / `#08161F` | `#0C2030` / `#E8F3F8` |
-| `--muted` / `--muted-foreground` | `#E7F0F4` / `#4A6472` | `#0F2735` / `#9DB6C4` |
+| Token                                    | Light                 | Dark                  |
+| ---------------------------------------- | --------------------- | --------------------- |
+| `--background`                           | `#F4F9FB`             | `#04101A`             |
+| `--foreground`                           | `#08161F`             | `#E8F3F8`             |
+| `--card` / `--card-foreground`           | `#FFFFFF` / `#08161F` | `#0A1B27` / `#E8F3F8` |
+| `--popover` / `--popover-foreground`     | `#FFFFFF` / `#08161F` | `#0C2030` / `#E8F3F8` |
+| `--muted` / `--muted-foreground`         | `#E7F0F4` / `#4A6472` | `#0F2735` / `#9DB6C4` |
 | `--secondary` / `--secondary-foreground` | `#E2EEF3` / `#0B3446` | `#122C3C` / `#CFE6F0` |
 
 ### 3.2 Action
 
-| Token | Light | Dark |
-|---|---|---|
-| `--primary` / `--primary-foreground` | `#0B5E7D` / `#F4F9FB` | `#4FC9E8` / `#04101A` |
-| `--accent` / `--accent-foreground` | `#A75B12` / `#FFFFFF` | `#E8A24E` / `#231303` |
+| Token                                        | Light                 | Dark                  |
+| -------------------------------------------- | --------------------- | --------------------- |
+| `--primary` / `--primary-foreground`         | `#0B5E7D` / `#F4F9FB` | `#4FC9E8` / `#04101A` |
+| `--accent` / `--accent-foreground`           | `#A75B12` / `#FFFFFF` | `#E8A24E` / `#231303` |
 | `--destructive` / `--destructive-foreground` | `#B0243A` / `#FFFFFF` | `#FF7B8E` / `#2A0510` |
-| `--ring` | `#1188B4` | `#4FC9E8` |
+| `--ring`                                     | `#1188B4`             | `#4FC9E8`             |
 
 `--destructive-foreground` does not exist in the 1Çatı reference, which renders
-destructive as tinted text on a 10% wash — that reads as *disabled*, not as
-*dangerous*. Azura's destructive button is filled.
+destructive as tinted text on a 10% wash — that reads as _disabled_, not as
+_dangerous_. Azura's destructive button is filled.
 
 ### 3.3 Border vs input — a distinction worth keeping
 
-| Token | Light | Dark | Held to |
-|---|---|---|---|
+| Token      | Light     | Dark      | Held to                       |
+| ---------- | --------- | --------- | ----------------------------- |
 | `--border` | `#C9DCE4` | `#1D3B4E` | nothing — decorative hairline |
-| `--input` | `#6E8FA0` | `#4A7288` | **3:1**, WCAG 1.4.11 |
+| `--input`  | `#6E8FA0` | `#4A7288` | **3:1**, WCAG 1.4.11          |
 
-WCAG 1.4.11 governs *UI component boundaries*, not separators. Collapsing the
+WCAG 1.4.11 governs _UI component boundaries_, not separators. Collapsing the
 two into one token forces a choice between a heavy-handed look and a failed
 audit. Splitting them gets both: quiet dividers, and control edges you can
 actually find. **A control's border uses `--input`.**
@@ -121,17 +121,17 @@ actually find. **A control's border uses `--input`.**
 
 One colour per `Confidence` in `CONTRACTS.md` §1, in both themes.
 
-| Token | Light | Dark |
-|---|---|---|
-| `--confidence-confirmed` | `#0F6B4F` | `#54D6A6` |
-| `--confidence-official` | `#0B5E7D` | `#4FC9E8` |
-| `--confidence-single` | `#4A6472` | `#9DB6C4` |
-| `--confidence-conflicted` | `#8A5200` | `#F0B45C` |
-| `--confidence-inferred` | `#5B4B8A` | `#B9A6F0` |
-| `--confidence-gap` | `#61737E` | `#8EA5B2` |
-| `--surface-conflict` | `#FDF3E3` | `#2A1D08` |
-| `--quality-modelled` | `#5B4B8A` | `#B9A6F0` |
-| `--quality-stale` | `#9A3412` | `#F5A97F` |
+| Token                                   | Light                 | Dark                  |
+| --------------------------------------- | --------------------- | --------------------- |
+| `--confidence-confirmed`                | `#0F6B4F`             | `#54D6A6`             |
+| `--confidence-official`                 | `#0B5E7D`             | `#4FC9E8`             |
+| `--confidence-single`                   | `#4A6472`             | `#9DB6C4`             |
+| `--confidence-conflicted`               | `#8A5200`             | `#F0B45C`             |
+| `--confidence-inferred`                 | `#5B4B8A`             | `#B9A6F0`             |
+| `--confidence-gap`                      | `#61737E`             | `#8EA5B2`             |
+| `--surface-conflict`                    | `#FDF3E3`             | `#2A1D08`             |
+| `--quality-modelled`                    | `#5B4B8A`             | `#B9A6F0`             |
+| `--quality-stale`                       | `#9A3412`             | `#F5A97F`             |
 | `--simulation` / `--surface-simulation` | `#8A5200` / `#FDF3E3` | `#F0B45C` / `#2A1D08` |
 
 Also defined: `--chart-1..5`, the full `--sidebar-*` set, and coastal tokens
@@ -157,39 +157,39 @@ Produced by the W1-D contrast harness against the exact token values above.
 **0 gated failures.** Floors: 4.5:1 body text (1.4.3), 3:1 UI component
 boundaries and focus indicators (1.4.11).
 
-| Pair | Light | Dark | Floor |
-|---|---|---|---|
-| foreground / background | **17.29** | **17.01** | 4.5 |
-| foreground / card | **18.34** | **15.52** | 4.5 |
-| foreground / popover | **18.34** | **14.71** | 4.5 |
-| muted-foreground / background | **5.90** | **9.07** | 4.5 |
-| muted-foreground / card | **6.26** | **8.28** | 4.5 |
-| muted-foreground / muted | **5.41** | **7.29** | 4.5 |
-| primary / background (link) | **6.80** | **9.92** | 4.5 |
-| primary / card (link) | **7.21** | **9.05** | 4.5 |
-| primary-fg / primary (button) | **6.80** | **9.92** | 4.5 |
-| secondary-fg / secondary | **11.14** | **11.18** | 4.5 |
-| accent / background (text) | **4.77** | **8.87** | 4.5 |
-| accent-fg / accent (CTA) | **5.06** | **8.33** | 4.5 |
-| destructive / background | **6.26** | **7.75** | 4.5 |
-| destructive-fg / destructive | **6.65** | **7.52** | 4.5 |
-| input / background (control edge) | **3.24** | **3.70** | 3.0 |
-| input / card (control edge) | **3.44** | **3.38** | 3.0 |
-| ring / background (focus) | **3.80** | **9.92** | 3.0 |
-| ring / card (focus) | **4.03** | **9.05** | 3.0 |
-| confidence confirmed / card | **6.49** | **9.63** | 4.5 |
-| confidence official / card | **7.21** | **9.05** | 4.5 |
-| confidence single_source / card | **6.26** | **8.28** | 4.5 |
-| **confidence conflicted / card** | **6.39** | **9.50** | 4.5 |
-| **confidence conflicted / conflict surface** | **5.81** | **8.91** | 4.5 |
-| confidence conflicted / background | **6.02** | **10.41** | 4.5 |
-| confidence inferred / card | **7.45** | **8.15** | 4.5 |
-| confidence gap / card | **4.93** | **6.82** | 4.5 |
-| confidence gap / background | **4.64** | **7.47** | 4.5 |
-| quality modelled / card | **7.45** | **8.15** | 4.5 |
-| quality stale / card | **7.31** | **9.06** | 4.5 |
-| SIMULATION label / sim surface | **5.81** | **8.91** | 4.5 |
-| SIMULATION label / card | **6.39** | **9.50** | 4.5 |
+| Pair                                         | Light     | Dark      | Floor |
+| -------------------------------------------- | --------- | --------- | ----- |
+| foreground / background                      | **17.29** | **17.01** | 4.5   |
+| foreground / card                            | **18.34** | **15.52** | 4.5   |
+| foreground / popover                         | **18.34** | **14.71** | 4.5   |
+| muted-foreground / background                | **5.90**  | **9.07**  | 4.5   |
+| muted-foreground / card                      | **6.26**  | **8.28**  | 4.5   |
+| muted-foreground / muted                     | **5.41**  | **7.29**  | 4.5   |
+| primary / background (link)                  | **6.80**  | **9.92**  | 4.5   |
+| primary / card (link)                        | **7.21**  | **9.05**  | 4.5   |
+| primary-fg / primary (button)                | **6.80**  | **9.92**  | 4.5   |
+| secondary-fg / secondary                     | **11.14** | **11.18** | 4.5   |
+| accent / background (text)                   | **4.77**  | **8.87**  | 4.5   |
+| accent-fg / accent (CTA)                     | **5.06**  | **8.33**  | 4.5   |
+| destructive / background                     | **6.26**  | **7.75**  | 4.5   |
+| destructive-fg / destructive                 | **6.65**  | **7.52**  | 4.5   |
+| input / background (control edge)            | **3.24**  | **3.70**  | 3.0   |
+| input / card (control edge)                  | **3.44**  | **3.38**  | 3.0   |
+| ring / background (focus)                    | **3.80**  | **9.92**  | 3.0   |
+| ring / card (focus)                          | **4.03**  | **9.05**  | 3.0   |
+| confidence confirmed / card                  | **6.49**  | **9.63**  | 4.5   |
+| confidence official / card                   | **7.21**  | **9.05**  | 4.5   |
+| confidence single_source / card              | **6.26**  | **8.28**  | 4.5   |
+| **confidence conflicted / card**             | **6.39**  | **9.50**  | 4.5   |
+| **confidence conflicted / conflict surface** | **5.81**  | **8.91**  | 4.5   |
+| confidence conflicted / background           | **6.02**  | **10.41** | 4.5   |
+| confidence inferred / card                   | **7.45**  | **8.15**  | 4.5   |
+| confidence gap / card                        | **4.93**  | **6.82**  | 4.5   |
+| confidence gap / background                  | **4.64**  | **7.47**  | 4.5   |
+| quality modelled / card                      | **7.45**  | **8.15**  | 4.5   |
+| quality stale / card                         | **7.31**  | **9.06**  | 4.5   |
+| SIMULATION label / sim surface               | **5.81**  | **8.91**  | 4.5   |
+| SIMULATION label / card                      | **6.39**  | **9.50**  | 4.5   |
 
 Informational, deliberately not gated — `--border` is a decorative separator,
 not a UI component boundary: light 1.33 (background) / 1.41 (card); dark 1.63 /
@@ -216,16 +216,16 @@ so a Google Fonts link is blocked by our own CSP on both counts.
 Both faces are variable and SIL OFL 1.1, so redistribution is fine — unlike
 everything under `sources/media`, which is a competitor's material.
 
-| File | Bytes |
-|---|---|
-| `manrope-var-latin.woff2` | 24,836 |
-| `manrope-var-latin-ext.woff2` | 15,120 |
-| `manrope-var-cyrillic.woff2` | 14,500 |
-| `manrope-var-cyrillic-ext.woff2` | 2,552 |
-| `playfair-var-latin.woff2` | 38,404 |
-| `playfair-var-latin-ext.woff2` | 21,140 |
-| `playfair-var-cyrillic.woff2` | 21,152 |
-| **total** | **137,704** |
+| File                             | Bytes       |
+| -------------------------------- | ----------- |
+| `manrope-var-latin.woff2`        | 24,836      |
+| `manrope-var-latin-ext.woff2`    | 15,120      |
+| `manrope-var-cyrillic.woff2`     | 14,500      |
+| `manrope-var-cyrillic-ext.woff2` | 2,552       |
+| `playfair-var-latin.woff2`       | 38,404      |
+| `playfair-var-latin-ext.woff2`   | 21,140      |
+| `playfair-var-cyrillic.woff2`    | 21,152      |
+| **total**                        | **137,704** |
 
 Seven files, not the twenty-nine Google's CSS implies: the per-weight URLs are
 byte-identical variable fonts, verified by sha256. `font-weight: 200 800`
@@ -244,13 +244,13 @@ Tracking is **size-specific**. A single `letter-spacing` is wrong somewhere:
 large text reads too loose as it grows and wants negative tracking, small text
 wants slightly positive.
 
-| Role | Size | Line height | Tracking |
-|---|---|---|---|
-| `h1` | `clamp` per surface | 1.04 | `-0.03em` |
-| `h2`, `h3`, `.font-display` | — | 1.1 | `-0.02em` |
-| body | `1rem` | 1.6 | 0 |
-| small / caption | `0.75–0.875rem` | 1.4–1.5 | `+0.01em`…`+0.02em` |
-| uppercase labels | `0.6875rem` | — | `+0.06em` |
+| Role                        | Size                | Line height | Tracking            |
+| --------------------------- | ------------------- | ----------- | ------------------- |
+| `h1`                        | `clamp` per surface | 1.04        | `-0.03em`           |
+| `h2`, `h3`, `.font-display` | —                   | 1.1         | `-0.02em`           |
+| body                        | `1rem`              | 1.6         | 0                   |
+| small / caption             | `0.75–0.875rem`     | 1.4–1.5     | `+0.01em`…`+0.02em` |
+| uppercase labels            | `0.6875rem`         | —           | `+0.06em`           |
 
 Sizes are in `rem` so a user's larger default scales the layout with the text
 instead of overflowing it.
@@ -266,13 +266,13 @@ illegible.
 The rules are a contract, not a style preference. Implemented in
 `components/evidence/*`.
 
-| Confidence | Treatment |
-|---|---|
-| `confirmed` / `official` | Normal weight. Quiet source affordance. |
-| `single_source` | Dotted underline (`.azura-underline-dotted`). |
-| `conflicted` | **Amber badge, always visible, never hover-only.** Range shown where one is honest. |
-| `inferred` | Italic + a "berechnet" marker + the derivation note. |
-| `gap` | **"—" and "Nicht belegt". Never `0`. Never blank.** |
+| Confidence               | Treatment                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `confirmed` / `official` | Normal weight. Quiet source affordance.                                             |
+| `single_source`          | Dotted underline (`.azura-underline-dotted`).                                       |
+| `conflicted`             | **Amber badge, always visible, never hover-only.** Range shown where one is honest. |
+| `inferred`               | Italic + a "berechnet" marker + the derivation note.                                |
+| `gap`                    | **"—" and "Nicht belegt". Never `0`. Never blank.**                                 |
 
 Three decisions inside those rules are worth defending explicitly.
 
@@ -293,7 +293,7 @@ units, and inventing a rate would be inventing a number.
 comparable numbers, more than one currency, or all values identical.
 
 **Colour is never the only signal.** Each confidence level pairs a distinct icon
-*shape* with its colour, chosen to differ in silhouette: double-tick, shield,
+_shape_ with its colour, chosen to differ in silhouette: double-tick, shield,
 minus, triangle (the only pointed shape), function glyph (the only one
 containing a character), slashed circle (the only circle). State survives
 greyscale, a monochrome A4 print, and colour vision deficiency (WCAG 1.4.1).
@@ -319,17 +319,17 @@ A fourth animation library is a bundle regression, not a capability.
 
 All values live in `lib/motion.ts`. Nobody hardcodes a duration.
 
-| Element | Duration |
-|---|---|
-| Button press | 160ms |
-| Tooltip | 125ms |
-| Popover, dialog | 200ms |
-| Tabs indicator | 220ms |
-| Scroll reveal | 500ms |
-| Hero | 800ms |
+| Element         | Duration |
+| --------------- | -------- |
+| Button press    | 160ms    |
+| Tooltip         | 125ms    |
+| Popover, dialog | 200ms    |
+| Tabs indicator  | 220ms    |
+| Scroll reveal   | 500ms    |
+| Hero            | 800ms    |
 
 `ease-in` is deliberately absent from the token set. It delays the first frame —
-the exact moment the user is watching hardest — so a 300ms `ease-in` *feels*
+the exact moment the user is watching hardest — so a 300ms `ease-in` _feels_
 slower than a 300ms `ease-out`.
 
 Springs use Apple's two-parameter model (damping ratio + response) expressed as
@@ -354,7 +354,11 @@ the mechanism matters more than the intent.
 The common failure is the blanket clamp:
 
 ```css
-@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.001ms } }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms;
+  }
+}
 ```
 
 That stops the animation but leaves whatever set `opacity: 0` in place — so
@@ -367,8 +371,8 @@ So the policy is inverted. Ambient CSS motion is opted **in** under
 `components/anim/reveal.tsx` returns **before** it hides anything:
 
 ```ts
-if (reduced) return                      // ← nothing was hidden
-gsap.set(targets, { y, opacity: 0 })     // ← only reached when animating
+if (reduced) return; // ← nothing was hidden
+gsap.set(targets, { y, opacity: 0 }); // ← only reached when animating
 ```
 
 The `[data-reveal]` rule in `globals.css` that forces `opacity: 1` under
@@ -404,7 +408,7 @@ that does not resolve:
 3. WebGL unavailable — probed with a real `getContext`, not inferred
 4. not yet near the viewport — IntersectionObserver with a 300px margin
 
-The poster stays mounted *underneath* the canvas rather than being swapped out,
+The poster stays mounted _underneath_ the canvas rather than being swapped out,
 so there is no frame in which the box is empty and a later context loss still
 has something behind it.
 

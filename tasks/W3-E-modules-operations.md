@@ -117,6 +117,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, evidence pasted:
+
 1. The full transition table, and a test that **every** invalid transition is rejected by the API
 2. Concurrent transition → one success, one 409
 3. Capacity race with true concurrency → exactly one booking, one clean rejection

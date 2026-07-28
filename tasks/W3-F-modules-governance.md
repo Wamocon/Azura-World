@@ -122,6 +122,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, evidence pasted:
+
 1. Self-elevation attempt → **403**, with the audit row
 2. Demote the last admin → rejected
 3. Deactivated user's next request → fails closed

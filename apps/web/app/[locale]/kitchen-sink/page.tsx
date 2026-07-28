@@ -223,7 +223,9 @@ const PLOT_AREA: SourcedFact<number> = {
 const DOWN_PAYMENT: SourcedFact<number> = {
   value: 30,
   confidence: "single_source",
-  sources: [source("Terra Real Estate", "https://terrarealestate.com/", 4, HASH_A)],
+  sources: [
+    source("Terra Real Estate", "https://terrarealestate.com/", 4, HASH_A),
+  ],
 }
 
 const TOTAL_UNITS: SourcedFact<number> = {
@@ -264,32 +266,77 @@ const ALL_LEVELS: ReadonlyArray<{
   {
     level: "confirmed",
     label: "confirmed — Grundstücksfläche",
-    node: <ProvenanceValue fact={PLOT_AREA} format="area" locale="de" labels={LABELS} showSources />,
+    node: (
+      <ProvenanceValue
+        fact={PLOT_AREA}
+        format="area"
+        locale="de"
+        labels={LABELS}
+        showSources
+      />
+    ),
   },
   {
     level: "official",
     label: "official — Wohneinheiten gesamt",
-    node: <ProvenanceValue fact={TOTAL_UNITS} format="number" locale="de" labels={LABELS} showSources />,
+    node: (
+      <ProvenanceValue
+        fact={TOTAL_UNITS}
+        format="number"
+        locale="de"
+        labels={LABELS}
+        showSources
+      />
+    ),
   },
   {
     level: "single_source",
     label: "single_source — Anzahlung",
-    node: <ProvenanceValue fact={DOWN_PAYMENT} format="percent" locale="de" labels={LABELS} showSources />,
+    node: (
+      <ProvenanceValue
+        fact={DOWN_PAYMENT}
+        format="percent"
+        locale="de"
+        labels={LABELS}
+        showSources
+      />
+    ),
   },
   {
     level: "conflicted",
     label: "conflicted — Einstiegspreis 1+1 (F-002)",
-    node: <ProvenanceValue fact={ENTRY_PRICE} format="money" locale="de" labels={LABELS} />,
+    node: (
+      <ProvenanceValue
+        fact={ENTRY_PRICE}
+        format="money"
+        locale="de"
+        labels={LABELS}
+      />
+    ),
   },
   {
     level: "inferred",
     label: "inferred — EUR/m² (konstruiert, siehe Hinweis)",
-    node: <ProvenanceValue fact={PRICE_PER_SQM} format="number" locale="de" labels={LABELS} />,
+    node: (
+      <ProvenanceValue
+        fact={PRICE_PER_SQM}
+        format="number"
+        locale="de"
+        labels={LABELS}
+      />
+    ),
   },
   {
     level: "gap",
     label: "gap — Platzierung des Hotels",
-    node: <ProvenanceValue fact={RANKING} format="text" locale="de" labels={LABELS} />,
+    node: (
+      <ProvenanceValue
+        fact={RANKING}
+        format="text"
+        locale="de"
+        labels={LABELS}
+      />
+    ),
   },
 ]
 
@@ -358,7 +405,7 @@ export default async function KitchenSinkPage({
   await params
 
   return (
-    <main className="container mx-auto flex min-w-0 max-w-4xl flex-col gap-12 py-10">
+    <main className="container mx-auto flex max-w-4xl min-w-0 flex-col gap-12 py-10">
       <header className="flex min-w-0 flex-col gap-4">
         <Badge variant="simulation">Nur Entwicklung</Badge>
         {/* The h1 is NOT scrambled. A decode effect on the one line that tells
@@ -370,8 +417,8 @@ export default async function KitchenSinkPage({
           <ScrambleText text="Türkler · Alanya · Antalya" />
         </p>
         <p className="max-w-prose text-muted-foreground">
-          Jede Primitive in jedem Zustand. Diese Seite ist der Nachweis für
-          W1-D — sechs Belege, jeweils mit <code>data-proof</code> markiert.
+          Jede Primitive in jedem Zustand. Diese Seite ist der Nachweis für W1-D
+          — sechs Belege, jeweils mit <code>data-proof</code> markiert.
         </p>
         <ThemeToggle />
       </header>
@@ -386,8 +433,13 @@ export default async function KitchenSinkPage({
           {ALL_LEVELS.map((entry) => (
             <Card key={entry.level} className="gap-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <code className="text-xs text-muted-foreground">{entry.label}</code>
-                <ConfidenceBadge confidence={entry.level} labels={LABELS.confidence} />
+                <code className="text-xs text-muted-foreground">
+                  {entry.label}
+                </code>
+                <ConfidenceBadge
+                  confidence={entry.level}
+                  labels={LABELS.confidence}
+                />
               </div>
               <div className="min-w-0">{entry.node}</div>
             </Card>
@@ -450,13 +502,22 @@ export default async function KitchenSinkPage({
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th scope="col" className="px-3 py-2 text-left text-xs uppercase tracking-[0.04em] text-muted-foreground">
+                <th
+                  scope="col"
+                  className="px-3 py-2 text-left text-xs tracking-[0.04em] text-muted-foreground uppercase"
+                >
                   Paar
                 </th>
-                <th scope="col" className="px-3 py-2 text-right text-xs uppercase tracking-[0.04em] text-muted-foreground">
+                <th
+                  scope="col"
+                  className="px-3 py-2 text-right text-xs tracking-[0.04em] text-muted-foreground uppercase"
+                >
                   Hell
                 </th>
-                <th scope="col" className="px-3 py-2 text-right text-xs uppercase tracking-[0.04em] text-muted-foreground">
+                <th
+                  scope="col"
+                  className="px-3 py-2 text-right text-xs tracking-[0.04em] text-muted-foreground uppercase"
+                >
                   Dunkel
                 </th>
               </tr>
@@ -465,8 +526,12 @@ export default async function KitchenSinkPage({
               {CONTRAST.map(([pair, light, dark]) => (
                 <tr key={pair} className="border-b border-border">
                   <td className="px-3 py-2">{pair}</td>
-                  <td data-numeric className="px-3 py-2 text-right">{light}</td>
-                  <td data-numeric className="px-3 py-2 text-right">{dark}</td>
+                  <td data-numeric className="px-3 py-2 text-right">
+                    {light}
+                  </td>
+                  <td data-numeric className="px-3 py-2 text-right">
+                    {dark}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -510,7 +575,9 @@ export default async function KitchenSinkPage({
               <Button>Wohnungsangebot anfordern</Button>
               <Button variant="accent">Besichtigungstermin vereinbaren</Button>
               <Button variant="outline">Quellenverzeichnis</Button>
-              <Button variant="destructive">Eintrag unwiderruflich löschen</Button>
+              <Button variant="destructive">
+                Eintrag unwiderruflich löschen
+              </Button>
             </CardFooter>
           </Card>
         </StaggerReveal>
@@ -543,9 +610,9 @@ export default async function KitchenSinkPage({
         <Card data-proof="glyph-coverage">
           <CardTitle>Glyphenabdeckung</CardTitle>
           <CardDescription>
-            Beide Schriften müssen Latin-ext (türkisch: ı İ ş ğ ç) und Kyrillisch
-            abdecken. Ein fehlendes Zeichen rendert als lautloses Kästchen — es
-            fällt niemandem auf, der die Sprache nicht liest.
+            Beide Schriften müssen Latin-ext (türkisch: ı İ ş ğ ç) und
+            Kyrillisch abdecken. Ein fehlendes Zeichen rendert als lautloses
+            Kästchen — es fällt niemandem auf, der die Sprache nicht liest.
           </CardDescription>
           <div className="flex flex-col gap-1">
             <p className="font-display text-2xl">
@@ -561,7 +628,12 @@ export default async function KitchenSinkPage({
           <CardTitle>Quellen-Chips</CardTitle>
           <div className="flex flex-wrap gap-2">
             <SourceChip
-              source={source("Azura World", "https://azuraworld.com/", 1, HASH_A)}
+              source={source(
+                "Azura World",
+                "https://azuraworld.com/",
+                1,
+                HASH_A
+              )}
               locale="de"
               labels={LABELS.source}
             />
@@ -588,13 +660,13 @@ export default async function KitchenSinkPage({
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <p className="text-xs uppercase tracking-[0.06em] text-muted-foreground">
+            <p className="text-xs tracking-[0.06em] text-muted-foreground uppercase">
               Maquette (mit allen Schutzmaßnahmen)
             </p>
             <CoastMaquette posterLabel="Schematische Massenstudie der Anlage Azura World: sieben Wohnblöcke, das Hotel und das Meer." />
           </div>
           <div className="flex flex-col gap-2">
-            <p className="text-xs uppercase tracking-[0.06em] text-muted-foreground">
+            <p className="text-xs tracking-[0.06em] text-muted-foreground uppercase">
               Poster (erzwungen)
             </p>
             <div className="aspect-[400/260] w-full overflow-hidden rounded-xl border border-border">

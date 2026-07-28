@@ -51,7 +51,7 @@ export function DashboardTopbar(): ReactNode {
           "sticky top-0 z-30 border-b border-border",
           // Translucent chrome with the content scrolling under it, rather than
           // an opaque strip that consumes a fixed band of the viewport.
-          "azura-glass",
+          "azura-glass"
         )}
       >
         <div className="flex min-h-16 min-w-0 items-center gap-2 px-4 pl-16 md:px-6 md:pl-4">
@@ -77,11 +77,15 @@ export function DashboardTopbar(): ReactNode {
               className="gap-2"
             >
               <Search aria-hidden="true" />
-              <span className="hidden sm:inline">{tShell("searchPlaceholder")}</span>
+              <span className="hidden sm:inline">
+                {tShell("searchPlaceholder")}
+              </span>
               <kbd className="hidden rounded border border-border bg-muted px-1 text-[0.625rem] font-medium text-muted-foreground md:inline">
                 {tShell("searchHint")}
               </kbd>
-              <span className="sr-only sm:hidden">{tShell("searchPlaceholder")}</span>
+              <span className="sr-only sm:hidden">
+                {tShell("searchPlaceholder")}
+              </span>
             </Button>
 
             <LocaleSwitcher />

@@ -1,7 +1,11 @@
 import { createManifestHandler, type HandlerResult } from "@/lib/api-handler"
 import { notFound } from "@/lib/api-errors"
 import type { HotelRecord } from "@/lib/hotel-data"
-import { getHotel, getHotelRooms, type HotelRoomBreakdown } from "@/lib/hotel-repository"
+import {
+  getHotel,
+  getHotelRooms,
+  type HotelRoomBreakdown,
+} from "@/lib/hotel-repository"
 import { RepositoryError } from "@/lib/repository-base"
 import { readEnum } from "@/lib/validation/query"
 

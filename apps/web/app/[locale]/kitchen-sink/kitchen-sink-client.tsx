@@ -13,7 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { DataSurface, EmptyState, ErrorState, LoadingState } from "@/components/ui/empty-state"
+import {
+  DataSurface,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+} from "@/components/ui/empty-state"
 import { Field, Input } from "@/components/ui/input"
 import {
   Table,
@@ -24,8 +29,18 @@ import {
   TableScrollArea,
   VirtualTableBody,
 } from "@/components/ui/table"
-import { Tabs, TabsIndicator, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tabs,
+  TabsIndicator,
+  TabsList,
+  TabsPanel,
+  TabsTab,
+} from "@/components/ui/tabs"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useTableScrollRef } from "@/components/ui/table"
 
 /**
@@ -96,14 +111,17 @@ export function KitchenSinkClient(): ReactNode {
 
   return (
     <>
-      <section data-proof="table-virtualisation" className="flex min-w-0 flex-col gap-4">
+      <section
+        data-proof="table-virtualisation"
+        className="flex min-w-0 flex-col gap-4"
+      >
         <header className="flex min-w-0 flex-col gap-1 border-b border-border pb-2">
           <h2 className="font-display text-xl font-semibold">
             6 · Tabelle mit 656 Zeilen
           </h2>
           <p className="text-sm text-muted-foreground">
-            Nur das sichtbare Fenster liegt im DOM. Die Bildlaufleiste beschreibt
-            trotzdem die volle Länge.
+            Nur das sichtbare Fenster liegt im DOM. Die Bildlaufleiste
+            beschreibt trotzdem die volle Länge.
           </p>
         </header>
 
@@ -122,7 +140,10 @@ export function KitchenSinkClient(): ReactNode {
           />
         </Field>
 
-        <p className="text-sm text-muted-foreground" data-testid="visible-count">
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="visible-count"
+        >
           {visible.length} von {units.length} Einheiten
         </p>
 
@@ -182,18 +203,20 @@ export function KitchenSinkClient(): ReactNode {
 
           <TabsPanel value="states" className="flex flex-col gap-3 pt-2">
             <div className="flex flex-wrap gap-2">
-              {(["loading", "error", "empty", "ready"] as const).map((state) => (
-                <Button
-                  key={state}
-                  size="sm"
-                  variant={surfaceState === state ? "default" : "outline"}
-                  onClick={() => setSurfaceState(state)}
-                  aria-pressed={surfaceState === state}
-                  data-testid={`surface-${state}`}
-                >
-                  {state}
-                </Button>
-              ))}
+              {(["loading", "error", "empty", "ready"] as const).map(
+                (state) => (
+                  <Button
+                    key={state}
+                    size="sm"
+                    variant={surfaceState === state ? "default" : "outline"}
+                    onClick={() => setSurfaceState(state)}
+                    aria-pressed={surfaceState === state}
+                    data-testid={`surface-${state}`}
+                  >
+                    {state}
+                  </Button>
+                )
+              )}
             </div>
 
             <DataSurface

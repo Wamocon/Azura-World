@@ -221,7 +221,9 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(project.distanceToAlanyaCentreKm.sources.length)}
+              note={sourceCount(
+                project.distanceToAlanyaCentreKm.sources.length
+              )}
             />
             <FactRow
               label={t("why.airportLabel")}
@@ -293,7 +295,10 @@ export async function AmenitiesSection({
         <Reveal>
           <div
             className="flex max-w-[62ch] flex-col gap-3 rounded-[var(--radius-sm)] border border-dashed border-[color-mix(in_srgb,var(--confidence-gap)_50%,transparent)] px-5 py-6"
-            style={{ backgroundColor: "color-mix(in srgb, var(--muted) 55%, transparent)" }}
+            style={{
+              backgroundColor:
+                "color-mix(in srgb, var(--muted) 55%, transparent)",
+            }}
           >
             <p className="font-display text-[1.125rem] leading-[1.3] tracking-[-0.01em]">
               {t("amenities.gapTitle")}

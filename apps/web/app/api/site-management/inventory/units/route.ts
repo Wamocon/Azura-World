@@ -1,7 +1,11 @@
 import { createManifestHandler } from "@/lib/api-handler"
 import { getUnits } from "@/lib/inventory-repository"
 import { readEnum, readId } from "@/lib/validation/query"
-import { saleStatuses, unitDataQualities, unitLayouts } from "@/lib/validation/vocab"
+import {
+  saleStatuses,
+  unitDataQualities,
+  unitLayouts,
+} from "@/lib/validation/vocab"
 
 export const dynamic = "force-dynamic"
 

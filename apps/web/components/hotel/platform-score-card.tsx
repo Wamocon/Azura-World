@@ -1,8 +1,18 @@
-import { ProvenanceValue, type ProvenanceLabels } from "@/components/evidence/provenance-value"
+import {
+  ProvenanceValue,
+  type ProvenanceLabels,
+} from "@/components/evidence/provenance-value"
 import { cn } from "@/lib/cn"
 
-import { SentimentDistribution, type SentimentLabels } from "./sentiment-distribution"
-import { formatFetchedDate, scoreAsDisplayFact, type PlatformGroup } from "./select"
+import {
+  SentimentDistribution,
+  type SentimentLabels,
+} from "./sentiment-distribution"
+import {
+  formatFetchedDate,
+  scoreAsDisplayFact,
+  type PlatformGroup,
+} from "./select"
 
 /**
  * One review platform, on its own scale.                          Owner: W3-G
@@ -79,7 +89,7 @@ export function PlatformScoreCard({
       data-slot="platform-score"
       className={cn(
         "flex flex-col gap-5 rounded-lg border border-border bg-card p-6",
-        className,
+        className
       )}
     >
       <header className="flex flex-col gap-1">
@@ -92,7 +102,7 @@ export function PlatformScoreCard({
         score — it is part of it, and it is never rendered separately.
       */}
       <div className="flex flex-col gap-1">
-        <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
           {labels.score}
         </p>
         <div className="flex items-baseline gap-1.5">
@@ -143,7 +153,8 @@ export function PlatformScoreCard({
             />
             {primary.fetchedAt !== null ? (
               <span className="text-xs text-muted-foreground">
-                {labels.fetchedAt} {formatFetchedDate(primary.fetchedAt, locale)}
+                {labels.fetchedAt}{" "}
+                {formatFetchedDate(primary.fetchedAt, locale)}
               </span>
             ) : null}
           </dd>
@@ -170,10 +181,13 @@ export function PlatformScoreCard({
                   rel="noreferrer noopener nofollow"
                   className={cn(
                     "rounded-sm underline underline-offset-4",
-                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   )}
                 >
-                  {labels.syndicatedBy.replace("{publisher}", capture.publisher)}
+                  {labels.syndicatedBy.replace(
+                    "{publisher}",
+                    capture.publisher
+                  )}
                 </a>
               </li>
             ))}
@@ -189,7 +203,7 @@ export function PlatformScoreCard({
           "mt-auto inline-flex min-h-6 w-fit items-center rounded-sm text-sm font-medium",
           "text-primary underline underline-offset-4 transition-transform duration-150 ease-out",
           "active:scale-[0.97]",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         )}
       >
         {labels.openPlatform.replace("{platform}", platformName)}

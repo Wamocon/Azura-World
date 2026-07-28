@@ -5,17 +5,17 @@
 > Read `SYSTEM-PROMPT.md`, `HANDOFF/W1-D.md` (tokens, motion budget, provenance components).
 > Then read these in full — they are the thing you are matching:
 >
-> | Component | Lines | What it is |
-> |---|---|---|
-> | `Cati\apps\web\components\live-erp-simulation.tsx` | 961 | Ticker of simulated ERP activity: tickets, payments, AI actions, sync |
-> | `Cati\apps\web\components\phase4-live-operations.tsx` | 797 | Interactive unit explorer with live filter/search/online-offline |
-> | `Cati\apps\web\components\isometric-erp-world.tsx` | 771 | **CSS** isometric world, step-through walkthrough |
-> | `Cati\apps\web\components\people-directory-live.tsx` | 436 | Animated role/people directory |
-> | `Cati\apps\web\components\finance-live-ledger.tsx` | 410 | Ledger entries posting in real time |
-> | `Cati\apps\web\components\dashboard-preview.tsx` | 357 | SVG product preview |
-> | `Cati\apps\web\components\site-command-simulation.tsx` | 182 | Site command overview from seed data |
-> | `Cati\apps\web\components\3d-card.tsx` | 32 | Pointer-tracking tilt card |
-> | `NewLevelPremium\components\three\TowerMaquette.tsx` | 235 | R3F WebGL maquette — the only real 3D in either repo |
+> | Component                                              | Lines | What it is                                                            |
+> | ------------------------------------------------------ | ----- | --------------------------------------------------------------------- |
+> | `Cati\apps\web\components\live-erp-simulation.tsx`     | 961   | Ticker of simulated ERP activity: tickets, payments, AI actions, sync |
+> | `Cati\apps\web\components\phase4-live-operations.tsx`  | 797   | Interactive unit explorer with live filter/search/online-offline      |
+> | `Cati\apps\web\components\isometric-erp-world.tsx`     | 771   | **CSS** isometric world, step-through walkthrough                     |
+> | `Cati\apps\web\components\people-directory-live.tsx`   | 436   | Animated role/people directory                                        |
+> | `Cati\apps\web\components\finance-live-ledger.tsx`     | 410   | Ledger entries posting in real time                                   |
+> | `Cati\apps\web\components\dashboard-preview.tsx`       | 357   | SVG product preview                                                   |
+> | `Cati\apps\web\components\site-command-simulation.tsx` | 182   | Site command overview from seed data                                  |
+> | `Cati\apps\web\components\3d-card.tsx`                 | 32    | Pointer-tracking tilt card                                            |
+> | `NewLevelPremium\components\three\TowerMaquette.tsx`   | 235   | R3F WebGL maquette — the only real 3D in either repo                  |
 
 ---
 
@@ -23,7 +23,7 @@
 
 My original wave plan specified **one** WebGL component and four motion primitives. 1Çatı has
 roughly **4,100 lines** of live-simulation components, and they are its signature: the landing
-page does not *describe* the ERP, it *runs* a simulation of it. Without this layer the Azura
+page does not _describe_ the ERP, it _runs_ a simulation of it. Without this layer the Azura
 build is functionally comparable and visibly thinner.
 
 Note what these actually are: **Framer Motion + CSS, driven by real seed data.** Even
@@ -55,6 +55,7 @@ opening and closing, payments posting, reservations confirming, an AI action log
 badge flipping between realtime and polling.
 
 **Non-negotiable honesty rules:**
+
 - Driven by the **real seed dataset**, never invented figures
 - Labelled **"Simulation"** in every locale, unmistakably, at all times
 - Never mixed with, or styled like, a live-data surface
@@ -79,7 +80,7 @@ online/offline state. `modelled` units stay visually distinct here exactly as in
 
 An animated walk through the evidence pipeline: 23 sources → harvest → conflict detection →
 resolution → the dataset. It ends on F-002 — four portals, four prices, one in USD, a 2.1×
-spread — and shows the conflict *not* being resolved.
+spread — and shows the conflict _not_ being resolved.
 
 Nothing in the reference repos corresponds to this. It is the component that argues the whole
 project, and it should be the one people remember.
@@ -132,6 +133,7 @@ pnpm qa:perf     # landing route still within budget WITH the simulation layer
 ```
 
 Evidence to paste:
+
 1. Each component screenshotted, 4 locales, light + dark
 2. `prefers-reduced-motion: reduce` → every simulation shows its complete final state
 3. WebGL disabled → poster renders

@@ -34,10 +34,32 @@ sources/media/*
 !sources/media/.gitkeep
 
 # --- generated QA artefacts (repo policy: never keep these) ---
+#
+# CONVENTIONS forbids generated QA output in the repo, and 39 such files had been
+# committed anyway: harness reports, per-run timestamped directories, probe
+# transcripts and screenshots. They are regenerable by re-running the harness,
+# they carry a timestamp so every run is a new file rather than a diff, and the
+# screenshots alone are megabytes.
+#
+# What is NOT ignored, deliberately: RELEASE-STATUS.md, TRACEABILITY.md and
+# QUALITY-REPORT.md live at the repo root. Those are documents that a person
+# wrote and a reader is meant to read, not output a script emitted.
 quality/results/
 quality/layout/
 quality/manual/
 quality/browser-audit/
+quality/e2e/
+quality/a11y/
+quality/perf/
+quality/drift/
+quality/browser/
+quality/probes/
+quality/w3c/
+quality/w3g/
+quality/*.json
+quality/*console.txt
+quality/*.txt
+quality/**/*.png
 test-results/
 playwright-report/
 qa_output/
@@ -58,3 +80,7 @@ Thumbs.db
 # --- supabase local ---
 supabase/.branches/
 supabase/.temp/
+
+# Keep the directory itself, so a fresh clone has somewhere for the harnesses
+# to write. Same pattern as sources/media/.gitkeep.
+!quality/.gitkeep

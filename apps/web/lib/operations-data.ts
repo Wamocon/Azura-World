@@ -22,7 +22,11 @@
 
 import type { Money } from "@/lib/contracts"
 import { seedIso } from "@/lib/repository-base"
-import { SEED_COMPANY_ID, SEED_PROFILE_IDS, SEED_SITE_ID } from "@/lib/finance-data"
+import {
+  SEED_COMPANY_ID,
+  SEED_PROFILE_IDS,
+  SEED_SITE_ID,
+} from "@/lib/finance-data"
 
 export {
   SEED_COMPANY_ID,
@@ -55,7 +59,12 @@ export type TicketStatus = (typeof ticketStatuses)[number]
 export const ticketPriorities = ["low", "normal", "high", "urgent"] as const
 export type TicketPriority = (typeof ticketPriorities)[number]
 
-export const ticketSeverities = ["minor", "moderate", "major", "critical"] as const
+export const ticketSeverities = [
+  "minor",
+  "moderate",
+  "major",
+  "critical",
+] as const
 export type TicketSeverity = (typeof ticketSeverities)[number]
 
 export const ticketCategories = [
@@ -840,7 +849,10 @@ export function seedWorkforceTasks(): WorkforceTask[] {
       slaDueAt: seedIso(3, 8),
       startedAt: seedIso(0, 8),
       completedAt: null,
-      checklist: [{ step: "Rutsche 1", done: true }, { step: "Rutsche 2", done: false }],
+      checklist: [
+        { step: "Rutsche 1", done: true },
+        { step: "Rutsche 2", done: false },
+      ],
       fieldNote: "Kalkablagerungen stärker als erwartet.",
       metadata: {},
       createdAt: seedIso(-2, 8),

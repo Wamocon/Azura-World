@@ -29,10 +29,10 @@
  */
 
 /** Specifiers that already carry an extension Node can resolve unaided. */
-const HAS_KNOWN_EXTENSION = /\.(m|c)?(j|t)sx?$|\.json$|\.node$/
+const HAS_KNOWN_EXTENSION = /\.(m|c)?(j|t)sx?$|\.json$|\.node$/;
 
 /** Tried in order for an extensionless relative specifier. */
-const CANDIDATE_SUFFIXES = [".ts", ".tsx", ".mts", "/index.ts", "/index.tsx"]
+const CANDIDATE_SUFFIXES = [".ts", ".tsx", ".mts", "/index.ts", "/index.tsx"];
 
 /**
  * `@/*` → `apps/web/*`, mirroring `apps/web/tsconfig.json`'s `paths`.
@@ -43,31 +43,31 @@ const CANDIDATE_SUFFIXES = [".ts", ".tsx", ".mts", "/index.ts", "/index.tsx"]
  * and a probe that cannot load a repository can only test a re-implementation
  * of it.
  */
-const ALIAS_PREFIX = "@/"
-const ALIAS_TARGET = new URL("../apps/web/", import.meta.url).href
+const ALIAS_PREFIX = "@/";
+const ALIAS_TARGET = new URL("../apps/web/", import.meta.url).href;
 
 export async function resolve(specifier, context, nextResolve) {
   if (specifier.startsWith(ALIAS_PREFIX)) {
-    const mapped = `${ALIAS_TARGET}${specifier.slice(ALIAS_PREFIX.length)}`
-    if (HAS_KNOWN_EXTENSION.test(mapped)) return nextResolve(mapped, context)
+    const mapped = `${ALIAS_TARGET}${specifier.slice(ALIAS_PREFIX.length)}`;
+    if (HAS_KNOWN_EXTENSION.test(mapped)) return nextResolve(mapped, context);
     for (const suffix of CANDIDATE_SUFFIXES) {
       try {
-        return await nextResolve(`${mapped}${suffix}`, context)
+        return await nextResolve(`${mapped}${suffix}`, context);
       } catch {
         // Next candidate.
       }
     }
-    return nextResolve(mapped, context)
+    return nextResolve(mapped, context);
   }
 
-  const relative = specifier.startsWith("./") || specifier.startsWith("../")
+  const relative = specifier.startsWith("./") || specifier.startsWith("../");
   if (!relative || HAS_KNOWN_EXTENSION.test(specifier)) {
-    return nextResolve(specifier, context)
+    return nextResolve(specifier, context);
   }
 
   for (const suffix of CANDIDATE_SUFFIXES) {
     try {
-      return await nextResolve(`${specifier}${suffix}`, context)
+      return await nextResolve(`${specifier}${suffix}`, context);
     } catch {
       // Try the next candidate. The original error is re-raised below if none
       // of them resolve, so a genuinely missing module still reports the
@@ -75,5 +75,5 @@ export async function resolve(specifier, context, nextResolve) {
     }
   }
 
-  return nextResolve(specifier, context)
+  return nextResolve(specifier, context);
 }

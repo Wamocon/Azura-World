@@ -69,7 +69,10 @@ const competingPrices: CompetingPrice[] = (() => {
   const out: CompetingPrice[] = []
   for (const candidate of finding.competingValues) {
     const value = candidate.value as { amount?: number; currency?: string }
-    if (typeof value.amount !== "number" || typeof value.currency !== "string") {
+    if (
+      typeof value.amount !== "number" ||
+      typeof value.currency !== "string"
+    ) {
       continue
     }
     const key = `${candidate.source.publisher}:${value.amount}:${value.currency}`
@@ -85,28 +88,29 @@ const competingPrices: CompetingPrice[] = (() => {
 })()
 
 /** The 1+1 entry price as a conflicted fact, built from F-002. */
-const entryPriceFact: SourcedFact<{ amount: number; currency: string }> = (() => {
-  const finding = dataset.findings.find((entry) => entry.id === "F-002")
-  const values = finding?.competingValues ?? []
-  const first = values[0]
-  if (first === undefined) {
-    return {
-      value: null,
-      confidence: "gap",
-      sources: [],
-      note: "F-002 not present in the dataset.",
+const entryPriceFact: SourcedFact<{ amount: number; currency: string }> =
+  (() => {
+    const finding = dataset.findings.find((entry) => entry.id === "F-002")
+    const values = finding?.competingValues ?? []
+    const first = values[0]
+    if (first === undefined) {
+      return {
+        value: null,
+        confidence: "gap",
+        sources: [],
+        note: "F-002 not present in the dataset.",
+      }
     }
-  }
-  return {
-    value: first.value as { amount: number; currency: string },
-    confidence: "conflicted",
-    sources: [first.source as SourcedFact<never>["sources"][number]],
-    conflictsWith: values.slice(1).map((candidate) => ({
-      value: candidate.value,
-      source: candidate.source as SourcedFact<never>["sources"][number],
-    })),
-  }
-})()
+    return {
+      value: first.value as { amount: number; currency: string },
+      confidence: "conflicted",
+      sources: [first.source as SourcedFact<never>["sources"][number]],
+      conflictsWith: values.slice(1).map((candidate) => ({
+        value: candidate.value,
+        source: candidate.source as SourcedFact<never>["sources"][number],
+      })),
+    }
+  })()
 
 const LABELS: Omit<AzuraImmersionLabels, "provenance"> = {
   eyebrow: "Simulationsebene",
@@ -265,8 +269,7 @@ export function ImmersionDemo({
           sourcesTotal: dataset.coverage.sourcesTotal,
           sourcesValidated: dataset.coverage.sourcesValidated,
           findings: dataset.findings.length,
-          conflictedFacts:
-            dataset.coverage.projectFactsByConfidence.conflicted,
+          conflictedFacts: dataset.coverage.projectFactsByConfidence.conflicted,
         }}
         competingPrices={competingPrices}
         entryPriceFact={entryPriceFact}

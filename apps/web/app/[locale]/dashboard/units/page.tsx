@@ -123,7 +123,9 @@ export default async function UnitsPage({
   if (!hasPermission(profile.role, "units:view")) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          {t("title")}
+        </h1>
         <p role="alert" className="max-w-prose text-sm text-muted-foreground">
           {tCommon("errors.forbidden")}
         </p>
@@ -148,7 +150,8 @@ export default async function UnitsPage({
 
   const rollup = rollupResult.data
   const units = unitsResult.data
-  const degraded = rollupResult.source === "local-seed" || unitsResult.source === "local-seed"
+  const degraded =
+    rollupResult.source === "local-seed" || unitsResult.source === "local-seed"
 
   const labels: UnitProvenanceLabels = {
     portal_listing: t("provenance.portal_listing"),
@@ -170,14 +173,20 @@ export default async function UnitsPage({
   // The filtered count drives paging; the rollup total never changes with the
   // filter, so the header keeps telling the truth about the whole inventory
   // even while the list below shows one slice of it.
-  const filteredTotal = activeQuality ? (rollup.byDataQuality[activeQuality] ?? 0) : total
+  const filteredTotal = activeQuality
+    ? (rollup.byDataQuality[activeQuality] ?? 0)
+    : total
   const pageCount = Math.max(1, Math.ceil(filteredTotal / PAGE_SIZE))
   const from = filteredTotal === 0 ? 0 : offset + 1
   const to = Math.min(offset + units.length, filteredTotal)
 
-  const hrefFor = (next: { quality?: UnitDataQuality | null; page?: number }) => {
+  const hrefFor = (next: {
+    quality?: UnitDataQuality | null
+    page?: number
+  }) => {
     const sp = new URLSearchParams()
-    const q = next.quality === undefined ? activeQuality : (next.quality ?? undefined)
+    const q =
+      next.quality === undefined ? activeQuality : (next.quality ?? undefined)
     if (q) sp.set("quality", q)
     const p = next.page ?? 1
     if (p > 1) sp.set("page", String(p))
@@ -188,7 +197,9 @@ export default async function UnitsPage({
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          {t("title")}
+        </h1>
         <p className="max-w-prose text-sm text-muted-foreground">{t("lead")}</p>
       </header>
 
@@ -217,22 +228,30 @@ export default async function UnitsPage({
 
       {/* Filter by provenance. Plain links, so this works with no JavaScript —
           the same reason the page pages on the server. */}
-      <nav aria-label={t("provenance.filterLabel")} className="flex flex-wrap items-center gap-2">
-        <FilterChip href={hrefFor({ quality: null })} active={activeQuality === undefined}>
+      <nav
+        aria-label={t("provenance.filterLabel")}
+        className="flex flex-wrap items-center gap-2"
+      >
+        <FilterChip
+          href={hrefFor({ quality: null })}
+          active={activeQuality === undefined}
+        >
           {t("provenance.filterAll")}
         </FilterChip>
-        {DATA_QUALITIES.filter((q) => (rollup.byDataQuality[q] ?? 0) > 0).map((quality) => (
-          <FilterChip
-            key={quality}
-            href={hrefFor({ quality })}
-            active={activeQuality === quality}
-          >
-            {labels[quality]}
-            <span className="ml-1.5 tabular-nums opacity-70">
-              {rollup.byDataQuality[quality] ?? 0}
-            </span>
-          </FilterChip>
-        ))}
+        {DATA_QUALITIES.filter((q) => (rollup.byDataQuality[q] ?? 0) > 0).map(
+          (quality) => (
+            <FilterChip
+              key={quality}
+              href={hrefFor({ quality })}
+              active={activeQuality === quality}
+            >
+              {labels[quality]}
+              <span className="ml-1.5 tabular-nums opacity-70">
+                {rollup.byDataQuality[quality] ?? 0}
+              </span>
+            </FilterChip>
+          )
+        )}
       </nav>
 
       {units.length === 0 ? (
@@ -243,15 +262,23 @@ export default async function UnitsPage({
         <TableScrollArea height={640}>
           <Table>
             <TableCaption>
-              {tCommon("pagination.showing", { from, to, total: filteredTotal })}
+              {tCommon("pagination.showing", {
+                from,
+                to,
+                total: filteredTotal,
+              })}
             </TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.id")}</TableHead>
                 <TableHead>{t("columns.block")}</TableHead>
                 <TableHead>{t("columns.layout")}</TableHead>
-                <TableHead className="text-right">{t("columns.area")}</TableHead>
-                <TableHead className="text-right">{t("columns.price")}</TableHead>
+                <TableHead className="text-right">
+                  {t("columns.area")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.price")}
+                </TableHead>
                 <TableHead>{t("columns.status")}</TableHead>
                 {/* The honesty column. Deliberately not last-and-forgotten on
                     wide screens — it sits next to the price it qualifies. */}
@@ -277,13 +304,16 @@ export default async function UnitsPage({
       )}
 
       {pageCount > 1 ? (
-        <nav aria-label={tCommon("pagination.page")} className="flex items-center gap-3">
+        <nav
+          aria-label={tCommon("pagination.page")}
+          className="flex items-center gap-3"
+        >
           {page > 1 ? (
             <PageLink href={hrefFor({ page: page - 1 })}>
               {tCommon("pagination.first")}
             </PageLink>
           ) : null}
-          <span className="text-sm tabular-nums text-muted-foreground">
+          <span className="text-sm text-muted-foreground tabular-nums">
             {tCommon("pagination.pageOf", { page, total: pageCount })}
           </span>
           {page < pageCount ? (
@@ -334,10 +364,14 @@ function UnitRow({
       data-modelled={isModelled ? "" : undefined}
       className={cn(
         "border-l-2",
-        isModelled ? "border-l-muted-foreground/30 bg-muted/20" : "border-l-confidence-confirmed",
+        isModelled
+          ? "border-l-muted-foreground/30 bg-muted/20"
+          : "border-l-confidence-confirmed"
       )}
     >
-      <TableCell className="font-medium tabular-nums">{unit.unitNo || unit.id}</TableCell>
+      <TableCell className="font-medium tabular-nums">
+        {unit.unitNo || unit.id}
+      </TableCell>
       <TableCell>{unit.blockName ?? unit.blockCode}</TableCell>
       <TableCell className="tabular-nums">{unit.layout}</TableCell>
       <TableCell className="text-right tabular-nums">
@@ -376,7 +410,7 @@ function UnitRow({
 
 function statusLabelFor(
   unit: InventoryUnit,
-  t: Awaited<ReturnType<typeof getTranslations>>,
+  t: Awaited<ReturnType<typeof getTranslations>>
 ): string {
   const status = unit.saleStatus?.value ?? null
   if (status === "available") return t("status.available")
@@ -400,10 +434,10 @@ function FilterChip({
       aria-current={active ? "true" : undefined}
       className={cn(
         "inline-flex items-center rounded-full border px-3 py-1 text-sm transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
         active
           ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground",
+          : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
       )}
     >
       {children}
@@ -411,11 +445,17 @@ function FilterChip({
   )
 }
 
-function PageLink({ href, children }: { href: string; children: React.ReactNode }) {
+function PageLink({
+  href,
+  children,
+}: {
+  href: string
+  children: React.ReactNode
+}) {
   return (
     <Link
       href={href}
-      className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       {children}
     </Link>

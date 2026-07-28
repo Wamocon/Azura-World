@@ -35,21 +35,21 @@ HANDOFF/W2-A.md
 
 ## Repositories to build
 
-| File | Serves |
-|---|---|
-| `repository-base.ts` | `withRepository()` wrapper, error mapping, `nowIso()` |
-| `evidence-repository.ts` | sources, snapshots, sourced facts, findings |
-| `inventory-repository.ts` | site, blocks, floors, units, availability rollups |
-| `portal-repository.ts` | portal listings, competing prices, staleness |
-| `hotel-repository.ts` | hotel, rooms, review sources, quotes |
-| `lead-repository.ts` | leads, buyer pipeline |
-| `finance-repository.ts` | ledger, payments, wallets, vendor invoices |
-| `operations-repository.ts` | tickets, activities, workforce tasks |
-| `document-repository.ts` | documents, compliance checks |
-| `communications-repository.ts` | threads, messages, notifications |
-| `governance-repository.ts` | profiles, roles, audit events |
-| `dashboard-repository.ts` | KPI snapshot aggregation |
-| `search-repository.ts` | global search over `operational_search_documents` |
+| File                           | Serves                                                |
+| ------------------------------ | ----------------------------------------------------- |
+| `repository-base.ts`           | `withRepository()` wrapper, error mapping, `nowIso()` |
+| `evidence-repository.ts`       | sources, snapshots, sourced facts, findings           |
+| `inventory-repository.ts`      | site, blocks, floors, units, availability rollups     |
+| `portal-repository.ts`         | portal listings, competing prices, staleness          |
+| `hotel-repository.ts`          | hotel, rooms, review sources, quotes                  |
+| `lead-repository.ts`           | leads, buyer pipeline                                 |
+| `finance-repository.ts`        | ledger, payments, wallets, vendor invoices            |
+| `operations-repository.ts`     | tickets, activities, workforce tasks                  |
+| `document-repository.ts`       | documents, compliance checks                          |
+| `communications-repository.ts` | threads, messages, notifications                      |
+| `governance-repository.ts`     | profiles, roles, audit events                         |
+| `dashboard-repository.ts`      | KPI snapshot aggregation                              |
+| `search-repository.ts`         | global search over `operational_search_documents`     |
 
 ---
 
@@ -62,10 +62,11 @@ export async function withRepository<T>(
   fn: (client: SupabaseClient) => Promise<T>,
   fallback: () => T,
   label: string,
-): Promise<RepositoryResult<T>>
+): Promise<RepositoryResult<T>>;
 ```
 
 Behaviour:
+
 - Supabase unconfigured → `{ data: fallback(), source: "local-seed", fetchedAt }`
 - Configured + succeeds → `{ data, source: "supabase", fetchedAt }`
 - Configured + fails → **throw** a mapped `ApiError`. Log the real Postgres detail server-side;

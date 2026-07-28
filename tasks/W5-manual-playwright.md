@@ -11,9 +11,9 @@
 
 Drive the application by hand, in a visible browser, and look at it.
 
-Ataberg's README makes the argument better than I can: its layout harness *"is also fallible: it
+Ataberg's README makes the argument better than I can: its layout harness _"is also fallible: it
 exempted the header and ignored `<select>`/`<svg>`, so a screenshot caught what it missed.
-**Look at the page.**"*
+**Look at the page.**"_
 
 Automated suites verify what someone thought to assert. This session catches what nobody thought
 of — the thing that is technically passing and visibly wrong. **Synthetic QA is not sign-off.**
@@ -53,64 +53,76 @@ failures to `quality/manual/`.
 ## The walkthrough — 12 passes
 
 ### Pass 1 — First impression, cold
+
 Landing page, German, 1440px, cold cache, throttled. Watch it load. Does the hero land before the
 3D? Is anything janky? Would you believe this was built by a competent team?
 **Then scroll slowly through the whole page.** Note anything that feels wrong even if you cannot
 name why — that instinct is the point of this pass.
 
 ### Pass 2 — The evidence claim
+
 The landing page's evidence band. Click into a conflicted figure. Follow a source link. Does it
 open the real page? Follow the snapshot link. Does it open the stored copy?
 **Then: pick any number on the page and try to find out where it came from in under 10 seconds.**
 If you cannot, the provenance UI has failed regardless of what the tests say.
 
 ### Pass 3 — Four locales, side by side
+
 `/de`, `/en`, `/tr`, `/ru` at 1440px and 375px. Look for clipping, overlap, wrong number
 formats, untranslated strings, and boxes where Cyrillic glyphs should be.
 **Specifically check `112.000,00 €` in German and that the USD figure is still USD.**
 
 ### Pass 4 — Every role's first screen
-Log in as all 11 roles in turn. For each: does the dashboard make sense as *their* home? Is the
+
+Log in as all 11 roles in turn. For each: does the dashboard make sense as _their_ home? Is the
 nav right? Any empty state that looks broken rather than empty?
 `guest` and `child_guest` are where this usually falls apart.
 
 ### Pass 5 — The 656-unit table
+
 Scroll it. Filter it. Sort by price with nulls present. Filter to zero results.
 **Can you tell a `modelled` unit from a real listing at a glance, without opening it?** If not,
 that is a blocking finding — it is the honesty control for the whole inventory.
 
 ### Pass 6 — The conflict, end to end
+
 Find F-002 in the evidence cockpit. All four 1+1 prices visible? Publisher, date, URL on each?
-USD shown as USD? Then ask the concierge *"Was kostet eine 1+1 Wohnung?"* and read the answer
+USD shown as USD? Then ask the concierge _"Was kostet eine 1+1 Wohnung?"_ and read the answer
 carefully. **Does it present the conflict, or does it pick one?** Picking one is a blocking
 failure.
 
 ### Pass 7 — Money
+
 As `accountant`: the ledger with mixed EUR and USD. Are the totals separate? Type `1.234,56` into
 a German amount field and save it — what was stored? Try to edit a posted entry. Double-click a
 payment submit button.
 
 ### Pass 8 — Operations
+
 Take a ticket through its full lifecycle. Try an invalid transition. Book the last capacity slot.
 Subscribe to the ICS feed **in a real calendar client** and check the times as a Berlin viewer.
 
 ### Pass 9 — The public write paths
+
 Submit a public report. Note the reference number. Look it up. Submit the same thing again —
 is there one report or two? Then stop Supabase and submit again: do you get a 503, or a
 reference number the system cannot honour?
 
 ### Pass 10 — Adversarial, by hand
+
 Paste an XSS payload into the report form and then look at it in the dashboard. Ask the concierge
 to ignore its instructions. Try `?next=https://evil.com`. Deep-link to another owner's statement.
 **Re-run the three findings W4-C rated highest and confirm they are actually fixed** — a status
 of FIXED in a document is not the same as fixed in the running app.
 
 ### Pass 11 — Accessibility, by hand
+
 Unplug the mouse. Complete: login → dashboard → units → filter → open a unit → view its sources →
 go back. Then turn on a screen reader for the landing page and the concierge. Then set
 `prefers-reduced-motion` and reload every animated surface — **is any content missing?**
 
 ### Pass 12 — Mobile, on a real device if possible
+
 375px. Sidebar sheet, 656-row table under touch scroll, the 3D hero, the concierge keyboard
 behaviour. Real device beats emulation for the last two.
 
@@ -122,6 +134,7 @@ For every issue:
 
 ```markdown
 ### M-001 — <title>
+
 **Severity:** Blocker | Major | Minor | Cosmetic
 **Pass:** 5 · **Role:** manager · **Locale:** de · **Viewport:** 1440
 **Owner:** W3-C
@@ -131,7 +144,7 @@ For every issue:
 **Automated coverage:** was there a test that should have caught this? If yes, why didn't it?
 ```
 
-That last line matters most. Every manual finding that an automated test *should* have caught is
+That last line matters most. Every manual finding that an automated test _should_ have caught is
 a gap in the suite, and it goes back to W4-A as a new test — otherwise the same class of bug
 returns next release.
 
@@ -160,4 +173,4 @@ Plus, stated plainly:
 - Findings by severity, with owners
 - The sign-off recommendation and its reasoning
 - **New tests handed to W4-A**, one per manual finding that automation should have caught
-- The honest one-line answer: *would you show this to the client on 29 July?*
+- The honest one-line answer: _would you show this to the client on 29 July?_

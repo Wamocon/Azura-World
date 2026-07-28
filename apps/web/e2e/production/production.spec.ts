@@ -55,20 +55,28 @@ test.describe("production build", () => {
     await visit(page, localised("/dashboard"))
     expect(
       new URL(page.url()).pathname,
-      "an admin cookie reached the dashboard in a production build",
+      "an admin cookie reached the dashboard in a production build"
     ).toContain("/login")
   })
 
-  test("every dashboard route redirects an anonymous caller to login", async ({ page }) => {
+  test("every dashboard route redirects an anonymous caller to login", async ({
+    page,
+  }) => {
     const reached: string[] = []
     for (const route of dashboardRoutes) {
       await visit(page, localised(route.href))
-      if (!new URL(page.url()).pathname.includes("/login")) reached.push(route.href)
+      if (!new URL(page.url()).pathname.includes("/login"))
+        reached.push(route.href)
     }
-    expect(reached, `routes served without a session: ${reached.join(", ")}`).toEqual([])
+    expect(
+      reached,
+      `routes served without a session: ${reached.join(", ")}`
+    ).toEqual([])
   })
 
-  test("W3-C's observation reproduces: the cockpit 307s without a session", async ({ page }) => {
+  test("W3-C's observation reproduces: the cockpit 307s without a session", async ({
+    page,
+  }) => {
     const response = await page.goto(localised("/dashboard/evidence"), {
       waitUntil: "domcontentloaded",
     })
@@ -76,7 +84,9 @@ test.describe("production build", () => {
     // The guard's redirect carries the destination, so a session could return.
     expect(page.url()).toContain("next=")
     // And what it lands on is a 404 — the blocking defect W4-B reported.
-    expect(response?.status(), "login rendered, so W4-B §4.1 is fixed").toBe(404)
+    expect(response?.status(), "login rendered, so W4-B §4.1 is fixed").toBe(
+      404
+    )
   })
 
   test("the public surfaces render in production", async ({ page }) => {

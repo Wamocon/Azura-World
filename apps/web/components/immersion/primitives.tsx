@@ -88,7 +88,8 @@ export function TiltCard({
       element.style.transform = `perspective(900px) rotateX(${currentY.toFixed(3)}deg) rotateY(${currentX.toFixed(3)}deg)`
 
       const settled =
-        Math.abs(targetX - currentX) < 0.01 && Math.abs(targetY - currentY) < 0.01
+        Math.abs(targetX - currentX) < 0.01 &&
+        Math.abs(targetY - currentY) < 0.01
       if (!settled) frame = window.requestAnimationFrame(animate)
     }
 
@@ -132,7 +133,7 @@ export function TiltCard({
     <div
       ref={ref}
       className={cn(
-        "[transform-style:preserve-3d] will-change-transform",
+        "will-change-transform [transform-style:preserve-3d]",
         className
       )}
     >

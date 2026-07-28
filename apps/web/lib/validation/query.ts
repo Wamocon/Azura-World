@@ -76,11 +76,15 @@ export function readEnum<T extends string>(
  * hand-written URL means. Anything unrecognised is absent, never `false` — a
  * typo must not silently invert a filter.
  */
-export function readBoolean(query: URLSearchParams, name: string): boolean | undefined {
+export function readBoolean(
+  query: URLSearchParams,
+  name: string
+): boolean | undefined {
   const raw = query.get(name)
   if (raw === null) return undefined
   const value = raw.trim().toLowerCase()
-  if (value === "" || value === "true" || value === "1" || value === "yes") return true
+  if (value === "" || value === "true" || value === "1" || value === "yes")
+    return true
   if (value === "false" || value === "0" || value === "no") return false
   return undefined
 }
@@ -106,7 +110,10 @@ export function readInt(
  * anything but this alphabet, and allowing more invites homoglyph confusion
  * between ids that render identically.
  */
-export function readId(query: URLSearchParams, name: string): string | undefined {
+export function readId(
+  query: URLSearchParams,
+  name: string
+): string | undefined {
   const value = readText(query, name, 64)
   if (value === undefined) return undefined
   return /^[A-Za-z0-9._:-]+$/.test(value) ? value : undefined

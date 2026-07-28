@@ -26,32 +26,38 @@
  *   drives `next start` over a real build.
  */
 
-import { spawn } from "node:child_process"
-import { createConnection } from "node:net"
-import { createRequire } from "node:module"
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs"
-import { dirname, join } from "node:path"
-import { fileURLToPath, pathToFileURL } from "node:url"
+import { spawn } from "node:child_process";
+import { createConnection } from "node:net";
+import { createRequire } from "node:module";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const HERE = dirname(fileURLToPath(import.meta.url))
-export const ROOT = join(HERE, "..")
-export const APP_DIR = join(ROOT, "apps", "web")
-export const QUALITY_DIR = join(ROOT, "quality")
+const HERE = dirname(fileURLToPath(import.meta.url));
+export const ROOT = join(HERE, "..");
+export const APP_DIR = join(ROOT, "apps", "web");
+export const QUALITY_DIR = join(ROOT, "quality");
 
 // ---------------------------------------------------------------------------
 // The matrix
 // ---------------------------------------------------------------------------
 
 /** CONTRACTS §7. German runs ~30% longer than English, Russian ~35%. */
-export const LOCALES = ["de", "en", "tr", "ru"]
+export const LOCALES = ["de", "en", "tr", "ru"];
 
 /**
  * tasks/W4-B: 8 widths. 320 is the one that matters — azura-ui-ux §5.6 says
  * "test at 320px in German, that is where layouts actually break".
  */
-export const WIDTHS = [320, 375, 414, 768, 1024, 1280, 1440, 1920]
+export const WIDTHS = [320, 375, 414, 768, 1024, 1280, 1440, 1920];
 
-export const THEMES = ["light", "dark"]
+export const THEMES = ["light", "dark"];
 
 /**
  * Every route, with what the harness can and cannot do with it.
@@ -65,18 +71,29 @@ export const THEMES = ["light", "dark"]
 export const ROUTES = [
   { path: "", name: "landing", auth: false, has3d: true },
   { path: "/hotel", name: "hotel", auth: false, has3d: false },
-  { path: "/kitchen-sink", name: "kitchen-sink", auth: false, has3d: true, needsFlag: true },
+  {
+    path: "/kitchen-sink",
+    name: "kitchen-sink",
+    auth: false,
+    has3d: true,
+    needsFlag: true,
+  },
   { path: "/dashboard", name: "dashboard", auth: true, has3d: false },
-  { path: "/dashboard/evidence", name: "dashboard-evidence", auth: true, has3d: false },
-]
+  {
+    path: "/dashboard/evidence",
+    name: "dashboard-evidence",
+    auth: true,
+    has3d: false,
+  },
+];
 
 export function publicRoutes() {
-  return ROUTES.filter((route) => !route.auth)
+  return ROUTES.filter((route) => !route.auth);
 }
 
 /** `/de`, `/de/hotel`, … */
 export function urlFor(base, locale, route) {
-  return `${base}/${locale}${route.path}`
+  return `${base}/${locale}${route.path}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -84,25 +101,29 @@ export function urlFor(base, locale, route) {
 // ---------------------------------------------------------------------------
 
 export function waitForPort(port, timeoutMs = 60_000) {
-  const deadline = Date.now() + timeoutMs
+  const deadline = Date.now() + timeoutMs;
   return new Promise((resolve, reject) => {
     const attempt = () => {
-      const socket = createConnection({ host: "127.0.0.1", port })
+      const socket = createConnection({ host: "127.0.0.1", port });
       socket.once("connect", () => {
-        socket.destroy()
-        resolve()
-      })
+        socket.destroy();
+        resolve();
+      });
       socket.once("error", () => {
-        socket.destroy()
+        socket.destroy();
         if (Date.now() > deadline) {
-          reject(new Error(`nothing listening on 127.0.0.1:${port} after ${timeoutMs}ms`))
-          return
+          reject(
+            new Error(
+              `nothing listening on 127.0.0.1:${port} after ${timeoutMs}ms`,
+            ),
+          );
+          return;
         }
-        setTimeout(attempt, 250)
-      })
-    }
-    attempt()
-  })
+        setTimeout(attempt, 250);
+      });
+    };
+    attempt();
+  });
 }
 
 /**
@@ -113,12 +134,16 @@ export function waitForPort(port, timeoutMs = 60_000) {
  * while proving nothing. Same reasoning as `csp-probe.mjs`.
  */
 export function startServer(port, extraEnv = {}) {
-  const nextBin = join(APP_DIR, "node_modules", "next", "dist", "bin", "next")
+  const nextBin = join(APP_DIR, "node_modules", "next", "dist", "bin", "next");
   if (!existsSync(nextBin)) {
-    throw new Error(`next binary not found at ${nextBin} — run \`pnpm --dir apps/web build\` first`)
+    throw new Error(
+      `next binary not found at ${nextBin} — run \`pnpm --dir apps/web build\` first`,
+    );
   }
   if (!existsSync(join(APP_DIR, ".next", "BUILD_ID"))) {
-    throw new Error(`no production build at ${join(APP_DIR, ".next")} — run \`pnpm --dir apps/web build\` first`)
+    throw new Error(
+      `no production build at ${join(APP_DIR, ".next")} — run \`pnpm --dir apps/web build\` first`,
+    );
   }
 
   const child = spawn(
@@ -134,23 +159,23 @@ export function startServer(port, extraEnv = {}) {
         ...extraEnv,
       },
     },
-  )
+  );
 
-  const log = []
-  child.stdout.on("data", (chunk) => log.push(String(chunk)))
-  child.stderr.on("data", (chunk) => log.push(String(chunk)))
+  const log = [];
+  child.stdout.on("data", (chunk) => log.push(String(chunk)));
+  child.stderr.on("data", (chunk) => log.push(String(chunk)));
 
   return {
     child,
     log,
     base: `http://127.0.0.1:${port}`,
     async ready(timeoutMs = 90_000) {
-      await waitForPort(port, timeoutMs)
+      await waitForPort(port, timeoutMs);
     },
     stop() {
-      if (child.exitCode === null) child.kill()
+      if (child.exitCode === null) child.kill();
     },
-  }
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -165,19 +190,19 @@ export function startServer(port, extraEnv = {}) {
  * measurement is not reproducible if you cannot say what produced it.
  */
 export function findInstalledChromium(explicit) {
-  if (explicit) return explicit
+  if (explicit) return explicit;
 
   const root =
     process.env.PLAYWRIGHT_BROWSERS_PATH ??
     (process.env.LOCALAPPDATA === undefined
       ? null
-      : join(process.env.LOCALAPPDATA, "ms-playwright"))
-  if (root === null || !existsSync(root)) return null
+      : join(process.env.LOCALAPPDATA, "ms-playwright"));
+  if (root === null || !existsSync(root)) return null;
 
   const candidates = readdirSync(root)
     .filter((name) => /^chromium(_headless_shell)?-\d+$/.test(name))
     .map((name) => ({ name, revision: Number(/(\d+)$/.exec(name)[1]) }))
-    .sort((a, b) => b.revision - a.revision)
+    .sort((a, b) => b.revision - a.revision);
 
   for (const { name } of candidates) {
     for (const relative of [
@@ -186,11 +211,11 @@ export function findInstalledChromium(explicit) {
       join("chrome-linux", "chrome"),
       join("chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
     ]) {
-      const candidate = join(root, name, relative)
-      if (existsSync(candidate)) return candidate
+      const candidate = join(root, name, relative);
+      if (existsSync(candidate)) return candidate;
     }
   }
-  return null
+  return null;
 }
 
 /**
@@ -200,69 +225,77 @@ export function findInstalledChromium(explicit) {
  * through `default`.
  */
 export async function loadChromium() {
-  const requireFromApp = createRequire(join(APP_DIR, "package.json"))
-  const mod = await import(pathToFileURL(requireFromApp.resolve("@playwright/test")).href)
-  const chromium = mod.chromium ?? mod.default?.chromium
-  if (chromium === undefined) throw new Error("@playwright/test exposes no chromium export")
-  return chromium
+  const requireFromApp = createRequire(join(APP_DIR, "package.json"));
+  const mod = await import(
+    pathToFileURL(requireFromApp.resolve("@playwright/test")).href
+  );
+  const chromium = mod.chromium ?? mod.default?.chromium;
+  if (chromium === undefined)
+    throw new Error("@playwright/test exposes no chromium export");
+  return chromium;
 }
 
 export async function launchBrowser({ headed = false, executablePath } = {}) {
-  const chromium = await loadChromium()
-  const exe = findInstalledChromium(executablePath)
+  const chromium = await loadChromium();
+  const exe = findInstalledChromium(executablePath);
   if (exe === null) {
     throw new Error(
       "no Chromium found. Run `npx playwright install chromium`, or pass --chromium <path>.",
-    )
+    );
   }
-  const browser = await chromium.launch({ executablePath: exe, headless: !headed })
-  return { browser, executablePath: exe }
+  const browser = await chromium.launch({
+    executablePath: exe,
+    headless: !headed,
+  });
+  return { browser, executablePath: exe };
 }
 
 // ---------------------------------------------------------------------------
 // Reporting
 // ---------------------------------------------------------------------------
 
-const BOLD = "\u001b[1m"
-const DIM = "\u001b[2m"
-const RED = "\u001b[31m"
-const GREEN = "\u001b[32m"
-const YELLOW = "\u001b[33m"
-const RESET = "\u001b[0m"
+const BOLD = "\u001b[1m";
+const DIM = "\u001b[2m";
+const RED = "\u001b[31m";
+const GREEN = "\u001b[32m";
+const YELLOW = "\u001b[33m";
+const RESET = "\u001b[0m";
 
 export function createReporter(title) {
-  let pass = 0
-  let fail = 0
-  const findings = []
-  const notes = []
+  let pass = 0;
+  let fail = 0;
+  const findings = [];
+  const notes = [];
 
   return {
     section(text) {
-      console.log(`\n${BOLD}${text}${RESET}`)
-      console.log("-".repeat(Math.min(text.length, 78)))
+      console.log(`\n${BOLD}${text}${RESET}`);
+      console.log("-".repeat(Math.min(text.length, 78)));
     },
     check(label, ok, detail = "") {
-      if (ok) pass += 1
-      else fail += 1
-      const mark = ok ? `${GREEN}PASS${RESET}` : `${RED}FAIL${RESET}`
-      console.log(`  ${mark}  ${label}${detail ? `  ${DIM}— ${detail}${RESET}` : ""}`)
+      if (ok) pass += 1;
+      else fail += 1;
+      const mark = ok ? `${GREEN}PASS${RESET}` : `${RED}FAIL${RESET}`;
+      console.log(
+        `  ${mark}  ${label}${detail ? `  ${DIM}— ${detail}${RESET}` : ""}`,
+      );
     },
     /** A violation with structured context, for the JSON report. */
     finding(entry) {
-      findings.push(entry)
+      findings.push(entry);
     },
     note(text) {
-      notes.push(text)
-      console.log(`  ${YELLOW}NOTE${RESET}  ${text}`)
+      notes.push(text);
+      console.log(`  ${YELLOW}NOTE${RESET}  ${text}`);
     },
     get counts() {
-      return { pass, fail, findings: findings.length }
+      return { pass, fail, findings: findings.length };
     },
     get findings() {
-      return findings
+      return findings;
     },
     get notes() {
-      return notes
+      return notes;
     },
     /**
      * Prints the summary and returns the process exit code.
@@ -274,10 +307,10 @@ export function createReporter(title) {
       console.log(
         `\n${fail === 0 ? GREEN : RED}${fail === 0 ? "OK" : "FAILED"}${RESET}  ` +
           `${pass} pass · ${fail} fail · ${findings.length} findings   ${DIM}[${title}]${RESET}`,
-      )
-      return fail === 0 ? 0 : 1
+      );
+      return fail === 0 ? 0 : 1;
     },
-  }
+  };
 }
 
 /**
@@ -289,9 +322,9 @@ export function createReporter(title) {
  * pass, so every report prints its own list before its results.
  */
 export function reportBlindSpots(reporter, spots) {
-  reporter.section("Blind spots — what this run did NOT check")
-  for (const spot of spots) console.log(`  ${DIM}·${RESET} ${spot}`)
-  return spots
+  reporter.section("Blind spots — what this run did NOT check");
+  for (const spot of spots) console.log(`  ${DIM}·${RESET} ${spot}`);
+  return spots;
 }
 
 // ---------------------------------------------------------------------------
@@ -300,16 +333,16 @@ export function reportBlindSpots(reporter, spots) {
 
 /** `quality/<kind>/<ISO-ish timestamp>/`, created. */
 export function resultDir(kind) {
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)
-  const dir = join(QUALITY_DIR, kind, stamp)
-  mkdirSync(dir, { recursive: true })
-  return dir
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const dir = join(QUALITY_DIR, kind, stamp);
+  mkdirSync(dir, { recursive: true });
+  return dir;
 }
 
 export function writeJson(dir, name, data) {
-  const path = join(dir, name)
-  writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8")
-  return path
+  const path = join(dir, name);
+  writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  return path;
 }
 
 // ---------------------------------------------------------------------------
@@ -339,20 +372,20 @@ export async function preparePage(page) {
       transition-delay: 0s !important;
       scroll-behavior: auto !important;
     }`,
-  })
+  });
   await page.evaluate(async () => {
-    if (document.fonts && document.fonts.ready) await document.fonts.ready
-  })
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  });
   // Walk the page so IntersectionObserver-gated content mounts, then return.
   await page.evaluate(async () => {
-    const step = Math.max(window.innerHeight, 400)
+    const step = Math.max(window.innerHeight, 400);
     for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y)
-      await new Promise((r) => setTimeout(r, 60))
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 60));
     }
-    window.scrollTo(0, 0)
-    await new Promise((r) => setTimeout(r, 120))
-  })
+    window.scrollTo(0, 0);
+    await new Promise((r) => setTimeout(r, 120));
+  });
 }
 
 /**
@@ -366,31 +399,34 @@ export async function preparePage(page) {
  */
 export const THEME_STORAGE_KEY = (() => {
   try {
-    const source = readFileSync(join(APP_DIR, "components", "providers", "theme-provider.tsx"), "utf8")
-    const match = /storageKey=["']([^"']+)["']/.exec(source)
-    if (match) return match[1]
+    const source = readFileSync(
+      join(APP_DIR, "components", "providers", "theme-provider.tsx"),
+      "utf8",
+    );
+    const match = /storageKey=["']([^"']+)["']/.exec(source);
+    if (match) return match[1];
   } catch {
     /* fall through to the default below */
   }
-  return "theme"
-})()
+  return "theme";
+})();
 
 /** Sets the theme the way next-themes does, before first paint. */
 export async function applyTheme(context, theme) {
   await context.addInitScript(
     ({ value, key }) => {
       try {
-        window.localStorage.setItem(key, value)
+        window.localStorage.setItem(key, value);
       } catch {
         /* storage unavailable — the class below still applies */
       }
       document.addEventListener("DOMContentLoaded", () => {
-        document.documentElement.classList.toggle("dark", value === "dark")
-        document.documentElement.setAttribute("data-theme", value)
-      })
+        document.documentElement.classList.toggle("dark", value === "dark");
+        document.documentElement.setAttribute("data-theme", value);
+      });
     },
     { value: theme, key: THEME_STORAGE_KEY },
-  )
+  );
 }
 
 /**
@@ -405,24 +441,26 @@ export async function applyTheme(context, theme) {
 export async function resolveTheme(page) {
   return page.evaluate(() => ({
     htmlClass: document.documentElement.className,
-    resolved: document.documentElement.classList.contains("dark") ? "dark" : "light",
+    resolved: document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light",
     requested: document.documentElement.getAttribute("data-theme"),
     background: getComputedStyle(document.body).backgroundColor,
-  }))
+  }));
 }
 
 export function parseArgs(argv) {
-  const args = { flags: new Set(), values: new Map() }
+  const args = { flags: new Set(), values: new Map() };
   for (let i = 0; i < argv.length; i += 1) {
-    const token = argv[i]
-    if (!token.startsWith("--")) continue
-    const next = argv[i + 1]
+    const token = argv[i];
+    if (!token.startsWith("--")) continue;
+    const next = argv[i + 1];
     if (next !== undefined && !next.startsWith("--")) {
-      args.values.set(token.slice(2), next)
-      i += 1
+      args.values.set(token.slice(2), next);
+      i += 1;
     } else {
-      args.flags.add(token.slice(2))
+      args.flags.add(token.slice(2));
     }
   }
-  return args
+  return args;
 }

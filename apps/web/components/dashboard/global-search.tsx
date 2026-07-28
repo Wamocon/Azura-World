@@ -70,7 +70,9 @@ export function GlobalSearch({
 
   const [query, setQuery] = useState("")
   const [hits, setHits] = useState<GlobalSearchHit[]>([])
-  const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle")
+  const [state, setState] = useState<"idle" | "loading" | "ready" | "error">(
+    "idle"
+  )
   const [activeIndex, setActiveIndex] = useState(0)
 
   /** Clears every result-related field. Called from the dialog's close event —
@@ -131,7 +133,10 @@ export function GlobalSearch({
         try {
           const response = await fetch(
             `/api/site-management/search?q=${encodeURIComponent(trimmed)}`,
-            { signal: controller.signal, headers: { accept: "application/json" } },
+            {
+              signal: controller.signal,
+              headers: { accept: "application/json" },
+            }
           )
           if (!response.ok) {
             setState("error")
@@ -143,7 +148,8 @@ export function GlobalSearch({
           setState("ready")
         } catch (error) {
           // An abort is the expected outcome of typing, not a failure.
-          if (error instanceof DOMException && error.name === "AbortError") return
+          if (error instanceof DOMException && error.name === "AbortError")
+            return
           setState("error")
         }
       })()
@@ -227,12 +233,15 @@ export function GlobalSearch({
       className={cn(
         "m-0 mx-auto mt-[10vh] w-[min(40rem,calc(100vw-2rem))] rounded-xl border border-border",
         "bg-popover p-0 text-popover-foreground shadow-2xl",
-        "backdrop:bg-[color-mix(in_srgb,var(--sea-deep)_55%,transparent)]",
+        "backdrop:bg-[color-mix(in_srgb,var(--sea-deep)_55%,transparent)]"
       )}
     >
       <div className="flex min-w-0 flex-col">
         <div className="flex min-w-0 items-center gap-2 border-b border-border px-3">
-          <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="size-4 shrink-0 text-muted-foreground"
+            aria-hidden="true"
+          />
           <input
             ref={inputRef}
             type="search"
@@ -268,18 +277,26 @@ export function GlobalSearch({
             </div>
           ) : displayState === "error" ? (
             <div className="flex flex-col gap-1 px-2 py-6 text-center">
-              <p className="text-sm font-medium text-foreground">{copy.tableErrorTitle}</p>
-              <p className="text-sm text-muted-foreground">{copy.tableErrorBody}</p>
+              <p className="text-sm font-medium text-foreground">
+                {copy.tableErrorTitle}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {copy.tableErrorBody}
+              </p>
             </div>
           ) : flat.length === 0 ? (
             <div className="flex flex-col gap-1 px-2 py-6 text-center">
-              <p className="text-sm font-medium text-foreground">{t("noResults")}</p>
-              <p className="text-sm text-muted-foreground">{copy.searchEmptyBody}</p>
+              <p className="text-sm font-medium text-foreground">
+                {t("noResults")}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {copy.searchEmptyBody}
+              </p>
             </div>
           ) : (
             groups.map((group) => (
               <div key={group.entity} className="flex flex-col gap-1 pb-2">
-                <p className="px-2 pt-2 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                <p className="px-2 pt-2 text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                   {groupLabel(group.entity)}
                 </p>
                 {group.hits.map((hit) => {
@@ -297,10 +314,12 @@ export function GlobalSearch({
                         "outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         index === activeIndex
                           ? "bg-secondary text-secondary-foreground"
-                          : "hover:bg-muted",
+                          : "hover:bg-muted"
                       )}
                     >
-                      <span className="min-w-0 flex-1 truncate">{hit.title}</span>
+                      <span className="min-w-0 flex-1 truncate">
+                        {hit.title}
+                      </span>
                       {hit.subtitle === undefined ? null : (
                         <Badge variant="muted" className="shrink-0">
                           {hit.subtitle}
@@ -330,10 +349,14 @@ const ENTITY_ORDER: ReadonlyArray<GlobalSearchHit["entity"]> = [
   "people",
 ]
 
-function groupHits(
-  hits: readonly GlobalSearchHit[],
-): ReadonlyArray<{ entity: GlobalSearchHit["entity"]; hits: GlobalSearchHit[] }> {
-  const groups: Array<{ entity: GlobalSearchHit["entity"]; hits: GlobalSearchHit[] }> = []
+function groupHits(hits: readonly GlobalSearchHit[]): ReadonlyArray<{
+  entity: GlobalSearchHit["entity"]
+  hits: GlobalSearchHit[]
+}> {
+  const groups: Array<{
+    entity: GlobalSearchHit["entity"]
+    hits: GlobalSearchHit[]
+  }> = []
   for (const entity of ENTITY_ORDER) {
     const matching = hits.filter((hit) => hit.entity === entity)
     if (matching.length > 0) groups.push({ entity, hits: matching })

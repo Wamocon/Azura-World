@@ -69,8 +69,8 @@ export function RebrandNotice({
     <aside
       aria-labelledby="rebrand-heading"
       className={cn(
-        "flex flex-col gap-4 rounded-lg border-l-4 border-l-accent border-y border-r border-border bg-card p-6",
-        className,
+        "flex flex-col gap-4 rounded-lg border-y border-r border-l-4 border-border border-l-accent bg-card p-6",
+        className
       )}
     >
       <h2 id="rebrand-heading" className="font-display text-lg text-balance">
@@ -79,22 +79,24 @@ export function RebrandNotice({
 
       <dl className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
-          <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {labels.currentNameLabel}
           </dt>
           <dd className="font-display text-lg text-foreground">{name.value}</dd>
         </div>
         <div className="flex flex-col gap-1">
-          <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {labels.formerNameLabel}
           </dt>
           {/* The ONLY place "Wyndham Alanya" is rendered, and it is rendered
               from `formerName`, under a label that says so. */}
-          <dd className="font-display text-lg text-muted-foreground">{former}</dd>
+          <dd className="font-display text-lg text-muted-foreground">
+            {former}
+          </dd>
         </div>
       </dl>
 
-      <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+      <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
         {labels.body.replace("{formerName}", former)}
       </p>
 
@@ -105,7 +107,7 @@ export function RebrandNotice({
         moreLabel={labels.more}
       />
 
-      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
         {labels.findingRef}
       </p>
     </aside>
@@ -156,10 +158,13 @@ export function UnrecoveredSources({
       aria-labelledby="unrecovered-heading"
       className={cn("flex flex-col gap-4", className)}
     >
-      <h3 id="unrecovered-heading" className="font-display text-xl text-balance">
+      <h3
+        id="unrecovered-heading"
+        className="font-display text-xl text-balance"
+      >
         {labels.heading}
       </h3>
-      <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+      <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
         {labels.intro}
       </p>
 
@@ -170,16 +175,19 @@ export function UnrecoveredSources({
             className="flex flex-col gap-1 rounded-md border border-dashed border-border p-4"
           >
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="font-medium text-foreground">{source.publisher}</span>
-              <span className="rounded-sm bg-confidence-gap/15 px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-confidence-gap">
+              <span className="font-medium text-foreground">
+                {source.publisher}
+              </span>
+              <span className="rounded-sm bg-confidence-gap/15 px-2 py-0.5 font-mono text-[0.6875rem] tracking-[0.14em] text-confidence-gap uppercase">
                 {labels.status[source.status] ?? source.status}
               </span>
             </div>
-            <span className="break-all font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-xs break-all text-muted-foreground">
               {source.url}
             </span>
             <span className="text-xs text-muted-foreground">
-              {labels.attemptedLabel} {formatFetchedDate(source.fetchedAt, locale)}
+              {labels.attemptedLabel}{" "}
+              {formatFetchedDate(source.fetchedAt, locale)}
             </span>
           </li>
         ))}
