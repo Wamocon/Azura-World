@@ -1063,6 +1063,27 @@
       "one": "Wie viele Wohnungen hat die Anlage?",
       "two": "Was ist über den Bauträger belegt?",
       "three": "Wo widersprechen sich die Quellen?"
+    },
+    "you": "Ihre Frage",
+    "assistant": "Antwort",
+    "refusalNote": "Der Assistent antwortet nur mit Angaben, für die eine Quelle vorliegt. Fehlt sie, sagt er das, statt zu schätzen.",
+    "notConfigured": "Der Assistent ist in dieser Umgebung nicht eingerichtet. Alle übrigen Inhalte der Seite stehen zur Verfügung.",
+    "openSource": "Quelle öffnen",
+    "snapshot": "Lokale Kopie",
+    "unreachable": "Quelle nicht erreichbar",
+    "feedback": {
+      "question": "War die Antwort hilfreich?",
+      "helpful": "Hilfreich",
+      "notHelpful": "Nicht hilfreich",
+      "thanks": "Danke für die Rückmeldung."
+    },
+    "sourceTier": {
+      "official": "Amtlich",
+      "developer": "Bauträger",
+      "hotel": "Hotel",
+      "portal": "Immobilienportal",
+      "review": "Bewertungsportal",
+      "press": "Presse"
     }
   },
   "auth": {
@@ -1076,7 +1097,8 @@
       "noAccount": "Kein Konto?",
       "requestAccess": "Zugang anfragen",
       "invalid": "E-Mail oder Passwort ist falsch.",
-      "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten."
+      "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten.",
+      "submitting": "Wird angemeldet …"
     },
     "signup": {
       "title": "Zugang anfragen",
@@ -1092,6 +1114,13 @@
       "title": "Kein Zugriff",
       "lead": "Ihre Rolle erlaubt diesen Bereich nicht.",
       "back": "Zur Übersicht"
+    },
+    "qaMode": {
+      "heading": "Testmodus ohne Anmeldung",
+      "warning": "In dieser Umgebung lässt sich eine Rolle ohne Passwort übernehmen. Das ist keine echte Anmeldung und dient ausschließlich dem Testen.",
+      "apply": "Rolle übernehmen",
+      "applying": "Wird übernommen …",
+      "failed": "Die Rolle konnte nicht übernommen werden."
     }
   },
   "legal": {

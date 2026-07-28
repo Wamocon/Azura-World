@@ -1063,6 +1063,27 @@
       "one": "How many units does the development have?",
       "two": "What is on record about the developer?",
       "three": "Where do the sources disagree?"
+    },
+    "you": "Your question",
+    "assistant": "Answer",
+    "refusalNote": "The assistant answers only with statements that have a source. Where there is none, it says so instead of guessing.",
+    "notConfigured": "The assistant is not set up in this environment. Everything else on the page still works.",
+    "openSource": "Open source",
+    "snapshot": "Local copy",
+    "unreachable": "Source unreachable",
+    "feedback": {
+      "question": "Was this answer helpful?",
+      "helpful": "Helpful",
+      "notHelpful": "Not helpful",
+      "thanks": "Thank you for the feedback."
+    },
+    "sourceTier": {
+      "official": "Official",
+      "developer": "Developer",
+      "hotel": "Hotel",
+      "portal": "Property portal",
+      "review": "Review platform",
+      "press": "Press"
     }
   },
   "auth": {
@@ -1076,7 +1097,8 @@
       "noAccount": "No account?",
       "requestAccess": "Request access",
       "invalid": "Email or password is incorrect.",
-      "sessionExpired": "Your session expired. Your input has been kept."
+      "sessionExpired": "Your session expired. Your input has been kept.",
+      "submitting": "Signing in …"
     },
     "signup": {
       "title": "Request access",
@@ -1092,6 +1114,13 @@
       "title": "No access",
       "lead": "Your role does not permit this area.",
       "back": "Back to overview"
+    },
+    "qaMode": {
+      "heading": "Test mode without sign-in",
+      "warning": "In this environment a role can be taken on without a password. This is not a real sign-in and exists only for testing.",
+      "apply": "Take on role",
+      "applying": "Switching …",
+      "failed": "The role could not be applied."
     }
   },
   "legal": {
