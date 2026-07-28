@@ -38,22 +38,23 @@ HANDOFF/W2-D.md
 
 ```ts
 export function useLiveSnapshot<T>(config: {
-  fetcher: () => Promise<RepositoryResult<T>>
-  channels?: RealtimeChannelConfig[]
-  pollIntervalMs?: number      // default 30_000
-  enabled?: boolean
+  fetcher: () => Promise<RepositoryResult<T>>;
+  channels?: RealtimeChannelConfig[];
+  pollIntervalMs?: number; // default 30_000
+  enabled?: boolean;
 }): {
-  data: T | null
-  source: "supabase" | "local-seed" | null
-  mode: "realtime" | "polling" | "static" | "offline"
-  lastUpdated: string | null
-  error: ApiError | null
-  isStale: boolean
-  refresh: () => Promise<void>
-}
+  data: T | null;
+  source: "supabase" | "local-seed" | null;
+  mode: "realtime" | "polling" | "static" | "offline";
+  lastUpdated: string | null;
+  error: ApiError | null;
+  isStale: boolean;
+  refresh: () => Promise<void>;
+};
 ```
 
 Mode resolution:
+
 - Realtime subscribed and healthy → `realtime`
 - Realtime unavailable or dropped → `polling`
 - Supabase unconfigured → `static` (seed data, no polling — polling seed data is pointless churn)
@@ -64,12 +65,12 @@ Mode resolution:
 Shows the mode plainly, with a relative timestamp. Colour is **not** the only signal — include
 text and an icon, for colour-blind users and for screenshots.
 
-| Mode | Shown |
-|---|---|
-| `realtime` | "Live" + pulse |
-| `polling` | "Aktualisiert alle 30 s · vor 12 s" |
-| `static` | "Demo-Daten" — **must be unmistakable** |
-| `offline` | "Offline · Stand vor 4 min" |
+| Mode       | Shown                                   |
+| ---------- | --------------------------------------- |
+| `realtime` | "Live" + pulse                          |
+| `polling`  | "Aktualisiert alle 30 s · vor 12 s"     |
+| `static`   | "Demo-Daten" — **must be unmistakable** |
+| `offline`  | "Offline · Stand vor 4 min"             |
 
 `static` is the one that must never be missable. A demo showing seed data that reads as live
 production data is the kind of thing that gets promised to a client by mistake.
@@ -90,10 +91,10 @@ activities, ledger entries, leads, notifications.
 
 ```ts
 export function useOptimisticMutation<TInput, TResult>(config: {
-  mutate: (input: TInput) => Promise<ApiResponse<TResult>>
-  optimisticUpdate: (current: TResult[], input: TInput) => TResult[]
-  rollbackOnError?: boolean       // default true
-}): { execute; isPending; error }
+  mutate: (input: TInput) => Promise<ApiResponse<TResult>>;
+  optimisticUpdate: (current: TResult[], input: TInput) => TResult[];
+  rollbackOnError?: boolean; // default true
+}): { execute; isPending; error };
 ```
 
 Rollback must restore the **exact** prior state, not a refetch — a refetch can race with another

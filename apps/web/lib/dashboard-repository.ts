@@ -125,11 +125,20 @@ export interface DashboardAccess {
  */
 export function dashboardAccess(role: Role | undefined): DashboardAccess {
   if (role === undefined) {
-    return { inventory: false, operations: false, finance: false, evidence: false, hotel: true }
+    return {
+      inventory: false,
+      operations: false,
+      finance: false,
+      evidence: false,
+      hotel: true,
+    }
   }
   const scope = roleScope(role)
   const internal =
-    scope === "company" || scope === "site" || scope === "finance" || scope === "field"
+    scope === "company" ||
+    scope === "site" ||
+    scope === "finance" ||
+    scope === "field"
   return {
     inventory: internal && hasPermission(role, "units:view"),
     operations: internal && hasPermission(role, "tickets:view"),
@@ -163,7 +172,7 @@ interface Tally {
 
 function tallyBy(
   rows: ReadonlyArray<Record<string, unknown>>,
-  pick: (row: Record<string, unknown>) => string | null,
+  pick: (row: Record<string, unknown>) => string | null
 ): Tally {
   const counts: Record<string, number> = {}
   let missing = 0
@@ -181,9 +190,11 @@ function tallyBy(
 /** Exact row count via `head: true` — no rows transferred, no ceiling to hit. */
 async function countRows(
   client: RepositoryClient,
-  table: string,
+  table: string
 ): Promise<number | null> {
-  const { count, error } = await client.from(table).select("*", { count: "exact", head: true })
+  const { count, error } = await client
+    .from(table)
+    .select("*", { count: "exact", head: true })
   if (error) throw error
   return count ?? null
 }
@@ -196,11 +207,11 @@ async function countRows(
 async function fetchPage(
   client: RepositoryClient,
   table: string,
-  columns: string,
+  columns: string
 ): Promise<{ rows: Record<string, unknown>[]; truncated: boolean }> {
   const rows = unwrap<Record<string, unknown>[]>(
     await client.from(table).select(columns).limit(ROLLUP_PAGE_SIZE),
-    [],
+    []
   )
   return { rows, truncated: rows.length >= ROLLUP_PAGE_SIZE }
 }
@@ -210,7 +221,7 @@ async function fetchPage(
  * brief warns about is 657 queries, and this is 2.
  */
 async function fetchUnitRows(
-  client: RepositoryClient,
+  client: RepositoryClient
 ): Promise<{ rows: Record<string, unknown>[]; truncated: boolean }> {
   const rows: Record<string, unknown>[] = []
   for (let offset = 0; offset < ROLLUP_ROW_CAP; offset += ROLLUP_PAGE_SIZE) {
@@ -222,7 +233,7 @@ async function fetchUnitRows(
         // units.id is TEXT ("AZW-B03-0412"), not uuid, and is the stable key.
         .order("id", { ascending: true })
         .range(offset, offset + size - 1),
-      [],
+      []
     )
     rows.push(...page)
     if (page.length < size) return { rows, truncated: false }
@@ -234,7 +245,9 @@ async function fetchUnitRows(
 // Panel loaders
 // ---------------------------------------------------------------------------
 
-async function loadInventory(client: RepositoryClient): Promise<InventoryPanel> {
+async function loadInventory(
+  client: RepositoryClient
+): Promise<InventoryPanel> {
   const [totalUnits, page] = await Promise.all([
     countRows(client, "units"),
     fetchUnitRows(client),
@@ -279,7 +292,7 @@ async function loadInventory(client: RepositoryClient): Promise<InventoryPanel> 
 
 async function loadOperations(
   client: RepositoryClient,
-  slaEvaluatedAt: string,
+  slaEvaluatedAt: string
 ): Promise<OperationsPanel> {
   const [totalTickets, page] = await Promise.all([
     countRows(client, "service_tickets"),
@@ -375,17 +388,24 @@ async function loadEvidence(client: RepositoryClient): Promise<EvidencePanel> {
 
   return {
     totalFindings,
-    findingsBySeverity: tallyBy(findingsPage.rows, (row) => asNullableString(row.severity)).counts,
-    findingsByArea: tallyBy(findingsPage.rows, (row) => asNullableString(row.area)).counts,
+    findingsBySeverity: tallyBy(findingsPage.rows, (row) =>
+      asNullableString(row.severity)
+    ).counts,
+    findingsByArea: tallyBy(findingsPage.rows, (row) =>
+      asNullableString(row.area)
+    ).counts,
     totalFacts,
-    factsByConfidence: tallyBy(factsPage.rows, (row) => asNullableString(row.confidence)).counts,
+    factsByConfidence: tallyBy(factsPage.rows, (row) =>
+      asNullableString(row.confidence)
+    ).counts,
     totalSources,
     sourcesByTier: tallyBy(sourcesPage.rows, (row) => {
       // `tier` is a smallint, so it arrives as a number rather than a string.
       const tier = asNullableNumber(row.tier)
       return tier === null ? null : String(tier)
     }).counts,
-    truncated: findingsPage.truncated || factsPage.truncated || sourcesPage.truncated,
+    truncated:
+      findingsPage.truncated || factsPage.truncated || sourcesPage.truncated,
   }
 }
 
@@ -396,7 +416,7 @@ async function loadHotel(client: RepositoryClient): Promise<HotelPanel> {
       .select(HOTEL_COLUMNS)
       .order("code", { ascending: true })
       .limit(1),
-    [],
+    []
   )
   // noUncheckedIndexedAccess: `hotelRows[0]` is `Record<string, unknown> | undefined`.
   const first = hotelRows[0]
@@ -413,7 +433,10 @@ async function loadHotel(client: RepositoryClient): Promise<HotelPanel> {
   const hotel = mapHotelRow(first)
 
   const [roomCountResponse, reviewRows] = await Promise.all([
-    client.from("hotel_rooms").select("*", { count: "exact", head: true }).eq("hotel_id", hotel.id),
+    client
+      .from("hotel_rooms")
+      .select("*", { count: "exact", head: true })
+      .eq("hotel_id", hotel.id),
     client
       .from("review_sources")
       .select(REVIEW_SOURCE_COLUMNS)
@@ -423,7 +446,9 @@ async function loadHotel(client: RepositoryClient): Promise<HotelPanel> {
       .limit(ROLLUP_PAGE_SIZE),
   ])
   if (roomCountResponse.error) throw roomCountResponse.error
-  const sources = unwrap<Record<string, unknown>[]>(reviewRows, []).map(mapReviewSourceRow)
+  const sources = unwrap<Record<string, unknown>[]>(reviewRows, []).map(
+    mapReviewSourceRow
+  )
   const publishedRoomTypes = roomCountResponse.count ?? 0
 
   return {
@@ -503,14 +528,16 @@ async function loadSnapshot(
   client: RepositoryClient,
   role: Role | null,
   profileId: string | null,
-  access: DashboardAccess,
+  access: DashboardAccess
 ): Promise<DashboardSnapshot> {
   const generatedAt = nowIso()
 
   // allSettled, never all: one broken table must not blank the other four.
   const settled = await Promise.allSettled([
     access.inventory ? loadInventory(client) : Promise.resolve(null),
-    access.operations ? loadOperations(client, generatedAt) : Promise.resolve(null),
+    access.operations
+      ? loadOperations(client, generatedAt)
+      : Promise.resolve(null),
     access.finance ? loadFinance(client) : Promise.resolve(null),
     access.evidence ? loadEvidence(client) : Promise.resolve(null),
     access.hotel ? loadHotel(client) : Promise.resolve(null),
@@ -518,7 +545,10 @@ async function loadSnapshot(
 
   const failedPanels: DashboardPanel[] = []
   const failures: unknown[] = []
-  function take<T>(outcome: PromiseSettledResult<T | null>, panel: DashboardPanel): T | null {
+  function take<T>(
+    outcome: PromiseSettledResult<T | null>,
+    panel: DashboardPanel
+  ): T | null {
     if (outcome.status === "fulfilled") return outcome.value
     failedPanels.push(panel)
     failures.push(outcome.reason)
@@ -549,13 +579,20 @@ async function loadSnapshot(
     throw new RepositoryError(toApiError(cause, "dashboard.snapshot"), cause)
   }
 
-  return assembleSnapshot({ generatedAt, role, profileId, access, panels, failedPanels })
+  return assembleSnapshot({
+    generatedAt,
+    role,
+    profileId,
+    access,
+    panels,
+    failedPanels,
+  })
 }
 
 function seedSnapshot(
   role: Role | null,
   profileId: string | null,
-  access: DashboardAccess,
+  access: DashboardAccess
 ): DashboardSnapshot {
   return assembleSnapshot({
     // Fixed, not `nowIso()`: two seeded snapshots must serialise identically.
@@ -600,7 +637,7 @@ export interface DashboardQuery {
  * than a degradation of it.
  */
 export async function getDashboardSnapshot(
-  opts: DashboardQuery = {},
+  opts: DashboardQuery = {}
 ): Promise<RepositoryResult<DashboardSnapshot>> {
   const role = opts.role ?? null
   const profileId = opts.profileId ?? null
@@ -609,16 +646,18 @@ export async function getDashboardSnapshot(
   const result = await withRepository<DashboardSnapshot>(
     (client) => loadSnapshot(client, role, profileId, access),
     () => seedSnapshot(role, profileId, access),
-    "dashboard.getDashboardSnapshot",
+    "dashboard.getDashboardSnapshot"
   )
 
   const notes: string[] = []
   if (result.data.failedPanels.length > 0) {
-    notes.push(`Panels that did not load: ${result.data.failedPanels.join(", ")}.`)
+    notes.push(
+      `Panels that did not load: ${result.data.failedPanels.join(", ")}.`
+    )
   }
   if (result.data.truncatedPanels.length > 0) {
     notes.push(
-      `Distributions computed from a bounded sample for: ${result.data.truncatedPanels.join(", ")}.`,
+      `Distributions computed from a bounded sample for: ${result.data.truncatedPanels.join(", ")}.`
     )
   }
   return notes.length === 0 ? result : degraded(result, notes.join(" "))

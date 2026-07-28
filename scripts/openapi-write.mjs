@@ -11,15 +11,18 @@
  * not implement, because nobody writes the document.
  */
 
-import { mkdir, writeFile } from "node:fs/promises"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { apiRoutes, apiTags } from "../apps/web/lib/api-routes.ts"
-import { buildSpec, toYaml } from "./openapi-build.mjs"
+import { apiRoutes, apiTags } from "../apps/web/lib/api-routes.ts";
+import { buildSpec, toYaml } from "./openapi-build.mjs";
 
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
-const outPath = path.join(rootDir, "docs", "api", "openapi.yaml")
+const rootDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
+const outPath = path.join(rootDir, "docs", "api", "openapi.yaml");
 
 /**
  * A date, not a semver.
@@ -30,14 +33,17 @@ const outPath = path.join(rootDir, "docs", "api", "openapi.yaml")
  * the manifest's own contract date so the value is stable across runs and does
  * not churn the file on every regeneration.
  */
-const SPEC_VERSION = "2026.07.28"
+const SPEC_VERSION = "2026.07.28";
 
-const yaml = toYaml(buildSpec(apiRoutes, apiTags, SPEC_VERSION))
+const yaml = toYaml(buildSpec(apiRoutes, apiTags, SPEC_VERSION));
 
-await mkdir(path.dirname(outPath), { recursive: true })
-await writeFile(outPath, yaml, "utf8")
+await mkdir(path.dirname(outPath), { recursive: true });
+await writeFile(outPath, yaml, "utf8");
 
-const operationCount = apiRoutes.reduce((total, route) => total + route.operations.length, 0)
+const operationCount = apiRoutes.reduce(
+  (total, route) => total + route.operations.length,
+  0,
+);
 console.log(
-  `Wrote ${path.relative(rootDir, outPath)} — ${apiRoutes.length} paths, ${operationCount} operations, ${yaml.length} bytes.`
-)
+  `Wrote ${path.relative(rootDir, outPath)} — ${apiRoutes.length} paths, ${operationCount} operations, ${yaml.length} bytes.`,
+);

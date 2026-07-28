@@ -54,8 +54,7 @@ export function apiFail(
 }
 
 export type BoundedJsonResult =
-  | { ok: true; value: unknown }
-  | { ok: false; error: ApiError }
+  { ok: true; value: unknown } | { ok: false; error: ApiError }
 
 const TOO_LARGE: ApiError = {
   code: "validation_failed",

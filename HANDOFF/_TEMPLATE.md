@@ -10,11 +10,11 @@ Window: <task file executed>
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | PASS / FAIL | <pasted output tail> |
-| `pnpm --dir apps/web lint` | PASS / FAIL | <pasted output tail> |
-| <task-specific> | PASS / FAIL / **NOT RUN** | <output or the reason it did not run> |
+| Command                         | Result                    | Evidence                              |
+| ------------------------------- | ------------------------- | ------------------------------------- |
+| `pnpm --dir apps/web typecheck` | PASS / FAIL               | <pasted output tail>                  |
+| `pnpm --dir apps/web lint`      | PASS / FAIL               | <pasted output tail>                  |
+| <task-specific>                 | PASS / FAIL / **NOT RUN** | <output or the reason it did not run> |
 
 Anything not executed is listed as **NOT RUN** with the reason.
 Never write "should pass", "expected to work", or "presumably fine".
@@ -31,7 +31,7 @@ An exit code captured behind a pipe is not an exit code — capture it explicitl
 ## Requests for other windows
 
 | File | Owning task | What is needed | Why |
-|---|---|---|---|
+| ---- | ----------- | -------------- | --- |
 
 <Changes you needed in files you do not own. You did not make them yourself.>
 

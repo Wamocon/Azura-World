@@ -68,7 +68,7 @@ that renders clearly and honestly, everything else will.
 
 Every scraped listing, grouped by publisher. Per listing: URL, fetch date, layout, size, price
 **in its own currency**, and the portal's own claims about the project (`claimedBlockCount`,
-`claimedTotalUnits`, `claimedBuildStatus`) so a user can see *which portal says what*.
+`claimedTotalUnits`, `claimedBuildStatus`) so a user can see _which portal says what_.
 
 **Stale listings** (contradicting a tier ≤3 source — Haspo still says "under construction" two
 years after confirmed completion) carry a badge **next to the price**, not in a footnote.
@@ -114,6 +114,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, evidence pasted:
+
 1. Evidence cockpit screenshots — all four views, German + English
 2. **F-002 rendered**: all four competing 1+1 prices visible with publisher, date, URL, and USD
    shown as USD

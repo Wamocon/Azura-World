@@ -22,7 +22,14 @@ export const dynamic = "force-dynamic"
 export const GET = createManifestHandler("getOpenApiDocument", {
   handler: async () => {
     // `process.cwd()` is `apps/web` under both `next dev` and `next start`.
-    const specPath = path.resolve(process.cwd(), "..", "..", "docs", "api", "openapi.yaml")
+    const specPath = path.resolve(
+      process.cwd(),
+      "..",
+      "..",
+      "docs",
+      "api",
+      "openapi.yaml"
+    )
     try {
       const spec = await readFile(specPath, "utf8")
       return { data: spec, source: "local-seed" as const }

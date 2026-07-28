@@ -119,7 +119,8 @@ function extractUsage(payload: unknown): {
   const usage = (payload as { usage?: unknown }).usage
   if (typeof usage !== "object" || usage === null) return empty
   const prompt = (usage as { prompt_tokens?: unknown }).prompt_tokens
-  const completion = (usage as { completion_tokens?: unknown }).completion_tokens
+  const completion = (usage as { completion_tokens?: unknown })
+    .completion_tokens
   return {
     promptTokens: typeof prompt === "number" ? prompt : null,
     completionTokens: typeof completion === "number" ? completion : null,

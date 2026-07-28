@@ -1,11 +1,23 @@
 import { createManifestHandler } from "@/lib/api-handler"
 import { forbidden } from "@/lib/api-errors"
-import { reverseLedgerEntry, settleVendorInvoice } from "@/lib/finance-repository"
-import { appendTicketEvent, updateTicketStatus } from "@/lib/operations-repository"
+import {
+  reverseLedgerEntry,
+  settleVendorInvoice,
+} from "@/lib/finance-repository"
+import {
+  appendTicketEvent,
+  updateTicketStatus,
+} from "@/lib/operations-repository"
 import type { Permission } from "@/lib/contracts"
 import { hasPermission } from "@/lib/rbac"
-import type { LedgerReversalResult, VendorInvoice } from "@/lib/finance-repository"
-import type { TicketEvent, UpdateTicketStatusResult } from "@/lib/operations-repository"
+import type {
+  LedgerReversalResult,
+  VendorInvoice,
+} from "@/lib/finance-repository"
+import type {
+  TicketEvent,
+  UpdateTicketStatusResult,
+} from "@/lib/operations-repository"
 import type { HandlerResult } from "@/lib/api-handler"
 import { RepositoryError } from "@/lib/repository-base"
 import { commandPermissions, commandSchema } from "@/lib/validation/schemas"
@@ -14,10 +26,7 @@ export const dynamic = "force-dynamic"
 
 /** Every shape a command can return. Stated, not inferred from the first branch. */
 type CommandResult =
-  | TicketEvent
-  | UpdateTicketStatusResult
-  | LedgerReversalResult
-  | VendorInvoice
+  TicketEvent | UpdateTicketStatusResult | LedgerReversalResult | VendorInvoice
 
 /**
  * The audited command endpoint.
@@ -66,7 +75,9 @@ export const POST = createManifestHandler("executeCommand", {
           companyId: body.companyId,
           kind: body.kind,
           actorProfileId: profile.id,
-          ...(body.fromStatus === undefined ? {} : { fromStatus: body.fromStatus }),
+          ...(body.fromStatus === undefined
+            ? {}
+            : { fromStatus: body.fromStatus }),
           ...(body.toStatus === undefined ? {} : { toStatus: body.toStatus }),
           ...(body.note === undefined ? {} : { note: body.note }),
         })

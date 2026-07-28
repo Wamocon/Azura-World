@@ -94,8 +94,12 @@ test.afterAll(() => {
 })
 
 test.describe("the evidence cockpit against the production build", () => {
-  test("renders for a permitted role, with its evidence intact", async ({ browser }) => {
-    const context = await browser.newContext({ baseURL: `http://127.0.0.1:${PORT}` })
+  test("renders for a permitted role, with its evidence intact", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      baseURL: `http://127.0.0.1:${PORT}`,
+    })
     await context.addCookies([
       {
         name: ACCESS_PROFILE_COOKIE,
@@ -107,30 +111,45 @@ test.describe("the evidence cockpit against the production build", () => {
     ])
     const page = await context.newPage()
 
-    const response = await page.goto(`http://127.0.0.1:${PORT}/de/dashboard/evidence`, {
-      waitUntil: "domcontentloaded",
-    })
+    const response = await page.goto(
+      `http://127.0.0.1:${PORT}/de/dashboard/evidence`,
+      {
+        waitUntil: "domcontentloaded",
+      }
+    )
 
-    expect(response?.status(), "the cockpit did not render from the production build").toBe(200)
-    expect(new URL(page.url()).pathname, "redirected instead of rendering").not.toContain("/login")
+    expect(
+      response?.status(),
+      "the cockpit did not render from the production build"
+    ).toBe(200)
+    expect(
+      new URL(page.url()).pathname,
+      "redirected instead of rendering"
+    ).not.toContain("/login")
 
     // Not merely a 200: the evidence itself, from the built artifact.
     const body = page.locator("body")
     await expect(body).toContainText("F-002")
     for (const figure of ["112.000", "185.000", "220.000", "239.171"]) {
-      await expect(body, `${figure} missing from the production render`).toContainText(figure)
+      await expect(
+        body,
+        `${figure} missing from the production render`
+      ).toContainText(figure)
     }
     // Two currencies, still not reconciled.
     const text = (await body.innerText()).replace(/\s+/g, " ")
-    expect(text, "the USD figure lost its currency in the production build").toMatch(
-      /239[.,]171\s*(\$|USD)/,
-    )
+    expect(
+      text,
+      "the USD figure lost its currency in the production build"
+    ).toMatch(/239[.,]171\s*(\$|USD)/)
 
     await context.close()
   })
 
   test("still refuses a role that lacks evidence:view", async ({ browser }) => {
-    const context = await browser.newContext({ baseURL: `http://127.0.0.1:${PORT}` })
+    const context = await browser.newContext({
+      baseURL: `http://127.0.0.1:${PORT}`,
+    })
     await context.addCookies([
       {
         name: ACCESS_PROFILE_COOKIE,

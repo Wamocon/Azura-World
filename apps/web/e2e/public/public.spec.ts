@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test"
 
-import { LOCALES, collectConsoleErrors, freezeMotion, localised, visit } from "../helpers"
+import {
+  LOCALES,
+  collectConsoleErrors,
+  freezeMotion,
+  localised,
+  visit,
+} from "../helpers"
 
 /**
  * The public surfaces.                                            Owner: W4-A
@@ -12,7 +18,9 @@ import { LOCALES, collectConsoleErrors, freezeMotion, localised, visit } from ".
 
 test.describe("public surfaces", () => {
   for (const locale of LOCALES) {
-    test(`${locale}: the landing page renders its argument`, async ({ page }) => {
+    test(`${locale}: the landing page renders its argument`, async ({
+      page,
+    }) => {
       await freezeMotion(page)
       const { status } = await visit(page, localised("/", locale))
       expect(status).toBe(200)
@@ -28,13 +36,18 @@ test.describe("public surfaces", () => {
 
       // The conflict badge is visible, not hover-only.
       const conflicted = page.locator("[data-confidence='conflicted']")
-      expect(await conflicted.count(), "no conflicted fact rendered").toBeGreaterThan(0)
+      expect(
+        await conflicted.count(),
+        "no conflicted fact rendered"
+      ).toBeGreaterThan(0)
       await expect(conflicted.first()).toBeVisible()
     })
   }
 
   for (const locale of LOCALES) {
-    test(`${locale}: the hotel page keeps every score on its own scale`, async ({ page }) => {
+    test(`${locale}: the hotel page keeps every score on its own scale`, async ({
+      page,
+    }) => {
       await freezeMotion(page)
       const { status } = await visit(page, localised("/hotel", locale))
       expect(status).toBe(200)
@@ -60,23 +73,32 @@ test.describe("public surfaces", () => {
     await freezeMotion(page)
     await visit(page, localised("/"))
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await expect(page.locator("footer, [data-slot='footer']").first()).toBeVisible()
+    await expect(
+      page.locator("footer, [data-slot='footer']").first()
+    ).toBeVisible()
     expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([])
   })
 
-  test("reduced motion yields a complete page, not a faster one", async ({ page }) => {
+  test("reduced motion yields a complete page, not a faster one", async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: "reduce" })
     await visit(page, localised("/"))
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
 
     // azura-ui-ux §5.1: content revealed only by ScrollTrigger is invisible to
     // this user. Nothing may be left at opacity 0.
-    const invisible = await page.evaluate(() =>
-      Array.from(document.querySelectorAll("body *")).filter((node) => {
-        const style = getComputedStyle(node)
-        if (style.display === "none" || style.visibility === "hidden") return false
-        return Number(style.opacity) === 0 && (node as HTMLElement).innerText?.trim().length > 0
-      }).length,
+    const invisible = await page.evaluate(
+      () =>
+        Array.from(document.querySelectorAll("body *")).filter((node) => {
+          const style = getComputedStyle(node)
+          if (style.display === "none" || style.visibility === "hidden")
+            return false
+          return (
+            Number(style.opacity) === 0 &&
+            (node as HTMLElement).innerText?.trim().length > 0
+          )
+        }).length
     )
     expect(invisible, "content left at opacity 0 under reduced motion").toBe(0)
   })
@@ -85,7 +107,8 @@ test.describe("public surfaces", () => {
     const context = await browser.newContext()
     await context.addInitScript(() => {
       const deny = () => null
-      HTMLCanvasElement.prototype.getContext = deny as typeof HTMLCanvasElement.prototype.getContext
+      HTMLCanvasElement.prototype.getContext =
+        deny as typeof HTMLCanvasElement.prototype.getContext
     })
     const page = await context.newPage()
     await page.goto(localised("/"), { waitUntil: "domcontentloaded" })
@@ -96,7 +119,10 @@ test.describe("public surfaces", () => {
     // An earlier version of this test looked for a generic `[data-slot='poster']`
     // and reported a working fallback as missing.
     const poster = page.locator("[data-slot='coast-poster']")
-    expect(await poster.count(), "WebGL is unavailable and nothing stood in").toBeGreaterThan(0)
+    expect(
+      await poster.count(),
+      "WebGL is unavailable and nothing stood in"
+    ).toBeGreaterThan(0)
     await context.close()
   })
 
@@ -112,12 +138,14 @@ test.describe("public surfaces", () => {
     }))
     expect(
       overflow.scrollWidth,
-      `horizontal overflow: ${overflow.scrollWidth} > ${overflow.clientWidth}`,
+      `horizontal overflow: ${overflow.scrollWidth} > ${overflow.clientWidth}`
     ).toBeLessThanOrEqual(overflow.clientWidth)
   })
 
   for (const locale of LOCALES) {
-    test(`${locale}: no message key renders as its own name`, async ({ page }) => {
+    test(`${locale}: no message key renders as its own name`, async ({
+      page,
+    }) => {
       await visit(page, localised("/hotel", locale))
       const text = await page.locator("body").innerText()
 
@@ -128,13 +156,17 @@ test.describe("public surfaces", () => {
       // "hotel.platform.open" where a sentence should be.
       //
       // Matched as a dotted namespace token, so ordinary prose cannot trip it.
-      const leaked = [...text.matchAll(/(hotel|evidence|landing|dashboard)\.[a-z][a-zA-Z]*(?:\.[a-z][a-zA-Z]*)+/g)]
+      const leaked = [
+        ...text.matchAll(
+          /(hotel|evidence|landing|dashboard)\.[a-z][a-zA-Z]*(?:\.[a-z][a-zA-Z]*)+/g
+        ),
+      ]
         .map((m) => m[0])
         .filter((k) => !k.startsWith("hotel.com"))
 
       expect(
         [...new Set(leaked)],
-        `untranslated message keys rendered as text: ${[...new Set(leaked)].join(", ")}`,
+        `untranslated message keys rendered as text: ${[...new Set(leaked)].join(", ")}`
       ).toEqual([])
     })
   }

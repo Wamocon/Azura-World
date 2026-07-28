@@ -78,7 +78,10 @@ export function ShareLink({
         </span>
         <span>{copied ? copiedLabel : copyLabel}</span>
       </button>
-      <span aria-live="polite" className="text-[0.8125rem] text-muted-foreground">
+      <span
+        aria-live="polite"
+        className="text-[0.8125rem] text-muted-foreground"
+      >
         {failed ? copyLabel : ""}
       </span>
     </div>

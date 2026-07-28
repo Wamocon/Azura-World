@@ -7,11 +7,7 @@ import type { SourcedFact } from "@/lib/contracts"
 
 import { ConfidenceBadge, type ConfidenceLabels } from "./confidence-badge"
 import { ConflictPopover, type ConflictLabels } from "./conflict-popover"
-import {
-  conflictRange,
-  formatFactValue,
-  type ProvenanceFormat,
-} from "./format"
+import { conflictRange, formatFactValue, type ProvenanceFormat } from "./format"
 import { SourceChipList, type SourceChipLabels } from "./source-chip"
 
 /**
@@ -168,7 +164,7 @@ export function ProvenanceValue<T>({
         <span data-numeric className="font-display font-semibold italic">
           {formatted}
         </span>
-        <span className="text-xs italic text-confidence-inferred">
+        <span className="text-xs text-confidence-inferred italic">
           {labels.inferred}
         </span>
         {/* Invariant 4 guarantees a note explaining the computation. It is the
@@ -303,7 +299,7 @@ export function DataQualityMark({
       data-slot="data-quality"
       data-quality={dataQuality}
       className={cn(
-        "inline-flex min-h-6 items-center gap-1 rounded-md border px-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.06em]",
+        "inline-flex min-h-6 items-center gap-1 rounded-md border px-1.5 text-[0.6875rem] font-semibold tracking-[0.06em] uppercase",
         dataQuality === "modelled"
           ? "border-quality-modelled/40 bg-quality-modelled/10 text-quality-modelled"
           : "border-confidence-gap/40 bg-confidence-gap/10 text-confidence-gap",

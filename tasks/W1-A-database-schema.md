@@ -34,22 +34,22 @@ Do **not** write `apps/web/lib/rbac.ts` (W1-B) or `supabase/imports/*` (W0-B).
 
 ### Migrations — sequential, never renumbered
 
-| # | File | Contents |
-|---|---|---|
-| 00 | `…0000_initial_schema.sql` | `profiles` extending `auth.users`, signup trigger, own-row RLS |
-| 01 | `…0001_rbac.sql` | 11-role enum **in `CONTRACTS.md` §3 order**, `roleLevel` helper, `current_user_role()`, `is_admin()`, `has_role_level(int)` |
-| 02 | `…0002_azura_core.sql` | `companies`, `sites`, `site_blocks`, `site_floors`, `units`, `residents`, `unit_residents` |
-| 03 | `…0003_evidence.sql` | `sources`, `source_snapshots`, `sourced_facts`, `findings` — the provenance store |
-| 04 | `…0004_hotel_reviews.sql` | `hotels`, `hotel_rooms`, `review_sources`, `review_quotes` |
-| 05 | `…0005_portal_listings.sql` | `portal_listings`, `competing_prices` |
-| 06 | `…0006_operations.sql` | `service_tickets`, `ticket_events`, `activities`, `workforce_tasks`, `media_reports` |
-| 07 | `…0007_finance.sql` | `finance_ledger_entries`, `payment_transactions`, `wallets`, `vendor_invoices` |
-| 08 | `…0008_documents_compliance.sql` | `documents`, `compliance_checks`, `audit_events`, `access_events` |
-| 09 | `…0009_communications.sql` | `threads`, `messages`, `notifications`, `integration_outbox` |
-| 10 | `…0010_search.sql` | `operational_search_documents`, tsvector + trigram indexes |
-| 11 | `…0011_ai_observability.sql` | `ai_action_logs`, `ai_conversations`, `ai_messages`, `ai_feedback` |
-| 12 | `…0012_realtime.sql` | Realtime publication registration for dashboard tables |
-| 13 | `…0013_hardening.sql` | Grant hardening, `search_path` pinning, function `SECURITY DEFINER` audit |
+| #   | File                             | Contents                                                                                                                    |
+| --- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 00  | `…0000_initial_schema.sql`       | `profiles` extending `auth.users`, signup trigger, own-row RLS                                                              |
+| 01  | `…0001_rbac.sql`                 | 11-role enum **in `CONTRACTS.md` §3 order**, `roleLevel` helper, `current_user_role()`, `is_admin()`, `has_role_level(int)` |
+| 02  | `…0002_azura_core.sql`           | `companies`, `sites`, `site_blocks`, `site_floors`, `units`, `residents`, `unit_residents`                                  |
+| 03  | `…0003_evidence.sql`             | `sources`, `source_snapshots`, `sourced_facts`, `findings` — the provenance store                                           |
+| 04  | `…0004_hotel_reviews.sql`        | `hotels`, `hotel_rooms`, `review_sources`, `review_quotes`                                                                  |
+| 05  | `…0005_portal_listings.sql`      | `portal_listings`, `competing_prices`                                                                                       |
+| 06  | `…0006_operations.sql`           | `service_tickets`, `ticket_events`, `activities`, `workforce_tasks`, `media_reports`                                        |
+| 07  | `…0007_finance.sql`              | `finance_ledger_entries`, `payment_transactions`, `wallets`, `vendor_invoices`                                              |
+| 08  | `…0008_documents_compliance.sql` | `documents`, `compliance_checks`, `audit_events`, `access_events`                                                           |
+| 09  | `…0009_communications.sql`       | `threads`, `messages`, `notifications`, `integration_outbox`                                                                |
+| 10  | `…0010_search.sql`               | `operational_search_documents`, tsvector + trigram indexes                                                                  |
+| 11  | `…0011_ai_observability.sql`     | `ai_action_logs`, `ai_conversations`, `ai_messages`, `ai_feedback`                                                          |
+| 12  | `…0012_realtime.sql`             | Realtime publication registration for dashboard tables                                                                      |
+| 13  | `…0013_hardening.sql`            | Grant hardening, `search_path` pinning, function `SECURITY DEFINER` audit                                                   |
 
 ### The evidence tables — Azura-specific, get these right
 
@@ -138,15 +138,15 @@ Deterministic. Seeds the confirmed Azura figures: 1 company, 1 site, **7 blocks,
 
 Minimum **150 assertions** across:
 
-| File | Covers |
-|---|---|
-| `01-schema.sql` | tables, columns, types, NOT NULLs, FKs present |
-| `02-rbac.sql` | all 11 roles exist, level ordering, helper functions correct |
-| `03-rls-positive.sql` | each role CAN reach what it should |
-| `04-rls-negative.sql` | each role CANNOT reach what it should not — **the important one** |
-| `05-finance-invariants.sql` | posted-immutability trigger fires; negative balance rejected |
-| `06-evidence-invariants.sql` | gap⟹null constraint; conflicted⟹conflict rows |
-| `07-seed-integrity.sql` | 7 blocks, 656 units, 188 rooms, 10 findings |
+| File                         | Covers                                                            |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `01-schema.sql`              | tables, columns, types, NOT NULLs, FKs present                    |
+| `02-rbac.sql`                | all 11 roles exist, level ordering, helper functions correct      |
+| `03-rls-positive.sql`        | each role CAN reach what it should                                |
+| `04-rls-negative.sql`        | each role CANNOT reach what it should not — **the important one** |
+| `05-finance-invariants.sql`  | posted-immutability trigger fires; negative balance rejected      |
+| `06-evidence-invariants.sql` | gap⟹null constraint; conflicted⟹conflict rows                     |
+| `07-seed-integrity.sql`      | 7 blocks, 656 units, 188 rooms, 10 findings                       |
 
 Negative tests matter more than positive ones. A permission test that only checks the happy path
 proves nothing about security.

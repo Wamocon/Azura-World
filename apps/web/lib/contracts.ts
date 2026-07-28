@@ -172,7 +172,11 @@ export interface AzuraUnit {
   floorLevel: number | null
   askingPrice: SourcedFact<Money>
   /** Same unit priced differently by different portals. Always keep all of them. */
-  competingPrices: Array<{ money: Money; source: SourceRef; observedAt: string }>
+  competingPrices: Array<{
+    money: Money
+    source: SourceRef
+    observedAt: string
+  }>
   saleStatus: SourcedFact<"available" | "reserved" | "sold" | "unknown">
   /** "portal_listing" = a real scraped listing. "modelled" = synthesised to fill the
    *  656-unit inventory; NEVER presented as a real listing. */
@@ -550,7 +554,8 @@ export function isSourcedFact<T>(v: unknown): v is SourcedFact<T> {
   if (!sources.every(isSourceRef)) return false
 
   const conflictsWith = v["conflictsWith"]
-  if (conflictsWith !== undefined && !isUnknownArray(conflictsWith)) return false
+  if (conflictsWith !== undefined && !isUnknownArray(conflictsWith))
+    return false
 
   const note = v["note"]
   if (note !== undefined && typeof note !== "string") return false

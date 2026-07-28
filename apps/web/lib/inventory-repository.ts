@@ -141,7 +141,11 @@ export interface SiteRecord {
   downPaymentPercent: number | null
   latitude: number | null
   longitude: number | null
-  contact: { phone: string | null; email: string | null; address: string | null }
+  contact: {
+    phone: string | null
+    email: string | null
+    address: string | null
+  }
   createdAt: string
   updatedAt: string
 }
@@ -292,7 +296,10 @@ function chunk<T>(values: readonly T[], size: number): T[][] {
 }
 
 function asCurrency(value: unknown): CurrencyCode | null {
-  return value === "EUR" || value === "USD" || value === "TRY" || value === "GBP"
+  return value === "EUR" ||
+    value === "USD" ||
+    value === "TRY" ||
+    value === "GBP"
     ? value
     : null
 }
@@ -330,7 +337,11 @@ function asConfidence(value: unknown): Confidence | null {
 }
 
 function toArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : value === null || value === undefined ? [] : [value]
+  return Array.isArray(value)
+    ? value
+    : value === null || value === undefined
+      ? []
+      : [value]
 }
 
 // ---------------------------------------------------------------------------
@@ -434,7 +445,9 @@ function mapSourcedFact<T>(
       const source = mapSourceRef(record)
       return source === null ? null : { value: record["value"], source }
     })
-    .filter((entry): entry is { value: unknown; source: SourceRef } => entry !== null)
+    .filter(
+      (entry): entry is { value: unknown; source: SourceRef } => entry !== null
+    )
 
   if (confidence === "conflicted" && conflicts.length === 0) {
     // Invariant 2: a conflicted fact must keep the losing value. Without it we
@@ -474,10 +487,17 @@ function indexUnitFacts(
   for (const row of rows) {
     const entityId = asNullableString(row["entity_id"])
     if (entityId === null) continue
-    const current = index.get(entityId) ?? { askingPrice: null, saleStatus: null }
+    const current = index.get(entityId) ?? {
+      askingPrice: null,
+      saleStatus: null,
+    }
     const field = asString(row["field_path"])
     if (field === "unit.askingPrice") {
-      current.askingPrice = mapSourcedFact(row, parseMoneyValue, `${entityId} askingPrice`)
+      current.askingPrice = mapSourcedFact(
+        row,
+        parseMoneyValue,
+        `${entityId} askingPrice`
+      )
     } else if (field === "unit.saleStatus") {
       current.saleStatus = mapSourcedFact(
         row,
@@ -513,7 +533,12 @@ function indexCompetingPrices(
     const money = asMoney(row["amount"], row["currency"])
     const sourceUrl = asNullableString(row["source_url"])
     const observedAt = asNullableString(row["observed_at"])
-    if (unitId === null || money === null || sourceUrl === null || observedAt === null) {
+    if (
+      unitId === null ||
+      money === null ||
+      sourceUrl === null ||
+      observedAt === null
+    ) {
       unresolved += 1
       continue
     }
@@ -567,7 +592,9 @@ function mapSite(row: Record<string, unknown>): SiteRecord {
         ? buildStatus
         : null,
     distanceToSeaM: asNullableNumber(row["distance_to_sea_m"]),
-    distanceToAlanyaCentreKm: asNullableNumber(row["distance_to_alanya_centre_km"]),
+    distanceToAlanyaCentreKm: asNullableNumber(
+      row["distance_to_alanya_centre_km"]
+    ),
     distanceToGazipasaAirportKm: asNullableNumber(
       row["distance_to_gazipasa_airport_km"]
     ),
@@ -678,7 +705,9 @@ function isResidentRole(role: Role): boolean {
 }
 
 function isChildRole(role: Role): boolean {
-  return role === "child_owner" || role === "child_tenant" || role === "child_guest"
+  return (
+    role === "child_owner" || role === "child_tenant" || role === "child_guest"
+  )
 }
 
 function relationForRole(role: Role): ResidentRelation {
@@ -692,7 +721,9 @@ function relationForRole(role: Role): ResidentRelation {
  * `unit_residents` edge, and its assignment scope lives in the operations
  * repository, not this one.
  */
-function scopeKindForRole(role: Role | undefined): "all" | "public" | "resident" {
+function scopeKindForRole(
+  role: Role | undefined
+): "all" | "public" | "resident" {
   if (role === undefined) return "public"
   if ((roleLevel[role] ?? 0) >= STAFF_LEVEL) return "all"
   if (isResidentRole(role)) return "resident"
@@ -741,20 +772,28 @@ async function resolveScope(
       .limit(1)
     if (error) throw error
     const first = rowsOf(data)[0]
-    const guardian = first === undefined ? null : asNullableString(first["guardian_profile_id"])
+    const guardian =
+      first === undefined
+        ? null
+        : asNullableString(first["guardian_profile_id"])
     if (guardian === null) return { kind: "units", unitIds: [] }
     effectiveProfileId = guardian
   }
 
   const { data, error } = await client
     .from("unit_residents")
-    .select("unit_id, relation, is_primary, end_date, residents!inner(profile_id)")
+    .select(
+      "unit_id, relation, is_primary, end_date, residents!inner(profile_id)"
+    )
     .eq("relation", relationForRole(role))
     .eq("residents.profile_id", effectiveProfileId)
     .limit(500)
   if (error) throw error
 
-  return { kind: "units", unitIds: holdingsFromRows(rowsOf(data), child, today) }
+  return {
+    kind: "units",
+    unitIds: holdingsFromRows(rowsOf(data), child, today),
+  }
 }
 
 function holdingsFromRows(
@@ -773,7 +812,10 @@ function holdingsFromRows(
 }
 
 /** The seed-mode twin of `resolveScope`. Same rules, same order, no RLS. */
-function resolveSeedScope(options: ScopeOptions, today: string): InventoryScope {
+function resolveSeedScope(
+  options: ScopeOptions,
+  today: string
+): InventoryScope {
   const kind = scopeKindForRole(options.role)
   if (kind === "all") return { kind: "all" }
   if (kind === "public") return { kind: "public" }
@@ -800,7 +842,8 @@ function resolveSeedScope(options: ScopeOptions, today: string): InventoryScope 
   const relation = relationForRole(role)
   const rows = seedUnitResidentRows().filter(
     (row) =>
-      row.relation === relation && row.residents?.profile_id === effectiveProfileId
+      row.relation === relation &&
+      row.residents?.profile_id === effectiveProfileId
   )
   return { kind: "units", unitIds: holdingsFromRows(rows, child, today) }
 }
@@ -813,7 +856,9 @@ async function resolveHoldings(
 ): Promise<string[]> {
   const { data, error } = await client
     .from("unit_residents")
-    .select("unit_id, relation, is_primary, end_date, residents!inner(profile_id)")
+    .select(
+      "unit_id, relation, is_primary, end_date, residents!inner(profile_id)"
+    )
     .eq("residents.profile_id", profileId)
     .limit(500)
   if (error) throw error
@@ -917,7 +962,8 @@ async function loadSourceRegister(
       const fetchedAt = asNullableString(snapshot["fetched_at"])
       const snapshotHash = asNullableString(snapshot["snapshot_sha256"])
       if (fetchedAt === null || snapshotHash === null) continue
-      if (best === null || fetchedAt > best.fetchedAt) best = { fetchedAt, snapshotHash }
+      if (best === null || fetchedAt > best.fetchedAt)
+        best = { fetchedAt, snapshotHash }
     }
     if (best === null) continue
 
@@ -1037,7 +1083,8 @@ export async function getUnits(
 
       if (scope.kind === "public") query = query.eq("is_publicly_listed", true)
       if (scope.kind === "units") query = query.in("id", scope.unitIds)
-      if (options.layout !== undefined) query = query.eq("layout", options.layout)
+      if (options.layout !== undefined)
+        query = query.eq("layout", options.layout)
       if (options.dataQuality !== undefined) {
         query = query.eq("data_quality", options.dataQuality)
       }
@@ -1073,7 +1120,9 @@ export async function getUnits(
 
       const rows = seedUnitRows()
         .filter((row) => seedRowInScope(row, scope))
-        .filter((row) => options.layout === undefined || row.layout === options.layout)
+        .filter(
+          (row) => options.layout === undefined || row.layout === options.layout
+        )
         .filter(
           (row) =>
             options.dataQuality === undefined ||
@@ -1081,10 +1130,13 @@ export async function getUnits(
         )
         .filter(
           (row) =>
-            options.saleStatus === undefined || row.sale_status === options.saleStatus
+            options.saleStatus === undefined ||
+            row.sale_status === options.saleStatus
         )
         .filter(
-          (row) => options.blockCode === undefined || row.block_code === options.blockCode
+          (row) =>
+            options.blockCode === undefined ||
+            row.block_code === options.blockCode
         )
         .slice(offset, offset + limit)
 
@@ -1181,7 +1233,11 @@ export async function getAvailabilityRollup(
       }
 
       const rows: Array<Record<string, unknown>> = []
-      for (let offset = 0; offset < ROLLUP_MAX_ROWS; offset += ROLLUP_PAGE_SIZE) {
+      for (
+        let offset = 0;
+        offset < ROLLUP_MAX_ROWS;
+        offset += ROLLUP_PAGE_SIZE
+      ) {
         let query = client
           .from("units")
           .select(ROLLUP_SELECT)
@@ -1189,7 +1245,8 @@ export async function getAvailabilityRollup(
           .order("sequence", { ascending: true })
           .range(offset, offset + ROLLUP_PAGE_SIZE - 1)
 
-        if (scope.kind === "public") query = query.eq("is_publicly_listed", true)
+        if (scope.kind === "public")
+          query = query.eq("is_publicly_listed", true)
         if (scope.kind === "units") query = query.in("id", scope.unitIds)
 
         const { data, error } = await query
@@ -1208,7 +1265,8 @@ export async function getAvailabilityRollup(
     },
     () => {
       const scope = resolveSeedScope(options, today)
-      if (scope.kind === "units" && scope.unitIds.length === 0) return emptyRollup()
+      if (scope.kind === "units" && scope.unitIds.length === 0)
+        return emptyRollup()
       const rows = seedUnitRows()
         .filter((row) => seedRowInScope(row, scope))
         .map((row) => ({
@@ -1242,7 +1300,10 @@ function buildRollup(
 
   const layouts = new Map<UnitLayout, LayoutRollup>()
   const blocks = new Map<string, BlockRollup>()
-  const priceSamples = new Map<string, { bucketKey: string; values: number[] }>()
+  const priceSamples = new Map<
+    string,
+    { bucketKey: string; values: number[] }
+  >()
   const moneyRows: Array<{ amount: number; currency: string }> = []
 
   let pricedUnits = 0
@@ -1252,7 +1313,9 @@ function buildRollup(
     const dataQuality = asDataQuality(row["data_quality"]) ?? "source_missing"
     const layout = asLayout(row["layout"])
     const blockCode = asString(row["block_code"])
-    const blockName = asNullableString(relatedRecord(row["site_blocks"])["name"])
+    const blockName = asNullableString(
+      relatedRecord(row["site_blocks"])["name"]
+    )
 
     bySaleStatus[saleStatus] += 1
     byDataQuality[dataQuality] += 1
@@ -1317,15 +1380,20 @@ function buildRollup(
   }
   priceByCurrency.sort(
     (a, b) =>
-      a.currency.localeCompare(b.currency) || a.dataQuality.localeCompare(b.dataQuality)
+      a.currency.localeCompare(b.currency) ||
+      a.dataQuality.localeCompare(b.dataQuality)
   )
 
   return {
     totalUnits: rows.length,
     bySaleStatus,
     byDataQuality,
-    byLayout: [...layouts.values()].sort((a, b) => a.layout.localeCompare(b.layout)),
-    byBlock: [...blocks.values()].sort((a, b) => a.blockCode.localeCompare(b.blockCode)),
+    byLayout: [...layouts.values()].sort((a, b) =>
+      a.layout.localeCompare(b.layout)
+    ),
+    byBlock: [...blocks.values()].sort((a, b) =>
+      a.blockCode.localeCompare(b.blockCode)
+    ),
     priceByCurrency,
     totalsByCurrency: totalsByCurrency(moneyRows),
     pricedUnits,

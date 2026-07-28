@@ -17,29 +17,29 @@ Secret hygiene, every cycle: 0 tracked `.env`, 0 tracked `sources/media`, 0 trac
 
 ## 2. What was built
 
-| Task | Status | Verified evidence |
-|---|---|---|
-| W0-A foundation | ✅ | 33 contract smoke assertions |
-| W0-B evidence | ✅ | 45/60 URLs, 53 sources, 656 units, 24 findings |
-| W0-C market | ✅ | Marktanalyse ×4 languages, primary sources parsed |
-| W0-D media | ✅ | 833 assets, 828 encoded, 8,649 renditions |
-| W1-A schema | ✅ | **366 pgTAP assertions planned, 366 executed, 366 passed** |
-| W1-B auth/RBAC | ✅ | rbac probe 157 pass · 0 fail |
-| W1-C i18n | ✅ | 576 keys × 4 locales, 0 English stubs |
-| W1-D design | ✅ | 27/27 Playwright |
-| W2-A repositories | ✅ | 13 repositories, 60 reads, 24/24 contract tests |
-| W2-C AI | ✅ | 152 assertions, **17 of 31 probes refused** |
-| W2-D realtime | ⚠️ PARTIAL *by design* | 93 pass; 3 browser checks NOT RUN, named |
-| W3-I simulation | ✅ | 16/16 Playwright |
+| Task              | Status                 | Verified evidence                                          |
+| ----------------- | ---------------------- | ---------------------------------------------------------- |
+| W0-A foundation   | ✅                     | 33 contract smoke assertions                               |
+| W0-B evidence     | ✅                     | 45/60 URLs, 53 sources, 656 units, 24 findings             |
+| W0-C market       | ✅                     | Marktanalyse ×4 languages, primary sources parsed          |
+| W0-D media        | ✅                     | 833 assets, 828 encoded, 8,649 renditions                  |
+| W1-A schema       | ✅                     | **366 pgTAP assertions planned, 366 executed, 366 passed** |
+| W1-B auth/RBAC    | ✅                     | rbac probe 157 pass · 0 fail                               |
+| W1-C i18n         | ✅                     | 576 keys × 4 locales, 0 English stubs                      |
+| W1-D design       | ✅                     | 27/27 Playwright                                           |
+| W2-A repositories | ✅                     | 13 repositories, 60 reads, 24/24 contract tests            |
+| W2-C AI           | ✅                     | 152 assertions, **17 of 31 probes refused**                |
+| W2-D realtime     | ⚠️ PARTIAL _by design_ | 93 pass; 3 browser checks NOT RUN, named                   |
+| W3-I simulation   | ✅                     | 16/16 Playwright                                           |
 
 Waves 0 and 1 complete. Wave 2 complete except **W2-B (API/OpenAPI), not started** — W1 declined
-the stretch deliberately: *"the night is late enough that a fresh window should take it with the
-handoffs in hand."*
+the stretch deliberately: _"the night is late enough that a fresh window should take it with the
+handoffs in hand."_
 
 ## 3. Two real bugs the night caught
 
 **Every authenticated user was an admin.** `is_admin()` is `SECURITY DEFINER`, so `current_user`
-resolved to the *function owner*, not the caller — `is_service_context()` returned true for
+resolved to the _function owner_, not the caller — `is_service_context()` returned true for
 everyone. Found by the **negative** pgTAP suite. The same run caught a deactivated profile
 keeping its residency scope, and `anon` unable to read `public.units` at all, which would have
 shipped an empty landing page. All fixed.
@@ -52,36 +52,43 @@ does not reproduce in `next dev`.** Still open — see §4.
 ## 4. Decisions waiting for you
 
 ### ① S-009 — CSP vs prerendering · **blocks wave 3**
+
 The landing page would ship dead and pass every dev check. Needs either a static-safe CSP
 fallback in `proxy.ts` (W1-B's file) or a documented rule that no route may be statically
 prerendered. **Fix this before W3-A starts.**
 
 ### ② S-010 — the 3D budget is unreachable
+
 Lazy 3D chunk is **236.4 KB gz against a 150 KB budget**. W4 tested removing `drei`: saved
 **10 bytes**, already tree-shaken, reverted. The 236 KB is three.js + R3F itself. Raise the
 budget for the 3D route, drop WebGL, or accept a documented exception.
 
 ### ③ S-014 — the merge, now a two-line instruction
-All four branches merge **CLEAN** into `main` individually. Across all six branch pairs the
-*entire* conflict set is two files:
 
-| Path | Resolution |
-|---|---|
-| `HANDOFF/NIGHT-LOG.md` | **Union — keep every line.** Append-only log |
+All four branches merge **CLEAN** into `main` individually. Across all six branch pairs the
+_entire_ conflict set is two files:
+
+| Path                     | Resolution                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| `HANDOFF/NIGHT-LOG.md`   | **Union — keep every line.** Append-only log                                              |
 | `scripts/check-i18n.mjs` | **Take W3's copy** (576 lines, fixed two gate bugs). W4's 498-line copy is a stale replay |
 
 Suggested order — data spine first, contaminated branch last:
+
 ```
 w1a-w2a-data → w1b-w2c-auth-ai → w1c-w0d-i18n-media → w1d-w3i-design
 ```
+
 `main` is protected (1 review + 2 checks), so this goes through PRs.
 
 ### ④ S-007 — do not merge three dependabot PRs
+
 **#8 typescript 5→7**, **#7 eslint 9→10**, **#6 @types/node 20→26** all break the pinned
 versions in `CONVENTIONS.md` §1. My `dependabot.yml` bounded the pinned-core group but left
 ungrouped dev-deps open — needs an `ignore` block for majors.
 
 ### ⑤ Generator fix before wave 3
+
 `azura-world-data.ts` types `project`/`hotel`/`portalListings` as `Record<string, unknown>`, and
 the trailing `satisfies` gives those subtrees no contextual type — so `tier` widens to `number`
 and `confidence` to `string` at every call site. W2-C worked around it with `isSourcedFact()`

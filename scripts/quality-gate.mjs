@@ -28,27 +28,35 @@
  *   node scripts/quality-gate.mjs --out=quality/gate.json
  */
 
-import { spawnSync } from "node:child_process"
-import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync, statSync } from "node:fs"
-import { gzipSync } from "node:zlib"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import { spawnSync } from "node:child_process";
+import {
+  existsSync,
+  readFileSync,
+  mkdirSync,
+  writeFileSync,
+  readdirSync,
+  statSync,
+} from "node:fs";
+import { gzipSync } from "node:zlib";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const HERE = path.dirname(fileURLToPath(import.meta.url))
-const REPO = path.resolve(HERE, "..")
-const WEB = path.join(REPO, "apps", "web")
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const REPO = path.resolve(HERE, "..");
+const WEB = path.join(REPO, "apps", "web");
 
-const args = process.argv.slice(2)
-const FAST = args.includes("--fast")
-const AS_JSON = args.includes("--json")
-const OUT = (args.find((a) => a.startsWith("--out=")) ?? "").split("=")[1] ?? null
+const args = process.argv.slice(2);
+const FAST = args.includes("--fast");
+const AS_JSON = args.includes("--json");
+const OUT =
+  (args.find((a) => a.startsWith("--out=")) ?? "").split("=")[1] ?? null;
 
 /** Per-gate ceiling. A gate that hangs is a failure, not a wait. */
-const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000
+const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
 
-const PASS = "PASS"
-const FAIL = "FAIL"
-const NOT_RUN = "NOT RUN"
+const PASS = "PASS";
+const FAIL = "FAIL";
+const NOT_RUN = "NOT RUN";
 
 // ---------------------------------------------------------------------------
 // Runner
@@ -61,8 +69,11 @@ const NOT_RUN = "NOT RUN"
  * Output is captured, never streamed through a pipe, so nothing can mask the
  * status. `timeout` kills the child; a killed child is a failure.
  */
-function run(command, { cwd = REPO, timeout = DEFAULT_TIMEOUT_MS, env = {} } = {}) {
-  const started = Date.now()
+function run(
+  command,
+  { cwd = REPO, timeout = DEFAULT_TIMEOUT_MS, env = {} } = {},
+) {
+  const started = Date.now();
   const r = spawnSync(command, {
     cwd,
     shell: true,
@@ -70,13 +81,14 @@ function run(command, { cwd = REPO, timeout = DEFAULT_TIMEOUT_MS, env = {} } = {
     timeout,
     maxBuffer: 64 * 1024 * 1024,
     env: { ...process.env, ...env, CI: "1", FORCE_COLOR: "0" },
-  })
-  const durationMs = Date.now() - started
-  const stdout = r.stdout ?? ""
-  const stderr = r.stderr ?? ""
+  });
+  const durationMs = Date.now() - started;
+  const stdout = r.stdout ?? "";
+  const stderr = r.stderr ?? "";
   // `status` is null when the process was killed (timeout/signal). That is a
   // failure with a distinct reason, not an unknown.
-  const timedOut = r.error?.code === "ETIMEDOUT" || (r.status === null && r.signal !== null)
+  const timedOut =
+    r.error?.code === "ETIMEDOUT" || (r.status === null && r.signal !== null);
   return {
     status: r.status,
     signal: r.signal,
@@ -86,30 +98,30 @@ function run(command, { cwd = REPO, timeout = DEFAULT_TIMEOUT_MS, env = {} } = {
     stderr,
     combined: `${stdout}${stderr}`,
     spawnError: r.error ? String(r.error.message).split("\n")[0] : null,
-  }
+  };
 }
 
 /** First capture group of the first matching pattern, else null. */
 function capture(text, ...patterns) {
   for (const p of patterns) {
-    const m = p.exec(text)
-    if (m) return m[1] ?? m[0]
+    const m = p.exec(text);
+    if (m) return m[1] ?? m[0];
   }
-  return null
+  return null;
 }
 
 function gzippedSize(file) {
-  return gzipSync(readFileSync(file), { level: 9 }).length
+  return gzipSync(readFileSync(file), { level: 9 }).length;
 }
 
 function kb(bytes) {
-  return `${(bytes / 1024).toFixed(1)}KB`
+  return `${(bytes / 1024).toFixed(1)}KB`;
 }
 
 /** Tool output is colourised; a metric regex must not depend on that. */
 function stripAnsi(s) {
   // eslint-disable-next-line no-control-regex
-  return s.replace(/\[[0-9;]*m/g, "")
+  return s.replace(/\[[0-9;]*m/g, "");
 }
 
 // ---------------------------------------------------------------------------
@@ -123,7 +135,7 @@ function stripAnsi(s) {
 // ---------------------------------------------------------------------------
 
 const missing = (rel, owner) => () =>
-  existsSync(path.join(REPO, rel)) ? null : `${rel} does not exist — ${owner}`
+  existsSync(path.join(REPO, rel)) ? null : `${rel} does not exist — ${owner}`;
 
 const GATES = [
   {
@@ -133,7 +145,10 @@ const GATES = [
     blocking: true,
     fast: true,
     cmd: "pnpm --dir apps/web typecheck",
-    metric: (o, r) => (r.status === 0 ? "tsc --noEmit, 0 errors" : capture(o, /error TS\d+/g) ?? "errors"),
+    metric: (o, r) =>
+      r.status === 0
+        ? "tsc --noEmit, 0 errors"
+        : (capture(o, /error TS\d+/g) ?? "errors"),
   },
   {
     n: 2,
@@ -142,7 +157,10 @@ const GATES = [
     blocking: true,
     fast: true,
     cmd: "pnpm --dir apps/web lint",
-    metric: (o, r) => (r.status === 0 ? "eslint, 0 errors 0 warnings" : capture(o, /✖ (\d+ problems?[^\n]*)/) ?? "problems"),
+    metric: (o, r) =>
+      r.status === 0
+        ? "eslint, 0 errors 0 warnings"
+        : (capture(o, /✖ (\d+ problems?[^\n]*)/) ?? "problems"),
   },
   {
     n: 3,
@@ -157,7 +175,7 @@ const GATES = [
     // build wrote more JSON. A gate whose number moves when nothing changed is
     // not measuring the thing it claims to measure. The repo `.gitignore`
     // already excludes `.next`, `node_modules`, `out` and `build`.
-    cmd: 'pnpm --dir apps/web exec prettier --check --ignore-path ../../.gitignore "**/*.{ts,tsx,mts,json,css}"',
+    cmd: 'pnpm --dir apps/web exec prettier --check --ignore-path ../../.gitignore --ignore-path .prettierignore "**/*.{ts,tsx,mts,json,css}"',
     // prettier colours its output, so `[warn]` arrives as `\x1b[33mwarn\x1b[39m`.
     // Counting the raw literal reported 0 unformatted files next to a red gate,
     // which is exactly the kind of self-contradicting evidence this whole file
@@ -175,7 +193,10 @@ const GATES = [
     fast: true,
     cmd: "pnpm --dir apps/web build",
     timeout: 20 * 60 * 1000,
-    metric: (o, r) => (r.status === 0 ? capture(o, /Compiled successfully in [^\n]+/) ?? "built" : "build failed"),
+    metric: (o, r) =>
+      r.status === 0
+        ? (capture(o, /Compiled successfully in [^\n]+/) ?? "built")
+        : "build failed",
   },
   {
     n: 5,
@@ -196,10 +217,14 @@ const GATES = [
     cmd: "node scripts/verify-evidence.mjs",
     precheck: missing("scripts/verify-evidence.mjs", "W0-B"),
     metric: (o) => {
-      const facts = capture(o, /(\d[\d,]*) facts/)
-      const units = capture(o, /units: ([^\n]+)/)
-      const viol = /no violations/.test(o) ? "no violations" : "violations present"
-      return [facts ? `${facts} facts` : null, units, viol].filter(Boolean).join(" · ")
+      const facts = capture(o, /(\d[\d,]*) facts/);
+      const units = capture(o, /units: ([^\n]+)/);
+      const viol = /no violations/.test(o)
+        ? "no violations"
+        : "violations present";
+      return [facts ? `${facts} facts` : null, units, viol]
+        .filter(Boolean)
+        .join(" · ");
     },
   },
   {
@@ -216,9 +241,9 @@ const GATES = [
     // honest design, but the count belongs in the gate table and not only in a
     // log nobody opens.
     metric: (o) => {
-      const shape = capture(o, /(\d+ paths · \d+ operations[^\n]*)/)
-      const tally = capture(o, /(\d+ pass · \d+ fail · \d+ exempt)/)
-      return [tally, shape].filter(Boolean).join(" · ") || "?"
+      const shape = capture(o, /(\d+ paths · \d+ operations[^\n]*)/);
+      const tally = capture(o, /(\d+ pass · \d+ fail · \d+ exempt)/);
+      return [tally, shape].filter(Boolean).join(" · ") || "?";
     },
   },
   {
@@ -229,18 +254,22 @@ const GATES = [
     fast: true,
     // The two suites are TypeScript with intra-app relative imports, so they
     // need the type-stripping loader W1-B added for exactly this.
-    cmd:
-      'node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs --test "apps/web/lib/repository-base.test.ts" "apps/web/lib/repository-contract.test.ts"',
+    cmd: 'node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs --test "apps/web/lib/repository-base.test.ts" "apps/web/lib/repository-contract.test.ts"',
     precheck: () => {
-      const files = ["apps/web/lib/repository-base.test.ts", "apps/web/lib/repository-contract.test.ts"]
-      const found = files.filter((f) => existsSync(path.join(REPO, f)))
-      return found.length ? null : "no *.test.ts files in the tree"
+      const files = [
+        "apps/web/lib/repository-base.test.ts",
+        "apps/web/lib/repository-contract.test.ts",
+      ];
+      const found = files.filter((f) => existsSync(path.join(REPO, f)));
+      return found.length ? null : "no *.test.ts files in the tree";
     },
     metric: (o) => {
-      const pass = capture(o, /^# pass (\d+)/m)
-      const fail = capture(o, /^# fail (\d+)/m)
-      const tests = capture(o, /^# tests (\d+)/m)
-      return tests ? `${tests} tests · ${pass ?? "?"} pass · ${fail ?? "?"} fail` : "no test count reported"
+      const pass = capture(o, /^# pass (\d+)/m);
+      const fail = capture(o, /^# fail (\d+)/m);
+      const tests = capture(o, /^# tests (\d+)/m);
+      return tests
+        ? `${tests} tests · ${pass ?? "?"} pass · ${fail ?? "?"} fail`
+        : "no test count reported";
     },
   },
   {
@@ -251,12 +280,13 @@ const GATES = [
     cmd: "npx supabase test db",
     timeout: 10 * 60 * 1000,
     precheck: () => {
-      const docker = run("docker info", { timeout: 60_000 })
+      const docker = run("docker info", { timeout: 60_000 });
       if (docker.status !== 0) {
-        return `Docker daemon unavailable (docker info exit ${docker.status ?? "killed"}) — supabase test db needs it`
+        return `Docker daemon unavailable (docker info exit ${docker.status ?? "killed"}) — supabase test db needs it`;
       }
-      if (!existsSync(path.join(REPO, "supabase", "config.toml"))) return "supabase/config.toml missing"
-      return null
+      if (!existsSync(path.join(REPO, "supabase", "config.toml")))
+        return "supabase/config.toml missing";
+      return null;
     },
   },
   {
@@ -334,7 +364,12 @@ const GATES = [
     blocking: true,
     cmd: "pnpm audit --audit-level=high",
     timeout: 5 * 60 * 1000,
-    metric: (o) => capture(o, /(\d+ vulnerabilities found[^\n]*)/, /(No known vulnerabilities found)/) ?? "see output",
+    metric: (o) =>
+      capture(
+        o,
+        /(\d+ vulnerabilities found[^\n]*)/,
+        /(No known vulnerabilities found)/,
+      ) ?? "see output",
   },
   {
     n: 19,
@@ -357,7 +392,7 @@ const GATES = [
     precheck: missing("scripts/csp-probe.mjs", "W-INT"),
     metric: (o) => capture(o, /(\d+ pass · \d+ fail)/) ?? "?",
   },
-]
+];
 
 // ---------------------------------------------------------------------------
 // Gate 16 — bundle budget, measured rather than asserted
@@ -374,15 +409,22 @@ const GATES = [
  * chunk from one budget to the other.
  */
 function bundleBudget() {
-  const manifestPath = path.join(WEB, ".next", "build-manifest.json")
+  const manifestPath = path.join(WEB, ".next", "build-manifest.json");
   if (!existsSync(manifestPath)) {
-    return { state: NOT_RUN, reason: "apps/web/.next/build-manifest.json absent — gate 4 (build) must run first" }
+    return {
+      state: NOT_RUN,
+      reason:
+        "apps/web/.next/build-manifest.json absent — gate 4 (build) must run first",
+    };
   }
-  let manifest
+  let manifest;
   try {
-    manifest = JSON.parse(readFileSync(manifestPath, "utf8"))
+    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   } catch (e) {
-    return { state: NOT_RUN, reason: `build-manifest.json unreadable: ${String(e.message).split("\n")[0]}` }
+    return {
+      state: NOT_RUN,
+      reason: `build-manifest.json unreadable: ${String(e.message).split("\n")[0]}`,
+    };
   }
 
   // Next 16 + `--webpack` emits no `app-build-manifest.json` and prints no
@@ -392,67 +434,92 @@ function bundleBudget() {
   // What this CANNOT see is a chunk pulled in by a runtime dynamic import, so
   // the figure is a floor, not a ceiling. It is labelled as such everywhere it
   // is printed rather than being passed off as the browser's real transfer.
-  const chunkRoot = path.join(WEB, ".next", "static", "chunks")
-  if (!existsSync(chunkRoot)) return { state: NOT_RUN, reason: ".next/static/chunks absent — build output incomplete" }
+  const chunkRoot = path.join(WEB, ".next", "static", "chunks");
+  if (!existsSync(chunkRoot))
+    return {
+      state: NOT_RUN,
+      reason: ".next/static/chunks absent — build output incomplete",
+    };
 
-  const shared = [...(manifest.polyfillFiles ?? []), ...(manifest.rootMainFiles ?? [])].filter((f) => f.endsWith(".js"))
+  const shared = [
+    ...(manifest.polyfillFiles ?? []),
+    ...(manifest.rootMainFiles ?? []),
+  ].filter((f) => f.endsWith(".js"));
 
-  const appChunks = []
+  const appChunks = [];
   const walk = (dir) => {
     for (const entry of readdirSync(dir)) {
-      const abs = path.join(dir, entry)
-      if (statSync(abs).isDirectory()) walk(abs)
-      else if (entry.endsWith(".js")) appChunks.push(abs)
+      const abs = path.join(dir, entry);
+      if (statSync(abs).isDirectory()) walk(abs);
+      else if (entry.endsWith(".js")) appChunks.push(abs);
     }
-  }
-  walk(chunkRoot)
+  };
+  walk(chunkRoot);
 
-  const wanted = [/[\\/]app[\\/]layout-[^\\/]+\.js$/, /[\\/]app[\\/]\[locale\][\\/]layout-[^\\/]+\.js$/, /[\\/]app[\\/]\[locale\][\\/]page-[^\\/]+\.js$/]
-  const routeFiles = appChunks.filter((abs) => wanted.some((re) => re.test(abs)))
+  const wanted = [
+    /[\\/]app[\\/]layout-[^\\/]+\.js$/,
+    /[\\/]app[\\/]\[locale\][\\/]layout-[^\\/]+\.js$/,
+    /[\\/]app[\\/]\[locale\][\\/]page-[^\\/]+\.js$/,
+  ];
+  const routeFiles = appChunks.filter((abs) =>
+    wanted.some((re) => re.test(abs)),
+  );
   if (!routeFiles.length) {
-    return { state: NOT_RUN, reason: "no app/[locale] layout+page chunks found — cannot attribute the landing route" }
+    return {
+      state: NOT_RUN,
+      reason:
+        "no app/[locale] layout+page chunks found — cannot attribute the landing route",
+    };
   }
 
-  const files = [...new Set([...shared.map((f) => path.join(WEB, ".next", f)), ...routeFiles])]
-  const THREE_MARKERS = /WebGLRenderer|THREE\.|react-three|@react-three/
-  let landing3d = 0
-  let landingRest = 0
-  const missingFiles = []
+  const files = [
+    ...new Set([
+      ...shared.map((f) => path.join(WEB, ".next", f)),
+      ...routeFiles,
+    ]),
+  ];
+  const THREE_MARKERS = /WebGLRenderer|THREE\.|react-three|@react-three/;
+  let landing3d = 0;
+  let landingRest = 0;
+  const missingFiles = [];
   for (const abs of files) {
     if (!existsSync(abs)) {
-      missingFiles.push(path.relative(path.join(WEB, ".next"), abs))
-      continue
+      missingFiles.push(path.relative(path.join(WEB, ".next"), abs));
+      continue;
     }
-    const size = gzippedSize(abs)
-    const is3d = THREE_MARKERS.test(readFileSync(abs, "utf8"))
-    if (is3d) landing3d += size
-    else landingRest += size
+    const size = gzippedSize(abs);
+    const is3d = THREE_MARKERS.test(readFileSync(abs, "utf8"));
+    if (is3d) landing3d += size;
+    else landingRest += size;
   }
-  const landingKey = "/[locale] (shared runtime + root layout + locale layout + page)"
+  const landingKey =
+    "/[locale] (shared runtime + root layout + locale layout + page)";
 
   // The 3D chunk is lazy — behind an IntersectionObserver — so it is NOT in the
   // landing entry graph. Measure it wherever it lives so the 260KB line is
   // checked regardless. Identified by CONTENT, never by filename: chunk names
   // are hashes, and a rename must not silently move a chunk between budgets.
-  let lazy3d = 0
-  const lazy3dFiles = []
+  let lazy3d = 0;
+  const lazy3dFiles = [];
   for (const abs of appChunks) {
-    const text = readFileSync(abs, "utf8")
+    const text = readFileSync(abs, "utf8");
     if (THREE_MARKERS.test(text)) {
-      lazy3d += gzipSync(Buffer.from(text), { level: 9 }).length
-      lazy3dFiles.push(path.relative(chunkRoot, abs))
+      lazy3d += gzipSync(Buffer.from(text), { level: 9 }).length;
+      lazy3dFiles.push(path.relative(chunkRoot, abs));
     }
   }
 
-  const LANDING_BUDGET = 250 * 1024
-  const THREE_BUDGET = 260 * 1024
-  const landingOk = landingRest <= LANDING_BUDGET
-  const threeOk = lazy3d <= THREE_BUDGET
+  const LANDING_BUDGET = 250 * 1024;
+  const THREE_BUDGET = 260 * 1024;
+  const landingOk = landingRest <= LANDING_BUDGET;
+  const threeOk = lazy3d <= THREE_BUDGET;
   const detail =
     `landing floor (excl. 3D) ${kb(landingRest)} / 250KB` +
     ` · 3D chunks ${kb(lazy3d)} / 260KB across ${lazy3dFiles.length} file(s)` +
     (landing3d ? ` · ${kb(landing3d)} of 3D sits in the landing graph` : "") +
-    (missingFiles.length ? ` · ${missingFiles.length} chunk(s) absent on disk` : "")
+    (missingFiles.length
+      ? ` · ${missingFiles.length} chunk(s) absent on disk`
+      : "");
 
   return {
     state: landingOk && threeOk ? PASS : FAIL,
@@ -467,7 +534,7 @@ function bundleBudget() {
       `runtime dynamic import are not in the static entry graph and are not counted\n` +
       `here. The authoritative number needs a real navigation under \`next start\`,\n` +
       `which is qa:perf's job — W4-B, never started (gate 14 NOT RUN).\n`,
-  }
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -485,27 +552,40 @@ function bundleBudget() {
  * over it.
  */
 function secretScan() {
-  const problems = []
-  const notes = []
+  const problems = [];
+  const notes = [];
 
-  const tracked = run("git ls-files")
-  if (tracked.status !== 0) return { state: NOT_RUN, reason: "git ls-files failed — not a git worktree?" }
-  const files = tracked.stdout.split(/\r?\n/).filter(Boolean)
+  const tracked = run("git ls-files");
+  if (tracked.status !== 0)
+    return {
+      state: NOT_RUN,
+      reason: "git ls-files failed — not a git worktree?",
+    };
+  const files = tracked.stdout.split(/\r?\n/).filter(Boolean);
 
-  const envTracked = files.filter((f) => /(^|\/)\.env($|\.local$|\..*\.local$)/.test(f))
-  if (envTracked.length) problems.push(`tracked env file(s): ${envTracked.join(", ")}`)
+  const envTracked = files.filter((f) =>
+    /(^|\/)\.env($|\.local$|\..*\.local$)/.test(f),
+  );
+  if (envTracked.length)
+    problems.push(`tracked env file(s): ${envTracked.join(", ")}`);
 
   // The repository is public; sources/ is a competitor's harvested media and raw
   // HTML. `.gitkeep` is the deliberate exception that keeps the directory alive.
   const sourcesTracked = files.filter(
     (f) => /^sources\/(raw|media)\//.test(f) && !f.endsWith(".gitkeep"),
-  )
+  );
   if (sourcesTracked.length) {
-    problems.push(`${sourcesTracked.length} tracked file(s) under sources/raw|media — this repo is public`)
+    problems.push(
+      `${sourcesTracked.length} tracked file(s) under sources/raw|media — this repo is public`,
+    );
   }
 
-  const binaryTracked = files.filter((f) => /\.(avif|webp|jpe?g|png|mp4|pdf)$/i.test(f) && f.startsWith("sources/"))
-  if (binaryTracked.length) problems.push(`${binaryTracked.length} tracked competitor media binaries`)
+  const binaryTracked = files.filter(
+    (f) =>
+      /\.(avif|webp|jpe?g|png|mp4|pdf)$/i.test(f) && f.startsWith("sources/"),
+  );
+  if (binaryTracked.length)
+    problems.push(`${binaryTracked.length} tracked competitor media binaries`);
 
   // Exactly CI's alternation, and exactly CI's exclusions — but assembled from
   // fragments rather than written as one literal. Written whole, this file would
@@ -518,22 +598,25 @@ function secretScan() {
     "ATATT" + "3xFfGF",
     "sk-[a-f0-9]{24,}",
     "-----BEGIN [A-Z ]*PRIVATE" + " KEY-----",
-  ].join("|")
+  ].join("|");
   const grep = run(
     `git grep -nIE "${pattern}" -- . ":(exclude).github/workflows/*" ":(exclude).githooks/*"`,
-  )
+  );
   // git grep: 0 = matches found, 1 = none, >1 = error.
   if (grep.status === 0) {
-    problems.push(`secret-shaped string(s):\n${grep.stdout.trim()}`)
+    problems.push(`secret-shaped string(s):\n${grep.stdout.trim()}`);
   } else if (grep.status !== 1) {
-    return { state: NOT_RUN, reason: `git grep failed with status ${grep.status}` }
+    return {
+      state: NOT_RUN,
+      reason: `git grep failed with status ${grep.status}`,
+    };
   }
 
   notes.push(
     "CI's pattern set is the one implemented here. .githooks/pre-commit additionally matches " +
       "postgres URLs and scans only the staged diff, so 'the hook passed' and 'CI will pass' are " +
       "not the same statement (W-INT §9, unreconciled).",
-  )
+  );
 
   return {
     state: problems.length ? FAIL : PASS,
@@ -541,29 +624,32 @@ function secretScan() {
       ? `${problems.length} problem(s)`
       : `${files.length} tracked files · 0 env · 0 sources/raw|media · 0 secret-shaped`,
     output: [...problems, ...notes].join("\n") + "\n",
-  }
+  };
 }
 
 // ---------------------------------------------------------------------------
 // Execute
 // ---------------------------------------------------------------------------
 
-const selected = FAST ? GATES.filter((g) => g.fast) : GATES
-const results = []
+const selected = FAST ? GATES.filter((g) => g.fast) : GATES;
+const results = [];
 
 for (const gate of selected) {
-  const label = `[${String(gate.n).padStart(2)}/${GATES.length}] ${gate.name}`
-  if (!AS_JSON) process.stdout.write(`${label} … `)
+  const label = `[${String(gate.n).padStart(2)}/${GATES.length}] ${gate.name}`;
+  if (!AS_JSON) process.stdout.write(`${label} … `);
 
-  let result
+  let result;
 
   if (gate.custom) {
-    const started = Date.now()
-    let r
+    const started = Date.now();
+    let r;
     try {
-      r = gate.custom()
+      r = gate.custom();
     } catch (e) {
-      r = { state: FAIL, reason: `gate threw: ${String(e.message).split("\n")[0]}` }
+      r = {
+        state: FAIL,
+        reason: `gate threw: ${String(e.message).split("\n")[0]}`,
+      };
     }
     result = {
       ...gate,
@@ -574,9 +660,9 @@ for (const gate of selected) {
       exitCode: null,
       command: "(in-process)",
       output: r.output ?? "",
-    }
+    };
   } else {
-    const reason = gate.precheck ? gate.precheck() : null
+    const reason = gate.precheck ? gate.precheck() : null;
     if (reason) {
       result = {
         ...gate,
@@ -587,10 +673,10 @@ for (const gate of selected) {
         exitCode: null,
         command: gate.cmd,
         output: "",
-      }
+      };
     } else {
-      const r = run(gate.cmd, { timeout: gate.timeout ?? DEFAULT_TIMEOUT_MS })
-      const state = r.timedOut ? FAIL : r.status === 0 ? PASS : FAIL
+      const r = run(gate.cmd, { timeout: gate.timeout ?? DEFAULT_TIMEOUT_MS });
+      const state = r.timedOut ? FAIL : r.status === 0 ? PASS : FAIL;
       result = {
         ...gate,
         state,
@@ -602,21 +688,28 @@ for (const gate of selected) {
         exitCode: r.status,
         command: gate.cmd,
         output: r.combined,
-      }
+      };
     }
   }
 
-  results.push(result)
+  results.push(result);
   if (!AS_JSON) {
-    const tag = result.state === PASS ? "PASS" : result.state === FAIL ? "FAIL" : "NOT RUN"
-    process.stdout.write(`${tag}${result.metric ? ` — ${result.metric}` : ""}${result.reason ? ` — ${result.reason}` : ""}\n`)
+    const tag =
+      result.state === PASS
+        ? "PASS"
+        : result.state === FAIL
+          ? "FAIL"
+          : "NOT RUN";
+    process.stdout.write(
+      `${tag}${result.metric ? ` — ${result.metric}` : ""}${result.reason ? ` — ${result.reason}` : ""}\n`,
+    );
   }
 }
 
-const blocking = results.filter((r) => r.blocking)
-const failed = blocking.filter((r) => r.state === FAIL)
-const notRun = blocking.filter((r) => r.state === NOT_RUN)
-const passed = blocking.filter((r) => r.state === PASS)
+const blocking = results.filter((r) => r.blocking);
+const failed = blocking.filter((r) => r.state === FAIL);
+const notRun = blocking.filter((r) => r.state === NOT_RUN);
+const passed = blocking.filter((r) => r.state === PASS);
 
 const summary = {
   generatedAt: new Date().toISOString(),
@@ -645,45 +738,57 @@ const summary = {
     durationMs: r.durationMs,
     command: r.command,
   })),
-}
+};
 
-const exitCode = failed.length > 0 ? 1 : notRun.length > 0 ? 2 : 0
-summary.exitCode = exitCode
+const exitCode = failed.length > 0 ? 1 : notRun.length > 0 ? 2 : 0;
+summary.exitCode = exitCode;
 summary.verdict =
   exitCode === 0
     ? "all blocking gates passed"
     : exitCode === 1
       ? `${failed.length} blocking gate(s) FAILED`
-      : `${notRun.length} blocking gate(s) NOT RUN — cannot certify`
+      : `${notRun.length} blocking gate(s) NOT RUN — cannot certify`;
 
 if (OUT) {
-  const abs = path.isAbsolute(OUT) ? OUT : path.join(REPO, OUT)
-  mkdirSync(path.dirname(abs), { recursive: true })
-  writeFileSync(abs, JSON.stringify({ ...summary, outputs: Object.fromEntries(results.map((r) => [r.key, r.output])) }, null, 2))
+  const abs = path.isAbsolute(OUT) ? OUT : path.join(REPO, OUT);
+  mkdirSync(path.dirname(abs), { recursive: true });
+  writeFileSync(
+    abs,
+    JSON.stringify(
+      {
+        ...summary,
+        outputs: Object.fromEntries(results.map((r) => [r.key, r.output])),
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 if (AS_JSON) {
-  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`)
+  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
 } else {
-  const w = { n: 3, name: 34, state: 8, metric: 60 }
-  process.stdout.write(`\n${"─".repeat(112)}\n`)
+  const w = { n: 3, name: 34, state: 8, metric: 60 };
+  process.stdout.write(`\n${"─".repeat(112)}\n`);
   process.stdout.write(
     `${"#".padEnd(w.n)} ${"Gate".padEnd(w.name)} ${"State".padEnd(w.state)} ${"Exit".padEnd(5)} Evidence / reason\n`,
-  )
-  process.stdout.write(`${"─".repeat(112)}\n`)
+  );
+  process.stdout.write(`${"─".repeat(112)}\n`);
   for (const r of results) {
-    const ev = (r.metric ?? r.reason ?? "").slice(0, w.metric)
+    const ev = (r.metric ?? r.reason ?? "").slice(0, w.metric);
     process.stdout.write(
       `${String(r.n).padEnd(w.n)} ${(r.name + (r.blocking ? "" : " (non-blocking)")).slice(0, w.name).padEnd(w.name)} ` +
         `${r.state.padEnd(w.state)} ${String(r.exitCode ?? "-").padEnd(5)} ${ev}\n`,
-    )
+    );
   }
-  process.stdout.write(`${"─".repeat(112)}\n`)
+  process.stdout.write(`${"─".repeat(112)}\n`);
   process.stdout.write(
     `blocking: ${passed.length} PASS · ${failed.length} FAIL · ${notRun.length} NOT RUN` +
       `   (non-blocking: ${results.filter((r) => !r.blocking).length})\n`,
-  )
-  process.stdout.write(`verdict : ${summary.verdict}\nexit    : ${exitCode}  (0=certifiable 1=failed 2=cannot certify)\n`)
+  );
+  process.stdout.write(
+    `verdict : ${summary.verdict}\nexit    : ${exitCode}  (0=certifiable 1=failed 2=cannot certify)\n`,
+  );
 }
 
-process.exit(exitCode)
+process.exit(exitCode);

@@ -89,10 +89,11 @@ const CHROMIUM = installedChromium()
 if (CHROMIUM === undefined) {
   console.warn(
     "[playwright.config] No installed Chromium found; falling back to Playwright's own resolution. " +
-      "If every test fails at launch, run `npx playwright install chromium`.",
+      "If every test fails at launch, run `npx playwright install chromium`."
   )
 }
-const launch = CHROMIUM === undefined ? {} : { launchOptions: { executablePath: CHROMIUM } }
+const launch =
+  CHROMIUM === undefined ? {} : { launchOptions: { executablePath: CHROMIUM } }
 
 const DEV_PORT = 3200
 const PROD_PORT = 3201
@@ -116,7 +117,10 @@ export default defineConfig({
   workers: process.env["CI"] ? 2 : 4,
   reporter: [
     ["list"],
-    ["json", { outputFile: join(HERE, "..", "..", "quality", "e2e", "results.json") }],
+    [
+      "json",
+      { outputFile: join(HERE, "..", "..", "quality", "e2e", "results.json") },
+    ],
   ],
   outputDir: join(TMP, "playwright-artifacts"),
 
@@ -132,7 +136,11 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 }, ...launch },
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 900 },
+        ...launch,
+      },
       testIgnore: /production\//,
     },
     {

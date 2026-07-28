@@ -54,7 +54,7 @@ function CardTitle({ className, ...props }: ComponentProps<"h3">) {
     <h3
       data-slot="card-title"
       className={cn(
-        "font-display text-lg font-semibold leading-tight tracking-[-0.015em]",
+        "font-display text-lg leading-tight font-semibold tracking-[-0.015em]",
         className
       )}
       {...props}

@@ -1,4 +1,4 @@
-# HANDOFF — W2-D  Realtime, sync, offline posture
+# HANDOFF — W2-D Realtime, sync, offline posture
 
 STATUS: PARTIAL
 Completed: 2026-07-27
@@ -36,20 +36,20 @@ not be one.
 
 ```ts
 export function useLiveSnapshot<T>(config: {
-  fetcher: () => Promise<RepositoryResult<T>>
-  channels?: readonly RealtimeChannelConfig[]   // default []
-  pollIntervalMs?: number                       // default 30_000
-  enabled?: boolean                             // default true
-  channelName?: string                          // default "live-snapshot"
+  fetcher: () => Promise<RepositoryResult<T>>;
+  channels?: readonly RealtimeChannelConfig[]; // default []
+  pollIntervalMs?: number; // default 30_000
+  enabled?: boolean; // default true
+  channelName?: string; // default "live-snapshot"
 }): {
-  data: T | null
-  source: "supabase" | "local-seed" | null
-  mode: "realtime" | "polling" | "static" | "offline"
-  lastUpdated: string | null      // the server's RepositoryResult.fetchedAt
-  error: ApiError | null
-  isStale: boolean
-  refresh: () => Promise<void>
-}
+  data: T | null;
+  source: "supabase" | "local-seed" | null;
+  mode: "realtime" | "polling" | "static" | "offline";
+  lastUpdated: string | null; // the server's RepositoryResult.fetchedAt
+  error: ApiError | null;
+  isStale: boolean;
+  refresh: () => Promise<void>;
+};
 ```
 
 Typical use, from a dashboard surface:
@@ -90,7 +90,7 @@ probe asserts the two lists are identical:
 
 Realtime does **not** bypass RLS — a subscriber receives only rows its policies already allow it
 to SELECT — so publishing a table does not widen access. What it does change is the failure mode:
-a policy bug on a published table leaks *continuously* rather than on request. That is why the
+a policy bug on a published table leaks _continuously_ rather than on request. That is why the
 list is short and why finance and documents are off it.
 
 **A realtime payload is never read.** `onChange` takes no argument. A change event means "refetch",
@@ -110,13 +110,13 @@ replay a buffered queue, showing a sequence of intermediate states that never ex
 /^\/(de|en|tr|ru)\/report(\/|$)/        /^\/auth(\/|$)/
 ```
 
-| Class | Strategy |
-|---|---|
-| any non-`GET` | **never** |
-| cross-origin | **never** |
-| any path matching the deny-list | **never** |
-| `/_next/static/**`, `/fonts/**`, `/media/**` | cache-first |
-| everything else | network-first, cached only on a successful navigation |
+| Class                                        | Strategy                                              |
+| -------------------------------------------- | ----------------------------------------------------- |
+| any non-`GET`                                | **never**                                             |
+| cross-origin                                 | **never**                                             |
+| any path matching the deny-list              | **never**                                             |
+| `/_next/static/**`, `/fonts/**`, `/media/**` | cache-first                                           |
+| everything else                              | network-first, cached only on a successful navigation |
 
 `/_next/image?...` is deliberately **network-first**, not cache-first: the URL carries no build
 hash, so a cached copy could outlive the deploy that produced it.
@@ -140,7 +140,7 @@ PASS  /de/hotel/dashboard-tour is NOT treated as protected
 ```
 
 This is a stronger proof than enumerating one runtime cache would be: it exercises the predicate
-that *decides* what enters the cache, over the whole class of inputs, rather than sampling one
+that _decides_ what enters the cache, over the whole class of inputs, rather than sampling one
 browser's cache after one session.
 
 **The service worker's copy cannot drift.** `public/sw.js` cannot import an application module, so
@@ -166,8 +166,8 @@ no `periodicsync` handler and no IndexedDB usage.
 
 `nextBackoffDelay(attempt, random)` — base 1 s, doubling, ±25 % jitter, hard cap 30 s.
 
-| attempt | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|---|---|
+| attempt     | 0     | 1     | 2     | 3     | 4      | 5      | 6      | 7      | 8      |
+| ----------- | ----- | ----- | ----- | ----- | ------ | ------ | ------ | ------ | ------ |
 | un-jittered | 1 000 | 2 000 | 4 000 | 8 000 | 16 000 | 30 000 | 30 000 | 30 000 | 30 000 |
 
 ```
@@ -188,25 +188,25 @@ endpoint down.
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | `tsc --noEmit`, no output, exit 0 |
-| `npx eslint hooks components/sync-badge.tsx components/connection-banner.tsx lib/realtime.ts lib/pwa.ts app/manifest.ts` | **PASS** | no output, exit 0 |
-| `node … scripts/realtime-probe.mts` | **PASS** | `OK  93 pass · 0 fail`, exit 0 |
+| Command                                                                                                                  | Result   | Evidence                          |
+| ------------------------------------------------------------------------------------------------------------------------ | -------- | --------------------------------- |
+| `pnpm --dir apps/web typecheck`                                                                                          | **PASS** | `tsc --noEmit`, no output, exit 0 |
+| `npx eslint hooks components/sync-badge.tsx components/connection-banner.tsx lib/realtime.ts lib/pwa.ts app/manifest.ts` | **PASS** | no output, exit 0                 |
+| `node … scripts/realtime-probe.mts`                                                                                      | **PASS** | `OK  93 pass · 0 fail`, exit 0    |
 
 ### The brief's nine checks
 
-| # | Check | Status |
-|---|---|---|
-| 1 | Realtime configured → `mode: "realtime"` | **PASS** — `resolveLiveMode` asserted |
-| 2 | Realtime killed mid-session → `polling` | **PASS** for the decision (`error`, `closed`, `subscribing` all → `polling`). **NOT RUN** as a live socket drop. |
-| 3 | Supabase unconfigured → `static`, **zero requests** | **PASS** — `shouldPoll("static") === false`, and exactly one of the four modes polls |
-| 4 | `navigator.onLine = false` → `offline`, last-updated preserved | **PASS** — offline outranks every other mode; `lastUpdated` is held in state and never cleared on failure |
-| 5 | 40 rapid updates → **one** re-render | **PASS** — 40 signals, 40 timer resets, exactly 1 run; a later burst runs again |
-| 6 | Unmount → all channels closed | **PARTIAL.** `cancel()` dropping pending work is asserted; the `supabase.removeChannel` call is in the effect cleanup and is **NOT RUN** — it needs a live client |
-| 7 | Optimistic update + forced error → exact prior state | **PASS** — restored by value, and the restored array is a copy, not the caller's reference |
-| 8 | SW caches **no** `/dashboard/*` URL | **PASS** — 15 protected URLs, 3 near-misses, non-GET, cross-origin, unparseable; plus the sw.js drift guard |
-| 9 | Reconnect backoff grows and caps at 30 s | **PASS** — table above |
+| #   | Check                                                          | Status                                                                                                                                                            |
+| --- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Realtime configured → `mode: "realtime"`                       | **PASS** — `resolveLiveMode` asserted                                                                                                                             |
+| 2   | Realtime killed mid-session → `polling`                        | **PASS** for the decision (`error`, `closed`, `subscribing` all → `polling`). **NOT RUN** as a live socket drop.                                                  |
+| 3   | Supabase unconfigured → `static`, **zero requests**            | **PASS** — `shouldPoll("static") === false`, and exactly one of the four modes polls                                                                              |
+| 4   | `navigator.onLine = false` → `offline`, last-updated preserved | **PASS** — offline outranks every other mode; `lastUpdated` is held in state and never cleared on failure                                                         |
+| 5   | 40 rapid updates → **one** re-render                           | **PASS** — 40 signals, 40 timer resets, exactly 1 run; a later burst runs again                                                                                   |
+| 6   | Unmount → all channels closed                                  | **PARTIAL.** `cancel()` dropping pending work is asserted; the `supabase.removeChannel` call is in the effect cleanup and is **NOT RUN** — it needs a live client |
+| 7   | Optimistic update + forced error → exact prior state           | **PASS** — restored by value, and the restored array is a copy, not the caller's reference                                                                        |
+| 8   | SW caches **no** `/dashboard/*` URL                            | **PASS** — 15 protected URLs, 3 near-misses, non-GET, cross-origin, unparseable; plus the sw.js drift guard                                                       |
+| 9   | Reconnect backoff grows and caps at 30 s                       | **PASS** — table above                                                                                                                                            |
 
 **NOT RUN, and why:**
 
@@ -229,11 +229,11 @@ endpoint down.
 
 ## Contracts I consumed
 
-| Contract | Fitted? |
-|---|---|
-| §4 `RepositoryResult<T>` | Yes — `useLiveSnapshot` is generic over it, so it works with any W2-A repository without importing one. |
-| §5 `ApiResponse` / `ApiError` | Yes, in `useOptimisticMutation`. |
-| §7 `Locale` | Yes, in the badge and banner. |
+| Contract                      | Fitted?                                                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| §4 `RepositoryResult<T>`      | Yes — `useLiveSnapshot` is generic over it, so it works with any W2-A repository without importing one. |
+| §5 `ApiResponse` / `ApiError` | Yes, in `useOptimisticMutation`.                                                                        |
+| §7 `Locale`                   | Yes, in the badge and banner.                                                                           |
 
 **No contract needed amending. `CONTRACT_VERSION` stays 1.**
 
@@ -277,7 +277,7 @@ app whose entry point is a 307 shows a blank frame for that round trip on every 
 
 **`scope` is `/`.** A narrower scope sounds safer and is the opposite: an uncontrolled path falls
 through to the browser's ordinary HTTP cache, which this code cannot govern at all. The worker
-needs control of the whole origin in order to *refuse*.
+needs control of the whole origin in order to _refuse_.
 
 **`offline.html` uses a link, not a button with `onclick`.** CONVENTIONS §4 forbids
 `unsafe-inline` in `script-src`, and an inline event-handler attribute is blocked by exactly that
@@ -292,13 +292,13 @@ half-filled form.
 
 ## Requests for other windows
 
-| File | Owner | What is needed |
-|---|---|---|
-| `apps/web/app/layout.tsx` | **W0-A** | register the service worker, and link the manifest. Next emits `/manifest.webmanifest` from `app/manifest.ts` automatically, but the worker needs one line: `navigator.serviceWorker.register("/sw.js")` behind a `"serviceWorker" in navigator` guard, in a client component. **Do not register it before W4-A has an e2e test for the cache boundary** — an unregistered worker caches nothing, which is the safe default. |
-| `package.json` | **W0-A** | `"qa:realtime": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/realtime-probe.mts"`. Third of three; see also `smoke:rbac` (W1-B) and `qa:ai-probe` (W2-C). |
-| `apps/web/e2e/*` | **W4-A** | the three runtime checks named above: channel teardown on unmount, a live socket drop, and a Cache Storage enumeration asserting no `/dashboard` key. The last is a **privacy control** and deserves a dedicated spec. |
-| `apps/web/public/media/*` | **W0-D** | PWA icons (192, 512, maskable). `app/manifest.ts` currently ships `favicon.ico` only — an entry pointing at a missing file fails installability silently, so the list is sparse on purpose. |
-| dashboard surfaces | **W3-B … W3-G** | render `<SyncBadge>` on every live data surface and `<ConnectionBanner>` once per page. A surface that shows data with no mode indicator is the failure this task was written to prevent. |
+| File                      | Owner           | What is needed                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/app/layout.tsx` | **W0-A**        | register the service worker, and link the manifest. Next emits `/manifest.webmanifest` from `app/manifest.ts` automatically, but the worker needs one line: `navigator.serviceWorker.register("/sw.js")` behind a `"serviceWorker" in navigator` guard, in a client component. **Do not register it before W4-A has an e2e test for the cache boundary** — an unregistered worker caches nothing, which is the safe default. |
+| `package.json`            | **W0-A**        | `"qa:realtime": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/realtime-probe.mts"`. Third of three; see also `smoke:rbac` (W1-B) and `qa:ai-probe` (W2-C).                                                                                                                                                                                                                             |
+| `apps/web/e2e/*`          | **W4-A**        | the three runtime checks named above: channel teardown on unmount, a live socket drop, and a Cache Storage enumeration asserting no `/dashboard` key. The last is a **privacy control** and deserves a dedicated spec.                                                                                                                                                                                                       |
+| `apps/web/public/media/*` | **W0-D**        | PWA icons (192, 512, maskable). `app/manifest.ts` currently ships `favicon.ico` only — an entry pointing at a missing file fails installability silently, so the list is sparse on purpose.                                                                                                                                                                                                                                  |
+| dashboard surfaces        | **W3-B … W3-G** | render `<SyncBadge>` on every live data surface and `<ConnectionBanner>` once per page. A surface that shows data with no mode indicator is the failure this task was written to prevent.                                                                                                                                                                                                                                    |
 
 ---
 

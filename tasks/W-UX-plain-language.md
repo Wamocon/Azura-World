@@ -47,19 +47,19 @@ proof belongs in the kitchen-sink route, not on the dashboard home.
 Rewrite in all four locales. **German is authoritative**; en/tr/ru follow its meaning, not its
 word order.
 
-| Now | Should be (de) | Why |
-|---|---|---|
-| `DataTable — 656 Zeilen` | `Wohnungen` + `656 Einheiten` | Nobody outside engineering says "rows" |
-| `Nur Entwicklung. Synthetische Zeilen…` | *(delete)* | Dev note |
-| `virtualisiert ab 100` | *(delete)* | Implementation detail |
-| `ready / loading / empty / error` | *(delete)* | State names |
-| `modelliert` | `Preis nicht von der Quelle bestätigt` | Say what it means |
-| `Nicht belegt` | `Keine Angabe` | "Belegt" reads as *occupied* to a property manager |
-| `Beleg-Cockpit` | `Quellen und Nachweise` | "Cockpit" is internal jargon |
-| `deals` | `Abschlüsse` | Untranslated English among German labels |
-| `QA · Administrator` | `Administrator` | QA is our word |
-| `AZW-B01-0001` as the primary label | `Block B01 · Wohnung 1`, ID small and secondary | The ID is for us; the location is for them |
-| `Demo-Daten` | `Beispieldaten` | Keep the honesty, drop the jargon |
+| Now                                     | Should be (de)                                  | Why                                                |
+| --------------------------------------- | ----------------------------------------------- | -------------------------------------------------- |
+| `DataTable — 656 Zeilen`                | `Wohnungen` + `656 Einheiten`                   | Nobody outside engineering says "rows"             |
+| `Nur Entwicklung. Synthetische Zeilen…` | _(delete)_                                      | Dev note                                           |
+| `virtualisiert ab 100`                  | _(delete)_                                      | Implementation detail                              |
+| `ready / loading / empty / error`       | _(delete)_                                      | State names                                        |
+| `modelliert`                            | `Preis nicht von der Quelle bestätigt`          | Say what it means                                  |
+| `Nicht belegt`                          | `Keine Angabe`                                  | "Belegt" reads as _occupied_ to a property manager |
+| `Beleg-Cockpit`                         | `Quellen und Nachweise`                         | "Cockpit" is internal jargon                       |
+| `deals`                                 | `Abschlüsse`                                    | Untranslated English among German labels           |
+| `QA · Administrator`                    | `Administrator`                                 | QA is our word                                     |
+| `AZW-B01-0001` as the primary label     | `Block B01 · Wohnung 1`, ID small and secondary | The ID is for us; the location is for them         |
+| `Demo-Daten`                            | `Beispieldaten`                                 | Keep the honesty, drop the jargon                  |
 
 **`In Arbeit` appears on 15+ nav items.** That is not information, it is noise, and it makes the
 product look unfinished on first impression. Either group unfinished modules under one quiet
@@ -83,6 +83,7 @@ Rewrite that rule in the skill file as part of this task. Use `Keine Angabe` (de
 `Not stated` (en), `Belirtilmemiş` (tr), `Нет данных` (ru).
 
 Rules for the rewrite:
+
 - No em dashes. Use a full stop and a new sentence, or a comma, or brackets.
 - No `·` as a sentence connector in prose. It is fine as a separator in dense metadata rows.
 - Short sentences. One idea each.
@@ -96,7 +97,7 @@ Rules for the rewrite:
 Walk every task an end user actually performs and count the clicks and the moments of doubt.
 
 - **Empty states must say what to do next**, not just that something is empty. `Es liegen noch
-  keine Belege vor.` tells the user nothing actionable.
+keine Belege vor.` tells the user nothing actionable.
 - **Errors must say what happened and what to do.** No codes, no `503`, no `SQLSTATE`.
 - Every destructive action confirms, and names what is affected. Every long action shows progress.
 - The search placeholder currently reads `Suchen … (Strg + K)` **and** shows a `Strg + K` chip.
@@ -130,7 +131,7 @@ button.**
 ## 6. What must NOT get lost
 
 Friendlier must not mean vaguer. The honesty controls are the product, and plain language makes
-them *stronger*, not weaker:
+them _stronger_, not weaker:
 
 - A modelled unit is still unmistakably not a real listing. `Preis nicht von der Quelle bestätigt`
   is clearer than `modelliert`, not softer.

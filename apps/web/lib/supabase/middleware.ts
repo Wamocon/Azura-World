@@ -77,7 +77,8 @@ export async function updateSession(
     const subject = data?.claims?.sub
     return {
       response,
-      isAuthenticated: error === null && typeof subject === "string" && subject.length > 0,
+      isAuthenticated:
+        error === null && typeof subject === "string" && subject.length > 0,
     }
   } catch {
     // A network failure, an expired refresh token or a malformed cookie all land

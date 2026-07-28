@@ -32,7 +32,11 @@ import {
   consumeRequestRateLimit,
   trustedClientAddress,
 } from "@/lib/ai-rate-limit"
-import { apiFail, readBoundedJson, requiresJsonContentType } from "@/lib/ai-http"
+import {
+  apiFail,
+  readBoundedJson,
+  requiresJsonContentType,
+} from "@/lib/ai-http"
 import {
   MAX_PUBLIC_MESSAGE_CHARS,
   PUBLIC_MAX_BODY_BYTES,

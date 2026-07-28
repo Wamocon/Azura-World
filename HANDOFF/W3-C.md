@@ -1,4 +1,4 @@
-# HANDOFF — W3-C  Inventory, evidence cockpit, leads, buyer pipeline
+# HANDOFF — W3-C Inventory, evidence cockpit, leads, buyer pipeline
 
 STATUS: PARTIAL
 Completed: 2026-07-28
@@ -18,14 +18,14 @@ explicit — do not build a table until it is.
 
 ## 1. What was built
 
-| File | What it is |
-|---|---|
-| `components/inventory/price-conflict-ladder.tsx` | The signature: one axis per currency, never joined |
+| File                                               | What it is                                                |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| `components/inventory/price-conflict-ladder.tsx`   | The signature: one axis per currency, never joined        |
 | `components/inventory/price-observation-table.tsx` | The record — every observation as text, with its citation |
-| `components/inventory/price-conflict-panel.tsx` | Composes judgement → shape → record → resolution |
-| `app/[locale]/dashboard/evidence/page.tsx` | The cockpit route, F-002 first |
-| `scripts/evidence-review.mjs` | 40 assertions in Chromium; screenshots to `quality/w3c/` |
-| `apps/web/messages/{de,en,tr,ru}.json` | +49 keys under `dashboard.evidence.*` (see §7) |
+| `components/inventory/price-conflict-panel.tsx`    | Composes judgement → shape → record → resolution          |
+| `app/[locale]/dashboard/evidence/page.tsx`         | The cockpit route, F-002 first                            |
+| `scripts/evidence-review.mjs`                      | 40 assertions in Chromium; screenshots to `quality/w3c/`  |
+| `apps/web/messages/{de,en,tr,ru}.json`             | +49 keys under `dashboard.evidence.*` (see §7)            |
 
 ### The design, and why it is this
 
@@ -36,7 +36,7 @@ seen the evidence rather than being told it first.
 
 **One rail per currency, and they are never joined.** EUR 112.000–310.000 across three publishers
 sits on its own axis; Housearch's USD figures sit on another; between them a dashed separator
-reads *"nicht vergleichbar · keine Umrechnung"*. Joining them would need a rate and a rate date
+reads _"nicht vergleichbar · keine Umrechnung"_. Joining them would need a rate and a rate date
 that no source provides, and CONVENTIONS §5 forbids exactly that. The incommensurability is not a
 footnote here — it is the layout.
 
@@ -57,7 +57,7 @@ here more than usual, given W-INT §4.
 
 `tasks/W3-C-modules-inventory.md` deliverables 2, 3 and 4 — the 656-unit table, the portal
 listings, leads and the pipeline — are all **"virtualised table via W3-B's `data-table`"**. The
-instruction for this window was: *"Do NOT build any table until `HANDOFF/W3-B.md` publishes it."*
+instruction for this window was: _"Do NOT build any table until `HANDOFF/W3-B.md` publishes it."_
 
 That file does not exist. `D:\azura-w3b` is on the same commit as this worktree and has published
 nothing. Building a table against a guessed API would produce work that either has to be thrown
@@ -71,32 +71,32 @@ counts and distributions, not rows — and it is the obvious next piece of work.
 
 ## 3. Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | `tsc --noEmit`, no output, exit 0 |
-| `pnpm --dir apps/web lint` | **PASS** | 0 errors, 0 warnings, exit 0 |
-| `pnpm --dir apps/web build` | **PASS** | exit 0; `├ ƒ /[locale]/dashboard/evidence` — **dynamic**, as W-INT §8 requires |
-| `node scripts/check-i18n.mjs` | **PASS** | 625 keys × 4 locales, identical key sets, 0 errors 0 warnings |
-| `node scripts/csp-probe.mjs` (`qa:csp`) | **PASS** | **21 pass · 0 fail**, exit 0, on a production build with this route present |
-| `node scripts/evidence-review.mjs` | **PASS** | **100 pass · 0 fail**, exit 0, real Chromium |
+| Command                                 | Result   | Evidence                                                                       |
+| --------------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| `pnpm --dir apps/web typecheck`         | **PASS** | `tsc --noEmit`, no output, exit 0                                              |
+| `pnpm --dir apps/web lint`              | **PASS** | 0 errors, 0 warnings, exit 0                                                   |
+| `pnpm --dir apps/web build`             | **PASS** | exit 0; `├ ƒ /[locale]/dashboard/evidence` — **dynamic**, as W-INT §8 requires |
+| `node scripts/check-i18n.mjs`           | **PASS** | 625 keys × 4 locales, identical key sets, 0 errors 0 warnings                  |
+| `node scripts/csp-probe.mjs` (`qa:csp`) | **PASS** | **21 pass · 0 fail**, exit 0, on a production build with this route present    |
+| `node scripts/evidence-review.mjs`      | **PASS** | **100 pass · 0 fail**, exit 0, real Chromium                                   |
 
 Screenshots in `quality/w3c/`: `evidence-f002-de-light.png`, `-de-dark.png`, `-de-320.png`,
 `-en-light.png`.
 
 ### The acceptance criteria, individually
 
-| # | Brief's requirement | Result |
-|---|---|---|
-| 2 | F-002 rendered: all four competing 1+1 prices with publisher, date, URL, USD shown as USD | **PASS** — asserted individually: 112.000 €, 185.000 €, 220.000 €, 239.171 $ all present as text; `$`/USD present; five publishers named |
-| — | Two currencies, two axes, no conversion | **PASS** — 2 rails, 1 per currency, separator text asserted |
-| — | Stale badge **next to the price**, not in a footnote | **PASS** — 8 stale rows, badge in the price cell in 8/8 |
-| — | Stale distinguishable without colour | **PASS** — 8px dashed hollow vs 4px solid; a shape difference |
-| — | Provenance never hover-only | **PASS** — ladder `aria-hidden`, 21 table rows, 21 rows with an outbound link |
-| — | Tap targets ≥ 24px | **PASS** — 0 violations |
-| — | 320px German, no horizontal scroll | **PASS** — `scrollWidth=320 clientWidth=320` (see §5) |
-| — | Reduced motion → complete, static page | **PASS** — 0 elements left at `opacity: 0`; every figure still present |
-| — | Both themes | **PASS** — light and dark screenshotted |
-| — | German **and** English | **PASS** — English asserted to be actually English, not a German fallback |
+| #   | Brief's requirement                                                                       | Result                                                                                                                                   |
+| --- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 2   | F-002 rendered: all four competing 1+1 prices with publisher, date, URL, USD shown as USD | **PASS** — asserted individually: 112.000 €, 185.000 €, 220.000 €, 239.171 $ all present as text; `$`/USD present; five publishers named |
+| —   | Two currencies, two axes, no conversion                                                   | **PASS** — 2 rails, 1 per currency, separator text asserted                                                                              |
+| —   | Stale badge **next to the price**, not in a footnote                                      | **PASS** — 8 stale rows, badge in the price cell in 8/8                                                                                  |
+| —   | Stale distinguishable without colour                                                      | **PASS** — 8px dashed hollow vs 4px solid; a shape difference                                                                            |
+| —   | Provenance never hover-only                                                               | **PASS** — ladder `aria-hidden`, 21 table rows, 21 rows with an outbound link                                                            |
+| —   | Tap targets ≥ 24px                                                                        | **PASS** — 0 violations                                                                                                                  |
+| —   | 320px German, no horizontal scroll                                                        | **PASS** — `scrollWidth=320 clientWidth=320` (see §5)                                                                                    |
+| —   | Reduced motion → complete, static page                                                    | **PASS** — 0 elements left at `opacity: 0`; every figure still present                                                                   |
+| —   | Both themes                                                                               | **PASS** — light and dark screenshotted                                                                                                  |
+| —   | German **and** English                                                                    | **PASS** — English asserted to be actually English, not a German fallback                                                                |
 
 ### NOT RUN
 
@@ -119,16 +119,16 @@ disqualifies most motion here — an analyst opens the evidence cockpit repeated
 animation reads as lag, not luxury. So the budget went where it compounds on a data surface:
 material, type, and exactly one motion moment.
 
-| Change | Why |
-|---|---|
-| The ladder sits in a **recessed well** (`bg-background/50`, inset border) rather than flat on the card | One level of layering is what separates "a page with a chart on it" from an instrument. It also groups the two rails and their separator into a single object the eye reads as one comparison. |
-| **Two shadows** on the panel — a 1px contact shadow plus a wide, very soft ambient one | apple-design §12: a large surface should read as thicker than a chip. A single blurred drop reads as a sticker. |
-| **Size-specific tracking**: heading `-0.018em`, price figures `-0.01em`, uppercase micro-labels `+0.06em` | apple-design §15. One `letter-spacing` value is wrong at one end of the scale or the other. All in `em`, so it holds at every size. |
-| Axis line is a **gradient that fades at both ends** | It stops the axis reading as a hard container edge, which was competing with the panel border. |
-| Fresh ticks carry a **3px halo** in the conflict surface colour | Separates overlapping ticks — eight Haspo observations sit between 112k and 190k and were merging into a smear. |
-| **Scroll-edge fade** on the right of each table below `lg` | apple-design §12: a scroll edge, not a divider. Below `lg` the 44rem table is wider than the panel and the clipped columns simply looked absent. The fade says "there is more this way" without spending a row of chrome on it. |
-| Row hover gated behind `@media (hover: hover) and (pointer: fine)` | A touch device fires hover on tap and the row latches highlighted after the finger leaves. |
-| `active:scale-[0.97]` on every source link, 100ms | The interface must visibly hear the press before navigation happens. |
+| Change                                                                                                    | Why                                                                                                                                                                                                                             |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The ladder sits in a **recessed well** (`bg-background/50`, inset border) rather than flat on the card    | One level of layering is what separates "a page with a chart on it" from an instrument. It also groups the two rails and their separator into a single object the eye reads as one comparison.                                  |
+| **Two shadows** on the panel — a 1px contact shadow plus a wide, very soft ambient one                    | apple-design §12: a large surface should read as thicker than a chip. A single blurred drop reads as a sticker.                                                                                                                 |
+| **Size-specific tracking**: heading `-0.018em`, price figures `-0.01em`, uppercase micro-labels `+0.06em` | apple-design §15. One `letter-spacing` value is wrong at one end of the scale or the other. All in `em`, so it holds at every size.                                                                                             |
+| Axis line is a **gradient that fades at both ends**                                                       | It stops the axis reading as a hard container edge, which was competing with the panel border.                                                                                                                                  |
+| Fresh ticks carry a **3px halo** in the conflict surface colour                                           | Separates overlapping ticks — eight Haspo observations sit between 112k and 190k and were merging into a smear.                                                                                                                 |
+| **Scroll-edge fade** on the right of each table below `lg`                                                | apple-design §12: a scroll edge, not a divider. Below `lg` the 44rem table is wider than the panel and the clipped columns simply looked absent. The fade says "there is more this way" without spending a row of chrome on it. |
+| Row hover gated behind `@media (hover: hover) and (pointer: fine)`                                        | A touch device fires hover on tap and the row latches highlighted after the finger leaves.                                                                                                                                      |
+| `active:scale-[0.97]` on every source link, 100ms                                                         | The interface must visibly hear the press before navigation happens.                                                                                                                                                            |
 
 ### The one motion moment
 
@@ -151,7 +151,7 @@ Both of these were caught by asserting, not by looking:
 
 1. **The stagger was 0.05ms.** `staggerDelay()` returns **seconds** (W1-D sized it for Framer
    Motion); I wrote `${…}ms`. Thirteen ticks arrived simultaneously while the code claimed a
-   cascade. The assertion now requires the delays to differ by ≥ 20ms *and* increase — "they
+   cascade. The assertion now requires the delays to differ by ≥ 20ms _and_ increase — "they
    differ" would have passed the broken version.
 2. **The reduced-motion assertion tested the wrong property.** Tailwind's `transition-none` leaves
    a residual `transition-duration` (`1e-05s`), so `duration === 0` would have passed a still-
@@ -176,7 +176,7 @@ gain. Removing the dead tokens is a tidy-up for whoever owns `globals.css` next.
 Within W3-C's own files there is **no `dark:` variant at all** — a dark override here would be dead
 code that reads as a supported state.
 
-Verified by driving a browser that *asks* for dark:
+Verified by driving a browser that _asks_ for dark:
 
 ```
 PASS  the document never carries the dark class — <html class="light">
@@ -196,17 +196,17 @@ goes red — but it is stale. See §8.
 ## 3c. Translation quality and pinned proper nouns
 
 `check-i18n` was already green (0 errors, 0 warnings) before this pass — it verifies structure,
-placeholders, key parity and length ratios, but it cannot judge whether a translation is *good*.
+placeholders, key parity and length ratios, but it cannot judge whether a translation is _good_.
 A read-through of all 55 keys side by side across the four locales found five real defects:
 
-| Key | Was | Now | Why |
-|---|---|---|---|
-| `finding.severity.*` (ru) | Критично · Высокая · Средняя · Низкая | Критический · Высокий · Средний · Низкий | The set did not agree with itself — an adverb, then three feminine adjectives. A severity chip must read as one consistent set; masculine agreeing with «уровень» is the standard Russian technical register. |
-| `ladder.negligible` (ru) | практически одинаково | Практически идентичны | Adverbial where the subject is two prices — needs a plural adjective. |
-| `ladder.spread` / `ladder.negligible` (en, tr, ru) | mixed case | both capitalised | They occupy the **same slot** in the rail header, one replacing the other. Different registers in one position reads as a bug. |
-| `ladder.lowest` / `highest` (en) | "lowest quoted" | "lowest quoted price" | Not idiomatic standing alone under a figure. |
-| `source.tier.hotel` (ru) | Отель | Гостиничный оператор | Tier 3 is the hotel's own *operational* site. "Отель" named the building, losing what the tier means. |
-| `finding.recordLabel` (en, ru) | "Finding text, original wording" | "Finding text as recorded" | Two fragments joined by a comma. |
+| Key                                                | Was                                   | Now                                      | Why                                                                                                                                                                                                           |
+| -------------------------------------------------- | ------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `finding.severity.*` (ru)                          | Критично · Высокая · Средняя · Низкая | Критический · Высокий · Средний · Низкий | The set did not agree with itself — an adverb, then three feminine adjectives. A severity chip must read as one consistent set; masculine agreeing with «уровень» is the standard Russian technical register. |
+| `ladder.negligible` (ru)                           | практически одинаково                 | Практически идентичны                    | Adverbial where the subject is two prices — needs a plural adjective.                                                                                                                                         |
+| `ladder.spread` / `ladder.negligible` (en, tr, ru) | mixed case                            | both capitalised                         | They occupy the **same slot** in the rail header, one replacing the other. Different registers in one position reads as a bug.                                                                                |
+| `ladder.lowest` / `highest` (en)                   | "lowest quoted"                       | "lowest quoted price"                    | Not idiomatic standing alone under a figure.                                                                                                                                                                  |
+| `source.tier.hotel` (ru)                           | Отель                                 | Гостиничный оператор                     | Tier 3 is the hotel's own _operational_ site. "Отель" named the building, losing what the tier means.                                                                                                         |
+| `finding.recordLabel` (en, ru)                     | "Finding text, original wording"      | "Finding text as recorded"               | Two fragments joined by a comma.                                                                                                                                                                              |
 
 ### Proper nouns
 
@@ -216,7 +216,7 @@ name in the dataset** — so nothing prevented a translator from rendering "Hasp
 "Alanya-Home" differently per locale, and the gate's own duplicate-detection was stripping the
 wrong set of terms. 17 entries added (§7), taking the list from 22 to 39.
 
-Inserted *before* the bare `Alanya` / `Azura` entries so the longest name wins — otherwise the
+Inserted _before_ the bare `Alanya` / `Azura` entries so the longest name wins — otherwise the
 stripper matches `Alanya` first and leaves `-Home` behind as a fragment.
 
 Verified at the rendered surface, in all four locales, which is where it actually matters:
@@ -244,7 +244,7 @@ view that renders them is not built** (§2). Two are worth naming because they a
 directly qualify what this page shows:
 
 - **F-018 (critical)** — the hotel's own site links a different property's Tripadvisor page.
-- **F-006 (high)** — the build-status conflict. It is *implicitly* present here: every Haspo
+- **F-006 (high)** — the build-status conflict. It is _implicitly_ present here: every Haspo
   observation inherits `isStale` from it, which is what the eight "VERALTET" badges mean, and the
   panel's stale legend cites F-006 by id. It is not otherwise rendered.
 - **F-013 / F-019 (high, pricing)** — both bear directly on F-002 (Alanya-Home publishing the
@@ -275,19 +275,19 @@ Recorded because each one shipped green through typecheck, lint and build.
 2. **A 0.09% spread was drawn identically to a 2.8× one.** Each rail normalises to its own min and
    max — right for comparing publishers, actively misleading when the values are nearly identical.
    Housearch's two USD observations were at 0% and 100% of the axis. A rail whose ratio is under
-   1.05 now clusters at the centre and says *"praktisch identisch · 0,09 % Unterschied"*. The
+   1.05 now clusters at the centre and says _"praktisch identisch · 0,09 % Unterschied"_. The
    endpoints are still named, so the ticks stop claiming a span the figures never did.
 
 3. **The spread badge contradicted the finding printed above it.** The badge read "Spanne 2,8×"
-   under a finding whose own text says *"a 2.1x range across four publishers"*. Both are correct:
+   under a finding whose own text says _"a 2.1x range across four publishers"_. Both are correct:
    F-002's ratio compares Haspo's EUR figure against Housearch's USD one — the exact conversion
    this design refuses to make — while 2.8× is the EUR-only span. The badge is now scoped
-   *"(nur EUR)"*. See §8 for the request this raises.
+   _"(nur EUR)"_. See §8 for the request this raises.
 
 4. **`Finding.message` was rendering as the German page's `<h2>`.** It is English analyst prose
    stored in the dataset, so the German page was asserting something in a language it had not
-   chosen. There is now a German heading — *"Vier Portale, vier Preise für dieselbe 1+1-Wohnung"* —
-   and the finding text is a labelled quotation under *"Befundtext im Original"*. Same treatment
+   chosen. There is now a German heading — _"Vier Portale, vier Preise für dieselbe 1+1-Wohnung"_ —
+   and the finding text is a labelled quotation under _"Befundtext im Original"_. Same treatment
    for `Finding.resolution`. Translating stored evidence would have been the wrong fix.
 
 ---
@@ -311,12 +311,12 @@ cannot occur because no string parsing of a formatted number happens anywhere in
 
 ## 7. Files I touched that I do not solely own
 
-| File | Owner | What I did, and why |
-|---|---|---|
-| `apps/web/messages/{de,en,tr,ru}.json` | **W1-C** | Added 49 keys, all under `dashboard.evidence.*`, which the W3-C brief assigns to this window ("Messages: `dashboard.evidence.*` … only"). Nothing outside that namespace was touched, no existing key was edited, and `check-i18n` passes at 625 keys × 4 with identical key sets. `evidence.label.openSource`, `evidence.label.snapshot` and `evidence.sourceUnreachable` are **reused** from W1-C's own namespace rather than duplicated — two copies of "Quelle öffnen" in four locales would drift. |
-| `apps/web/components/providers/theme-provider.tsx` | **W1-D** | Added `forcedTheme="light"` on the repository owner's explicit instruction (§3b). One prop. Their `.dark` tokens and `dark:` utilities are untouched — only unreachable. **Their design suite and the kitchen-sink `ThemeToggle` now describe a state the app cannot enter.** |
-| `apps/web/lib/proper-nouns.json` | **W1-C** | Added 17 terms — `1Çatı` and every publisher name in the dataset (§3c). Purely additive to `properNouns`; no existing entry changed. The file is shared gate config read by both the app module and `check-i18n.mjs`, and the omission meant publisher names were not pinned across locales at all. |
-| `scripts/ts-resolve-hooks.mjs` | W1-B (me) | Added `@/*` → `apps/web/*` alias resolution. Purely additive: an aliased specifier previously threw `ERR_MODULE_NOT_FOUND`, so nothing that resolved before can change. Needed because W2-A's repositories import through the alias, and a probe that cannot load a repository can only test a re-implementation of it. |
+| File                                               | Owner     | What I did, and why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/messages/{de,en,tr,ru}.json`             | **W1-C**  | Added 49 keys, all under `dashboard.evidence.*`, which the W3-C brief assigns to this window ("Messages: `dashboard.evidence.*` … only"). Nothing outside that namespace was touched, no existing key was edited, and `check-i18n` passes at 625 keys × 4 with identical key sets. `evidence.label.openSource`, `evidence.label.snapshot` and `evidence.sourceUnreachable` are **reused** from W1-C's own namespace rather than duplicated — two copies of "Quelle öffnen" in four locales would drift. |
+| `apps/web/components/providers/theme-provider.tsx` | **W1-D**  | Added `forcedTheme="light"` on the repository owner's explicit instruction (§3b). One prop. Their `.dark` tokens and `dark:` utilities are untouched — only unreachable. **Their design suite and the kitchen-sink `ThemeToggle` now describe a state the app cannot enter.**                                                                                                                                                                                                                           |
+| `apps/web/lib/proper-nouns.json`                   | **W1-C**  | Added 17 terms — `1Çatı` and every publisher name in the dataset (§3c). Purely additive to `properNouns`; no existing entry changed. The file is shared gate config read by both the app module and `check-i18n.mjs`, and the omission meant publisher names were not pinned across locales at all.                                                                                                                                                                                                     |
+| `scripts/ts-resolve-hooks.mjs`                     | W1-B (me) | Added `@/*` → `apps/web/*` alias resolution. Purely additive: an aliased specifier previously threw `ERR_MODULE_NOT_FOUND`, so nothing that resolved before can change. Needed because W2-A's repositories import through the alias, and a probe that cannot load a repository can only test a re-implementation of it.                                                                                                                                                                                 |
 
 One German string was rejected by `check-i18n` rule 6 (`"Anmerkung der Erhebung"` was 1.83× its
 English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work.
@@ -325,16 +325,16 @@ English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work
 
 ## 8. Requests for other windows
 
-| # | Owner | Request |
-|---|---|---|
-| 1 | **W3-B** | **Publish `HANDOFF/W3-B.md`.** Four W3-C deliverables and three of the four cockpit views are waiting on the `data-table` contract. The specific things I need from it: the virtualisation API, how a row renders a `ReactNode` cell (every price cell is a `ProvenanceValue`), how sorting handles `null` (the brief requires nulls last in **both** directions, never treated as `0`), and whether row tinting is a supported prop — the `modelled` honesty control needs a tinted row, not just a badge. |
-| 2 | **W0-B** | **F-002's `message` quotes a 2.1× range computed across two currencies** (Haspo EUR 112,000 → Housearch USD 239,171). Our own rule is that those two numbers cannot be compared without a rate. The EUR-only span is 2.77×. The UI now scopes its own ratio per currency, so nothing is wrong on screen — but the dataset's headline figure is derived by a method the product forbids, and W3-A or a report may quote it verbatim. Suggest either dropping the ratio from the message or stating it per currency. |
-| 3 | **W2-A** | **The seed's F-002 says "four publishers" and lists three.** `lib/evidence-data.ts` condenses `competingValues` to Haspo / Seaside / Housearch and drops Alanya-Home, while keeping the "four publishers" wording. A panel built on `Finding.competingValues` would therefore *understate* a conflict — the one direction this product must never fail in. This module reads the **listings** for its numbers and the finding only for its narrative, so it is unaffected; a window that trusts `competingValues` would not be. |
-| 4 | **W0-B** | **`PortalListing` carries no `snapshotHash`.** A listing row can link its live URL but not the stored snapshot unless its URL also happens to be in the source register. Ten of the 21 rows currently fall back to a live-URL-only chip. Invariant 6 exists because a citation you cannot re-open is not a citation, and a portal listing is the most likely thing in this dataset to be edited or deleted. |
-| 5 | **W1-C** | `evidence.label.sourceCount` uses ICU plural syntax (`{count, plural, …}`) while W1-D's provenance components take plain `{count}` templates and interpolate themselves. They are not interchangeable — passing an ICU string to `interpolate()` renders the ICU source. Not a bug today (I did not use that key), but worth a note in the catalogue so the next window does not discover it at render time. |
-| 6 | **W4-A** | The evidence route is behind the W1-B route guard, so an e2e pass needs an authenticated session or a QA access profile. See §9. |
-| 7 | **W1-D** | **The app is light-only now** (§3b). Your Playwright design suite asserts `<html class="dark">` and the kitchen-sink ships a `ThemeToggle`; both now test a state that cannot occur. Nothing is gated on that suite so nothing is red, but it should be trimmed rather than left to fail confusingly later. The `.dark` block in `globals.css` is dead code — your call whether to remove it or keep it against a future reversal. |
-| 8 | **W1-C** | I added 17 terms to `proper-nouns.json`, including `1Çatı` (§3c). Two things worth your eye: the ordering matters (longer names must precede `Alanya` / `Azura` or the stripper leaves fragments), and the list is still missing anything W3-D…W3-H introduce. Worth a pass once their copy lands. |
+| #   | Owner    | Request                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **W3-B** | **Publish `HANDOFF/W3-B.md`.** Four W3-C deliverables and three of the four cockpit views are waiting on the `data-table` contract. The specific things I need from it: the virtualisation API, how a row renders a `ReactNode` cell (every price cell is a `ProvenanceValue`), how sorting handles `null` (the brief requires nulls last in **both** directions, never treated as `0`), and whether row tinting is a supported prop — the `modelled` honesty control needs a tinted row, not just a badge.                     |
+| 2   | **W0-B** | **F-002's `message` quotes a 2.1× range computed across two currencies** (Haspo EUR 112,000 → Housearch USD 239,171). Our own rule is that those two numbers cannot be compared without a rate. The EUR-only span is 2.77×. The UI now scopes its own ratio per currency, so nothing is wrong on screen — but the dataset's headline figure is derived by a method the product forbids, and W3-A or a report may quote it verbatim. Suggest either dropping the ratio from the message or stating it per currency.              |
+| 3   | **W2-A** | **The seed's F-002 says "four publishers" and lists three.** `lib/evidence-data.ts` condenses `competingValues` to Haspo / Seaside / Housearch and drops Alanya-Home, while keeping the "four publishers" wording. A panel built on `Finding.competingValues` would therefore _understate_ a conflict — the one direction this product must never fail in. This module reads the **listings** for its numbers and the finding only for its narrative, so it is unaffected; a window that trusts `competingValues` would not be. |
+| 4   | **W0-B** | **`PortalListing` carries no `snapshotHash`.** A listing row can link its live URL but not the stored snapshot unless its URL also happens to be in the source register. Ten of the 21 rows currently fall back to a live-URL-only chip. Invariant 6 exists because a citation you cannot re-open is not a citation, and a portal listing is the most likely thing in this dataset to be edited or deleted.                                                                                                                     |
+| 5   | **W1-C** | `evidence.label.sourceCount` uses ICU plural syntax (`{count, plural, …}`) while W1-D's provenance components take plain `{count}` templates and interpolate themselves. They are not interchangeable — passing an ICU string to `interpolate()` renders the ICU source. Not a bug today (I did not use that key), but worth a note in the catalogue so the next window does not discover it at render time.                                                                                                                    |
+| 6   | **W4-A** | The evidence route is behind the W1-B route guard, so an e2e pass needs an authenticated session or a QA access profile. See §9.                                                                                                                                                                                                                                                                                                                                                                                                |
+| 7   | **W1-D** | **The app is light-only now** (§3b). Your Playwright design suite asserts `<html class="dark">` and the kitchen-sink ships a `ThemeToggle`; both now test a state that cannot occur. Nothing is gated on that suite so nothing is red, but it should be trimmed rather than left to fail confusingly later. The `.dark` block in `globals.css` is dead code — your call whether to remove it or keep it against a future reversal.                                                                                              |
+| 8   | **W1-C** | I added 17 terms to `proper-nouns.json`, including `1Çatı` (§3c). Two things worth your eye: the ordering matters (longer names must precede `Alanya` / `Azura` or the stripper leaves fragments), and the list is still missing anything W3-D…W3-H introduce. Worth a pass once their copy lands.                                                                                                                                                                                                                              |
 
 ---
 
@@ -352,8 +352,8 @@ English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work
 - ~~**`[GAP]` The `modelled` vs `portal_listing` split is NOT rendered anywhere yet.**~~
   **CLOSED 2026-07-28 — see §11.** `/[locale]/dashboard/units` now renders it three ways:
   the header carries the counts and a proportion bar, every row carries a `Herkunft` badge, and
-  modelled rows are visually recessed. Verified served: *"25 von 656 Einheiten stammen aus einem
-  realen Inserat. Die übrigen 631 sind modelliert"*, legend `Reales Inserat 25 (3.8%)` ·
+  modelled rows are visually recessed. Verified served: _"25 von 656 Einheiten stammen aus einem
+  realen Inserat. Die übrigen 631 sind modelliert"_, legend `Reales Inserat 25 (3.8%)` ·
   `Modelliert 631 (96.2%)`.
 - **`[GAP]` No CSV export.** Blocked with the tables. When it lands it must carry provenance
   columns; an export that strips sources recreates the problem this system exists to solve.
@@ -387,7 +387,7 @@ gaps. Rebased onto `main` (`bb9bf87`) first — fast-forward, 0 commits ahead, n
 The split is rendered **three ways**, because one way is a thing a reader skims past:
 
 1. **Header** — `components/inventory/inventory-split-summary.tsx`. Counts, percentages to one
-   decimal, and a proportion bar. The bar is the point: *3.8%* lands before any digit is read.
+   decimal, and a proportion bar. The bar is the point: _3.8%_ lands before any digit is read.
    One decimal deliberately — rounding 3.8% to 4% inflates the honest number.
 2. **A `Herkunft` column** — `components/inventory/unit-provenance-badge.tsx`, one badge per
    `UnitDataQuality`, placed next to the price it qualifies rather than last on the row.
@@ -420,13 +420,13 @@ assume the user typed the URL.
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** exit 0 | `tsc --noEmit`, no output |
-| `pnpm --dir apps/web lint` | **PASS** exit 0 | `eslint`, 0 errors 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** exit 0 | `/[locale]/dashboard/units` emitted as `ƒ` (dynamic) |
-| `node scripts/check-i18n.mjs` | **PASS** exit 0 | **831 keys × 4 locales**, identical key sets, 0 warnings |
-| Served render, `/de/dashboard/units` | **PASS** | caption `25 von 656 … Die übrigen 631 sind modelliert`; legend `25 (3.8%)` / `631 (96.2%)`; 26 `data-data-quality="portal_listing"` + 26 `"modelled"`; `data-modelled` present on rows |
+| Command                              | Result          | Evidence                                                                                                                                                                               |
+| ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm --dir apps/web typecheck`      | **PASS** exit 0 | `tsc --noEmit`, no output                                                                                                                                                              |
+| `pnpm --dir apps/web lint`           | **PASS** exit 0 | `eslint`, 0 errors 0 warnings                                                                                                                                                          |
+| `pnpm --dir apps/web build`          | **PASS** exit 0 | `/[locale]/dashboard/units` emitted as `ƒ` (dynamic)                                                                                                                                   |
+| `node scripts/check-i18n.mjs`        | **PASS** exit 0 | **831 keys × 4 locales**, identical key sets, 0 warnings                                                                                                                               |
+| Served render, `/de/dashboard/units` | **PASS**        | caption `25 von 656 … Die übrigen 631 sind modelliert`; legend `25 (3.8%)` / `631 (96.2%)`; 26 `data-data-quality="portal_listing"` + 26 `"modelled"`; `data-modelled` present on rows |
 
 **Message-file discipline:** the four catalogues took **one contiguous hunk each** (`git diff`
 reports exactly 1 hunk per file, +17/−1), entirely inside `dashboard.units.*`. Nothing outside that

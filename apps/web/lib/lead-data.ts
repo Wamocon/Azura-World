@@ -356,7 +356,8 @@ export function seedLeads(): LeadRecord[] {
       lastContactedAt: seedIso(-60, 11),
       nextActionAt: null,
       // leads_lost_needs_reason: a lost lead without a reason teaches nothing.
-      lostReason: "Hat in einem Nachbarprojekt mit früherem Fertigstellungstermin gekauft.",
+      lostReason:
+        "Hat in einem Nachbarprojekt mit früherem Fertigstellungstermin gekauft.",
       consentMarketing: false,
       metadata: { competitor: "Nachbarprojekt Türkler" },
       version: 5,

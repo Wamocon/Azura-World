@@ -23,7 +23,7 @@ tree is merged.
 ## 1. Merge — the conflict set is already known
 
 Simulated with `git merge-tree`: all four branches merge **CLEAN** into `main` individually, and
-across all six branch pairs the *entire* conflict set is two files.
+across all six branch pairs the _entire_ conflict set is two files.
 
 ```bash
 git checkout main && git pull
@@ -33,9 +33,9 @@ git merge --no-ff feature/INTERNAL-107-w1c-w0d-i18n-media
 git merge --no-ff feature/INTERNAL-107-w1d-w3i-design
 ```
 
-| Conflict | Resolution |
-|---|---|
-| `HANDOFF/NIGHT-LOG.md` | **Union — keep every line from both sides.** Append-only log; nothing supersedes anything |
+| Conflict                 | Resolution                                                                                                                                           |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HANDOFF/NIGHT-LOG.md`   | **Union — keep every line from both sides.** Append-only log; nothing supersedes anything                                                            |
 | `scripts/check-i18n.mjs` | **Take W3's copy** (`w1c-w0d-i18n-media`, 576 lines). W4's 498-line copy is a stale replay that predates the commit fixing two real bugs in the gate |
 
 Data spine first so the schema lands before its dependents; the contaminated branch last so its

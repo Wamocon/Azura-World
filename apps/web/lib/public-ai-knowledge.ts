@@ -41,7 +41,7 @@ const answers: Record<PublicTopic, Phrase> = {
   },
   "where-do-numbers-come-from": {
     de: "Aus einem Harvest öffentlich zugänglicher Seiten: der Projektseite, der Bauträgerseite, der Hotelseite, sieben Immobilienportalen und drei Bewertungsplattformen. Jede Seite wurde als Rohdatei gespeichert; jede Zahl verweist auf diese Momentaufnahme. Was keine Quelle nennt, bleibt „nicht belegt“ — es wird nicht geschätzt.",
-    en: "From a harvest of publicly reachable pages: the project site, the developer site, the hotel site, seven property portals and three review platforms. Every page was stored as a raw snapshot; every figure points back to that snapshot. Anything no source states stays \"not established\" — it is not estimated.",
+    en: 'From a harvest of publicly reachable pages: the project site, the developer site, the hotel site, seven property portals and three review platforms. Every page was stored as a raw snapshot; every figure points back to that snapshot. Anything no source states stays "not established" — it is not estimated.',
     tr: "Kamuya açık sayfaların toplanmasından: proje sitesi, geliştirici sitesi, otel sitesi, yedi emlak portalı ve üç değerlendirme platformu. Her sayfa ham anlık görüntü olarak saklandı; her rakam o görüntüye işaret eder. Hiçbir kaynağın söylemediği şey “belgelenmemiş” kalır — tahmin edilmez.",
     ru: "Из сбора общедоступных страниц: сайт проекта, сайт застройщика, сайт отеля, семь порталов недвижимости и три площадки отзывов. Каждая страница сохранена как снимок; каждая цифра ссылается на этот снимок. То, чего не говорит ни один источник, остаётся «не подтверждено» — оценок нет.",
   },
@@ -53,7 +53,7 @@ const answers: Record<PublicTopic, Phrase> = {
   },
   "who-are-you": {
     de: "Ich bin der Evidenz-Concierge dieser Analyse. Ich sage nur, was in den erhobenen Quellen steht, nenne zu jeder Zahl die Quelle und sage „nicht belegt“, wenn nichts belegt ist. Beraten tue ich nicht.",
-    en: "I am the evidence concierge for this analysis. I say only what the harvested sources state, name the source for every figure, and say \"not established\" when nothing is. I do not advise.",
+    en: 'I am the evidence concierge for this analysis. I say only what the harvested sources state, name the source for every figure, and say "not established" when nothing is. I do not advise.',
     tr: "Bu analizin kanıt danışmanıyım. Yalnızca toplanan kaynakların söylediğini aktarır, her rakamın kaynağını belirtir ve belgelenmemişse “belgelenmemiş” derim. Danışmanlık vermem.",
     ru: "Я консьерж по доказательствам этого анализа. Излагаю только то, что говорят собранные источники, называю источник для каждой цифры и говорю «не подтверждено», если подтверждения нет. Консультаций не даю.",
   },

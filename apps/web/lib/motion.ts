@@ -124,7 +124,10 @@ export const stagger = {
 export const STAGGER_CAP = 12
 
 /** Delay for item `index`, capped so long lists do not accumulate seconds. */
-export function staggerDelay(index: number, step: number = stagger.base): number {
+export function staggerDelay(
+  index: number,
+  step: number = stagger.base
+): number {
   return Math.min(index, STAGGER_CAP) * step
 }
 
@@ -160,7 +163,10 @@ export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
  * The test is mechanical: turn the flag on, and no information may be missing.
  */
 export function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+  if (
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
+  ) {
     return false
   }
   return window.matchMedia(REDUCED_MOTION_QUERY).matches

@@ -40,7 +40,7 @@ Conventional prefixes otherwise: `feat:` `fix:` `docs:` `chore:` `test:` `refact
 
 This project is built by many windows at once. **[ORCHESTRATION.md](ORCHESTRATION.md) §4 is the
 file-ownership matrix — write only what your task owns.** If you need a change elsewhere, record
-it in your handoff under *Requests for other windows*.
+it in your handoff under _Requests for other windows_.
 
 Every task ends by writing `HANDOFF/<task-id>.md`. **A task without a handoff is not finished**,
 regardless of what shipped. All four wave-0 windows skipped this once; do not repeat it.

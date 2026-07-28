@@ -103,7 +103,10 @@ const MAX_TRACKED_KEYS = 4_096
  * logging PII, and a Map that outlives the request is close enough to a log.
  */
 function rateIdentity(request: Request, scope: string): string {
-  const edge = request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim()
+  const edge = request.headers
+    .get("x-vercel-forwarded-for")
+    ?.split(",")[0]
+    ?.trim()
   const production = process.env.NODE_ENV === "production"
   const address =
     edge !== undefined && edge.length > 0
@@ -114,8 +117,8 @@ function rateIdentity(request: Request, scope: string): string {
           // collapses onto one shared bucket instead — degraded, but safe.
           "trusted-edge-unavailable"
         : (request.headers.get("x-real-ip") ??
-           request.headers.get("x-forwarded-for")?.split(",")[0] ??
-           "local")
+          request.headers.get("x-forwarded-for")?.split(",")[0] ??
+          "local")
   const fingerprint = [
     request.headers.get("user-agent") ?? "",
     request.headers.get("accept-language") ?? "",
@@ -198,8 +201,7 @@ function sameFingerprint(a: string, b: string): boolean {
 // ---------------------------------------------------------------------------
 
 type BodyResult =
-  | { ok: true; raw: string; value: unknown }
-  | { ok: false; error: ApiError }
+  { ok: true; raw: string; value: unknown } | { ok: false; error: ApiError }
 
 /**
  * Streams and counts bytes. `Content-Length` is a *claim* — a chunked request
@@ -329,7 +331,10 @@ async function writeAudit(input: {
   } catch {
     // An audit failure must not turn a successful mutation into an error the
     // caller retries — that would double-apply the write. It is logged instead.
-    console.warn("azura.api.audit-failed", JSON.stringify({ requestId: input.requestId }))
+    console.warn(
+      "azura.api.audit-failed",
+      JSON.stringify({ requestId: input.requestId })
+    )
   }
 }
 
@@ -406,7 +411,11 @@ export interface CreateHandlerConfig<TBody, TResult> {
    * mapping and the headers. Only the final representation differs, and errors
    * are still the standard envelope.
    */
-  serialize?: (data: TResult) => { body: string; contentType: string; headers?: Record<string, string> }
+  serialize?: (data: TResult) => {
+    body: string
+    contentType: string
+    headers?: Record<string, string>
+  }
 }
 
 const MUTATING: readonly HttpMethod[] = ["POST", "PATCH", "DELETE"]
@@ -433,15 +442,19 @@ export function createManifestHandler<TBody, TResult>(
   extra: {
     schema?: ZodType<TBody>
     handler: (ctx: HandlerContext<TBody>) => Promise<HandlerResult<TResult>>
-    serialize?: (
-      data: TResult
-    ) => { body: string; contentType: string; headers?: Record<string, string> }
+    serialize?: (data: TResult) => {
+      body: string
+      contentType: string
+      headers?: Record<string, string>
+    }
   }
 ): (
   request: Request,
   context?: { params?: Promise<Record<string, string>> }
 ) => Promise<Response> {
-  const operation = flattenOperations().find((entry) => entry.operationId === operationId)
+  const operation = flattenOperations().find(
+    (entry) => entry.operationId === operationId
+  )
   if (operation === undefined) {
     throw new Error(
       `No route manifest entry declares operationId "${operationId}". Add it to lib/api-routes.ts.`
@@ -457,15 +470,21 @@ export function createManifestHandler<TBody, TResult>(
     ...(operation.publicJustification === undefined
       ? {}
       : { publicJustification: operation.publicJustification }),
-    ...(operation.rateLimit === undefined ? {} : { rateLimit: operation.rateLimit }),
+    ...(operation.rateLimit === undefined
+      ? {}
+      : { rateLimit: operation.rateLimit }),
     ...(operation.audit === undefined ? {} : { audit: operation.audit }),
     ...(operation.requiresPersistence === undefined
       ? {}
       : { requiresPersistence: operation.requiresPersistence }),
-    ...(operation.idempotent === undefined ? {} : { idempotent: operation.idempotent }),
+    ...(operation.idempotent === undefined
+      ? {}
+      : { idempotent: operation.idempotent }),
     ...(operation.writeGap === undefined
       ? {}
-      : { writeGap: `${operation.writeGap.reason} Owner: ${operation.writeGap.owner}.` }),
+      : {
+          writeGap: `${operation.writeGap.reason} Owner: ${operation.writeGap.owner}.`,
+        }),
   })
 }
 
@@ -491,10 +510,13 @@ export function createHandler<TBody, TResult>(
       // 1. Method. Next routes by export name, so a mismatch here means the
       //    file wired the wrong verb — a 405 is the honest answer either way.
       if (request.method !== config.method) {
-        return NextResponse.json(errorBody(validationFailed("Method not allowed."), requestId), {
-          status: 405,
-          headers: { ...apiHeaders, Allow: config.method },
-        })
+        return NextResponse.json(
+          errorBody(validationFailed("Method not allowed."), requestId),
+          {
+            status: 405,
+            headers: { ...apiHeaders, Allow: config.method },
+          }
+        )
       }
 
       // 1b. Content type. A form-encoded POST is how a cross-site form reaches
@@ -504,7 +526,10 @@ export function createHandler<TBody, TResult>(
         const contentType = request.headers.get("content-type") ?? ""
         if (!contentType.toLowerCase().includes("application/json")) {
           return NextResponse.json(
-            errorBody(validationFailed("Content-Type must be application/json."), requestId),
+            errorBody(
+              validationFailed("Content-Type must be application/json."),
+              requestId
+            ),
             { status: 415, headers: apiHeaders }
           )
         }
@@ -560,7 +585,10 @@ export function createHandler<TBody, TResult>(
       const idempotencyKey = request.headers.get("idempotency-key")
       if (config.idempotent === true && idempotencyKey !== null) {
         const stored = idempotencyStore.get(idempotencyKey)
-        if (stored !== undefined && Date.now() - stored.storedAt < IDEMPOTENCY_TTL_MS) {
+        if (
+          stored !== undefined &&
+          Date.now() - stored.storedAt < IDEMPOTENCY_TTL_MS
+        ) {
           if (!sameFingerprint(stored.fingerprint, fingerprintBody(rawBody))) {
             // Same key, different body. Returning the stored response would be
             // worse than an error: the caller would believe THIS request
@@ -574,7 +602,11 @@ export function createHandler<TBody, TResult>(
           }
           return new NextResponse(stored.body, {
             status: stored.status,
-            headers: { ...apiHeaders, "Content-Type": "application/json", "Idempotency-Replayed": "true" },
+            headers: {
+              ...apiHeaders,
+              "Content-Type": "application/json",
+              "Idempotency-Replayed": "true",
+            },
           })
         }
       }
@@ -621,7 +653,9 @@ export function createHandler<TBody, TResult>(
         limit: Number.isFinite(rawLimit)
           ? Math.min(Math.max(Math.trunc(rawLimit), 1), MAX_PAGE_LIMIT)
           : 50,
-        offset: Number.isFinite(rawOffset) ? Math.max(Math.trunc(rawOffset), 0) : 0,
+        offset: Number.isFinite(rawOffset)
+          ? Math.max(Math.trunc(rawOffset), 0)
+          : 0,
         signal: request.signal,
       })
 
@@ -656,7 +690,9 @@ export function createHandler<TBody, TResult>(
         })
       }
 
-      const payload = JSON.stringify(successBody(result.data, result.source, requestId))
+      const payload = JSON.stringify(
+        successBody(result.data, result.source, requestId)
+      )
 
       if (config.idempotent === true && idempotencyKey !== null) {
         idempotencyStore.set(idempotencyKey, {

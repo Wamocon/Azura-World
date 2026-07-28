@@ -120,7 +120,8 @@ export function PriceConflictPanel({
   const publishers = Array.from(
     new Set(observations.map((observation) => observation.publisher))
   )
-  const resolved = finding.resolvedTo !== null && finding.resolvedTo !== undefined
+  const resolved =
+    finding.resolvedTo !== null && finding.resolvedTo !== undefined
 
   return (
     <section
@@ -150,18 +151,18 @@ export function PriceConflictPanel({
         <div className="flex flex-wrap items-center gap-2">
           <span
             className={cn(
-              "inline-flex min-h-6 items-center rounded-md border px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.06em]",
+              "inline-flex min-h-6 items-center rounded-md border px-2 text-[0.6875rem] font-semibold tracking-[0.06em] uppercase",
               SEVERITY_CLASS[finding.severity]
             )}
           >
             {labels.severity[finding.severity]}
           </span>
-          <span className="inline-flex min-h-6 items-center rounded-md border border-input bg-background px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+          <span className="inline-flex min-h-6 items-center rounded-md border border-input bg-background px-2 text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
             {labels.area[finding.area]}
           </span>
           <span
             data-numeric
-            className="text-xs font-semibold tabular-nums text-muted-foreground"
+            className="text-xs font-semibold text-muted-foreground tabular-nums"
           >
             {labels.findingId.replace("{id}", finding.id)}
           </span>
@@ -173,7 +174,7 @@ export function PriceConflictPanel({
             end or the other. In `em`, never `px`, so it holds at every size. */}
         <h2
           id={`finding-${finding.id}-heading`}
-          className="font-display text-xl font-semibold leading-[1.15] tracking-[-0.018em] text-balance sm:text-2xl"
+          className="font-display text-xl leading-[1.15] font-semibold tracking-[-0.018em] text-balance sm:text-2xl"
         >
           {labels.headline}
         </h2>
@@ -195,7 +196,7 @@ export function PriceConflictPanel({
           is later translated (or is not).
         */}
         <figure className="m-0 border-l-2 border-confidence-conflicted/40 pl-3">
-          <figcaption className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+          <figcaption className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
             {labels.recordLabel}
           </figcaption>
           <blockquote className="mt-1 text-sm leading-relaxed text-foreground/90">
@@ -229,7 +230,7 @@ export function PriceConflictPanel({
 
       {unstatedLayoutObservations.length > 0 ? (
         <section className="flex min-w-0 flex-col gap-3 border-t border-border pt-5">
-          <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+          <h3 className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
             {labels.unstatedHeading}
           </h3>
           <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">
@@ -248,7 +249,7 @@ export function PriceConflictPanel({
       {/* The resolution, last: a reader should reach it having seen the
           evidence, not be told the conclusion first. */}
       <footer className="flex flex-col gap-2 rounded-lg border border-border bg-background p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        <h3 className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
           {resolved ? labels.resolvedHeading : labels.resolutionHeading}
         </h3>
         {/* Also the analyst's own words, also stored English-only. Quoted for
@@ -259,7 +260,9 @@ export function PriceConflictPanel({
         <p
           className={cn(
             "text-sm font-semibold",
-            resolved ? "text-confidence-confirmed" : "text-confidence-conflicted"
+            resolved
+              ? "text-confidence-confirmed"
+              : "text-confidence-conflicted"
           )}
         >
           {resolved ? String(finding.resolvedTo) : labels.unresolved}

@@ -55,7 +55,10 @@ import {
   withRepository,
   type RepositoryClient,
 } from "@/lib/repository-base"
-import { resolveScopedUnitIds, seedUnitIdsForProfile } from "@/lib/finance-repository"
+import {
+  resolveScopedUnitIds,
+  seedUnitIdsForProfile,
+} from "@/lib/finance-repository"
 import {
   activityCategories,
   activityStatuses,
@@ -155,12 +158,18 @@ function requireEnum<T extends string>(
       details: { column },
       retryable: true,
     }
-    throw new RepositoryError(apiError, new Error(`Unrecognised value for ${column}`))
+    throw new RepositoryError(
+      apiError,
+      new Error(`Unrecognised value for ${column}`)
+    )
   }
   return match
 }
 
-function optionalEnum<T extends string>(value: unknown, allowed: readonly T[]): T | null {
+function optionalEnum<T extends string>(
+  value: unknown,
+  allowed: readonly T[]
+): T | null {
   if (value === null || value === undefined) return null
   return allowed.find((candidate) => candidate === value) ?? null
 }
@@ -381,7 +390,9 @@ function operationsScope(
 function seedAssignedTicketIds(profileId: string | null): string[] {
   if (profileId === null) return []
   const ids = seedWorkforceTasks()
-    .filter((task) => task.assigneeProfileId === profileId && task.ticketId !== null)
+    .filter(
+      (task) => task.assigneeProfileId === profileId && task.ticketId !== null
+    )
     .map((task) => task.ticketId)
     .filter((ticketId): ticketId is string => ticketId !== null)
   return [...new Set(ids)]
@@ -425,9 +436,11 @@ async function scopeFor(
   const profileId = access.profileId ?? null
 
   // Staff and above never need either lookup: their read path is company-wide.
-  if (isStaffOrAbove(role)) return operationsScope(access, access.unitIds ?? [], [])
+  if (isStaffOrAbove(role))
+    return operationsScope(access, access.unitIds ?? [], [])
 
-  const unitIds = access.unitIds ?? (await resolveScopedUnitIds(client, profileId))
+  const unitIds =
+    access.unitIds ?? (await resolveScopedUnitIds(client, profileId))
   const assignedTicketIds = await fetchAssignedTicketIds(client, profileId)
   return operationsScope(access, unitIds, assignedTicketIds)
 }
@@ -439,14 +452,18 @@ async function scopeFor(
 function ticketVisible(ticket: ServiceTicket, scope: OperationsScope): boolean {
   if (scope.denied) return false
   if (scope.staffWide) return true
-  if (ticket.unitId !== null && scope.unitIds.includes(ticket.unitId)) return true
+  if (ticket.unitId !== null && scope.unitIds.includes(ticket.unitId))
+    return true
   if (
     scope.selfProfileId !== null &&
     ticket.requesterProfileId === scope.selfProfileId
   ) {
     return true
   }
-  if (scope.selfProfileId !== null && ticket.assigneeProfileId === scope.selfProfileId) {
+  if (
+    scope.selfProfileId !== null &&
+    ticket.assigneeProfileId === scope.selfProfileId
+  ) {
     return true
   }
   return scope.assignedTicketIds.includes(ticket.id)
@@ -460,23 +477,39 @@ function activityVisible(activity: Activity, scope: OperationsScope): boolean {
   return activity.status !== "draft"
 }
 
-function workforceTaskVisible(task: WorkforceTask, scope: OperationsScope): boolean {
+function workforceTaskVisible(
+  task: WorkforceTask,
+  scope: OperationsScope
+): boolean {
   if (scope.denied) return false
   if (scope.staffWide) return true
-  if (scope.selfProfileId !== null && task.assigneeProfileId === scope.selfProfileId) {
+  if (
+    scope.selfProfileId !== null &&
+    task.assigneeProfileId === scope.selfProfileId
+  ) {
     return true
   }
   return task.unitId !== null && scope.unitIds.includes(task.unitId)
 }
 
-function mediaReportVisible(report: MediaReport, scope: OperationsScope): boolean {
+function mediaReportVisible(
+  report: MediaReport,
+  scope: OperationsScope
+): boolean {
   if (scope.denied) return false
   if (scope.staffWide) return true
-  if (report.unitId !== null && scope.unitIds.includes(report.unitId)) return true
-  if (scope.selfProfileId !== null && report.reporterProfileId === scope.selfProfileId) {
+  if (report.unitId !== null && scope.unitIds.includes(report.unitId))
+    return true
+  if (
+    scope.selfProfileId !== null &&
+    report.reporterProfileId === scope.selfProfileId
+  ) {
     return true
   }
-  return report.ticketId !== null && scope.assignedTicketIds.includes(report.ticketId)
+  return (
+    report.ticketId !== null &&
+    scope.assignedTicketIds.includes(report.ticketId)
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -514,7 +547,8 @@ function paginate<T>(rows: readonly T[], options: PageOptions): T[] {
  */
 function ticketOrClauses(scope: OperationsScope): string[] {
   const clauses: string[] = []
-  if (scope.unitIds.length > 0) clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
+  if (scope.unitIds.length > 0)
+    clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
   if (scope.selfProfileId !== null) {
     clauses.push(`requester_profile_id.eq.${scope.selfProfileId}`)
     clauses.push(`assignee_profile_id.eq.${scope.selfProfileId}`)
@@ -554,20 +588,43 @@ function isSlaBreached(ticket: ServiceTicket, asOf: string): boolean {
   return ticket.slaDueAt < asOf
 }
 
-function seedTicketsFiltered(query: TicketQuery, scope: OperationsScope, asOf: string) {
+function seedTicketsFiltered(
+  query: TicketQuery,
+  scope: OperationsScope,
+  asOf: string
+) {
   const rows = seedServiceTickets()
     .filter((ticket) => ticketVisible(ticket, scope))
-    .filter((ticket) => query.companyId === undefined || ticket.companyId === query.companyId)
-    .filter((ticket) => query.siteId === undefined || ticket.siteId === query.siteId)
-    .filter((ticket) => query.unitId === undefined || ticket.unitId === query.unitId)
-    .filter((ticket) => query.status === undefined || ticket.status === query.status)
     .filter(
       (ticket) =>
-        query.openOnly !== true || !terminalTicketStatuses.includes(ticket.status)
+        query.companyId === undefined || ticket.companyId === query.companyId
     )
-    .filter((ticket) => query.priority === undefined || ticket.priority === query.priority)
-    .filter((ticket) => query.severity === undefined || ticket.severity === query.severity)
-    .filter((ticket) => query.category === undefined || ticket.category === query.category)
+    .filter(
+      (ticket) => query.siteId === undefined || ticket.siteId === query.siteId
+    )
+    .filter(
+      (ticket) => query.unitId === undefined || ticket.unitId === query.unitId
+    )
+    .filter(
+      (ticket) => query.status === undefined || ticket.status === query.status
+    )
+    .filter(
+      (ticket) =>
+        query.openOnly !== true ||
+        !terminalTicketStatuses.includes(ticket.status)
+    )
+    .filter(
+      (ticket) =>
+        query.priority === undefined || ticket.priority === query.priority
+    )
+    .filter(
+      (ticket) =>
+        query.severity === undefined || ticket.severity === query.severity
+    )
+    .filter(
+      (ticket) =>
+        query.category === undefined || ticket.category === query.category
+    )
     .filter(
       (ticket) =>
         query.assigneeProfileId === undefined ||
@@ -583,7 +640,9 @@ function seedTicketsFiltered(query: TicketQuery, scope: OperationsScope, asOf: s
         query.requiresFinanceApproval === undefined ||
         ticket.requiresFinanceApproval === query.requiresFinanceApproval
     )
-    .filter((ticket) => query.slaBreachedOnly !== true || isSlaBreached(ticket, asOf))
+    .filter(
+      (ticket) => query.slaBreachedOnly !== true || isSlaBreached(ticket, asOf)
+    )
     .sort((a, b) => compareDesc(a.reportedAt, b.reportedAt))
   return paginate(rows, query)
 }
@@ -607,16 +666,24 @@ async function fetchTicketRows(
     builder = builder.or(clauses.join(","))
   }
 
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.unitId !== undefined) builder = builder.eq("unit_id", query.unitId)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
   if (query.openOnly === true) {
-    builder = builder.not("status", "in", `(${terminalTicketStatuses.join(",")})`)
+    builder = builder.not(
+      "status",
+      "in",
+      `(${terminalTicketStatuses.join(",")})`
+    )
   }
-  if (query.priority !== undefined) builder = builder.eq("priority", query.priority)
-  if (query.severity !== undefined) builder = builder.eq("severity", query.severity)
-  if (query.category !== undefined) builder = builder.eq("category", query.category)
+  if (query.priority !== undefined)
+    builder = builder.eq("priority", query.priority)
+  if (query.severity !== undefined)
+    builder = builder.eq("severity", query.severity)
+  if (query.category !== undefined)
+    builder = builder.eq("category", query.category)
   if (query.assigneeProfileId !== undefined) {
     builder = builder.eq("assignee_profile_id", query.assigneeProfileId)
   }
@@ -624,7 +691,10 @@ async function fetchTicketRows(
     builder = builder.eq("requester_profile_id", query.requesterProfileId)
   }
   if (query.requiresFinanceApproval !== undefined) {
-    builder = builder.eq("requires_finance_approval", query.requiresFinanceApproval)
+    builder = builder.eq(
+      "requires_finance_approval",
+      query.requiresFinanceApproval
+    )
   }
   if (query.slaBreachedOnly === true) {
     builder = builder
@@ -681,7 +751,9 @@ export async function getTicket(
     },
     () => {
       const scope = seedScope(access)
-      const ticket = seedServiceTickets().find((candidate) => candidate.id === id)
+      const ticket = seedServiceTickets().find(
+        (candidate) => candidate.id === id
+      )
       if (ticket === undefined) return null
       return ticketVisible(ticket, scope) ? ticket : null
     },
@@ -727,7 +799,9 @@ export async function getTicketEvents(
     },
     () => {
       const scope = seedScope(access)
-      const ticket = seedServiceTickets().find((candidate) => candidate.id === ticketId)
+      const ticket = seedServiceTickets().find(
+        (candidate) => candidate.id === ticketId
+      )
       if (ticket === undefined || !ticketVisible(ticket, scope)) return []
       const rows = seedTicketEvents()
         .filter((event) => event.ticketId === ticketId)
@@ -763,20 +837,34 @@ function seedActivitiesFiltered(
   const rows = seedActivities()
     .filter((activity) => activityVisible(activity, scope))
     .filter(
-      (activity) => query.companyId === undefined || activity.companyId === query.companyId
-    )
-    .filter((activity) => query.siteId === undefined || activity.siteId === query.siteId)
-    .filter((activity) => query.status === undefined || activity.status === query.status)
-    .filter((activity) => query.category === undefined || activity.category === query.category)
-    .filter(
       (activity) =>
-        query.startsAfter === undefined || activity.startsAt >= query.startsAfter
+        query.companyId === undefined || activity.companyId === query.companyId
     )
     .filter(
       (activity) =>
-        query.startsBefore === undefined || activity.startsAt <= query.startsBefore
+        query.siteId === undefined || activity.siteId === query.siteId
     )
-    .filter((activity) => query.upcomingOnly !== true || activity.startsAt >= asOf)
+    .filter(
+      (activity) =>
+        query.status === undefined || activity.status === query.status
+    )
+    .filter(
+      (activity) =>
+        query.category === undefined || activity.category === query.category
+    )
+    .filter(
+      (activity) =>
+        query.startsAfter === undefined ||
+        activity.startsAt >= query.startsAfter
+    )
+    .filter(
+      (activity) =>
+        query.startsBefore === undefined ||
+        activity.startsAt <= query.startsBefore
+    )
+    .filter(
+      (activity) => query.upcomingOnly !== true || activity.startsAt >= asOf
+    )
     .sort((a, b) => compareAsc(a.startsAt, b.startsAt))
   return paginate(rows, query)
 }
@@ -792,12 +880,16 @@ async function fetchActivityRows(
 
   let builder = client.from(T_ACTIVITIES).select(ACTIVITY_COLUMNS)
   if (!scope.staffWide) builder = builder.neq("status", "draft")
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
-  if (query.category !== undefined) builder = builder.eq("category", query.category)
-  if (query.startsAfter !== undefined) builder = builder.gte("starts_at", query.startsAfter)
-  if (query.startsBefore !== undefined) builder = builder.lte("starts_at", query.startsBefore)
+  if (query.category !== undefined)
+    builder = builder.eq("category", query.category)
+  if (query.startsAfter !== undefined)
+    builder = builder.gte("starts_at", query.startsAfter)
+  if (query.startsBefore !== undefined)
+    builder = builder.lte("starts_at", query.startsBefore)
   if (query.upcomingOnly === true) builder = builder.gte("starts_at", asOf)
 
   const limit = clampLimit(page.limit)
@@ -853,23 +945,39 @@ function seedWorkforceTasksFiltered(
 ): WorkforceTask[] {
   const rows = seedWorkforceTasks()
     .filter((task) => workforceTaskVisible(task, scope))
-    .filter((task) => query.companyId === undefined || task.companyId === query.companyId)
-    .filter((task) => query.siteId === undefined || task.siteId === query.siteId)
-    .filter((task) => query.ticketId === undefined || task.ticketId === query.ticketId)
-    .filter((task) => query.unitId === undefined || task.unitId === query.unitId)
+    .filter(
+      (task) =>
+        query.companyId === undefined || task.companyId === query.companyId
+    )
+    .filter(
+      (task) => query.siteId === undefined || task.siteId === query.siteId
+    )
+    .filter(
+      (task) => query.ticketId === undefined || task.ticketId === query.ticketId
+    )
+    .filter(
+      (task) => query.unitId === undefined || task.unitId === query.unitId
+    )
     .filter(
       (task) =>
         query.assigneeProfileId === undefined ||
         task.assigneeProfileId === query.assigneeProfileId
     )
     .filter((task) => query.team === undefined || task.team === query.team)
-    .filter((task) => query.status === undefined || task.status === query.status)
-    .filter((task) => query.priority === undefined || task.priority === query.priority)
+    .filter(
+      (task) => query.status === undefined || task.status === query.status
+    )
+    .filter(
+      (task) => query.priority === undefined || task.priority === query.priority
+    )
     .filter(
       (task) =>
-        query.openOnly !== true || !terminalWorkforceTaskStatuses.includes(task.status)
+        query.openOnly !== true ||
+        !terminalWorkforceTaskStatuses.includes(task.status)
     )
-    .filter((task) => query.slaBreachedOnly !== true || isTaskSlaBreached(task, asOf))
+    .filter(
+      (task) => query.slaBreachedOnly !== true || isTaskSlaBreached(task, asOf)
+    )
     .sort((a, b) => compareDesc(a.createdAt, b.createdAt))
   return paginate(rows, query)
 }
@@ -889,23 +997,31 @@ async function fetchWorkforceTaskRows(
     if (scope.selfProfileId !== null) {
       clauses.push(`assignee_profile_id.eq.${scope.selfProfileId}`)
     }
-    if (scope.unitIds.length > 0) clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
+    if (scope.unitIds.length > 0)
+      clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
     if (clauses.length === 0) return []
     builder = builder.or(clauses.join(","))
   }
 
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
-  if (query.ticketId !== undefined) builder = builder.eq("ticket_id", query.ticketId)
+  if (query.ticketId !== undefined)
+    builder = builder.eq("ticket_id", query.ticketId)
   if (query.unitId !== undefined) builder = builder.eq("unit_id", query.unitId)
   if (query.assigneeProfileId !== undefined) {
     builder = builder.eq("assignee_profile_id", query.assigneeProfileId)
   }
   if (query.team !== undefined) builder = builder.eq("team", query.team)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
-  if (query.priority !== undefined) builder = builder.eq("priority", query.priority)
+  if (query.priority !== undefined)
+    builder = builder.eq("priority", query.priority)
   if (query.openOnly === true) {
-    builder = builder.not("status", "in", `(${terminalWorkforceTaskStatuses.join(",")})`)
+    builder = builder.not(
+      "status",
+      "in",
+      `(${terminalWorkforceTaskStatuses.join(",")})`
+    )
   }
   if (query.slaBreachedOnly === true) {
     builder = builder
@@ -956,14 +1072,27 @@ function seedMediaReportsFiltered(
 ): MediaReport[] {
   const rows = seedMediaReports()
     .filter((report) => mediaReportVisible(report, scope))
-    .filter((report) => query.companyId === undefined || report.companyId === query.companyId)
-    .filter((report) => query.siteId === undefined || report.siteId === query.siteId)
-    .filter((report) => query.unitId === undefined || report.unitId === query.unitId)
-    .filter((report) => query.ticketId === undefined || report.ticketId === query.ticketId)
-    .filter((report) => query.status === undefined || report.status === query.status)
     .filter(
       (report) =>
-        query.isPublicIntake === undefined || report.isPublicIntake === query.isPublicIntake
+        query.companyId === undefined || report.companyId === query.companyId
+    )
+    .filter(
+      (report) => query.siteId === undefined || report.siteId === query.siteId
+    )
+    .filter(
+      (report) => query.unitId === undefined || report.unitId === query.unitId
+    )
+    .filter(
+      (report) =>
+        query.ticketId === undefined || report.ticketId === query.ticketId
+    )
+    .filter(
+      (report) => query.status === undefined || report.status === query.status
+    )
+    .filter(
+      (report) =>
+        query.isPublicIntake === undefined ||
+        report.isPublicIntake === query.isPublicIntake
     )
     .filter((report) => query.untriagedOnly !== true || report.status === "new")
     .sort((a, b) => compareDesc(a.createdAt, b.createdAt))
@@ -981,7 +1110,8 @@ async function fetchMediaReportRows(
   let builder = client.from(T_MEDIA_REPORTS).select(MEDIA_REPORT_COLUMNS)
   if (!scope.staffWide) {
     const clauses: string[] = []
-    if (scope.unitIds.length > 0) clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
+    if (scope.unitIds.length > 0)
+      clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
     if (scope.selfProfileId !== null) {
       clauses.push(`reporter_profile_id.eq.${scope.selfProfileId}`)
     }
@@ -992,10 +1122,12 @@ async function fetchMediaReportRows(
     builder = builder.or(clauses.join(","))
   }
 
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.unitId !== undefined) builder = builder.eq("unit_id", query.unitId)
-  if (query.ticketId !== undefined) builder = builder.eq("ticket_id", query.ticketId)
+  if (query.ticketId !== undefined)
+    builder = builder.eq("ticket_id", query.ticketId)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
   if (query.isPublicIntake !== undefined) {
     builder = builder.eq("is_public_intake", query.isPublicIntake)
@@ -1118,7 +1250,10 @@ function buildOperationsSummary(
       // exposure and make the total look more precise than it is.
       openTicketsWithoutEstimate += 1
     } else {
-      openEstimates.push({ amount: estimate.amount, currency: estimate.currency })
+      openEstimates.push({
+        amount: estimate.amount,
+        currency: estimate.currency,
+      })
     }
   }
 
@@ -1179,7 +1314,10 @@ export async function getOperationsSummary(
   query: OperationsSummaryQuery = {}
 ): Promise<RepositoryResult<OperationsSummary>> {
   const asOf = query.asOf ?? nowIso()
-  const scoped: TicketQuery & WorkforceTaskQuery & ActivityQuery & MediaReportQuery = {
+  const scoped: TicketQuery &
+    WorkforceTaskQuery &
+    ActivityQuery &
+    MediaReportQuery = {
     ...query,
     ...SUMMARY_PAGE,
   }
@@ -1189,10 +1327,33 @@ export async function getOperationsSummary(
       const scope = await scopeFor(client, query)
       // Sequential, not `Promise.all`: a rejection must not leave sibling queries
       // running, and a throwing query is the signal this layer must not swallow.
-      const tickets = await fetchTicketRows(client, scoped, scope, SUMMARY_PAGE, asOf)
-      const tasks = await fetchWorkforceTaskRows(client, scoped, scope, SUMMARY_PAGE, asOf)
-      const activities = await fetchActivityRows(client, scoped, scope, SUMMARY_PAGE, asOf)
-      const reports = await fetchMediaReportRows(client, scoped, scope, SUMMARY_PAGE)
+      const tickets = await fetchTicketRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE,
+        asOf
+      )
+      const tasks = await fetchWorkforceTaskRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE,
+        asOf
+      )
+      const activities = await fetchActivityRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE,
+        asOf
+      )
+      const reports = await fetchMediaReportRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE
+      )
       return buildOperationsSummary(tickets, tasks, activities, reports, asOf)
     },
     () => {
@@ -1342,12 +1503,15 @@ export async function updateTicketStatus(
   const conflict = (): never => {
     throw new RepositoryError({
       code: "conflict",
-      message: "The record changed while you were editing it. Reload and try again.",
+      message:
+        "The record changed while you were editing it. Reload and try again.",
       retryable: true,
     })
   }
 
-  const statusTimestamps = (toStatus: TicketStatus): Record<string, unknown> => {
+  const statusTimestamps = (
+    toStatus: TicketStatus
+  ): Record<string, unknown> => {
     if (toStatus === "resolved") return { resolved_at: at }
     if (toStatus === "closed") return { closed_at: at }
     if (toStatus === "cancelled") return { closed_at: at }

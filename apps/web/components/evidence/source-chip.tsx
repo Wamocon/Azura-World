@@ -200,7 +200,9 @@ export function SourceChipList({
   const remaining = sources.length - shown.length
 
   return (
-    <span className={cn("inline-flex flex-wrap items-center gap-1.5", className)}>
+    <span
+      className={cn("inline-flex flex-wrap items-center gap-1.5", className)}
+    >
       {shown.map((source) => (
         <SourceChip
           key={`${source.url}-${source.snapshotHash}`}

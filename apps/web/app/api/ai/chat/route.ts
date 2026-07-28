@@ -101,7 +101,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     return apiFail(
       {
         code: "rate_limited",
-        message: "Too many requests in flight. Please wait for the current answer.",
+        message:
+          "Too many requests in flight. Please wait for the current answer.",
         retryable: true,
       },
       requestId,

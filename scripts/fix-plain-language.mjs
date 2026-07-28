@@ -22,13 +22,13 @@
  *   node scripts/fix-plain-language.mjs --dry-run
  */
 
-import { readFile, writeFile } from "node:fs/promises"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
-const MESSAGES = path.join(REPO, "apps", "web", "messages")
-const DRY = process.argv.includes("--dry-run")
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const MESSAGES = path.join(REPO, "apps", "web", "messages");
+const DRY = process.argv.includes("--dry-run");
 
 // ---------------------------------------------------------------------------
 // 1. Vocabulary — brief §2. The null placeholder is the important one: it was
@@ -46,7 +46,8 @@ const VOCABULARY = {
     "common.pagination.rowsPerPage": "Einträge pro Seite",
     "common.table.noRows": "Keine Einträge",
     "dashboard.evidence.title": "Quellen und Nachweise",
-    "dashboard.units.provenance.modelledMeaning": "Preis nicht von der Quelle bestätigt",
+    "dashboard.units.provenance.modelledMeaning":
+      "Preis nicht von der Quelle bestätigt",
     "dashboard.units.split.rowNote": "Preis nicht von der Quelle bestätigt",
   },
   en: {
@@ -58,7 +59,8 @@ const VOCABULARY = {
     "common.pagination.rowsPerPage": "Entries per page",
     "common.table.noRows": "No entries",
     "dashboard.evidence.title": "Sources and evidence",
-    "dashboard.units.provenance.modelledMeaning": "Price not confirmed by the source",
+    "dashboard.units.provenance.modelledMeaning":
+      "Price not confirmed by the source",
     "dashboard.units.split.rowNote": "Price not confirmed by the source",
   },
   tr: {
@@ -70,7 +72,8 @@ const VOCABULARY = {
     "common.pagination.rowsPerPage": "Sayfa başına kayıt",
     "common.table.noRows": "Kayıt yok",
     "dashboard.evidence.title": "Kaynaklar ve belgeler",
-    "dashboard.units.provenance.modelledMeaning": "Fiyat kaynak tarafından doğrulanmadı",
+    "dashboard.units.provenance.modelledMeaning":
+      "Fiyat kaynak tarafından doğrulanmadı",
     "dashboard.units.split.rowNote": "Fiyat kaynak tarafından doğrulanmadı",
   },
   ru: {
@@ -82,10 +85,11 @@ const VOCABULARY = {
     "common.pagination.rowsPerPage": "Записей на странице",
     "common.table.noRows": "Нет записей",
     "dashboard.evidence.title": "Источники и подтверждения",
-    "dashboard.units.provenance.modelledMeaning": "Цена не подтверждена источником",
+    "dashboard.units.provenance.modelledMeaning":
+      "Цена не подтверждена источником",
     "dashboard.units.split.rowNote": "Цена не подтверждена источником",
   },
-}
+};
 
 // ---------------------------------------------------------------------------
 // 2. German em dashes — hand-written, one key at a time.
@@ -101,7 +105,8 @@ const VOCABULARY = {
 const GERMAN = {
   "evidence.confidence.conflicted_long":
     "Quellen widersprechen sich. Beide Werte sind erfasst.",
-  "landing.topBar.notice": "Evidenzbasierte Wettbewerbsanalyse. Jede Zahl mit Quelle.",
+  "landing.topBar.notice":
+    "Evidenzbasierte Wettbewerbsanalyse. Jede Zahl mit Quelle.",
   "landing.hero.subtitle":
     "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste, vollständig belegt, Zahl für Zahl.",
   "landing.hero.conflictCallout":
@@ -152,14 +157,14 @@ const GERMAN = {
     "Der Datenbestand zu Azura World. Dieselben Zahlen, dieselben Quellen, ohne Anmeldung.",
   "concierge.subtitle":
     "Fragen zum Projekt, beantwortet ausschließlich aus dem belegten Datenbestand.",
-}
+};
 
 // ---------------------------------------------------------------------------
 // 3. Structural transform for en / tr / ru.
 // ---------------------------------------------------------------------------
 
 /** Sentence-ending punctuation, per script. Cyrillic and Latin share these. */
-const ENDS_CLAUSE = /[.!?:;,]$/
+const ENDS_CLAUSE = /[.!?:;,]$/;
 
 /**
  * Replace an em dash with the punctuation the sentence actually needs.
@@ -172,86 +177,89 @@ const ENDS_CLAUSE = /[.!?:;,]$/
  * manufacture a sentence with no verb.
  */
 const FRAGMENT_OPENERS =
-  /^(not|no|and|or|but|with|without|for|from|in|on|at|by|of|the|a|an|ile|ve|veya|ama|için|ile birlikte|и|или|но|с|без|для|от|в|на|по)\b/i
+  /^(not|no|and|or|but|with|without|for|from|in|on|at|by|of|the|a|an|ile|ve|veya|ama|için|ile birlikte|и|или|но|с|без|для|от|в|на|по)\b/i;
 
 function rewriteEmDashes(value) {
-  if (!value.includes("—")) return value
-  let out = value
+  if (!value.includes("—")) return value;
+  let out = value;
 
   // " — " with something either side is the only form that carries meaning here.
   out = out.replace(/\s*—\s*/g, (_m, offset, whole) => {
-    const before = whole.slice(0, offset)
-    const after = whole.slice(offset).replace(/^\s*—\s*/, "")
-    const isTitle = whole.length < 60 && !/[.!?]/.test(whole)
-    if (isTitle) return ": "
-    if (FRAGMENT_OPENERS.test(after)) return ", "
-    if (ENDS_CLAUSE.test(before.trim())) return " "
-    return ". "
-  })
+    const before = whole.slice(0, offset);
+    const after = whole.slice(offset).replace(/^\s*—\s*/, "");
+    const isTitle = whole.length < 60 && !/[.!?]/.test(whole);
+    if (isTitle) return ": ";
+    if (FRAGMENT_OPENERS.test(after)) return ", ";
+    if (ENDS_CLAUSE.test(before.trim())) return " ";
+    return ". ";
+  });
 
   // Capitalise after a full stop the transform introduced.
-  out = out.replace(/\.\s+(\p{Ll})/gu, (m, ch) => `. ${ch.toLocaleUpperCase()}`)
-  return out.replace(/\s{2,}/g, " ").trim()
+  out = out.replace(
+    /\.\s+(\p{Ll})/gu,
+    (m, ch) => `. ${ch.toLocaleUpperCase()}`,
+  );
+  return out.replace(/\s{2,}/g, " ").trim();
 }
 
 // ---------------------------------------------------------------------------
 
 function getPath(obj, dotted) {
-  return dotted.split(".").reduce((o, k) => (o == null ? o : o[k]), obj)
+  return dotted.split(".").reduce((o, k) => (o == null ? o : o[k]), obj);
 }
 function setPath(obj, dotted, value) {
-  const parts = dotted.split(".")
-  const last = parts.pop()
-  const target = parts.reduce((o, k) => (o[k] ??= {}), obj)
-  const had = target[last] !== value
-  target[last] = value
-  return had
+  const parts = dotted.split(".");
+  const last = parts.pop();
+  const target = parts.reduce((o, k) => (o[k] ??= {}), obj);
+  const had = target[last] !== value;
+  target[last] = value;
+  return had;
 }
 function walk(node, prefix, fn) {
   for (const [k, v] of Object.entries(node)) {
-    const p = prefix ? `${prefix}.${k}` : k
-    if (typeof v === "string") fn(p, v, node, k)
-    else if (v && typeof v === "object") walk(v, p, fn)
+    const p = prefix ? `${prefix}.${k}` : k;
+    if (typeof v === "string") fn(p, v, node, k);
+    else if (v && typeof v === "object") walk(v, p, fn);
   }
 }
 
-const summary = []
+const summary = [];
 
 for (const locale of ["de", "en", "tr", "ru"]) {
-  const file = path.join(MESSAGES, `${locale}.json`)
-  const doc = JSON.parse(await readFile(file, "utf8"))
-  let vocab = 0
-  let dashes = 0
+  const file = path.join(MESSAGES, `${locale}.json`);
+  const doc = JSON.parse(await readFile(file, "utf8"));
+  let vocab = 0;
+  let dashes = 0;
 
   for (const [key, value] of Object.entries(VOCABULARY[locale])) {
-    if (getPath(doc, key) === undefined) continue
-    if (setPath(doc, key, value)) vocab++
+    if (getPath(doc, key) === undefined) continue;
+    if (setPath(doc, key, value)) vocab++;
   }
 
   if (locale === "de") {
     for (const [key, value] of Object.entries(GERMAN)) {
-      if (getPath(doc, key) === undefined) continue
-      if (setPath(doc, key, value)) dashes++
+      if (getPath(doc, key) === undefined) continue;
+      if (setPath(doc, key, value)) dashes++;
     }
   }
 
   // Anything still carrying a dash after the hand-written pass.
   walk(doc, "", (p, v, parent, k) => {
-    if (!v.includes("—")) return
-    const next = rewriteEmDashes(v)
+    if (!v.includes("—")) return;
+    const next = rewriteEmDashes(v);
     if (next !== v) {
-      parent[k] = next
-      dashes++
+      parent[k] = next;
+      dashes++;
     }
-  })
+  });
 
-  summary.push({ locale, vocab, dashes })
-  if (!DRY) await writeFile(file, `${JSON.stringify(doc, null, 2)}\n`, "utf8")
+  summary.push({ locale, vocab, dashes });
+  if (!DRY) await writeFile(file, `${JSON.stringify(doc, null, 2)}\n`, "utf8");
 }
 
 for (const s of summary) {
   process.stdout.write(
     `${s.locale}: ${String(s.vocab).padStart(2)} vocabulary · ${String(s.dashes).padStart(2)} em-dash strings rewritten\n`,
-  )
+  );
 }
-process.stdout.write(DRY ? "\n--dry-run: nothing written\n" : "\nwritten\n")
+process.stdout.write(DRY ? "\n--dry-run: nothing written\n" : "\nwritten\n");

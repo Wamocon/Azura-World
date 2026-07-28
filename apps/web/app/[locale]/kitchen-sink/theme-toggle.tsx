@@ -37,7 +37,10 @@ export function ThemeToggle(): ReactNode {
   ] as const
 
   return (
-    <div className="flex flex-wrap items-center gap-1" data-testid="theme-toggle">
+    <div
+      className="flex flex-wrap items-center gap-1"
+      data-testid="theme-toggle"
+    >
       {options.map((option) => {
         const Icon = option.icon
         const active = mounted && theme === option.value

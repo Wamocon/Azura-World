@@ -41,19 +41,19 @@ Windows: `PLAYWRIGHT_BROWSERS_PATH`, `TEMP`, `TMP` into `.tmp`.
 
 ### 2. Suite structure
 
-| Directory | Covers |
-|---|---|
-| `e2e/public/` | landing, hotel page, report flow, concierge |
-| `e2e/auth/` | login, access profiles, redirects, session expiry |
-| `e2e/roles/` | **the role × route matrix** |
-| `e2e/evidence/` | evidence cockpit, conflicts, provenance rendering |
-| `e2e/inventory/` | units, listings, filters, virtualisation |
-| `e2e/finance/` | ledger, payments, currency separation |
-| `e2e/operations/` | ticket lifecycle, activities, calendar, ICS |
-| `e2e/governance/` | documents, compliance, users, admin |
-| `e2e/api/` | contract-level assertions against every route |
-| `e2e/i18n/` | four locales, switching, formatting |
-| `e2e/a11y/` | keyboard paths, focus, landmarks |
+| Directory         | Covers                                            |
+| ----------------- | ------------------------------------------------- |
+| `e2e/public/`     | landing, hotel page, report flow, concierge       |
+| `e2e/auth/`       | login, access profiles, redirects, session expiry |
+| `e2e/roles/`      | **the role × route matrix**                       |
+| `e2e/evidence/`   | evidence cockpit, conflicts, provenance rendering |
+| `e2e/inventory/`  | units, listings, filters, virtualisation          |
+| `e2e/finance/`    | ledger, payments, currency separation             |
+| `e2e/operations/` | ticket lifecycle, activities, calendar, ICS       |
+| `e2e/governance/` | documents, compliance, users, admin               |
+| `e2e/api/`        | contract-level assertions against every route     |
+| `e2e/i18n/`       | four locales, switching, formatting               |
+| `e2e/a11y/`       | keyboard paths, focus, landmarks                  |
 
 ### 3. The role × route matrix — the centrepiece
 
@@ -63,15 +63,15 @@ Windows: `PLAYWRIGHT_BROWSERS_PATH`, `TEMP`, `TMP` into `.tmp`.
 for (const role of roles)
   for (const route of dashboardRoutes)
     test(`${role} → ${route.href}`, async ({ page }) => {
-      await loginAs(page, role)
-      const res = await page.goto(route.href)
-      const allowed = hasPermission(role, route.permission)
-      expect(res!.status()).toBe(allowed ? 200 : 403)
+      await loginAs(page, role);
+      const res = await page.goto(route.href);
+      const allowed = hasPermission(role, route.permission);
+      expect(res!.status()).toBe(allowed ? 200 : 403);
       if (allowed) {
-        await expect(page.locator("main")).toBeVisible()
-        expect(await page.locator("[data-error-boundary]").count()).toBe(0)
+        await expect(page.locator("main")).toBeVisible();
+        expect(await page.locator("[data-error-boundary]").count()).toBe(0);
       }
-    })
+    });
 ```
 
 Assert **both directions**. A matrix that only checks that permitted roles get in proves nothing
@@ -130,13 +130,13 @@ echo "exit=$?"      # capture it explicitly
 
 Report, honestly:
 
-| Metric | Value |
-|---|---|
-| Tests defined | n |
-| **Tests executed** | n |
-| Passed / Failed / Skipped / Flaky | n / n / n / n |
-| Role×route combinations asserted | n of 11 × 20 × 2 |
-| axe violations (serious+critical) | n |
+| Metric                            | Value            |
+| --------------------------------- | ---------------- |
+| Tests defined                     | n                |
+| **Tests executed**                | n                |
+| Passed / Failed / Skipped / Flaky | n / n / n / n    |
+| Role×route combinations asserted  | n of 11 × 20 × 2 |
+| axe violations (serious+critical) | n                |
 
 **A skipped test is not a passing test.** List every skip with its reason. If the full matrix did
 not run, say which part did not and why — do not report a partial run as a suite pass.

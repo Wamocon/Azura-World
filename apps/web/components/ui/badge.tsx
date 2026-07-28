@@ -51,11 +51,10 @@ const badgeVariants = cva(
 
         modelled:
           "border-quality-modelled/40 bg-quality-modelled/10 text-quality-modelled",
-        stale:
-          "border-quality-stale/40 bg-quality-stale/10 text-quality-stale",
+        stale: "border-quality-stale/40 bg-quality-stale/10 text-quality-stale",
         /* Simulated data. The loudest label in the build — W3-I §1. */
         simulation:
-          "border-simulation/50 bg-surface-simulation text-simulation uppercase tracking-[0.08em]",
+          "border-simulation/50 bg-surface-simulation tracking-[0.08em] text-simulation uppercase",
       },
       size: {
         default: "",

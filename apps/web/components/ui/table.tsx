@@ -43,7 +43,10 @@ function Table({ className, ...props }: ComponentProps<"table">) {
     <div className="azura-scrollbar-slim w-full overflow-x-auto">
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom border-collapse text-sm", className)}
+        className={cn(
+          "w-full caption-bottom border-collapse text-sm",
+          className
+        )}
         {...props}
       />
     </div>
@@ -86,7 +89,7 @@ function TableHead({ className, ...props }: ComponentProps<"th">) {
         // `whitespace-normal` and a min-width, not `nowrap`: German column
         // headings are long and truncating a heading loses the only label the
         // column has.
-        "min-w-24 px-3 py-2.5 text-left align-bottom text-xs font-semibold uppercase tracking-[0.04em] text-muted-foreground",
+        "min-w-24 px-3 py-2.5 text-left align-bottom text-xs font-semibold tracking-[0.04em] text-muted-foreground uppercase",
         className
       )}
       {...props}

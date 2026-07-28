@@ -9,12 +9,12 @@
 
 ## Mission
 
-**This module is acceptance criterion 4** — *"Bewertungen und Hotel-Buchungsquellen einbeziehen"* —
+**This module is acceptance criterion 4** — _"Bewertungen und Hotel-Buchungsquellen einbeziehen"_ —
 and it fails if it turns into marketing.
 
 Azura World Hotel scores 4.0/5 across 358 Tripadvisor reviews and ranks #10 of 33 hotels in
-Türkler. The sentiment is genuinely polarised: review titles range from *"Everything is perfect"*
-to *"A Five-Star Hotel in Name Only: Misleading, Unsafe, and Unprofessional."* **Both must be
+Türkler. The sentiment is genuinely polarised: review titles range from _"Everything is perfect"_
+to _"A Five-Star Hotel in Name Only: Misleading, Unsafe, and Unprofessional."_ **Both must be
 visible.** A competitor CATI that surfaces only the 4.0 average and a positive quote is not
 intelligence — it is a brochure, and it will mislead whoever makes a decision from it.
 
@@ -44,16 +44,16 @@ Messages: `hotel.*`, `dashboard.hotel.*`, `dashboard.reviews.*` only.
 
 The operation as an asset of the complex. Every figure through `ProvenanceValue`:
 
-| Fact | Value | Confidence |
-|---|---|---|
-| Name | Azura World Hotel | confirmed |
-| Former name | Wyndham Alanya | confirmed — **shown, with the rebrand explained** |
-| Class | 5★, All-Inclusive | confirmed |
-| Rooms | 188 · 6 floors · 2 lifts | confirmed |
-| Opened | 2025 | confirmed |
-| Aquapark | 13 slides | single source |
-| Beach | 1 km + shuttle | single source — **note it differs from the residence's 300 m** |
-| Check-in / out | 14:00 / 12:00 | single source |
+| Fact           | Value                    | Confidence                                                     |
+| -------------- | ------------------------ | -------------------------------------------------------------- |
+| Name           | Azura World Hotel        | confirmed                                                      |
+| Former name    | Wyndham Alanya           | confirmed — **shown, with the rebrand explained**              |
+| Class          | 5★, All-Inclusive        | confirmed                                                      |
+| Rooms          | 188 · 6 floors · 2 lifts | confirmed                                                      |
+| Opened         | 2025                     | confirmed                                                      |
+| Aquapark       | 13 slides                | single source                                                  |
+| Beach          | 1 km + shuttle           | single source — **note it differs from the residence's 300 m** |
+| Check-in / out | 14:00 / 12:00            | single source                                                  |
 
 The beach-distance divergence (F-003) is not a contradiction — different reference points — and
 the page should say so rather than leaving a reader to spot an apparent inconsistency.
@@ -75,7 +75,7 @@ is an allegation you have authored.
 
 **Balance is a hard requirement**: the quote list must show both extremes by default, not the
 positive ones with negatives behind a filter. Build the default view to be balanced and let
-filtering *narrow* it, never widen it from a positive-only default.
+filtering _narrow_ it, never widen it from a positive-only default.
 
 ### 3. Hotel operations — `/dashboard/hotel`
 
@@ -119,6 +119,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, evidence pasted:
+
 1. Public hotel page, four locales, all figures with provenance
 2. **The rebrand rendered**: current name primary, former name explained, source cited
 3. Review dashboard: each platform on its **own scale**, no cross-platform average anywhere —

@@ -1058,7 +1058,9 @@ export async function getEvidenceCoverage(): Promise<
             .from("findings")
             .select("severity, area, resolved_to")
             .limit(ceiling),
-          client.from("fact_sources").select("id", { count: "exact", head: true }),
+          client
+            .from("fact_sources")
+            .select("id", { count: "exact", head: true }),
           client
             .from("fact_sources")
             .select("id", { count: "exact", head: true })

@@ -13,7 +13,7 @@ This task **is** the ticket. Acceptance criteria 2, 3 and 4 are satisfied here o
 Build a reproducible pipeline that harvests 23 competitor sources, extracts every fact with its
 provenance, records every disagreement rather than resolving it silently, and emits a typed
 dataset the rest of the app renders. Its output is the difference between competitor
-*intelligence* and competitor *rumour*.
+_intelligence_ and competitor _rumour_.
 
 You do not need W0-A's scaffold to start — write the scripts, generate `sources/raw/`, and only
 the final TypeScript emit needs the repo to compile.
@@ -37,13 +37,13 @@ HANDOFF/W0-B.md
 
 ## Reference implementations — read before writing
 
-| For | Read |
-|---|---|
-| Harvest with byte validation | `D:\Ataberg\scripts\harvest.mjs` |
-| Listing extraction | `D:\Ataberg\scripts\extract-listings.mjs` |
-| Dataset build → TS + SQL + CSV | `D:\Real Estate CRM\Cati\scripts\build-new-level-premium-dataset.py` |
-| Target output shape | `D:\Real Estate CRM\Cati\apps\web\lib\new-level-premium-data.ts` (first 70 lines) |
-| Evidence grading style | `D:\Ataberg\ANALYSIS.md` §0 |
+| For                            | Read                                                                              |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| Harvest with byte validation   | `D:\Ataberg\scripts\harvest.mjs`                                                  |
+| Listing extraction             | `D:\Ataberg\scripts\extract-listings.mjs`                                         |
+| Dataset build → TS + SQL + CSV | `D:\Real Estate CRM\Cati\scripts\build-new-level-premium-dataset.py`              |
+| Target output shape            | `D:\Real Estate CRM\Cati\apps\web\lib\new-level-premium-data.ts` (first 70 lines) |
+| Evidence grading style         | `D:\Ataberg\ANALYSIS.md` §0                                                       |
 
 ---
 
@@ -109,7 +109,7 @@ unit-by-unit breakdown**. So:
 
 - Real scraped listings → `dataQuality: "portal_listing"`, real prices, real URLs
 - The remainder, synthesised to fill 656 → `dataQuality: "modelled"`, `askingPrice.confidence:
-  "inferred"` with a note naming the derivation
+"inferred"` with a note naming the derivation
 - The counts must appear in the dataset: `{ portalListing: n, modelled: 656 - n }`
 - **A modelled unit must never be displayed in a way that reads as a real listing.** W3-C
   enforces the visual distinction; you enforce the data honesty.
@@ -136,7 +136,7 @@ The competitor situation analysis, in Ataberg's register. Sections:
 1. What Azura World actually is
 2. The source estate — 23 sources, which are authoritative, which are unreachable
 3. The conflict register — all findings, with your reasoning
-4. What the portals disagree about and why *(currency, staleness, subsetting)*
+4. What the portals disagree about and why _(currency, staleness, subsetting)_
 5. The hotel: rebrand, ratings, polarised sentiment
 6. **What is not established** — the `[GAP]` list, unfilled
 
@@ -159,7 +159,7 @@ for the structural figures.
   nullable. Never infer one from the other.
 - Same unit on three portals at three prices → all three in `competingPrices`, none discarded.
 - A source that 200s today and 403s tomorrow → the pipeline must be re-runnable and produce a
-  *diff*, not a silent regression. Keep prior manifests.
+  _diff_, not a silent regression. Keep prior manifests.
 - Review text containing HTML or emoji → store as text, escape at render. Never
   `dangerouslySetInnerHTML` on scraped content.
 - Rate limiting / soft ban mid-run → back off, record partial, exit non-zero. A partial harvest

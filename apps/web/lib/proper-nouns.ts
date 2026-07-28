@@ -53,7 +53,9 @@ export function pinProperNoun(value: string): string | null {
  */
 export function pinProperNouns(value: string): string {
   let result = value
-  for (const variant of Object.keys(variants).sort((a, b) => b.length - a.length)) {
+  for (const variant of Object.keys(variants).sort(
+    (a, b) => b.length - a.length
+  )) {
     const canonical = variants[variant]
     if (canonical !== undefined && result.includes(variant)) {
       result = result.split(variant).join(canonical)

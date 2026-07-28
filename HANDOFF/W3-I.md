@@ -7,17 +7,17 @@ Completed: 2026-07-27
 
 ## What was built
 
-| File | Lines | What it is |
-|---|---|---|
-| `apps/web/lib/simulation-clock.ts` | 196 | Seeded clock. mulberry32, fixed epoch, tab-visibility pause. |
-| `apps/web/components/immersion/simulation-label.tsx` | 108 | `SimulationBanner` + `SimulationChip`. |
-| `apps/web/components/immersion/primitives.tsx` | 330 | `TiltCard`, `KineticHeadline`, `AnimatedCounter`, `AuroraBackground`. |
-| `apps/web/components/immersion/azura-live-simulation.tsx` | 300 | The operational ticker. |
-| `apps/web/components/immersion/azura-site-world.tsx` | 250 | CSS isometric masterplan + step-through. |
-| `apps/web/components/immersion/azura-unit-explorer.tsx` | 300 | 656 units, filter + search + connection state. |
-| `apps/web/components/immersion/azura-evidence-flow.tsx` | 290 | The evidence pipeline, ending unresolved on F-002. |
-| `apps/web/app/sections/azura-immersion.tsx` | 165 | The composed section — **W3-A's import surface**. |
-| `apps/web/app/[locale]/kitchen-sink/immersion-demo.tsx` | 275 | Mounts all of it against the real dataset. |
+| File                                                      | Lines | What it is                                                            |
+| --------------------------------------------------------- | ----- | --------------------------------------------------------------------- |
+| `apps/web/lib/simulation-clock.ts`                        | 196   | Seeded clock. mulberry32, fixed epoch, tab-visibility pause.          |
+| `apps/web/components/immersion/simulation-label.tsx`      | 108   | `SimulationBanner` + `SimulationChip`.                                |
+| `apps/web/components/immersion/primitives.tsx`            | 330   | `TiltCard`, `KineticHeadline`, `AnimatedCounter`, `AuroraBackground`. |
+| `apps/web/components/immersion/azura-live-simulation.tsx` | 300   | The operational ticker.                                               |
+| `apps/web/components/immersion/azura-site-world.tsx`      | 250   | CSS isometric masterplan + step-through.                              |
+| `apps/web/components/immersion/azura-unit-explorer.tsx`   | 300   | 656 units, filter + search + connection state.                        |
+| `apps/web/components/immersion/azura-evidence-flow.tsx`   | 290   | The evidence pipeline, ending unresolved on F-002.                    |
+| `apps/web/app/sections/azura-immersion.tsx`               | 165   | The composed section — **W3-A's import surface**.                     |
+| `apps/web/app/[locale]/kitchen-sink/immersion-demo.tsx`   | 275   | Mounts all of it against the real dataset.                            |
 
 `AzuraCoastMaquette` is `components/three/coast-maquette.tsx`, built under W1-D
 with all of its guards, and composed here inside a `TiltCard`.
@@ -32,19 +32,19 @@ so no cross-window request was needed.
 One component, one props object, **all serialisable**:
 
 ```tsx
-import { AzuraImmersionSection } from "@/app/sections/azura-immersion"
+import { AzuraImmersionSection } from "@/app/sections/azura-immersion";
 
 <AzuraImmersionSection
   locale={locale}
-  labels={labels}              // AzuraImmersionLabels — plain strings only
-  blocks={blocks}              // SiteBlock[]    — code, unitCount, kind
-  units={units}                // ExplorerUnit[] — pass all 656; it windows them
-  facts={facts}                // SiteWorldFacts — five SourcedFacts
-  counts={counts}              // EvidenceFlowCounts
-  competingPrices={prices}     // CompetingPrice[] — F-002
-  entryPriceFact={fact}        // SourcedFact<Money>
-  realtime={false}             // from W2-D
-/>
+  labels={labels} // AzuraImmersionLabels — plain strings only
+  blocks={blocks} // SiteBlock[]    — code, unitCount, kind
+  units={units} // ExplorerUnit[] — pass all 656; it windows them
+  facts={facts} // SiteWorldFacts — five SourcedFacts
+  counts={counts} // EvidenceFlowCounts
+  competingPrices={prices} // CompetingPrice[] — F-002
+  entryPriceFact={fact} // SourcedFact<Money>
+  realtime={false} // from W2-D
+/>;
 ```
 
 It is a **Server Component** and imports no data. Every figure arrives as a
@@ -61,13 +61,13 @@ boundary. Placeholders are `{count}`, `{visible}`, `{total}`.
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| Scoped `tsc --noEmit` (W1-D + W3-I files) | **PASS** exit 0 | scratchpad config; W3-I subtree included |
-| `eslint` over all owned paths | **PASS** exit 0, 0 errors 0 warnings | see below |
-| Playwright, real Chromium | **PASS — 16/16** | output below |
-| `pnpm --dir apps/web build` | **PASS** exit 0 | Blocked on W2-C's `ai-retrieval.ts:147` for most of the run; green in the final pass. |
-| `pnpm qa:perf` | **NOT RUN** | script does not exist; W4-B owns it |
+| Command                                   | Result                               | Evidence                                                                              |
+| ----------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------- |
+| Scoped `tsc --noEmit` (W1-D + W3-I files) | **PASS** exit 0                      | scratchpad config; W3-I subtree included                                              |
+| `eslint` over all owned paths             | **PASS** exit 0, 0 errors 0 warnings | see below                                                                             |
+| Playwright, real Chromium                 | **PASS — 16/16**                     | output below                                                                          |
+| `pnpm --dir apps/web build`               | **PASS** exit 0                      | Blocked on W2-C's `ai-retrieval.ts:147` for most of the run; green in the final pass. |
+| `pnpm qa:perf`                            | **NOT RUN**                          | script does not exist; W4-B owns it                                                   |
 
 ### Lint — the five errors the supervisor flagged as S-002 were mine, and are fixed
 
@@ -120,7 +120,7 @@ PASS  320px: simulation label still visible          visible=true
 1. **Incoherent feed rows.** The ticker picked a block code and a unit id
    independently, producing `B03 · AZW-B01-0056` — a unit shown against a block
    its own id contradicts. The events are simulated and labelled as such; being
-   *internally incoherent* is a different failure and reads as a data bug. The
+   _internally incoherent_ is a different failure and reads as a data bug. The
    block now comes from the unit.
 2. **A sentence in a `Badge`.** `Badge` was `whitespace-nowrap`, so the
    masterplan's schematic warning blew the page out to 971px at a 320px
@@ -158,17 +158,17 @@ No source publishes a site plan, and a plausible-looking one reads as a survey.
 
 ## Reduced-motion behaviour, per component
 
-| Component | Under `prefers-reduced-motion: reduce` |
-|---|---|
-| `AzuraLiveSimulation` | Renders a **full six-event feed** — its complete final state, not a paused first frame. The clock never starts. |
-| `AzuraSiteWorld` | Scene renders statically; the CSS float is opted in under `no-preference` so it never starts. All figures are text regardless. |
-| `AzuraUnitExplorer` | No motion to begin with. |
-| `AzuraEvidenceFlow` | Static. The F-002 panel renders whether or not the reader steps through, so the argument is never behind an interaction. |
-| `TiltCard` | Returns a plain `div`. No listeners, no rAF. |
-| `KineticHeadline` | Returns plain text, no motion wrapper. |
-| `AnimatedCounter` | Renders the final value. No count-up. |
-| `AuroraBackground` | Static gradient stays; only the drifting layer is withheld. |
-| `CoastMaquette` | Poster. |
+| Component             | Under `prefers-reduced-motion: reduce`                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `AzuraLiveSimulation` | Renders a **full six-event feed** — its complete final state, not a paused first frame. The clock never starts.                |
+| `AzuraSiteWorld`      | Scene renders statically; the CSS float is opted in under `no-preference` so it never starts. All figures are text regardless. |
+| `AzuraUnitExplorer`   | No motion to begin with.                                                                                                       |
+| `AzuraEvidenceFlow`   | Static. The F-002 panel renders whether or not the reader steps through, so the argument is never behind an interaction.       |
+| `TiltCard`            | Returns a plain `div`. No listeners, no rAF.                                                                                   |
+| `KineticHeadline`     | Returns plain text, no motion wrapper.                                                                                         |
+| `AnimatedCounter`     | Renders the final value. No count-up.                                                                                          |
+| `AuroraBackground`    | Static gradient stays; only the drifting layer is withheld.                                                                    |
+| `CoastMaquette`       | Poster.                                                                                                                        |
 
 Verified: **0 elements left below 5% opacity** anywhere in the section.
 
@@ -222,7 +222,7 @@ design). The two are identical field-for-field.
 3. **W2-D** — `AzuraUnitExplorer` takes a `realtime` boolean and renders its own
    connection chip. It deliberately does **not** import your `SyncBadge`: a
    simulated surface must not share a live surface's freshness vocabulary. The
-   explorer is real data, so it *may* use yours later — but the ticker must not.
+   explorer is real data, so it _may_ use yours later — but the ticker must not.
 4. **W2-C** — still blocking the production build: `lib/ai-retrieval.ts:147`,
    `Type 'number' is not assignable to type 'SourceTier'`.
 

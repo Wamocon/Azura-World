@@ -57,7 +57,9 @@ export function DashboardPageHeader({
         {/* `flex-wrap` is not optional: two German action labels do not fit
             beside a title at 320px, and without it they overflow the page. */}
         {actions === undefined ? null : (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {actions}
+          </div>
         )}
       </div>
 
@@ -102,7 +104,9 @@ export function DashboardSection({
             {title}
           </Heading>
           {description === undefined ? null : (
-            <p className="max-w-prose text-sm text-muted-foreground">{description}</p>
+            <p className="max-w-prose text-sm text-muted-foreground">
+              {description}
+            </p>
           )}
         </div>
         {actions === undefined ? null : (
@@ -134,8 +138,8 @@ export function DashboardKpiGrid({
     <div
       data-slot="dashboard-kpi-grid"
       className={cn(
-        "grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))]",
-        className,
+        "grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-3",
+        className
       )}
     >
       {children}

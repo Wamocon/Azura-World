@@ -9,22 +9,21 @@ Machine-readable: [`quality/gate.json`](quality/gate.json) (includes full stdout
 Console transcripts: `quality/gate-console.txt` · `quality/traceability-console.txt`
 Probe transcripts: `quality/probes/*.txt`
 
-
 > ## ⚠ SUPERSEDING RE-RUN — 2026-07-28, after W2-B completed
 >
 > Both runs below were executed with the corrected gate (see the two self-corrections at the end
 > of this block). **Where any figure further down this document disagrees with this block, this
 > block is right.**
 >
-> | | `main` @ `bb9bf87` (+W4-D) | `main` + **W2-B** merged (preview) |
-> |---|---|---|
-> | blocking PASS | **9** | **10** |
-> | blocking FAIL | **2** | **2** |
-> | blocking NOT RUN | **8** | **7** |
-> | exit code | **1** | **1** |
-> | gate 3 Format | FAIL — **121** source files | FAIL — **145** source files |
-> | gate 7 OpenAPI | **NOT RUN** — absent on `main` | **PASS** — `13 pass · 0 fail · 23 exempt`, 33 paths · 49 operations |
-> | gate 18 Audit | FAIL — 8 high + 7 moderate | FAIL — 8 high + 7 moderate |
+> |                  | `main` @ `bb9bf87` (+W4-D)     | `main` + **W2-B** merged (preview)                                  |
+> | ---------------- | ------------------------------ | ------------------------------------------------------------------- |
+> | blocking PASS    | **9**                          | **10**                                                              |
+> | blocking FAIL    | **2**                          | **2**                                                               |
+> | blocking NOT RUN | **8**                          | **7**                                                               |
+> | exit code        | **1**                          | **1**                                                               |
+> | gate 3 Format    | FAIL — **121** source files    | FAIL — **145** source files                                         |
+> | gate 7 OpenAPI   | **NOT RUN** — absent on `main` | **PASS** — `13 pass · 0 fail · 23 exempt`, 33 paths · 49 operations |
+> | gate 18 Audit    | FAIL — 8 high + 7 moderate     | FAIL — 8 high + 7 moderate                                          |
 >
 > **W2-B is COMPLETE but NOT MERGED.** `origin/main` is still `bb9bf87` and carries no
 > `scripts/validate-openapi.mjs`, so on `main` today gate 7 is honestly **NOT RUN**. The second
@@ -37,6 +36,7 @@ Probe transcripts: `quality/probes/*.txt`
 > "OpenAPI contract: PASS" alone would misrepresent it, so the gate table now prints the tally.
 >
 > **Two corrections to my own earlier reporting, both defects in this gate rather than in the tree:**
+>
 > 1. Gate 3 first reported **"0 file(s) need formatting"** next to a red FAIL — prettier colourises
 >    its output and the counter matched a raw literal. Fixed with `stripAnsi()`.
 > 2. Gate 3 then reported **174 → 198 → 254** across three runs of an unchanged tree, because
@@ -98,7 +98,7 @@ the exact failure this wave exists to prevent. Fixing it is one mechanical `pret
 commit — see `RELEASE-STATUS.md` §5②, and note it would touch files owned by eight different
 windows, which is why W4-D did not do it unilaterally.
 
-*Self-correction worth recording:* the first run of this gate reported **"0 file(s) need
+_Self-correction worth recording:_ the first run of this gate reported **"0 file(s) need
 formatting"** next to a red FAIL. prettier colourises its output, so `[warn]` arrives as
 `\x1b[33mwarn\x1b[39m` and the literal-match counter found nothing. A gate whose evidence
 contradicts its own verdict is worse than no gate; `stripAnsi()` was added, and after the
@@ -108,26 +108,26 @@ contradicts its own verdict is worse than no gate; `stripAnsi()` was added, and 
 
 `pnpm audit --audit-level=high`
 
-| Severity | Package | Advisory | Patched in |
-|---|---|---|---|
-| **high** | `next` | Middleware / Proxy bypass in App Router applications | `>=16.2.11` |
-| **high** | `next` | Denial of Service in App Router using Server Actions | `>=16.2.11` |
-| **high** | `next` | Server-Side Request Forgery in Server Actions | `>=16.2.11` |
-| **high** | `next` | Server-Side Request Forgery in rewrites | `>=16.2.11` |
-| moderate | `next` | Cache confusion of response bodies ×2 | `>=16.2.11` |
-| moderate | `next` | Unbounded Server Action payload (Edge) | `>=16.2.11` |
-| moderate | `next` | DoS in the Image Optimization API | `>=16.2.11` |
-| moderate | `next` | Unauthenticated disclosure of internal Server Functions | `>=16.2.11` |
-| **high** | `postcss` | Arbitrary file read / information disclosure | `>=8.5.12` |
-| **high** | `postcss` | Path traversal in previous-source-map auto-loading | `>=8.5.18` |
-| moderate | `postcss` | XSS via unescaped `</style>` | `>=8.5.10` |
-| **high** | `sharp` | Inherited libvips vulnerabilities (CVE-2026-33327) | `>=0.35.0` |
-| **high** | `brace-expansion` | DoS via unbounded expansion | `>=5.0.8` |
-| moderate | `@hono/node-server` | Path traversal in `serve-static` | `>=2.0.5` |
+| Severity | Package             | Advisory                                                | Patched in  |
+| -------- | ------------------- | ------------------------------------------------------- | ----------- |
+| **high** | `next`              | Middleware / Proxy bypass in App Router applications    | `>=16.2.11` |
+| **high** | `next`              | Denial of Service in App Router using Server Actions    | `>=16.2.11` |
+| **high** | `next`              | Server-Side Request Forgery in Server Actions           | `>=16.2.11` |
+| **high** | `next`              | Server-Side Request Forgery in rewrites                 | `>=16.2.11` |
+| moderate | `next`              | Cache confusion of response bodies ×2                   | `>=16.2.11` |
+| moderate | `next`              | Unbounded Server Action payload (Edge)                  | `>=16.2.11` |
+| moderate | `next`              | DoS in the Image Optimization API                       | `>=16.2.11` |
+| moderate | `next`              | Unauthenticated disclosure of internal Server Functions | `>=16.2.11` |
+| **high** | `postcss`           | Arbitrary file read / information disclosure            | `>=8.5.12`  |
+| **high** | `postcss`           | Path traversal in previous-source-map auto-loading      | `>=8.5.18`  |
+| moderate | `postcss`           | XSS via unescaped `</style>`                            | `>=8.5.10`  |
+| **high** | `sharp`             | Inherited libvips vulnerabilities (CVE-2026-33327)      | `>=0.35.0`  |
+| **high** | `brace-expansion`   | DoS via unbounded expansion                             | `>=5.0.8`   |
+| moderate | `@hono/node-server` | Path traversal in `serve-static`                        | `>=2.0.5`   |
 
 **The pin is the problem.** All nine `next` advisories are `vulnerable: >=16.0.0 <16.2.11`;
 `CONVENTIONS.md` §1 pins `next` at exactly **16.2.6**. `postcss` and `sharp` reach the tree
-transitively *through* `next@16.2.6`.
+transitively _through_ `next@16.2.6`.
 
 The first advisory is the one to read twice: **Middleware / Proxy bypass in App Router
 applications.** `apps/web/proxy.ts` is where this application performs Supabase session refresh and
@@ -143,20 +143,20 @@ Dependabot **PR #4** (`next` → 16.2.12, `react`/`react-dom` → 19.2.8) clears
 
 ## 3. The eight NOT RUN gates — why each could not run
 
-None of these is a failure to *pass*; each is an absence of anything to execute. All were verified
+None of these is a failure to _pass_; each is an absence of anything to execute. All were verified
 by checking for the target file, not assumed.
 
-| Gate | Missing target | Owner | Status of that window |
-|---|---|---|---|
-| 7 OpenAPI | `scripts/validate-openapi.mjs`, `docs/api/openapi.yaml` | W2-B | **COMPLETE but unmerged** — runs and passes on a preview merge; see the superseding block |
-| 9 pgTAP | Docker daemon (`docker info` exit 1) | environment | down for the entire run; **substitute recorded** |
-| 10 e2e chromium | `apps/web/playwright.config.ts` | W4-A | **never started** — `apps/web/e2e/` has 0 spec files |
-| 11 e2e mobile | same | W4-A | same |
-| 12 Layout | `scripts/layout-audit.mjs` | W4-B | **never started** |
-| 13 a11y | `scripts/a11y.mjs` (no `qa:a11y` script exists either) | W4-B | **never started** |
-| 14 Performance | `scripts/perf.mjs` | W4-B | **never started** |
-| 15 Security probe | `scripts/security-probe.mjs` | W4-C | **never started** |
-| 19 Drift *(non-blocking)* | `scripts/evidence-drift.mjs` | W0-B | never written |
+| Gate                      | Missing target                                          | Owner       | Status of that window                                                                     |
+| ------------------------- | ------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| 7 OpenAPI                 | `scripts/validate-openapi.mjs`, `docs/api/openapi.yaml` | W2-B        | **COMPLETE but unmerged** — runs and passes on a preview merge; see the superseding block |
+| 9 pgTAP                   | Docker daemon (`docker info` exit 1)                    | environment | down for the entire run; **substitute recorded**                                          |
+| 10 e2e chromium           | `apps/web/playwright.config.ts`                         | W4-A        | **never started** — `apps/web/e2e/` has 0 spec files                                      |
+| 11 e2e mobile             | same                                                    | W4-A        | same                                                                                      |
+| 12 Layout                 | `scripts/layout-audit.mjs`                              | W4-B        | **never started**                                                                         |
+| 13 a11y                   | `scripts/a11y.mjs` (no `qa:a11y` script exists either)  | W4-B        | **never started**                                                                         |
+| 14 Performance            | `scripts/perf.mjs`                                      | W4-B        | **never started**                                                                         |
+| 15 Security probe         | `scripts/security-probe.mjs`                            | W4-C        | **never started**                                                                         |
+| 19 Drift _(non-blocking)_ | `scripts/evidence-drift.mjs`                            | W0-B        | never written                                                                             |
 
 **Gate 9's substitute, stated as a substitute.** W1-A ran pgTAP 1.3.3 against the live cloud
 database inside `BEGIN..ROLLBACK`: **366 planned · 366 executed · 366 passed**. That run found the
@@ -170,14 +170,14 @@ and it does not prove a from-scratch `supabase db reset`.
 
 Re-run by W4-D on this tree, exit codes read directly from each process:
 
-| Suite | Command | Exit | Result |
-|---|---|---|---|
-| Contract smoke | `pnpm smoke:contracts` | 0 | 33 pass · 0 fail |
-| RBAC matrix | `scripts/rbac-probe.mts` | 0 | 157 pass · 0 fail |
-| AI guardrails | `scripts/ai-probe.mjs` | 0 | 152 pass · 0 fail · 17/31 refused |
-| Realtime | `scripts/realtime-probe.mts` | 0 | 93 pass · 0 fail |
-| Dashboard matrix | `pnpm qa:dashboard` | 0 | 647 pass · 0 fail · 11 roles × 21 routes |
-| Traceability | `scripts/traceability.mjs` | 0 | 15 pass · 0 fail |
+| Suite            | Command                      | Exit | Result                                   |
+| ---------------- | ---------------------------- | ---- | ---------------------------------------- |
+| Contract smoke   | `pnpm smoke:contracts`       | 0    | 33 pass · 0 fail                         |
+| RBAC matrix      | `scripts/rbac-probe.mts`     | 0    | 157 pass · 0 fail                        |
+| AI guardrails    | `scripts/ai-probe.mjs`       | 0    | 152 pass · 0 fail · 17/31 refused        |
+| Realtime         | `scripts/realtime-probe.mts` | 0    | 93 pass · 0 fail                         |
+| Dashboard matrix | `pnpm qa:dashboard`          | 0    | 647 pass · 0 fail · 11 roles × 21 routes |
+| Traceability     | `scripts/traceability.mjs`   | 0    | 15 pass · 0 fail                         |
 
 **1,151 assertions executed, 1,151 passed, 0 failed.**
 

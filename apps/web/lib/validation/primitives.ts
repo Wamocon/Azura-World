@@ -35,7 +35,10 @@ export const identifier = z
   .max(64, "That identifier is too long.")
   // Unicode letters are deliberately excluded: an id is machine-generated, and
   // allowing them invites homoglyph confusion between visually identical ids.
-  .regex(/^[A-Za-z0-9._:-]+$/, "That identifier contains characters that are not allowed.")
+  .regex(
+    /^[A-Za-z0-9._:-]+$/,
+    "That identifier contains characters that are not allowed."
+  )
 
 export const shortText = (label: string) => boundedText(200, label)
 export const longText = (label: string) => boundedText(4_000, label)

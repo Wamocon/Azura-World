@@ -163,7 +163,8 @@ export function toApiError(error: unknown, label: string): ApiError {
     case "40P01":
       return {
         code: "conflict",
-        message: "The record changed while you were editing it. Reload and try again.",
+        message:
+          "The record changed while you were editing it. Reload and try again.",
         retryable: true,
       }
     // undefined_table / undefined_column: the schema is behind the code. This is
@@ -215,7 +216,7 @@ export type RepositoryClient = ServerSupabaseClient
 export async function withRepository<T>(
   fn: (client: RepositoryClient) => Promise<T>,
   fallback: () => T,
-  label: string,
+  label: string
 ): Promise<RepositoryResult<T>> {
   return runRepository(fn, fallback, label, {
     isConfigured: isSupabaseConfigured,
@@ -241,7 +242,7 @@ export async function runRepository<T>(
   fn: (client: RepositoryClient) => Promise<T>,
   fallback: () => T,
   label: string,
-  deps: RepositoryDeps,
+  deps: RepositoryDeps
 ): Promise<RepositoryResult<T>> {
   if (!deps.isConfigured()) {
     return {
@@ -264,7 +265,10 @@ export async function runRepository<T>(
       details: { source: label },
       retryable: true,
     }
-    logRepositoryFailure(label, new Error("Supabase client could not be created"))
+    logRepositoryFailure(
+      label,
+      new Error("Supabase client could not be created")
+    )
     throw new RepositoryError(apiError)
   }
 
@@ -285,7 +289,7 @@ export async function runRepository<T>(
  */
 export function unwrap<T>(
   response: { data: T | null; error: PostgrestError | null },
-  whenNull: T,
+  whenNull: T
 ): T {
   if (response.error) throw response.error
   return response.data ?? whenNull
@@ -363,12 +367,13 @@ export function asNumber(value: unknown, fallback = 0): number {
  */
 export function asMoney(
   amount: unknown,
-  currency: unknown,
+  currency: unknown
 ): { amount: number; currency: "EUR" | "USD" | "TRY" | "GBP" } | null {
   const parsed = asNullableNumber(amount)
   const code = asNullableString(currency)
   if (parsed === null || code === null) return null
-  if (code !== "EUR" && code !== "USD" && code !== "TRY" && code !== "GBP") return null
+  if (code !== "EUR" && code !== "USD" && code !== "TRY" && code !== "GBP")
+    return null
   return { amount: parsed, currency: code }
 }
 
@@ -387,7 +392,7 @@ export function relatedRecord(value: unknown): Record<string, unknown> {
  * and decides how to present them.
  */
 export function totalsByCurrency(
-  rows: ReadonlyArray<{ amount: number; currency: string }>,
+  rows: ReadonlyArray<{ amount: number; currency: string }>
 ): Record<string, number> {
   const totals: Record<string, number> = {}
   for (const row of rows) {
@@ -412,7 +417,7 @@ export function totalsByCurrency(
  */
 export function degraded<T>(
   result: RepositoryResult<T>,
-  reason: string,
+  reason: string
 ): RepositoryResult<T> {
   const existing = result.degradedReason
   return {
@@ -422,7 +427,10 @@ export function degraded<T>(
 }
 
 /** A `local-seed` result built without touching Supabase. */
-export function seedResult<T>(data: T, degradedReason?: string): RepositoryResult<T> {
+export function seedResult<T>(
+  data: T,
+  degradedReason?: string
+): RepositoryResult<T> {
   return {
     data,
     source: "local-seed",

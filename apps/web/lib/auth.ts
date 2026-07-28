@@ -160,7 +160,10 @@ export async function getUserProfile(): Promise<UserProfile> {
     // 3. Every remaining decision is the pure table in `auth-resolution.ts`.
     return resolveSupabaseProfile({
       userId: user.id,
-      userEmail: typeof user.email === "string" && user.email.length > 0 ? user.email : null,
+      userEmail:
+        typeof user.email === "string" && user.email.length > 0
+          ? user.email
+          : null,
       profileReadFailed: profileError !== null,
       row,
     })

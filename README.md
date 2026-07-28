@@ -34,14 +34,14 @@ will corrupt the build.
 
 ## Reading order (for you, once)
 
-| File | What it is |
-|---|---|
-| [ORCHESTRATION.md](ORCHESTRATION.md) | Waves, dependency graph, file-ownership matrix, merge protocol |
-| [SYSTEM-PROMPT.md](SYSTEM-PROMPT.md) | Paste-in system prompt for every window — non-negotiables |
-| [CONTRACTS.md](CONTRACTS.md) | Frozen TypeScript interfaces every window codes against |
-| [CONVENTIONS.md](CONVENTIONS.md) | Stack versions, security rules, edge cases, July-2026 practice |
-| [SOURCES.md](SOURCES.md) | Evidence register: 23 sources, what each yields, every conflict |
-| [SUPABASE-SETUP.md](SUPABASE-SETUP.md) | The five values needed in `.env.local`, and how to verify them |
+| File                                   | What it is                                                      |
+| -------------------------------------- | --------------------------------------------------------------- |
+| [ORCHESTRATION.md](ORCHESTRATION.md)   | Waves, dependency graph, file-ownership matrix, merge protocol  |
+| [SYSTEM-PROMPT.md](SYSTEM-PROMPT.md)   | Paste-in system prompt for every window — non-negotiables       |
+| [CONTRACTS.md](CONTRACTS.md)           | Frozen TypeScript interfaces every window codes against         |
+| [CONVENTIONS.md](CONVENTIONS.md)       | Stack versions, security rules, edge cases, July-2026 practice  |
+| [SOURCES.md](SOURCES.md)               | Evidence register: 23 sources, what each yields, every conflict |
+| [SUPABASE-SETUP.md](SUPABASE-SETUP.md) | The five values needed in `.env.local`, and how to verify them  |
 
 ---
 

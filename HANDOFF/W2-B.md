@@ -1,4 +1,4 @@
-# HANDOFF — W2-B  API routes + OpenAPI contract
+# HANDOFF — W2-B API routes + OpenAPI contract
 
 STATUS: COMPLETE
 Completed: 2026-07-28
@@ -12,16 +12,16 @@ an unverified property is visible in the gate output rather than quietly counted
 
 ## 1. Counts, for the project docs
 
-| | |
-|---|---|
-| **Paths** | **33** |
-| **Operations** | **49** |
-| Operations this window owns | 42 |
-| Operations another window owns, declared here so they are not shadow endpoints | 7 |
-| Mutating operations | 22 |
-| Public operations (no permission) | 9 — 3 mine, 6 external |
-| Declared write gaps (503 and no 2xx, by construction) | 14 |
-| Route files under `app/api` | 28 |
+|                                                                                |                        |
+| ------------------------------------------------------------------------------ | ---------------------- |
+| **Paths**                                                                      | **33**                 |
+| **Operations**                                                                 | **49**                 |
+| Operations this window owns                                                    | 42                     |
+| Operations another window owns, declared here so they are not shadow endpoints | 7                      |
+| Mutating operations                                                            | 22                     |
+| Public operations (no permission)                                              | 9 — 3 mine, 6 external |
+| Declared write gaps (503 and no 2xx, by construction)                          | 14                     |
+| Route files under `app/api`                                                    | 28                     |
 
 The seven external operations are W1-B's `access-profile` switch and W2-C's four AI endpoints.
 `ORCHESTRATION` §4 forbids this window from editing those files, and leaving them out of the
@@ -36,14 +36,14 @@ exists to prevent. They are declared, documented, and marked `external`, and the
 
 Never through a pipe — exit codes captured from the command.
 
-| Command | Result |
-|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** — exit 0, no output |
-| `pnpm --dir apps/web lint` | **PASS** — exit 0, 0 errors 0 warnings |
-| `pnpm --dir apps/web build` | **PASS** — exit 0; all 28 route files build as `ƒ (Dynamic)` |
-| `pnpm test:contract` | **PASS** — exit 0 |
-| `scripts/api-matrix-probe.mjs` (dev) | **PASS** — exit 0 |
-| `scripts/api-matrix-probe.mjs` (prod) | **PASS** — exit 0 |
+| Command                               | Result                                                       |
+| ------------------------------------- | ------------------------------------------------------------ |
+| `pnpm --dir apps/web typecheck`       | **PASS** — exit 0, no output                                 |
+| `pnpm --dir apps/web lint`            | **PASS** — exit 0, 0 errors 0 warnings                       |
+| `pnpm --dir apps/web build`           | **PASS** — exit 0; all 28 route files build as `ƒ (Dynamic)` |
+| `pnpm test:contract`                  | **PASS** — exit 0                                            |
+| `scripts/api-matrix-probe.mjs` (dev)  | **PASS** — exit 0                                            |
+| `scripts/api-matrix-probe.mjs` (prod) | **PASS** — exit 0                                            |
 
 ### The validator's summary line
 
@@ -118,7 +118,7 @@ Read this before quoting §2.
    idempotency store only after a **successful** response, which is correct: caching a 503 under a
    key would stop the client retrying once the data plane returns. With Supabase unconfigured no
    write reaches 2xx — test 3 proves exactly that — so nothing is ever stored and the replay and
-   409-on-changed-body branches are unreachable in this environment. What *was* verified is that
+   409-on-changed-body branches are unreachable in this environment. What _was_ verified is that
    unstored responses are deterministic across all 11 idempotent operations. **The DoD's item 6 is
    therefore not satisfied and I am not claiming it is.** It needs a data plane.
 3. **`[GAP]` No route has been exercised against a real Supabase.** Every read served seed data;
@@ -126,7 +126,7 @@ Read this before quoting §2.
    have never run against Postgres.
 4. **`[GAP]` The 14 declared write gaps return 503 by construction**, so their success paths, their
    audit rows and their optimistic-concurrency conflicts (`expectedVersion` → 409) are unproven.
-   The 503 is enforced *after* authentication, authorisation and validation, so the contract around
+   The 503 is enforced _after_ authentication, authorisation and validation, so the contract around
    the gap is real even though the write is not.
 5. **`[GAP]` `AbortSignal` handling is not tested.** The brief asks for client-disconnect handling
    on long queries; no query here is long enough to test it against seed data.
@@ -142,13 +142,13 @@ Read this before quoting §2.
 Nine operations carry `permission: null`. Three are mine; six belong to other windows and are
 declared here so the spec covers them.
 
-| Operation | Owner | Rate limit | Why it is public |
-|---|---|---|---|
-| `POST /api/site-management/public/report` | W2-B | **5 / 60s** | Site damage must be reportable by a resident's visitor or a passer-by, who has no account. It accepts no identifiers beyond a free-text contact the submitter chooses to give, is the most tightly limited route in the app, and requires an idempotency key. |
-| `GET /api/calendar/ics/{token}` | W2-B | 30 / 60s | Calendar clients cannot carry a session cookie. The token is opaque, single-purpose, read-only, grants activity times only, and is compared in constant time. |
-| `GET /api/openapi` | W2-B | 30 / 60s | The spec describes only the shape of a surface an unauthenticated caller can discover by probing anyway. Publishing it makes the parity guarantee externally checkable. |
-| `GET`/`POST`/`DELETE /api/access-profile` | W1-B | none — see below | It is the mechanism by which a QA session acquires a role, so it cannot itself require one. Inert unless `ENABLE_ACCESS_PROFILES` is set, and enabling it in production is a startup failure rather than a configuration choice. |
-| `POST /api/ai/public-chat` (+ `/stream`, `/feedback`) | W2-C | none here — `lib/ai-rate-limit.ts` | Answers prospective buyers who have no account, over already-published material, and refuses anything it cannot ground. |
+| Operation                                             | Owner | Rate limit                         | Why it is public                                                                                                                                                                                                                                              |
+| ----------------------------------------------------- | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/site-management/public/report`             | W2-B  | **5 / 60s**                        | Site damage must be reportable by a resident's visitor or a passer-by, who has no account. It accepts no identifiers beyond a free-text contact the submitter chooses to give, is the most tightly limited route in the app, and requires an idempotency key. |
+| `GET /api/calendar/ics/{token}`                       | W2-B  | 30 / 60s                           | Calendar clients cannot carry a session cookie. The token is opaque, single-purpose, read-only, grants activity times only, and is compared in constant time.                                                                                                 |
+| `GET /api/openapi`                                    | W2-B  | 30 / 60s                           | The spec describes only the shape of a surface an unauthenticated caller can discover by probing anyway. Publishing it makes the parity guarantee externally checkable.                                                                                       |
+| `GET`/`POST`/`DELETE /api/access-profile`             | W1-B  | none — see below                   | It is the mechanism by which a QA session acquires a role, so it cannot itself require one. Inert unless `ENABLE_ACCESS_PROFILES` is set, and enabling it in production is a startup failure rather than a configuration choice.                              |
+| `POST /api/ai/public-chat` (+ `/stream`, `/feedback`) | W2-C  | none here — `lib/ai-rate-limit.ts` | Answers prospective buyers who have no account, over already-published material, and refuses anything it cannot ground.                                                                                                                                       |
 
 **The validator's rule "a public route must declare a rate limit" is not satisfied by the six
 external ones, and it says so rather than exempting them silently.** W2-C rate-limits in its own
@@ -162,16 +162,16 @@ manifest, which is why they print as `~ not verified by this gate` with the owne
 `CONTRACTS.md` §5's table is frozen and `lib/contracts.ts` holds it as `apiErrorStatus`.
 `lib/api-errors.ts` has no table of its own — it reads that one — so the two cannot drift.
 
-| `ApiError.code` | HTTP | Constructor | Where it comes from |
-|---|---|---|---|
-| `unauthorized` | **401** | `unauthorized()` | step 4, no authenticated profile |
-| `forbidden` | **403** | `forbidden()` | step 5, `hasPermission()` false |
-| `not_found` | **404** | `notFound()` | repository returns no row |
-| `validation_failed` | **422** | `validationFailed()` | step 3, Zod; `details` names each field |
-| `conflict` | **409** | `conflict()` | idempotency key reused with a different body; `expectedVersion` mismatch |
-| `rate_limited` | **429** | `rateLimited()` | step 2, with `Retry-After` |
-| `persistence_unavailable` | **503** | `persistenceUnavailable()` | step 6, a write with no data plane |
-| `upstream_failed` | **502** | `upstreamFailed()` | an upstream did not answer |
+| `ApiError.code`           | HTTP    | Constructor                | Where it comes from                                                      |
+| ------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------ |
+| `unauthorized`            | **401** | `unauthorized()`           | step 4, no authenticated profile                                         |
+| `forbidden`               | **403** | `forbidden()`              | step 5, `hasPermission()` false                                          |
+| `not_found`               | **404** | `notFound()`               | repository returns no row                                                |
+| `validation_failed`       | **422** | `validationFailed()`       | step 3, Zod; `details` names each field                                  |
+| `conflict`                | **409** | `conflict()`               | idempotency key reused with a different body; `expectedVersion` mismatch |
+| `rate_limited`            | **429** | `rateLimited()`            | step 2, with `Retry-After`                                               |
+| `persistence_unavailable` | **503** | `persistenceUnavailable()` | step 6, a write with no data plane                                       |
+| `upstream_failed`         | **502** | `upstreamFailed()`         | an upstream did not answer                                               |
 
 **415** and **405** are returned before an `ApiError` exists — wrong content type and wrong verb
 are answered at step 1, before anything is parsed. **500 is deliberately absent from every
@@ -219,15 +219,15 @@ pass — test 1's fixtures are schema-valid, so they reach the permission check 
 
 ## 8. Requests for other windows
 
-| # | Owner | Request |
-|---|---|---|
-| 1 | **W2-A** | Eleven of the fourteen write gaps are yours (§1). Each route already authenticates, authorises, validates and rate-limits, then returns 503 naming what is missing — so landing a repository mutation is a one-line swap at the call site, not a new route. `updateFindingSchema`, `createLeadSchema`, `createTicketSchema` and the rest are the shapes the handlers will hand you. |
-| 2 | **W1-A** | Three write gaps need migrations or RPCs first: `POST /finance/payments` (the double-entry group must balance atomically), and `POST`/`PATCH /users` (a profile insert and a role change, both of which the escalation trigger governs). |
-| 3 | **W4-D** | `pnpm test:contract` is green and is yours to wire. Please also wire `scripts/api-matrix-probe.mjs` — **but run it in both modes**, or half the matrix silently skips (§3.1). It needs a server; if the gate cannot stand one up, run the dev mode at minimum, because that is the one covering the 429-case role matrix. |
-| 4 | **W3-\*** | The dashboard surfaces do not need to call these routes: they are Server Components and can call W2-A's repositories directly, which skips a network hop. Use these when a **client** component needs data, or when something outside the app does. Either way the permission is enforced server-side in both paths. |
-| 5 | **W2-C** | Your four AI operations are declared in `lib/api-routes.ts` with `external: { owner }` so they appear in the published spec. If you change a method, a status or a public justification, that file is where the spec learns about it — and `test:contract` will fail until it does. |
-| 6 | **W1-B** | Same for `access-profile`'s three operations. Also: **the production kill-switch holds at the HTTP boundary**, verified 39/39 (§2, test 2b). |
-| 7 | **W0-A** | `scripts/api-matrix-probe.mjs` is a new script outside my declared file list; flagging rather than burying it. A `qa:api` entry in `package.json` would be the natural home — that file is yours. |
+| #   | Owner     | Request                                                                                                                                                                                                                                                                                                                                                                             |
+| --- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **W2-A**  | Eleven of the fourteen write gaps are yours (§1). Each route already authenticates, authorises, validates and rate-limits, then returns 503 naming what is missing — so landing a repository mutation is a one-line swap at the call site, not a new route. `updateFindingSchema`, `createLeadSchema`, `createTicketSchema` and the rest are the shapes the handlers will hand you. |
+| 2   | **W1-A**  | Three write gaps need migrations or RPCs first: `POST /finance/payments` (the double-entry group must balance atomically), and `POST`/`PATCH /users` (a profile insert and a role change, both of which the escalation trigger governs).                                                                                                                                            |
+| 3   | **W4-D**  | `pnpm test:contract` is green and is yours to wire. Please also wire `scripts/api-matrix-probe.mjs` — **but run it in both modes**, or half the matrix silently skips (§3.1). It needs a server; if the gate cannot stand one up, run the dev mode at minimum, because that is the one covering the 429-case role matrix.                                                           |
+| 4   | **W3-\*** | The dashboard surfaces do not need to call these routes: they are Server Components and can call W2-A's repositories directly, which skips a network hop. Use these when a **client** component needs data, or when something outside the app does. Either way the permission is enforced server-side in both paths.                                                                |
+| 5   | **W2-C**  | Your four AI operations are declared in `lib/api-routes.ts` with `external: { owner }` so they appear in the published spec. If you change a method, a status or a public justification, that file is where the spec learns about it — and `test:contract` will fail until it does.                                                                                                 |
+| 6   | **W1-B**  | Same for `access-profile`'s three operations. Also: **the production kill-switch holds at the HTTP boundary**, verified 39/39 (§2, test 2b).                                                                                                                                                                                                                                        |
+| 7   | **W0-A**  | `scripts/api-matrix-probe.mjs` is a new script outside my declared file list; flagging rather than burying it. A `qa:api` entry in `package.json` would be the natural home — that file is yours.                                                                                                                                                                                   |
 
 ---
 

@@ -20,18 +20,18 @@ INTERNAL-107 — and **not one of the 23 registered sources grants any right to 
 
 ## 2. The decision
 
-| `usage` | Meaning | Count |
-|---|---|---|
-| `internal_only` | Authenticated dashboard only. Never a public route. | *see `mediaManifestStats.byUsage`* |
-| `unknown` | No term found either way. Treated **exactly** like `internal_only`. | *ditto* |
-| `attributed_display` | Publishable, with visible attribution. | **0** |
+| `usage`              | Meaning                                                             | Count                              |
+| -------------------- | ------------------------------------------------------------------- | ---------------------------------- |
+| `internal_only`      | Authenticated dashboard only. Never a public route.                 | _see `mediaManifestStats.byUsage`_ |
+| `unknown`            | No term found either way. Treated **exactly** like `internal_only`. | _ditto_                            |
+| `attributed_display` | Publishable, with visible attribution.                              | **0**                              |
 
 `attributed_display` is empty, and that is a finding rather than an omission. Every source falls
 into one of three buckets, and none of them permits publication:
 
 1. **Explicit prohibition** — Booking.com, Agoda, Housearch, Alanya-Home, TERRA.
-   Agoda's clause is the most on-point in the register: it names *"photographs, images,
-   illustrations"* and names *"storing or rehosting the Content outside our Platform"*. `[V]`
+   Agoda's clause is the most on-point in the register: it names _"photographs, images,
+   illustrations"_ and names _"storing or rehosting the Content outside our Platform"_. `[V]`
 2. **All rights reserved, no terms document** — Cebeci Group, Haspo, ENS Pride, Kalinka,
    OnTheBeach, Wyndham/antalyacoast, Turizm Güncel. An express reservation is the opposite of a
    grant. `[V]`
@@ -47,12 +47,12 @@ check would read as consent:
   `/de/datenschutz` — all four are byte-identical 49,439-byte copies of the homepage. `[V]`
   Reading those 200s as "terms checked, nothing prohibited" is the Ataberg soft-404 failure
   applied to rights instead of pixels.
-- **hasporealty.com**'s terms page is the placeholder *"Die Seite wird derzeit aktualisiert."* `[V]`
+- **hasporealty.com**'s terms page is the placeholder _"Die Seite wird derzeit aktualisiert."_ `[V]`
 
 **TERRA is the closest any source comes to permitting display, and it still does not reach it.**
-It states *"Any copying or reproducing of our website content is unlawful"*, then grants a narrow
-carve-out: *"Our content may be used for private use only and only by indicating our website as
-the source of the content."* `[V]` Two cumulative conditions. Internal analysis inside our own
+It states _"Any copying or reproducing of our website content is unlawful"_, then grants a narrow
+carve-out: _"Our content may be used for private use only and only by indicating our website as
+the source of the content."_ `[V]` Two cumulative conditions. Internal analysis inside our own
 organisation is arguably private use with attribution; **our public landing page is not private
 use under any reading.** `[I]` — and W4-C should review that reading, because TERRA carries the
 7 floor plans and the `GENERAL PLAN`, the highest-value assets in the whole harvest.
@@ -100,8 +100,8 @@ regardless of host, because they are the most rights-sensitive categories:
 - **Floor plans and site plans** are architectural drawings — the developer's or its architect's
   copyright, republished by portals that cannot sub-license them. Every one recovered is
   **watermarked by the portal that published it**, which is itself an assertion of control.
-- **Logos and brand marks** are trade marks. TERRA states outright that *no one in the real estate
-  sector* may use its logo or mark `[V]`, and reproducing the Cebeci or Azura World marks on our
+- **Logos and brand marks** are trade marks. TERRA states outright that _no one in the real estate
+  sector_ may use its logo or mark `[V]`, and reproducing the Cebeci or Azura World marks on our
   surface would imply an association that does not exist.
 
 ### Watermarks are preserved
@@ -131,7 +131,7 @@ exposure, and the poster is fetched from the platform's own CDN.
 
 `[V]` The most authoritative video found is **`e6cs3yRRzAg` — "AZURA WORLD - CEBECİ GROUP A.Ş."**,
 uploaded by the developer's own channel `@CebeciGroupAlanya`. `[I]` A developer's own YouTube
-upload is published for distribution and is the *safest* thing to embed — embedding is the use
+upload is published for distribution and is the _safest_ thing to embed — embedding is the use
 YouTube's player exists for, and it leaves the file on YouTube's servers. **Embedding is a
 different act from rehosting, and only embedding is on the table.**
 `[GAP]` No duration is stated on any page for any of the videos; none was played to measure one.
@@ -198,30 +198,30 @@ mistake cannot reach the manifest.
 
 Full evidence, with verbatim quotes and URLs, is in `sources/media/rights-policy.json`.
 
-| # | Source | Tier | Terms found | Operative statement | `usage` |
-|---|---|---|---|---|---|
-| 1 | azuraworld.com | 1 | **none** `[V]` | no copyright line, no terms, 7 paths 404 | `unknown` |
-| 2,3 | cebecigroup.com | 2 | none | *"© 2024 Cebeci Group A.Ş. All right reserved."* | `internal_only` |
-| 4 | alanyacebeci.com | 2 | — | lame delegation, nothing fetched | `unknown` |
-| 5 | azuraworldhotel.com | 3 | **Lorem ipsum** `[V]` | placeholder text under a real heading | `internal_only` |
-| 6 | terrarealestate.com | 4 | yes | *"copying or reproducing … is unlawful"* + private-use carve-out | `internal_only` |
-| 7 | alanya-home.com | 4 | yes | *"You must not: Republish material"* | `internal_only` |
-| 8 | housearch.com | 4 | yes | *"without the prior written permission … is prohibited"* | `internal_only` |
-| 9 | hasporealty.com | 4 | **placeholder** | *"Alle Rechte vorbehalten."* | `internal_only` |
-| 10 | seaside-alanya.com | 4 | **soft-404s** `[V]` | `dcterms.rightsHolder` assertion only | `internal_only` |
-| 11 | realtygroup.com.tr | 4 | — | SERVFAIL on four resolvers | `unknown` |
-| 12 | ivm-turkey.com | 4 | privacy only | hotlink protection = control, not permission | `internal_only` |
-| 13 | tripadvisor.com | 5 | **403** `[GAP]` | UGC — rights sit with each traveller | `internal_only` |
-| 14 | wyndham.antalyacoast.com | 5 | none | *"All rights reserved."* · superseded brand | `internal_only` |
-| 15 | facebook / instagram | 1/2 | — | robots `Disallow: /` · login wall | `internal_only` |
-| 16 | enspride.com | 6 | none (404s) | *"Copyright © 2024 ENS Pride All Rights Reserved."* | `internal_only` |
-| 17 | booking.com | 5 | yes | *"not allowed to … scrape/crawl, download, reproduce"* | `internal_only` |
-| 18 | agoda.com | 5 | yes | names *"photographs, images"* and *"rehosting"* | `internal_only` |
-| 19 | onthebeach.co.uk | 5 | booking T&Cs only | footer copyright only | `internal_only` |
-| 20 | kalinka-realty.com | 6 | none | *"© 1999-2026 Kalinka Ecosystem"* | `internal_only` |
-| 21 | cestate.net | 6 | **none at all** `[V]` | no terms, no © anywhere in its own markup | `unknown` |
-| 22 | alanyhome.com | 6 | — | NXDOMAIN, deregistered | `unknown` |
-| 23 | turizmguncel.com | 6 | yes | *"Tüm hakları saklıdır"* + `use=reference` | `internal_only` |
+| #   | Source                   | Tier | Terms found           | Operative statement                                              | `usage`         |
+| --- | ------------------------ | ---- | --------------------- | ---------------------------------------------------------------- | --------------- |
+| 1   | azuraworld.com           | 1    | **none** `[V]`        | no copyright line, no terms, 7 paths 404                         | `unknown`       |
+| 2,3 | cebecigroup.com          | 2    | none                  | _"© 2024 Cebeci Group A.Ş. All right reserved."_                 | `internal_only` |
+| 4   | alanyacebeci.com         | 2    | —                     | lame delegation, nothing fetched                                 | `unknown`       |
+| 5   | azuraworldhotel.com      | 3    | **Lorem ipsum** `[V]` | placeholder text under a real heading                            | `internal_only` |
+| 6   | terrarealestate.com      | 4    | yes                   | _"copying or reproducing … is unlawful"_ + private-use carve-out | `internal_only` |
+| 7   | alanya-home.com          | 4    | yes                   | _"You must not: Republish material"_                             | `internal_only` |
+| 8   | housearch.com            | 4    | yes                   | _"without the prior written permission … is prohibited"_         | `internal_only` |
+| 9   | hasporealty.com          | 4    | **placeholder**       | _"Alle Rechte vorbehalten."_                                     | `internal_only` |
+| 10  | seaside-alanya.com       | 4    | **soft-404s** `[V]`   | `dcterms.rightsHolder` assertion only                            | `internal_only` |
+| 11  | realtygroup.com.tr       | 4    | —                     | SERVFAIL on four resolvers                                       | `unknown`       |
+| 12  | ivm-turkey.com           | 4    | privacy only          | hotlink protection = control, not permission                     | `internal_only` |
+| 13  | tripadvisor.com          | 5    | **403** `[GAP]`       | UGC — rights sit with each traveller                             | `internal_only` |
+| 14  | wyndham.antalyacoast.com | 5    | none                  | _"All rights reserved."_ · superseded brand                      | `internal_only` |
+| 15  | facebook / instagram     | 1/2  | —                     | robots `Disallow: /` · login wall                                | `internal_only` |
+| 16  | enspride.com             | 6    | none (404s)           | _"Copyright © 2024 ENS Pride All Rights Reserved."_              | `internal_only` |
+| 17  | booking.com              | 5    | yes                   | _"not allowed to … scrape/crawl, download, reproduce"_           | `internal_only` |
+| 18  | agoda.com                | 5    | yes                   | names _"photographs, images"_ and _"rehosting"_                  | `internal_only` |
+| 19  | onthebeach.co.uk         | 5    | booking T&Cs only     | footer copyright only                                            | `internal_only` |
+| 20  | kalinka-realty.com       | 6    | none                  | _"© 1999-2026 Kalinka Ecosystem"_                                | `internal_only` |
+| 21  | cestate.net              | 6    | **none at all** `[V]` | no terms, no © anywhere in its own markup                        | `unknown`       |
+| 22  | alanyhome.com            | 6    | —                     | NXDOMAIN, deregistered                                           | `unknown`       |
+| 23  | turizmguncel.com         | 6    | yes                   | _"Tüm hakları saklıdır"_ + `use=reference`                       | `internal_only` |
 
 ---
 

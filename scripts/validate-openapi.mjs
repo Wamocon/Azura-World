@@ -11,9 +11,9 @@
  * fail before the relaunch could happen.
  */
 
-import { ensureTypeStripping } from "./ts-bootstrap.mjs"
+import { ensureTypeStripping } from "./ts-bootstrap.mjs";
 
-const relaunchedExitCode = await ensureTypeStripping(import.meta.url)
-if (relaunchedExitCode !== null) process.exit(relaunchedExitCode)
+const relaunchedExitCode = await ensureTypeStripping(import.meta.url);
+if (relaunchedExitCode !== null) process.exit(relaunchedExitCode);
 
-await import("./openapi-contract-check.mjs")
+await import("./openapi-contract-check.mjs");

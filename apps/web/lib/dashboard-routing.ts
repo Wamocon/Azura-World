@@ -339,7 +339,9 @@ export interface DashboardNavGroup {
  * for the session lifetime is the bug that edge case describes.
  */
 export function routesForRole(role: Role): readonly DashboardRoute[] {
-  return dashboardRoutes.filter((route) => hasPermission(role, route.permission))
+  return dashboardRoutes.filter((route) =>
+    hasPermission(role, route.permission)
+  )
 }
 
 /**
@@ -400,7 +402,9 @@ export function routeForPath(pathWithoutLocale: string): DashboardRoute | null {
 /** Trailing slashes off, query and hash removed, always leading-slashed. */
 export function normalizeDashboardPath(path: string): string {
   const withoutQuery = path.split("?")[0]?.split("#")[0] ?? ""
-  const leading = withoutQuery.startsWith("/") ? withoutQuery : `/${withoutQuery}`
+  const leading = withoutQuery.startsWith("/")
+    ? withoutQuery
+    : `/${withoutQuery}`
   if (leading.length > 1 && leading.endsWith("/")) return leading.slice(0, -1)
   return leading
 }

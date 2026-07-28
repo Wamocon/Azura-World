@@ -112,8 +112,10 @@ export interface ComplianceDocument extends DocumentRecord {
 }
 
 /** Filters for `getComplianceDocuments()`. */
-export interface ComplianceDocumentQueryOptions
-  extends Omit<DocumentQueryOptions, "category"> {
+export interface ComplianceDocumentQueryOptions extends Omit<
+  DocumentQueryOptions,
+  "category"
+> {
   /** Defaults to `complianceDocumentCategories`. */
   category?: DocumentCategory | readonly DocumentCategory[]
   /** Only documents expiring within this many days of `asOf`. */
@@ -331,17 +333,29 @@ function filterSeedDocuments(
       return false
     }
     if (scope.kind === "company") {
-      if (opts.unitId !== undefined && document.unitId !== opts.unitId) return false
-      if (opts.residentId !== undefined && document.residentId !== opts.residentId) {
+      if (opts.unitId !== undefined && document.unitId !== opts.unitId)
+        return false
+      if (
+        opts.residentId !== undefined &&
+        document.residentId !== opts.residentId
+      ) {
         return false
       }
     }
-    if (opts.siteId !== undefined && document.siteId !== opts.siteId) return false
-    if (categories !== null && !categories.includes(document.category)) return false
-    if (opts.reviewStatus !== undefined && document.reviewStatus !== opts.reviewStatus) {
+    if (opts.siteId !== undefined && document.siteId !== opts.siteId)
+      return false
+    if (categories !== null && !categories.includes(document.category))
+      return false
+    if (
+      opts.reviewStatus !== undefined &&
+      document.reviewStatus !== opts.reviewStatus
+    ) {
       return false
     }
-    if (opts.visibility !== undefined && document.visibility !== opts.visibility) {
+    if (
+      opts.visibility !== undefined &&
+      document.visibility !== opts.visibility
+    ) {
       return false
     }
     if (
@@ -397,7 +411,9 @@ async function queryDocuments(
   if (categories !== null) query = query.in("category", [...categories])
 
   const rows = unwrap<unknown[]>(
-    await query.order("created_at", { ascending: false }).range(offset, offset + limit - 1),
+    await query
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1),
     []
   )
   return rows.map(mapDocument)
@@ -515,7 +531,9 @@ export async function getSignedDocumentUrl(
       const path = asString(record["storage_path"])
       if (path.length === 0) return null
 
-      const signed = await client.storage.from(bucket).createSignedUrl(path, ttl)
+      const signed = await client.storage
+        .from(bucket)
+        .createSignedUrl(path, ttl)
       // Thrown, not swallowed: a configured Supabase that fails is an outage,
       // and `withRepository` maps and logs it server-side.
       if (signed.error !== null) throw signed.error
@@ -531,7 +549,9 @@ export async function getSignedDocumentUrl(
         url,
         ttlSeconds: ttl,
         issuedAt,
-        expiresAt: new Date(new Date(issuedAt).getTime() + ttl * 1000).toISOString(),
+        expiresAt: new Date(
+          new Date(issuedAt).getTime() + ttl * 1000
+        ).toISOString(),
       }
     },
     () => null,
@@ -687,7 +707,8 @@ export async function getComplianceDocuments(
 
       // `expires_at asc nulls last`, matching the Supabase ordering.
       matched.sort((a, b) => {
-        if (a.expiresAt === b.expiresAt) return a.createdAt.localeCompare(b.createdAt)
+        if (a.expiresAt === b.expiresAt)
+          return a.createdAt.localeCompare(b.createdAt)
         if (a.expiresAt === null) return 1
         if (b.expiresAt === null) return -1
         return a.expiresAt.localeCompare(b.expiresAt)

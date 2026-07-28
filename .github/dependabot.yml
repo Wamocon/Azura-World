@@ -17,7 +17,15 @@ updates:
         # pair together, so the two cannot drift by construction rather than by
         # someone remembering to check.
         patterns:
-          ["next", "eslint-config-next", "react", "react-dom", "three", "gsap", "tailwindcss"]
+          [
+            "next",
+            "eslint-config-next",
+            "react",
+            "react-dom",
+            "three",
+            "gsap",
+            "tailwindcss",
+          ]
         update-types: ["minor", "patch"]
     # S-007. The group above bounds what lands INSIDE the group; it does not
     # bound the ungrouped dev-dependencies, which is how PRs #8 (typescript

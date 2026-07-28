@@ -45,7 +45,11 @@ export type DashboardAccessDenial =
 
 export type DashboardAccessDecision =
   | { allowed: true; route: DashboardRoute }
-  | { allowed: false; reason: DashboardAccessDenial; route: DashboardRoute | null }
+  | {
+      allowed: false
+      reason: DashboardAccessDenial
+      route: DashboardRoute | null
+    }
 
 /**
  * Decide whether `role` may open `pathWithoutLocale`.
@@ -58,7 +62,7 @@ export type DashboardAccessDecision =
 export function decideDashboardAccess(
   pathWithoutLocale: string,
   role: Role,
-  authenticated: boolean,
+  authenticated: boolean
 ): DashboardAccessDecision {
   const route = routeForPath(pathWithoutLocale)
 
@@ -84,7 +88,9 @@ export function decideDashboardAccess(
  * duplicating the mapping — the pairing of route to permission lives in
  * `dashboard-routing.ts` and nowhere else.
  */
-export function permissionForPath(pathWithoutLocale: string): Permission | null {
+export function permissionForPath(
+  pathWithoutLocale: string
+): Permission | null {
   return routeForPath(pathWithoutLocale)?.permission ?? null
 }
 
@@ -98,5 +104,5 @@ export function permissionForPath(pathWithoutLocale: string): Permission | null 
  * was wrong stays wrong.
  */
 export const allDashboardPaths: readonly string[] = Object.freeze(
-  dashboardRoutes.map((route) => route.href),
+  dashboardRoutes.map((route) => route.href)
 )

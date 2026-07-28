@@ -69,7 +69,10 @@ export function SplitVerdict({
 
   if (verdict.best === null || verdict.worst === null) {
     return (
-      <section aria-labelledby="split-verdict-heading" className="flex flex-col gap-4">
+      <section
+        aria-labelledby="split-verdict-heading"
+        className="flex flex-col gap-4"
+      >
         <h3 id="split-verdict-heading" className="font-display text-2xl">
           {labels.heading}
         </h3>
@@ -79,12 +82,18 @@ export function SplitVerdict({
   }
 
   return (
-    <section aria-labelledby="split-verdict-heading" className="flex flex-col gap-5">
+    <section
+      aria-labelledby="split-verdict-heading"
+      className="flex flex-col gap-5"
+    >
       <div className="flex flex-col gap-2">
-        <h3 id="split-verdict-heading" className="font-display text-2xl text-balance">
+        <h3
+          id="split-verdict-heading"
+          className="font-display text-2xl text-balance"
+        >
           {labels.heading}
         </h3>
-        <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
           {labels.intro}
         </p>
       </div>

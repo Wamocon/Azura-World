@@ -1,4 +1,4 @@
-# HANDOFF — W0-D  Media harvest & image pipeline
+# HANDOFF — W0-D Media harvest & image pipeline
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -39,15 +39,15 @@ Window: `tasks/W0-D-media-harvest.md`
 share `cebecigroup.com`), after folding 261 duplicates. All 833 ids are distinct — the run asserts
 this and prints the collision count rather than assuming it.
 
-| Category | Count | Notes |
-|---|---|---|
-| `photo` | 514 | includes **45 flagged `constructionProgress`** — dated build-progress aerials |
-| `render` | 201 | developer/architect visualisations |
-| `document` | 70 | brochure pages, certificates, PDFs |
-| `logo` | 15 | brand marks — the most rights-sensitive category |
-| `video` | 13 | **poster frames only**; the clips are referenced, never rehosted |
-| **`floorplan`** | **13** | see below |
-| **`siteplan`** | **7** | see below |
+| Category        | Count  | Notes                                                                         |
+| --------------- | ------ | ----------------------------------------------------------------------------- |
+| `photo`         | 514    | includes **45 flagged `constructionProgress`** — dated build-progress aerials |
+| `render`        | 201    | developer/architect visualisations                                            |
+| `document`      | 70     | brochure pages, certificates, PDFs                                            |
+| `logo`          | 15     | brand marks — the most rights-sensitive category                              |
+| `video`         | 13     | **poster frames only**; the clips are referenced, never rehosted              |
+| **`floorplan`** | **13** | see below                                                                     |
+| **`siteplan`**  | **7**  | see below                                                                     |
 
 By subject: `project` 368 · `hotel` 222 · `unit` 187 · `amenity` 35 · `location` 19 · `developer` 2.
 
@@ -62,9 +62,9 @@ pass classified **231** assets as floor plans. Rendering them showed the truth (
 
 **13 floor plans**, every one carrying a readable area schedule:
 
-| Source | Types |
-|---|---|
-| TERRA (7) | 1+1 · 2+1 XL · 3+1 XL · 4+1 Penthouse · 5+1 Penthouse XL · 2+1 Townhouse · 5+1 Private Villa |
+| Source      | Types                                                                                                                             |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| TERRA (7)   | 1+1 · 2+1 XL · 3+1 XL · 4+1 Penthouse · 5+1 Penthouse XL · 2+1 Townhouse · 5+1 Private Villa                                      |
 | Seaside (6) | 1+1 (81 m²) · 2+1 XL (157 m²) · 3+1 XL (181 m²) · 5+1 XL Penthouse (392 m²) · 2+1 Townhouse (113 m²) · 5+1 Private Villa (348 m²) |
 
 **7 site plans**, including three that are independently useful to the dataset:
@@ -78,7 +78,7 @@ pass classified **231** assets as floor plans. Rendering them showed the truth (
 - `housearch.com` — "Bebauungsplan Azura World", 2400×1344.
 
 `[V]` The keyed site plans label **C2 as the HOTEL block** — directly useful to W3-G.
-`[I]` They give block *structure*; they do **not** give per-block unit counts, so `SOURCES.md`
+`[I]` They give block _structure_; they do **not** give per-block unit counts, so `SOURCES.md`
 §5.8's per-block `[GAP]` stays open.
 
 ### Video — referenced, never rehosted
@@ -103,11 +103,11 @@ Consequence, stated plainly: **`apps/web/public/media/` is empty and must stay t
 is no harvested competitor imagery that may appear on the public landing page. W3-A's hero and
 section art must come from our own or properly licensed material.
 
-| `usage` | Count | Delivery | Who may render it |
-|---|---|---|---|
-| `attributed_display` | **0** | `apps/web/public/media/` | anyone — the directory is empty |
-| `internal_only` | **789** | `sources/media/encoded/` (git-ignored) | authenticated dashboard only, via a gated route |
-| `unknown` | **44** | `sources/media/encoded/` (git-ignored) | same — treated exactly as `internal_only` |
+| `usage`              | Count   | Delivery                               | Who may render it                               |
+| -------------------- | ------- | -------------------------------------- | ----------------------------------------------- |
+| `attributed_display` | **0**   | `apps/web/public/media/`               | anyone — the directory is empty                 |
+| `internal_only`      | **789** | `sources/media/encoded/` (git-ignored) | authenticated dashboard only, via a gated route |
+| `unknown`            | **44**  | `sources/media/encoded/` (git-ignored) | same — treated exactly as `internal_only`       |
 
 `internal_only` where a source explicitly forbids reuse or reserves all rights;
 `unknown` where a source publishes **no terms at all** — a measured absence, not a refusal
@@ -125,17 +125,17 @@ placeholder. Full evidence with verbatim quotes: `MEDIA-LICENSE.md` §7 and `rig
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `node scripts/harvest-media.mjs --selftest` | **PASS** exit 0 | 8 of 8 cases behaved as expected — table below |
-| `node scripts/harvest-media.mjs` | **PASS** | 1146 attempted · 1094 decoded · 52 rejected · 833 unique · 0 id collisions |
-| `node scripts/encode-images.mjs` | **PASS** | 828 encoded (**public 0** · internal 828) · 5 PDFs skipped as `not_raster` · 828 LQIP · 668.11 MB across 8,649 files |
-| `node scripts/media-manifest.mjs` | **PASS** | 2,042 KB manifest · 163 KB `lqip.json` |
-| `node scripts/media-manifest.mjs --check` | **PASS** exit 0 | committed manifest is current for the committed dataset |
-| `pnpm --dir apps/web typecheck` | **PASS for W0-D**; repo-wide fluctuating | Observed exit 0 with the final manifest in-tree. Later exit 1 on W1-D/W2-A files. **0 errors in `media-manifest.ts` in every run.** |
-| `pnpm --dir apps/web lint` | **FAIL — not W0-D** | 6 errors, all `react-hooks/set-state-in-effect` in W1-D / W3-I components. **0 problems in W0-D files.** |
-| Unit assertions on the pure helpers | **PASS** exit 0 | 28 robots/srcset/sniff/hamming + 8 classifier + 8 rights-resolution + 6 canonical-key |
-| Visual verification of all 20 plan assets | **PASS** | rendered to contact sheets and read individually |
+| Command                                     | Result                                   | Evidence                                                                                                                            |
+| ------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `node scripts/harvest-media.mjs --selftest` | **PASS** exit 0                          | 8 of 8 cases behaved as expected — table below                                                                                      |
+| `node scripts/harvest-media.mjs`            | **PASS**                                 | 1146 attempted · 1094 decoded · 52 rejected · 833 unique · 0 id collisions                                                          |
+| `node scripts/encode-images.mjs`            | **PASS**                                 | 828 encoded (**public 0** · internal 828) · 5 PDFs skipped as `not_raster` · 828 LQIP · 668.11 MB across 8,649 files                |
+| `node scripts/media-manifest.mjs`           | **PASS**                                 | 2,042 KB manifest · 163 KB `lqip.json`                                                                                              |
+| `node scripts/media-manifest.mjs --check`   | **PASS** exit 0                          | committed manifest is current for the committed dataset                                                                             |
+| `pnpm --dir apps/web typecheck`             | **PASS for W0-D**; repo-wide fluctuating | Observed exit 0 with the final manifest in-tree. Later exit 1 on W1-D/W2-A files. **0 errors in `media-manifest.ts` in every run.** |
+| `pnpm --dir apps/web lint`                  | **FAIL — not W0-D**                      | 6 errors, all `react-hooks/set-state-in-effect` in W1-D / W3-I components. **0 problems in W0-D files.**                            |
+| Unit assertions on the pure helpers         | **PASS** exit 0                          | 28 robots/srcset/sniff/hamming + 8 classifier + 8 rights-resolution + 6 canonical-key                                               |
+| Visual verification of all 20 plan assets   | **PASS**                                 | rendered to contact sheets and read individually                                                                                    |
 
 ### The repo-wide gates, precisely
 
@@ -180,20 +180,20 @@ modes exactly: 404 HTML wearing `.jpg`, and HEIC that `sharp` cannot decode.
 
 ### Validation table — attempted / decoded / rejected
 
-| | Count |
-|---|---|
-| Attempted | **1146** |
-| Decoded and accepted | **1094** |
-| Rejected | **52** |
-| Unique after dedupe | **833** (108 identical-byte + 153 perceptual = 261 folded) |
+|                      | Count                                                      |
+| -------------------- | ---------------------------------------------------------- |
+| Attempted            | **1146**                                                   |
+| Decoded and accepted | **1094**                                                   |
+| Rejected             | **52**                                                     |
+| Unique after dedupe  | **833** (108 identical-byte + 153 perceptual = 261 folded) |
 
-| Rejection reason | Count |
-|---|---|
-| `below_10240_bytes` | 39 |
-| `robots_disallow` | 7 |
-| `over_max_download_bytes` (>24MB ceiling) | 3 |
-| `soft_404_or_bot_wall_html` | 2 |
-| `http_404` | 1 |
+| Rejection reason                          | Count |
+| ----------------------------------------- | ----- |
+| `below_10240_bytes`                       | 39    |
+| `robots_disallow`                         | 7     |
+| `over_max_download_bytes` (>24MB ceiling) | 3     |
+| `soft_404_or_bot_wall_html`               | 2     |
+| `http_404`                                | 1     |
 
 **HEIC encountered in the live harvest: 0.** An earlier draft of the report claimed 3; that was a
 bug in the report itself — HEIC and over-ceiling attempts share a `reportable` flag and were being
@@ -221,14 +221,14 @@ developer render republished across portals, kept at the highest resolution avai
 
 ### Sources that yielded zero media, and why
 
-| # | Source | Measured reason |
-|---|---|---|
-| 4 | `alanyacebeci.com` | **Lame delegation** — REFUSED from four independent resolvers. Not a timeout; permanently unrecoverable without a DNS fix by the owner. |
-| 11 | `realtygroup.com.tr` | SERVFAIL on system resolver + 1.1.1.1 + 8.8.8.8 + 9.9.9.9, apex and `www`, http and https |
-| 22 | `alanyhome.com` | **NXDOMAIN** — not delegated in the `.com` zone. Deregistered, not down. |
-| 13 | `tripadvisor.com` | robots: `ClaudeBot / Disallow: /` — not fetched (also 403 to a full browser) |
-| 15 | `facebook.com` / `instagram.com` | robots `Disallow: /` for `*` and ClaudeBot; Instagram is login-walled. **Public posts only was the rule, so this is a clean `[GAP]`.** |
-| 23 | `turizmguncel.com` | robots: `ClaudeBot / Disallow: /` — 2 assets deliberately not taken |
+| #   | Source                           | Measured reason                                                                                                                         |
+| --- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 4   | `alanyacebeci.com`               | **Lame delegation** — REFUSED from four independent resolvers. Not a timeout; permanently unrecoverable without a DNS fix by the owner. |
+| 11  | `realtygroup.com.tr`             | SERVFAIL on system resolver + 1.1.1.1 + 8.8.8.8 + 9.9.9.9, apex and `www`, http and https                                               |
+| 22  | `alanyhome.com`                  | **NXDOMAIN** — not delegated in the `.com` zone. Deregistered, not down.                                                                |
+| 13  | `tripadvisor.com`                | robots: `ClaudeBot / Disallow: /` — not fetched (also 403 to a full browser)                                                            |
+| 15  | `facebook.com` / `instagram.com` | robots `Disallow: /` for `*` and ClaudeBot; Instagram is login-walled. **Public posts only was the rule, so this is a clean `[GAP]`.**  |
+| 23  | `turizmguncel.com`               | robots: `ClaudeBot / Disallow: /` — 2 assets deliberately not taken                                                                     |
 
 ### Coverage bounds — disclosed, not silent
 
@@ -326,7 +326,7 @@ nothing but bandwidth on someone else's server. 3 assets exceeded it; all 3 are 
 real size in `harvest-report.json → oversizeFindings`, never silently skipped.
 
 **8. Perceptual dedupe uses complete linkage and never merges across categories.** Single linkage
-chained A~B~C into an A~C pair 9 apart under a threshold of 6, and that is how Seaside's site plan
+chained A~~B~~C into an A~C pair 9 apart under a threshold of 6, and that is how Seaside's site plan
 was silently absorbed into an ENS Pride render. Now every member must be within the threshold of
 every other, and a plan can never be folded into a photo. Seaside's site plan is now correctly
 folded into the **same drawing at higher resolution** from alanya-home (distance 3), with both hosts
@@ -334,7 +334,7 @@ credited.
 
 **9. Byte-identical assets fold unconditionally; only the perceptual pass respects category.**
 Constraining the merge by category (decision 8) introduced its own defect: azuraworld.com serves
-the *same bytes* as `/assets/en/1.jpg` (a brochure page → `document`) and `/assets/en/s/1.jpg` (its
+the _same bytes_ as `/assets/en/1.jpg` (a brochure page → `document`) and `/assets/en/s/1.jpg` (its
 thumbnail → `photo`), so 40 pairs survived as separate assets sharing one content-addressed id —
 colliding in `lqip.json` and in `mediaById()`. Identical `sha256` is the same file whatever we
 labelled it, so exact duplicates now fold first and across categories, keeping the most specific
@@ -347,13 +347,13 @@ rounding off. After the fix: 828 encoded, 828 LQIP, 0 id collisions.
 
 ## Requests for other windows
 
-| File | Owning task | What is needed | Why |
-|---|---|---|---|
-| `.gitignore` | W0-A | Add `!sources/media/rights-policy.json` and `!sources/media/recon/` (or `!sources/media/recon/*.json`) under the existing `sources/media/*` rule | `sources/media/*` currently ignores the **hand-authored rights decision record** and the **evidence behind every quote in `MEDIA-LICENSE.md`**. Both are small text files containing no competitor imagery. Without them a fresh clone has the rights conclusions but not the reasoning, and the encoder silently falls back to "everything internal_only" (fail-safe, but the decisions are lost). The bulk directories `raw/`, `originals/`, `encoded/` must stay ignored. |
-| `apps/web/app/api/media/[id]/route.ts` (new) | W2-B | An authenticated route serving `sources/media/encoded/**`, gated on `hasPermission(role, "evidence:view")` | 869 of 869 assets are `internal_only`/`unknown` and therefore **not** in `public/`. Without a gated route the dashboard cannot render any harvested media. Signed short-TTL URLs would match `CONVENTIONS.md` §4. |
-| `apps/web/messages/*` | W1-C | Translation keys for media captions, if captions are to be shown in four locales | `MediaAsset.caption` is `null` by design; `sourceCaption` holds the observed single-language text. Translation is an i18n decision, not a harvest one. |
-| `SOURCES.md` | W0-B | Four corrections, each measured — details below | The register is wrong in ways that change what later waves attempt |
-| `CONTRACTS.md` note | W4-D | `SourceRef.snapshotHash` for media resolves under `sources/media/raw/`, not `sources/raw/` | So a generalised evidence check does not report a false miss |
+| File                                         | Owning task | What is needed                                                                                                                                   | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.gitignore`                                 | W0-A        | Add `!sources/media/rights-policy.json` and `!sources/media/recon/` (or `!sources/media/recon/*.json`) under the existing `sources/media/*` rule | `sources/media/*` currently ignores the **hand-authored rights decision record** and the **evidence behind every quote in `MEDIA-LICENSE.md`**. Both are small text files containing no competitor imagery. Without them a fresh clone has the rights conclusions but not the reasoning, and the encoder silently falls back to "everything internal_only" (fail-safe, but the decisions are lost). The bulk directories `raw/`, `originals/`, `encoded/` must stay ignored. |
+| `apps/web/app/api/media/[id]/route.ts` (new) | W2-B        | An authenticated route serving `sources/media/encoded/**`, gated on `hasPermission(role, "evidence:view")`                                       | 869 of 869 assets are `internal_only`/`unknown` and therefore **not** in `public/`. Without a gated route the dashboard cannot render any harvested media. Signed short-TTL URLs would match `CONVENTIONS.md` §4.                                                                                                                                                                                                                                                            |
+| `apps/web/messages/*`                        | W1-C        | Translation keys for media captions, if captions are to be shown in four locales                                                                 | `MediaAsset.caption` is `null` by design; `sourceCaption` holds the observed single-language text. Translation is an i18n decision, not a harvest one.                                                                                                                                                                                                                                                                                                                       |
+| `SOURCES.md`                                 | W0-B        | Four corrections, each measured — details below                                                                                                  | The register is wrong in ways that change what later waves attempt                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `CONTRACTS.md` note                          | W4-D        | `SourceRef.snapshotHash` for media resolves under `sources/media/raw/`, not `sources/raw/`                                                       | So a generalised evidence check does not report a false miss                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### `SOURCES.md` corrections for W0-B — all measured, none inferred
 
@@ -369,7 +369,7 @@ rounding off. After the fix: 828 encoded, 828 LQIP, 0 id collisions.
 3. **#22 `alanyhome.com` is NXDOMAIN**, not a DNS timeout — not delegated in the `.com` zone.
    Reclassify from "retry" to "permanently gone". Same for **#4 `alanyacebeci.com`** (lame
    delegation, REFUSED by all six delegated nameservers).
-4. **#14 Wyndham is no longer 403** and now serves *current* Azura World content (38 assets) —
+4. **#14 Wyndham is no longer 403** and now serves _current_ Azura World content (38 assets) —
    further F-007 evidence, alongside OnTheBeach still naming every image file `Wyndham-Alanya.jpg`.
 
 **Also not in the register:** a second TERRA listing,
@@ -393,7 +393,7 @@ rounding off. After the fix: 828 encoded, 828 LQIP, 0 id collisions.
 - `[GAP]` **Instagram/Facebook build-progress posts.** Out of scope by the brief's own rule —
   public posts only, no login. Instagram's logged-out render returns zero images; Facebook
   disallows the whole origin in robots. A clean gap, not a failure.
-- `[GAP]` **Per-block unit counts.** The keyed site plans give block *structure* (A–I, C2 = hotel)
+- `[GAP]` **Per-block unit counts.** The keyed site plans give block _structure_ (A–I, C2 = hotel)
   but not how many units are in each. `SOURCES.md` §5.8 stays open.
 - **`unknown` vs `internal_only` is a real distinction, not a hedge.** `unknown` means a source
   publishes no terms at all. If permission is ever sought, those are the cheapest sources to ask.
@@ -434,11 +434,11 @@ those belong to W0-A, W0-B, W1-D and W2-A, which were running in parallel throug
 
 # ADDENDUM — independent re-verification by the second executor
 
-*Two Claude Code executors ran the window-3 chain (`W1-C → W0-D`) concurrently against the one
+_Two Claude Code executors ran the window-3 chain (`W1-C → W0-D`) concurrently against the one
 shared working tree, both on `feature/INTERNAL-107-w1c-w0d-i18n-media`. Everything above was
 written by the first. This addendum is the second executor re-running the pipeline's gates
 itself and reporting what they printed — appended, not merged, because the section above is the
-other executor's work and stays as written.*
+other executor's work and stays as written._
 
 ## Why this addendum exists at all
 
@@ -451,27 +451,27 @@ this handoff, and **no image bytes** — the encoded renditions stay git-ignored
 
 ## Re-run, on the final tree, exit codes captured explicitly
 
-| Command | Result | What it printed |
-|---|---|---|
+| Command                                     | Result          | What it printed                                                                                                                                                                           |
+| ------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `node scripts/harvest-media.mjs --selftest` | **PASS** exit 0 | `8 of 8 cases behaved as expected, 0 wrong`. Case 1 is a live fetch: `https://www.azuraworld.com/…-w0d-selftest.jpg` → 404, 355 bytes, sniffed `html`, `REJECT soft_404_or_bot_wall_html` |
-| `node scripts/media-manifest.mjs` | **PASS** exit 0 | `25195 lines, 2042.4 KB` · usage `internal_only 789 · unknown 44 · attributed_display 0` · `video references: 53 (none rehosted)` · `assets with no encoded variants: 5` |
-| `pnpm --dir apps/web typecheck` | **PASS** exit 0 | `tsc --noEmit` clean **with the 2 MB generated manifest in the tree** — the one real risk of a 25k-line generated file |
-| `pnpm --dir apps/web lint` | **FAIL** exit 1 | Confirmed **not W0-D**. At my run: `components/anim/reveal.tsx:142` (`react-hooks/refs`) + `components/anim/counter.tsx:5` (unused var) — both W1-D |
+| `node scripts/media-manifest.mjs`           | **PASS** exit 0 | `25195 lines, 2042.4 KB` · usage `internal_only 789 · unknown 44 · attributed_display 0` · `video references: 53 (none rehosted)` · `assets with no encoded variants: 5`                  |
+| `pnpm --dir apps/web typecheck`             | **PASS** exit 0 | `tsc --noEmit` clean **with the 2 MB generated manifest in the tree** — the one real risk of a 25k-line generated file                                                                    |
+| `pnpm --dir apps/web lint`                  | **FAIL** exit 1 | Confirmed **not W0-D**. At my run: `components/anim/reveal.tsx:142` (`react-hooks/refs`) + `components/anim/counter.tsx:5` (unused var) — both W1-D                                       |
 
 ## Numbers reproduced independently
 
 Measured from `sources/media/harvest-report.json`, `assets.json` and the encoded directory,
 not copied from the section above:
 
-| Claim above | My measurement | Agrees |
-|---|---|---|
-| 1146 attempted · 1094 decoded · 52 rejected | `totals: {"attempted":1146,"decoded":1094,"rejected":52}` | yes |
-| 833 unique | manifest `total 833` (789 + 44 + 0) | yes |
-| 828 encoded, **public 0** | 833 − 5 no-encode = 828; `lqip.json` holds **828** entries | yes |
-| 8,649 encoded files | `find` counts **2,883 avif + 2,883 webp + 2,883 jpg = 8,649** | yes |
-| 668.11 MB encoded | 668 MB by file-size sum; **688 MB by `du`** (block overhead) — same bytes, different metric | yes |
-| Rejections 39/7/3/2/1 | `{"below_10240_bytes":39,"robots_disallow(…)":7,"over_max_download_bytes(…)":3,"soft_404_or_bot_wall_html":2,"http_404":1}` | yes |
-| 3204 photo/render capped per host | `cappedNotHarvested.count: 3204` | yes |
+| Claim above                                 | My measurement                                                                                                              | Agrees |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1146 attempted · 1094 decoded · 52 rejected | `totals: {"attempted":1146,"decoded":1094,"rejected":52}`                                                                   | yes    |
+| 833 unique                                  | manifest `total 833` (789 + 44 + 0)                                                                                         | yes    |
+| 828 encoded, **public 0**                   | 833 − 5 no-encode = 828; `lqip.json` holds **828** entries                                                                  | yes    |
+| 8,649 encoded files                         | `find` counts **2,883 avif + 2,883 webp + 2,883 jpg = 8,649**                                                               | yes    |
+| 668.11 MB encoded                           | 668 MB by file-size sum; **688 MB by `du`** (block overhead) — same bytes, different metric                                 | yes    |
+| Rejections 39/7/3/2/1                       | `{"below_10240_bytes":39,"robots_disallow(…)":7,"over_max_download_bytes(…)":3,"soft_404_or_bot_wall_html":2,"http_404":1}` | yes    |
+| 3204 photo/render capped per host           | `cappedNotHarvested.count: 3204`                                                                                            | yes    |
 
 **Per format** — the ladder is doing its job: AVIF **140.1 MB** · WebP **225.4 MB** · JPEG
 **302.6 MB** for the identical 2,883 renditions. AVIF is 38% under WebP and 54% under JPEG.

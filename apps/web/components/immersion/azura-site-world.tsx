@@ -188,7 +188,9 @@ export function AzuraSiteWorld({
             {labels.steps[candidate]}
           </Button>
         ))}
-        <p className="w-full text-xs text-muted-foreground">{labels.stepHint}</p>
+        <p className="w-full text-xs text-muted-foreground">
+          {labels.stepHint}
+        </p>
       </div>
 
       {/* The information, as text. This is the accessible path and it is not a
@@ -252,7 +254,7 @@ function Figure({
 }): ReactNode {
   return (
     <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-border bg-card p-3">
-      <dt className="text-xs uppercase tracking-[0.06em] text-muted-foreground">
+      <dt className="text-xs tracking-[0.06em] text-muted-foreground uppercase">
         {label}
       </dt>
       <dd className="min-w-0">{children}</dd>

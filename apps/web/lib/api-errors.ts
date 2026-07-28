@@ -149,7 +149,10 @@ export function successBody<T>(
   return { ok: true, data, source, requestId }
 }
 
-export function errorBody(error: ApiError, requestId: string): ApiResponse<never> {
+export function errorBody(
+  error: ApiError,
+  requestId: string
+): ApiResponse<never> {
   return { ok: false, error, requestId }
 }
 

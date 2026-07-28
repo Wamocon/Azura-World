@@ -6,7 +6,9 @@ export const dynamic = "force-dynamic"
 export const GET = createManifestHandler("getEvidenceSources", {
   handler: async ({ query }) => {
     const result =
-      query.get("view") === "health" ? await getSourceHealth() : await getSources()
+      query.get("view") === "health"
+        ? await getSourceHealth()
+        : await getSources()
     return { data: result.data, source: result.source }
   },
 })

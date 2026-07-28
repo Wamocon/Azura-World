@@ -1,4 +1,4 @@
-# HANDOFF — W1-A  Database schema, RLS, pgTAP
+# HANDOFF — W1-A Database schema, RLS, pgTAP
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -29,30 +29,30 @@ grants.
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| Apply migrations 00→14 in order, live cloud DB | **PASS** | `OK 00000000000000_initial_schema.sql (58ms)` … `OK 00000000000014_leads_buyer_pipeline.sql`, exit 0 |
-| `supabase/seed.sql` — first run | **PASS** | exit 0; deferred invariant triggers passed at COMMIT |
-| `supabase/seed.sql` — second run (idempotency) | **PASS** | identical counts: units 656, facts 1354, fact_sources 1566, findings 24, competing_prices 25, portal_listings 47, profiles 11, residents 3 |
-| pgTAP `01-schema.sql` | **PASS** | plan=99 pass=99 fail=0 |
-| pgTAP `02-rbac.sql` | **PASS** | plan=51 pass=51 fail=0 |
-| pgTAP `03-rls-positive.sql` | **PASS** | plan=56 pass=56 fail=0 |
-| pgTAP `04-rls-negative.sql` | **PASS** | plan=77 pass=77 fail=0 |
-| pgTAP `05-finance-invariants.sql` | **PASS** | plan=25 pass=25 fail=0 |
-| pgTAP `06-evidence-invariants.sql` | **PASS** | plan=23 pass=23 fail=0 |
-| pgTAP `07-seed-integrity.sql` | **PASS** | plan=35 pass=35 fail=0 |
-| **pgTAP total** | **PASS** | **planned=366 pass=366 fail=0** |
-| `node --test` repository contract suite | **PASS** | 14 pass, 0 fail (see HANDOFF/W2-A.md) |
-| `pnpm --dir apps/web typecheck` | **PASS** | exit 0, whole tree. It was red on W2-C's `lib/ai-retrieval.ts` and `lib/local-ai.ts` for part of the night; that window has since fixed them. |
+| Command                                        | Result   | Evidence                                                                                                                                      |
+| ---------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Apply migrations 00→14 in order, live cloud DB | **PASS** | `OK 00000000000000_initial_schema.sql (58ms)` … `OK 00000000000014_leads_buyer_pipeline.sql`, exit 0                                          |
+| `supabase/seed.sql` — first run                | **PASS** | exit 0; deferred invariant triggers passed at COMMIT                                                                                          |
+| `supabase/seed.sql` — second run (idempotency) | **PASS** | identical counts: units 656, facts 1354, fact_sources 1566, findings 24, competing_prices 25, portal_listings 47, profiles 11, residents 3    |
+| pgTAP `01-schema.sql`                          | **PASS** | plan=99 pass=99 fail=0                                                                                                                        |
+| pgTAP `02-rbac.sql`                            | **PASS** | plan=51 pass=51 fail=0                                                                                                                        |
+| pgTAP `03-rls-positive.sql`                    | **PASS** | plan=56 pass=56 fail=0                                                                                                                        |
+| pgTAP `04-rls-negative.sql`                    | **PASS** | plan=77 pass=77 fail=0                                                                                                                        |
+| pgTAP `05-finance-invariants.sql`              | **PASS** | plan=25 pass=25 fail=0                                                                                                                        |
+| pgTAP `06-evidence-invariants.sql`             | **PASS** | plan=23 pass=23 fail=0                                                                                                                        |
+| pgTAP `07-seed-integrity.sql`                  | **PASS** | plan=35 pass=35 fail=0                                                                                                                        |
+| **pgTAP total**                                | **PASS** | **planned=366 pass=366 fail=0**                                                                                                               |
+| `node --test` repository contract suite        | **PASS** | 14 pass, 0 fail (see HANDOFF/W2-A.md)                                                                                                         |
+| `pnpm --dir apps/web typecheck`                | **PASS** | exit 0, whole tree. It was red on W2-C's `lib/ai-retrieval.ts` and `lib/local-ai.ts` for part of the night; that window has since fixed them. |
 
 ### NOT RUN, and why
 
-| Command | Status | Reason |
-|---|---|---|
-| `npx supabase db reset` | **NOT RUN** | Needs the local Docker stack. `docker ps` → *"failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine … The system cannot find the file specified."* The daemon is not running on this machine. Running it against the **linked cloud** project is forbidden by OVERNIGHT.md §4 — it drops everything. |
-| `npx supabase test db` | **NOT RUN** | Same reason: it starts the local stack. |
-| `npx supabase db lint` | **NOT RUN** | Same reason. |
-| `npx supabase gen types typescript --local` | **NOT RUN** | Same reason. The `--db-url` variant was not attempted; W2-A hand-wrote its row types instead. |
+| Command                                     | Status      | Reason                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npx supabase db reset`                     | **NOT RUN** | Needs the local Docker stack. `docker ps` → _"failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine … The system cannot find the file specified."_ The daemon is not running on this machine. Running it against the **linked cloud** project is forbidden by OVERNIGHT.md §4 — it drops everything. |
+| `npx supabase test db`                      | **NOT RUN** | Same reason: it starts the local stack.                                                                                                                                                                                                                                                                                         |
+| `npx supabase db lint`                      | **NOT RUN** | Same reason.                                                                                                                                                                                                                                                                                                                    |
+| `npx supabase gen types typescript --local` | **NOT RUN** | Same reason. The `--db-url` variant was not attempted; W2-A hand-wrote its row types instead.                                                                                                                                                                                                                                   |
 
 ### What the tests caught
 
@@ -95,23 +95,23 @@ ten protected tables.
 
 ## Migration inventory — final number is **14**
 
-| # | File | Contents |
-|---|---|---|
-| 00 | `…0000_initial_schema.sql` | `profiles`, signup trigger, `set_updated_at()`, own-row RLS, grants |
-| 01 | `…0001_rbac.sql` | `app_role` enum (11), `role_level`, `current_user_role`, `is_admin`, `has_role_level`, `guardianships`, escalation guard |
-| 02 | `…0002_azura_core.sql` | `companies`, `sites`, `site_blocks`, `site_floors`, `units`, `residents`, `unit_residents` |
-| 03 | `…0003_evidence.sql` | `sources`, `source_snapshots`, `sourced_facts`, `fact_sources`, `fact_conflicts`, `findings`, `finding_values` |
-| 04 | `…0004_hotel_reviews.sql` | `hotels`, `hotel_rooms`, `review_sources`, `review_quotes` |
-| 05 | `…0005_portal_listings.sql` | `portal_listings`, `competing_prices` |
-| 06 | `…0006_operations.sql` | `service_tickets`, `ticket_events`, `activities`, `workforce_tasks`, `media_reports` |
-| 07 | `…0007_finance.sql` | `finance_ledger_entries`, `payment_transactions`, `wallets`, `vendor_invoices` |
-| 08 | `…0008_documents_compliance.sql` | `documents`, `compliance_checks`, `audit_events`, `access_events` |
-| 09 | `…0009_communications.sql` | `threads`, `messages`, `notifications`, `integration_outbox` |
-| 10 | `…0010_search.sql` | **creates `pg_trgm`**, `operational_search_documents`, `search_operational_records()` |
-| 11 | `…0011_ai_observability.sql` | `ai_action_logs`, `ai_conversations`, `ai_messages`, `ai_feedback` |
-| 12 | `…0012_realtime.sql` | publication registration + `replica identity full` on 3 tables |
-| 13 | `…0013_hardening.sql` | default privileges, and **five executable sweeps** (see below) |
-| 14 | `…0014_leads_buyer_pipeline.sql` | `leads`, `buyer_pipeline_entries` — **added, not in the brief** |
+| #   | File                             | Contents                                                                                                                 |
+| --- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 00  | `…0000_initial_schema.sql`       | `profiles`, signup trigger, `set_updated_at()`, own-row RLS, grants                                                      |
+| 01  | `…0001_rbac.sql`                 | `app_role` enum (11), `role_level`, `current_user_role`, `is_admin`, `has_role_level`, `guardianships`, escalation guard |
+| 02  | `…0002_azura_core.sql`           | `companies`, `sites`, `site_blocks`, `site_floors`, `units`, `residents`, `unit_residents`                               |
+| 03  | `…0003_evidence.sql`             | `sources`, `source_snapshots`, `sourced_facts`, `fact_sources`, `fact_conflicts`, `findings`, `finding_values`           |
+| 04  | `…0004_hotel_reviews.sql`        | `hotels`, `hotel_rooms`, `review_sources`, `review_quotes`                                                               |
+| 05  | `…0005_portal_listings.sql`      | `portal_listings`, `competing_prices`                                                                                    |
+| 06  | `…0006_operations.sql`           | `service_tickets`, `ticket_events`, `activities`, `workforce_tasks`, `media_reports`                                     |
+| 07  | `…0007_finance.sql`              | `finance_ledger_entries`, `payment_transactions`, `wallets`, `vendor_invoices`                                           |
+| 08  | `…0008_documents_compliance.sql` | `documents`, `compliance_checks`, `audit_events`, `access_events`                                                        |
+| 09  | `…0009_communications.sql`       | `threads`, `messages`, `notifications`, `integration_outbox`                                                             |
+| 10  | `…0010_search.sql`               | **creates `pg_trgm`**, `operational_search_documents`, `search_operational_records()`                                    |
+| 11  | `…0011_ai_observability.sql`     | `ai_action_logs`, `ai_conversations`, `ai_messages`, `ai_feedback`                                                       |
+| 12  | `…0012_realtime.sql`             | publication registration + `replica identity full` on 3 tables                                                           |
+| 13  | `…0013_hardening.sql`            | default privileges, and **five executable sweeps** (see below)                                                           |
+| 14  | `…0014_leads_buyer_pipeline.sql` | `leads`, `buyer_pipeline_entries` — **added, not in the brief**                                                          |
 
 **The next migration is `00000000000015_`.** Never renumber (CONVENTIONS §6).
 
@@ -143,20 +143,20 @@ ai_source · ai_refusal_reason · lead_status · lead_source · pipeline_stage
 
 ### SQL helpers every window may rely on
 
-| Function | Returns | Use |
-|---|---|---|
-| `current_user_role()` | `app_role` | NULL for anon **and for a deactivated profile** |
-| `current_user_role_level()` | `integer` | 0 when unresolved |
-| `has_role_level(int)` | `boolean` | "manager or above" style thresholds |
-| `is_admin()` | `boolean` | true in the service context too |
-| `is_service_context()` | `boolean` | true for postgres/service_role; never for `authenticated` |
-| `current_user_company_id()` | `uuid` | |
-| `current_user_scope_profile_id()` | `uuid` | **self, or the GUARDIAN for a `child_*` role** |
-| `current_user_unit_ids()` | `setof text` | resolves through the scope profile |
-| `current_user_can_view_unit(text)` | `boolean` | |
-| `current_user_can_view_ticket(uuid)` | `boolean` | |
-| `current_user_can_access_thread(uuid)` | `boolean` | the single thread/message choke point |
-| `search_operational_records(text, int)` | `setof record` | **the only read path** to the search index |
+| Function                                | Returns        | Use                                                       |
+| --------------------------------------- | -------------- | --------------------------------------------------------- |
+| `current_user_role()`                   | `app_role`     | NULL for anon **and for a deactivated profile**           |
+| `current_user_role_level()`             | `integer`      | 0 when unresolved                                         |
+| `has_role_level(int)`                   | `boolean`      | "manager or above" style thresholds                       |
+| `is_admin()`                            | `boolean`      | true in the service context too                           |
+| `is_service_context()`                  | `boolean`      | true for postgres/service_role; never for `authenticated` |
+| `current_user_company_id()`             | `uuid`         |                                                           |
+| `current_user_scope_profile_id()`       | `uuid`         | **self, or the GUARDIAN for a `child_*` role**            |
+| `current_user_unit_ids()`               | `setof text`   | resolves through the scope profile                        |
+| `current_user_can_view_unit(text)`      | `boolean`      |                                                           |
+| `current_user_can_view_ticket(uuid)`    | `boolean`      |                                                           |
+| `current_user_can_access_thread(uuid)`  | `boolean`      | the single thread/message choke point                     |
+| `search_operational_records(text, int)` | `setof record` | **the only read path** to the search index                |
 
 ---
 
@@ -193,7 +193,7 @@ out rather than debugged out, and here is the mechanism, because W2-B and W4-C w
 2. **No policy contains a bare `exists (select … from <another RLS-protected table>)`.** Every
    cross-table predicate goes through a `SECURITY DEFINER` + `set search_path = ''` helper.
 3. The one genuinely dangerous shape — 1Çatı's `workforce_tasks ⇄ staff_members` cycle — is
-   *structurally* unavailable here: there is no `staff_members` table. Assignment is a direct
+   _structurally_ unavailable here: there is no `staff_members` table. Assignment is a direct
    `assignee_profile_id uuid references profiles(id)`, and `workforce_tasks` is the sink of
    the dependency graph. The one edge that must cross (`service_provider` → parent ticket)
    goes through `current_user_assigned_ticket_ids()`.
@@ -232,10 +232,11 @@ units are `false` and assigned to two different owners and a tenant, which is wh
 
 **2. Evidence RLS is split, not uniformly manager+.**
 tasks/W1-A says "Evidence tables: read for manager+, write for admin only". Applied to all
-seven tables the product cannot work — SYSTEM-PROMPT §2.1 requires every fact shown to *any*
+seven tables the product cannot work — SYSTEM-PROMPT §2.1 requires every fact shown to _any_
 user, including an anonymous visitor, to carry its source URL. The split:
+
 - **public read**: `sources`, `source_snapshots`, `sourced_facts`, `fact_sources`,
-  `fact_conflicts` — these *are* the citation beside a number, and the losing value §2.2
+  `fact_conflicts` — these _are_ the citation beside a number, and the losing value §2.2
   requires to stay "visible on demand". All scraped public competitor data.
 - **manager+ read**: `findings`, `finding_values` — the internal register with severity
   ratings, i.e. the "source/conflict cockpit" CONTRACTS §3 gates behind `evidence:view`.
@@ -245,7 +246,7 @@ user, including an anonymous visitor, to carry its source URL. The split:
 
 **3. The ledger has no settlement status.** `ledger_entry_status` is `draft|posted|void`
 only. `open/partially_paid/paid/overdue` cannot coexist with immutability — marking a posted
-row "paid" *is* an update of a posted row. Settlement lives on `vendor_invoices.paid_amount`
+row "paid" _is_ an update of a posted row. Settlement lives on `vendor_invoices.paid_amount`
 and `payment_transactions`; "what is open" is **derived**. Correction is a new row with
 `reversal_of`, never an edit.
 
@@ -283,12 +284,12 @@ forbids.
 
 ## Requests for other windows
 
-| File | Owning task | What is needed |
-|---|---|---|
-| `apps/web/lib/ai-retrieval.ts`, `apps/web/lib/local-ai.ts` | **W2-C** | RESOLVED during the night — these were red on typecheck (`SourceTier`/`Money.currency` widening) and that window fixed them. Recorded so nobody re-investigates. |
-| `apps/web/app/[locale]/login/actions.ts` | **W1-B / W3-H** | `eslint` reports one warning: *"Unused eslint-disable directive (no problems were reported from 'no-control-regex')"*. Harmless, but SYSTEM-PROMPT §5 wants 0 warnings. |
-| `apps/web/lib/rbac.ts` | **W1-B** | No change needed — verified it imports `roleLevel` from `contracts.ts` rather than redeclaring it. The SQL half matches value-for-value. Recorded so W4-C need not re-derive it. |
-| `scripts/verify-evidence.mjs` | **W0-B** | The database enforces five of the six CONTRACTS §1 invariants. **Invariant 6 (every `snapshotHash` resolves to a real file under `sources/raw/`) is filesystem-side and Postgres cannot check it.** The DB half is an FK to `source_snapshots.snapshot_sha256`; the file-existence half is yours. |
+| File                                                       | Owning task     | What is needed                                                                                                                                                                                                                                                                                    |
+| ---------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/lib/ai-retrieval.ts`, `apps/web/lib/local-ai.ts` | **W2-C**        | RESOLVED during the night — these were red on typecheck (`SourceTier`/`Money.currency` widening) and that window fixed them. Recorded so nobody re-investigates.                                                                                                                                  |
+| `apps/web/app/[locale]/login/actions.ts`                   | **W1-B / W3-H** | `eslint` reports one warning: _"Unused eslint-disable directive (no problems were reported from 'no-control-regex')"_. Harmless, but SYSTEM-PROMPT §5 wants 0 warnings.                                                                                                                           |
+| `apps/web/lib/rbac.ts`                                     | **W1-B**        | No change needed — verified it imports `roleLevel` from `contracts.ts` rather than redeclaring it. The SQL half matches value-for-value. Recorded so W4-C need not re-derive it.                                                                                                                  |
+| `scripts/verify-evidence.mjs`                              | **W0-B**        | The database enforces five of the six CONTRACTS §1 invariants. **Invariant 6 (every `snapshotHash` resolves to a real file under `sources/raw/`) is filesystem-side and Postgres cannot check it.** The DB half is an FK to `source_snapshots.snapshot_sha256`; the file-existence half is yours. |
 
 ---
 
@@ -302,7 +303,7 @@ forbids.
   **both private**.
 - **`[I]` The seed's 656 units carry 631 `modelled` rows.** They are excluded from the public
   catalogue (`is_publicly_listed = false`) and asserted so in `07-seed-integrity.sql`. W3-C
-  must keep them visually distinct wherever they *are* shown.
+  must keep them visually distinct wherever they _are_ shown.
 - **`[GAP]` `hotel_rooms`, `site_floors`, `compliance_checks`, `integration_outbox`,
   `ai_*` and the finance tables are seeded empty or near-empty.** The schema is exercised by
   pgTAP; the demo data for those surfaces is not written. W3-D/E/F will need fixtures.

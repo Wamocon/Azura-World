@@ -41,6 +41,7 @@ Supabase email/password, plus the **local access-profile role picker** in contro
 environments only.
 
 The role picker is a deliberate QA backdoor. It must:
+
 - Render **only** when `isAccessProfileEnabled()` (W1-B)
 - Carry a visible, unmissable banner that this is a QA mode with no real authentication
 - Be impossible to reach in a production build — W1-B's module-load guard enforces this; your job
@@ -60,7 +61,7 @@ Report an issue on the grounds with no account. Optionally QR-scoped to a unit o
 
 **Every control below is required:**
 
-- **Rate limited** — by IP *and* request fingerprint. IP alone is trivially bypassed and, behind a
+- **Rate limited** — by IP _and_ request fingerprint. IP alone is trivially bypassed and, behind a
   carrier NAT, punishes legitimate users.
 - **Idempotency key** required. Same key + same fingerprint → return the **stored** response
   byte-identically. Same key + different body → 409.
@@ -83,8 +84,8 @@ The chat UI over W2-C's guarded endpoint.
 - **Refusals shown as first-class answers**, not errors. "Nicht belegt" is a good answer and
   should look like one — not a red failure state.
 - Conflict answers render the competing values as a small table, not a wall of prose.
-- Starter prompts that demonstrate the honest behaviour, e.g. *"Warum widersprechen sich die
-  Preisangaben?"*
+- Starter prompts that demonstrate the honest behaviour, e.g. _"Warum widersprechen sich die
+  Preisangaben?"_
 - Gateway unconfigured → a polite "not configured" state; the page still works entirely.
 - Feedback control (helpful / not helpful) writing to `ai_feedback`.
 

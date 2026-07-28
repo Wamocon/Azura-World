@@ -3,7 +3,10 @@ import { notFound } from "next/navigation"
 import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
-import { HotelFactGrid, DistanceDivergence } from "@/components/hotel/hotel-facts"
+import {
+  HotelFactGrid,
+  DistanceDivergence,
+} from "@/components/hotel/hotel-facts"
 import {
   RebrandNotice,
   UnrecoveredSources,
@@ -136,13 +139,13 @@ export default async function HotelPage({
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-20 px-5 py-16 sm:px-8 lg:py-24">
       {/* ---- Identity ---------------------------------------------------- */}
       <header className="flex flex-col gap-6">
-        <p className="font-mono text-[0.6875rem] uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="font-mono text-[0.6875rem] tracking-[0.22em] text-muted-foreground uppercase">
           {t("eyebrow")}
         </p>
-        <h1 className="max-w-3xl text-balance font-display text-4xl leading-[1.05] tracking-[-0.02em] sm:text-5xl lg:text-6xl">
+        <h1 className="max-w-3xl font-display text-4xl leading-[1.05] tracking-[-0.02em] text-balance sm:text-5xl lg:text-6xl">
           {hotel.name.value}
         </h1>
-        <p className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
+        <p className="max-w-2xl text-lg leading-relaxed text-pretty text-muted-foreground">
           {t("lead")}
         </p>
       </header>
@@ -173,7 +176,7 @@ export default async function HotelPage({
         <h2 id="facts-heading" className="font-display text-3xl text-balance">
           {t("facts.heading")}
         </h2>
-        <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
           {t("facts.intro")}
         </p>
         <HotelFactGrid
@@ -210,12 +213,18 @@ export default async function HotelPage({
       />
 
       {/* ---- Review intelligence ------------------------------------------ */}
-      <section aria-labelledby="reviews-heading" className="flex flex-col gap-8">
+      <section
+        aria-labelledby="reviews-heading"
+        className="flex flex-col gap-8"
+      >
         <div className="flex flex-col gap-3">
-          <h2 id="reviews-heading" className="font-display text-3xl text-balance">
+          <h2
+            id="reviews-heading"
+            className="font-display text-3xl text-balance"
+          >
             {t("reviewsTitle")}
           </h2>
-          <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+          <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
             {t("reviews.intro")}
           </p>
           {/*
@@ -223,7 +232,7 @@ export default async function HotelPage({
             two scores side by side will try to combine them unless told why
             they cannot be.
           */}
-          <p className="max-w-2xl text-pretty text-sm leading-relaxed text-foreground/80">
+          <p className="max-w-2xl text-sm leading-relaxed text-pretty text-foreground/80">
             {t("reviews.noAverageNote")}
           </p>
         </div>
@@ -277,10 +286,13 @@ export default async function HotelPage({
       {/* ---- Every recovered quote ---------------------------------------- */}
       <section aria-labelledby="quotes-heading" className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h2 id="quotes-heading" className="font-display text-3xl text-balance">
+          <h2
+            id="quotes-heading"
+            className="font-display text-3xl text-balance"
+          >
             {t("quotes.heading")}
           </h2>
-          <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+          <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
             {t("quotes.intro").replace("{count}", String(totalQuotes(reviews)))}
           </p>
         </div>

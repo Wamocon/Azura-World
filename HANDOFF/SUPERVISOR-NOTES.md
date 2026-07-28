@@ -12,11 +12,11 @@ Gates **in the shared working tree**: `typecheck` **RED** · `lint` **RED** · `
 **GREEN** (656 units, no violations).
 
 > **Important caveat.** The shared tree contains all four windows' in-progress work at once, so a
-> red tree does not mean a red branch. W3b reports (19:05): *"typecheck+lint RED in the shared
+> red tree does not mean a red branch. W3b reports (19:05): _"typecheck+lint RED in the shared
 > tree but ONLY on W2-C `lib/ai-*.ts` and W1-D `coast-maquette.tsx` — none of those files exist
-> on my branch, which is green."* Per-branch verification would require checking out, which would
+> on my branch, which is green."_ Per-branch verification would require checking out, which would
 > yank the tree out from under four live windows. **Deferred to morning.**
-No `.env` tracked, no `sources/` content tracked. Secret hygiene clean.
+> No `.env` tracked, no `sources/` content tracked. Secret hygiene clean.
 
 ---
 
@@ -36,8 +36,8 @@ lib/ai-retrieval.ts(154,5) TS2345
 `function toTier(n: number): SourceTier`. **Do not** `as any` or loosen the union in
 `CONTRACTS.md`; three other windows compile against it.
 
-*`lib/local-ai.ts` also failed at 19:02 and was clean by 19:07 — Window 2 is actively fixing.
-This may resolve without intervention.*
+_`lib/local-ai.ts` also failed at 19:02 and was clean by 19:07 — Window 2 is actively fixing.
+This may resolve without intervention._
 
 ### S-002 · MEDIUM · lint red — 5 errors, all in one window · owner **Window 4 (W1-D)**
 
@@ -66,10 +66,10 @@ are committing to their branches via a private `GIT_INDEX_FILE` without checking
 worked this out independently and documented it, which is good improvisation — but it already
 cost one incident:
 
-> W3b, 19:20: *"`git checkout -b` moved the SHARED HEAD, so my first W1-C commit (4d8d8ec)
+> W3b, 19:20: _"`git checkout -b` moved the SHARED HEAD, so my first W1-C commit (4d8d8ec)
 > landed on W4's branch and W4 committed on top of it. Recovered by replaying the same 17 paths
 > onto the correct branch (f9bc385, verified byte-identical). **4d8d8ec stays on
-> w1d-w3i-design — cannot be removed without rewriting W4's branch.**"*
+> w1d-w3i-design — cannot be removed without rewriting W4's branch.**"_
 
 So `feature/INTERNAL-107-w1d-w3i-design` carries one W1-C commit that does not belong to it.
 Harmless if both branches merge, but it means W4's branch is not a clean W1-D diff.
@@ -99,7 +99,7 @@ W1-A reports the Docker daemon is unavailable, so `supabase test db` will not ru
 running pgTAP 1.3.3 against the **cloud** database inside `BEGIN..ROLLBACK`.
 
 That is a reasonable substitute and it is honest about being one. **W1-A's handoff must record
-assertions *executed*, and state plainly that `supabase test db` was NOT RUN and why** — the
+assertions _executed_, and state plainly that `supabase test db` was NOT RUN and why** — the
 reference project's status document makes exactly this distinction and it is the standard here.
 
 ### S-006 · INFO · migrations applied to the live cloud project
@@ -110,16 +110,16 @@ enforceable `SourcedFact` invariants fire server-side, including rejection of a 
 
 ### S-007 · MEDIUM · Dependabot opened 8 PRs — several violate the pinned versions
 
-| PR | Bump | Verdict |
-|---|---|---|
-| **#8** | typescript 5.9.3 → **7.0.2** | ❌ **Do not merge.** Major. CONVENTIONS §1 pins TS 5. |
-| **#7** | eslint 9.39.5 → **10.8.0** | ❌ **Do not merge.** Major, and the React-compiler rules in S-002 would shift under it. |
-| **#6** | @types/node 20 → **26** | ❌ Do not merge. Node is pinned ≥20. |
-| **#4** | pinned-core group (3 updates) | ⚠️ Review individually — this group is `next`/`react`/`three` etc. |
-| #5 | eslint-config-next 16.2.6 → 16.2.12 | ✅ Safe, patch-level |
-| #1–3 | GitHub Actions major bumps | ⚠️ Low risk, but read the changelogs |
+| PR     | Bump                                | Verdict                                                                                 |
+| ------ | ----------------------------------- | --------------------------------------------------------------------------------------- |
+| **#8** | typescript 5.9.3 → **7.0.2**        | ❌ **Do not merge.** Major. CONVENTIONS §1 pins TS 5.                                   |
+| **#7** | eslint 9.39.5 → **10.8.0**          | ❌ **Do not merge.** Major, and the React-compiler rules in S-002 would shift under it. |
+| **#6** | @types/node 20 → **26**             | ❌ Do not merge. Node is pinned ≥20.                                                    |
+| **#4** | pinned-core group (3 updates)       | ⚠️ Review individually — this group is `next`/`react`/`three` etc.                      |
+| #5     | eslint-config-next 16.2.6 → 16.2.12 | ✅ Safe, patch-level                                                                    |
+| #1–3   | GitHub Actions major bumps          | ⚠️ Low risk, but read the changelogs                                                    |
 
-My `dependabot.yml` restricted the *pinned-core group* to minor/patch but left the ungrouped
+My `dependabot.yml` restricted the _pinned-core group_ to minor/patch but left the ungrouped
 dev-dependencies unbounded — that is why the TS and eslint majors appeared. **Nobody should merge
 these overnight.** Morning fix: add an `ignore` block for major updates on
 `typescript`, `eslint`, `@types/node`.
@@ -132,6 +132,7 @@ these overnight.** Morning fix: add an `ignore` block for major updates on
 W1-C complete with verified gates.
 
 **Needs you:**
+
 1. Decide on the contaminated W4 branch (S-003)
 2. Close or restrict dependabot PRs #6, #7, #8 (S-007)
 3. Confirm the cloud-pgTAP substitution is acceptable evidence (S-005)
@@ -155,12 +156,12 @@ build      exit 0     evidence exit 0  (656 units, no violations)
 Secret hygiene clean: 0 tracked `.env`, 0 tracked `sources/media`, 0 tracked `sources/raw`
 content, no secret-shaped string anywhere in tracked files.
 
-| Branch | Commits | Chain |
-|---|---|---|
-| `w1a-w2a-data` | 14 | W1-A ✅ → W2-A ✅ |
-| `w1b-w2c-auth-ai` | 7 | W1-B ✅ → W2-C ✅ → W2-D (PARTIAL by design) |
-| `w1c-w0d-i18n-media` | 7 | W1-C ✅ → W0-D ✅ |
-| `w1d-w3i-design` | 16 | W1-D ✅ → W3-I ✅ |
+| Branch               | Commits | Chain                                        |
+| -------------------- | ------- | -------------------------------------------- |
+| `w1a-w2a-data`       | 14      | W1-A ✅ → W2-A ✅                            |
+| `w1b-w2c-auth-ai`    | 7       | W1-B ✅ → W2-C ✅ → W2-D (PARTIAL by design) |
+| `w1c-w0d-i18n-media` | 7       | W1-C ✅ → W0-D ✅                            |
+| `w1d-w3i-design`     | 16      | W1-D ✅ → W3-I ✅                            |
 
 **S-001 CLOSED** — and the root cause was not what I diagnosed. I attributed the `SourceTier`
 widening to W2-C's object literals. W2-C traced it further: `azura-world-data.ts` types
@@ -176,11 +177,11 @@ emits the weak types — W2-A, W3-C and W3-G will each hit this.** Fix requested
 
 ### S-008 · CRITICAL (found and fixed by W1-A) · every authenticated user was an admin
 
-`is_admin()` is `SECURITY DEFINER`, so `current_user` inside it resolves to the *function owner*,
+`is_admin()` is `SECURITY DEFINER`, so `current_user` inside it resolves to the _function owner_,
 not the caller. `is_service_context()` therefore returned true for everyone, and every
 authenticated user passed every admin check.
 
-Found by the **negative** pgTAP suite — the half that asserts what a role *cannot* reach. Two
+Found by the **negative** pgTAP suite — the half that asserts what a role _cannot_ reach. Two
 further real bugs came out of the same run: a deactivated profile kept its residency scope, and
 `anon` could not read `public.units` at all (helper-calling policies were evaluated for anon), so
 the landing page would have shipped empty.
@@ -216,7 +217,7 @@ for a lighter treatment, or accept the overage as a documented exception. **A de
 ### S-011 · MEDIUM (found by W2-A) · RLS looser than RBAC on `leads`
 
 Migration 14's `leads` RLS admitted `staff`, but `rbac.ts` grants staff no `leads` permission.
-RLS being *looser* than RBAC is the dangerous direction — the UI hides it, the database allows
+RLS being _looser_ than RBAC is the dangerous direction — the UI hides it, the database allows
 it. Tightened. Also found: a guest could reach an owner's private unit **in seed mode only**
 (seed and DB disagreed on `is_publicly_listed`), and `toApiError()` missed SQLSTATE 22023, so an
 over-long search query returned a retryable 503.
@@ -234,10 +235,11 @@ restored it with the evidence inline. Both are the behaviour the system prompt a
 
 **Done:** waves 0, 1 and most of 2. 9 tasks COMPLETE, 1 PARTIAL by design. All four gates green.
 
-**Not started:** W2-B (API/OpenAPI). W1 deliberately declined the stretch — *"the night is late
-enough that a fresh window should take it with the handoffs in hand."* Sound call.
+**Not started:** W2-B (API/OpenAPI). W1 deliberately declined the stretch — _"the night is late
+enough that a fresh window should take it with the handoffs in hand."_ Sound call.
 
 **Needs you:**
+
 1. **S-009** — the CSP/prerender bug. Blocks W3-A. Highest priority.
 2. **S-010** — decide the 3D budget.
 3. **S-003** — contaminated W4 branch (still open from cycle 1).
@@ -265,14 +267,14 @@ its private index reads as modified-or-untracked from here.
 
 Verified by hashing each modified file against every branch:
 
-| File | Committed on |
-|---|---|
-| `apps/web/proxy.ts` | `w1b-w2c-auth-ai` |
-| `apps/web/lib/lqip.json` | `w1c-w0d-i18n-media` |
+| File                             | Committed on         |
+| -------------------------------- | -------------------- |
+| `apps/web/proxy.ts`              | `w1b-w2c-auth-ai`    |
+| `apps/web/lib/lqip.json`         | `w1c-w0d-i18n-media` |
 | `apps/web/lib/media-manifest.ts` | `w1c-w0d-i18n-media` |
-| `scripts/check-i18n.mjs` | `w1c-w0d-i18n-media` |
-| `scripts/encode-images.mjs` | `w1c-w0d-i18n-media` |
-| `scripts/harvest-media.mjs` | `w1c-w0d-i18n-media` |
+| `scripts/check-i18n.mjs`         | `w1c-w0d-i18n-media` |
+| `scripts/encode-images.mjs`      | `w1c-w0d-i18n-media` |
+| `scripts/harvest-media.mjs`      | `w1c-w0d-i18n-media` |
 
 All six byte-identical to a commit on their owning branch. **Nothing is unsaved.** Worth knowing
 before anyone runs `git checkout` or `git clean` in the morning — on this tree, both are
@@ -320,10 +322,10 @@ identical: 15      diverged: 1
 
 The only divergence is `scripts/check-i18n.mjs`:
 
-| Branch | Lines | History |
-|---|---|---|
-| `w1d-w3i-design` (W4) | 498 | the stray replay only |
-| `w1c-w0d-i18n-media` (W3) | **576** | `f9bc385` then `83990f3` — *"fix two bugs the gate had"* |
+| Branch                    | Lines   | History                                                  |
+| ------------------------- | ------- | -------------------------------------------------------- |
+| `w1d-w3i-design` (W4)     | 498     | the stray replay only                                    |
+| `w1c-w0d-i18n-media` (W3) | **576** | `f9bc385` then `83990f3` — _"fix two bugs the gate had"_ |
 
 **W3's copy is authoritative.** It carries the later commit where W3's own reject-test found two
 real bugs in the gate (rule 6's floor was on the English side; rule 0b never fired).
@@ -363,12 +365,12 @@ working tree or the index — safe to run while windows hold the tree.
 
 **Each branch against `main`, individually: all four CLEAN, zero conflicts.**
 
-Cumulatively, and pairwise across all six branch pairs, the *entire* set of conflicts is:
+Cumulatively, and pairwise across all six branch pairs, the _entire_ set of conflicts is:
 
-| # | Path | Cause | Resolution |
-|---|---|---|---|
-| 1 | `HANDOFF/NIGHT-LOG.md` | All four windows appended concurrently | **Union — keep every line.** It is an append-only log; no line supersedes another |
-| 2 | `scripts/check-i18n.mjs` | S-003 contamination (add/add) | **Take W3's copy** — `w1c-w0d-i18n-media`, 576 lines, carries `83990f3` which fixed two real bugs in the gate. W4's is the 498-line stale replay |
+| #   | Path                     | Cause                                  | Resolution                                                                                                                                       |
+| --- | ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `HANDOFF/NIGHT-LOG.md`   | All four windows appended concurrently | **Union — keep every line.** It is an append-only log; no line supersedes another                                                                |
+| 2   | `scripts/check-i18n.mjs` | S-003 contamination (add/add)          | **Take W3's copy** — `w1c-w0d-i18n-media`, 576 lines, carries `83990f3` which fixed two real bugs in the gate. W4's is the 498-line stale replay |
 
 **There are no other conflicts.** No code path, no migration, no message file, no component.
 44 commits across four parallel windows and the only collisions are one shared log and one

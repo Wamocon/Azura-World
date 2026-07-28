@@ -115,9 +115,7 @@ function mutationOriginAllowed(request: Request): boolean {
 /** Streams the body and counts bytes; `Content-Length` is only an early reject. */
 async function readBoundedJson(
   request: Request
-): Promise<
-  { ok: true; value: unknown } | { ok: false; error: ApiError }
-> {
+): Promise<{ ok: true; value: unknown } | { ok: false; error: ApiError }> {
   const declared = request.headers.get("content-length")
   if (declared !== null) {
     const bytes = Number(declared)
@@ -326,7 +324,10 @@ export async function DELETE(request: Request): Promise<NextResponse> {
     )
   }
 
-  const response = ok(stateFor(resolveAccessProfileRole(undefined), false), requestId)
+  const response = ok(
+    stateFor(resolveAccessProfileRole(undefined), false),
+    requestId
+  )
   response.cookies.set(ACCESS_PROFILE_COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",

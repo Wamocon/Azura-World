@@ -18,7 +18,10 @@
  * that becomes necessary, the function belongs in `lib/auth.ts`, not here.
  */
 
-import { resolveAccessProfileRole, type EnvironmentRecord } from "./access-profile-policy"
+import {
+  resolveAccessProfileRole,
+  type EnvironmentRecord,
+} from "./access-profile-policy"
 import { isValidRole, type RoleScope } from "./rbac"
 import { hasPermission } from "./rbac"
 import { roleLevel, type Locale, type Permission, type Role } from "./contracts"

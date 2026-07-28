@@ -1,6 +1,12 @@
 "use client"
 
-import { ArrowRight, Check, GitBranch, ScanSearch, Database } from "lucide-react"
+import {
+  ArrowRight,
+  Check,
+  GitBranch,
+  ScanSearch,
+  Database,
+} from "lucide-react"
 import { useState, type ReactNode } from "react"
 
 import { cn } from "@/lib/cn"
@@ -122,7 +128,10 @@ export function AzuraEvidenceFlow({
       aria-labelledby="azura-flow-heading"
     >
       <header className="flex min-w-0 flex-col gap-2">
-        <h3 id="azura-flow-heading" className="font-display text-xl font-semibold">
+        <h3
+          id="azura-flow-heading"
+          className="font-display text-xl font-semibold"
+        >
           {labels.heading}
         </h3>
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
@@ -133,7 +142,10 @@ export function AzuraEvidenceFlow({
       {/* Stage rail. Buttons, not a scroll-scrubbed timeline: a reader must be
           able to go back to a stage, and on a phone a scrubbed animation means
           the content is only reachable at one exact scroll position. */}
-      <ol className="flex min-w-0 flex-wrap items-center gap-2" data-testid="flow-stages">
+      <ol
+        className="flex min-w-0 flex-wrap items-center gap-2"
+        data-testid="flow-stages"
+      >
         {STAGES.map((candidate, index) => {
           const Icon = STAGE_ICON[candidate]
           const done = index < stageIndex
@@ -199,7 +211,7 @@ export function AzuraEvidenceFlow({
             must still see that the conflict was left open. */}
         <div className="flex min-w-0 flex-col gap-3 rounded-xl border-2 border-confidence-conflicted/45 bg-surface-conflict p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-bold uppercase tracking-[0.08em] text-confidence-conflicted">
+            <span className="text-xs font-bold tracking-[0.08em] text-confidence-conflicted uppercase">
               {labels.finding.eyebrow}
             </span>
             <Badge variant="conflicted">{labels.finding.unresolved}</Badge>
@@ -209,7 +221,10 @@ export function AzuraEvidenceFlow({
             {labels.finding.title}
           </p>
 
-          <ul className="flex min-w-0 flex-col gap-1.5" data-testid="flow-competing">
+          <ul
+            className="flex min-w-0 flex-col gap-1.5"
+            data-testid="flow-competing"
+          >
             {competingPrices.map((price) => (
               <li
                 key={`${price.publisher}-${price.amount}-${price.currency}`}
@@ -243,7 +258,7 @@ export function AzuraEvidenceFlow({
           <p className="text-xs leading-relaxed text-foreground/80">
             {labels.finding.body}
           </p>
-          <p className="text-xs font-medium leading-relaxed text-confidence-conflicted">
+          <p className="text-xs leading-relaxed font-medium text-confidence-conflicted">
             {labels.finding.resolution}
           </p>
         </div>
@@ -276,7 +291,7 @@ function Metric({
 }): ReactNode {
   return (
     <div className="flex min-w-0 flex-col">
-      <dt className="truncate text-xs uppercase tracking-[0.06em] text-muted-foreground">
+      <dt className="truncate text-xs tracking-[0.06em] text-muted-foreground uppercase">
         {label}
       </dt>
       <dd className="font-display text-2xl font-bold">

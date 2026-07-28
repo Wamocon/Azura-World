@@ -30,7 +30,7 @@ type Translator = (key: string) => string
 
 export function buildProvenanceLabels(
   tEvidence: Translator,
-  tHotel: Translator,
+  tHotel: Translator
 ): ProvenanceLabels {
   const tier = {
     official: tHotel("provenance.tier.official"),

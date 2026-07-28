@@ -1,4 +1,4 @@
-# HANDOFF — W4-A  Playwright end-to-end suite
+# HANDOFF — W4-A Playwright end-to-end suite
 
 STATUS: COMPLETE
 Completed: 2026-07-28
@@ -17,17 +17,17 @@ what that does and does not prove.
 
 ## 1. The honest table
 
-| Metric | Value |
-|---|---|
-| Tests **defined** | **572** — 283 chromium · 283 mobile-chrome · 6 production |
-| Tests **executed** | **572** (100%) |
-| **Passed** | **560** |
-| **Failed** | **12** — six defects × two projects |
-| **Skipped** | **0** |
-| **Flaky** | **0** — see §4 |
-| Role × route combinations asserted | **462** of 11 × 21 × 2 |
-| …of which prove an authorisation decision | **44** — see §2 |
-| axe violations (serious + critical) | **not measured** — `@axe-core/playwright` and `axe-core` are both absent from `node_modules`; see §6 |
+| Metric                                    | Value                                                                                                |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Tests **defined**                         | **572** — 283 chromium · 283 mobile-chrome · 6 production                                            |
+| Tests **executed**                        | **572** (100%)                                                                                       |
+| **Passed**                                | **560**                                                                                              |
+| **Failed**                                | **12** — six defects × two projects                                                                  |
+| **Skipped**                               | **0**                                                                                                |
+| **Flaky**                                 | **0** — see §4                                                                                       |
+| Role × route combinations asserted        | **462** of 11 × 21 × 2                                                                               |
+| …of which prove an authorisation decision | **44** — see §2                                                                                      |
+| axe violations (serious + critical)       | **not measured** — `@axe-core/playwright` and `axe-core` are both absent from `node_modules`; see §6 |
 
 Per project:
 
@@ -58,10 +58,10 @@ that matters:
 **But only 44 of the 462 cells can prove that today**, and reporting 462 as if each one exercised a
 permission decision would be the exact dishonesty this brief warns about:
 
-| | Routes | Cells (×2 viewports) | What the cell proves |
-|---|---|---|---|
-| Built (`/dashboard`, `/dashboard/evidence`) | 2 | **44** | The full allow/deny assertion |
-| Not built (the other nineteen) | 19 | 418 | Only that the route answers **404** for every role, with no 403 panel and no 5xx |
+|                                             | Routes | Cells (×2 viewports) | What the cell proves                                                             |
+| ------------------------------------------- | ------ | -------------------- | -------------------------------------------------------------------------------- |
+| Built (`/dashboard`, `/dashboard/evidence`) | 2      | **44**               | The full allow/deny assertion                                                    |
+| Not built (the other nineteen)              | 19     | 418                  | Only that the route answers **404** for every role, with no 403 panel and no 5xx |
 
 An unbuilt route returns 404 before the guard renders anything — Next resolves the missing page
 first. That is safe (there is no content to withhold) but it is not an authorisation decision, and
@@ -82,8 +82,8 @@ asserted instead. Recorded because it is a deviation from the written brief, not
 
 ## 3. W3-C's open verification — closed, with the boundary stated
 
-`HANDOFF/W3-C.md` §9 left this window: *"the evidence cockpit renders under `next start` with a
-real session."*
+`HANDOFF/W3-C.md` §9 left this window: _"the evidence cockpit renders under `next start` with a
+real session."_
 
 **The literal test is impossible in this environment**, and the reason is three independent
 blockers rather than one missing step:
@@ -91,7 +91,7 @@ blockers rather than one missing step:
 1. **No data plane.** `docker info` exits 1; there is no `psql`. `supabase start` cannot run, so
    there is no database to seed a session against.
 2. **The QA access profile cannot substitute.** `accessProfilesEnabledForEnvironment()` returns
-   `false` whenever `NODE_ENV` is `production`, *before it reads a flag*, and `next start` sets
+   `false` whenever `NODE_ENV` is `production`, _before it reads a flag_, and `next start` sets
    exactly that. Verified, not assumed: the production project asserts an `admin` cookie still
    lands on login.
 3. **There is no login form.** `/[locale]/login` is a **404** — the directory holds `actions.ts`
@@ -106,10 +106,10 @@ therefore reachable and the page can be driven.
 `manager`, renders `F-002`, all four competing prices — 112.000, 185.000, 220.000, 239.171 — and
 keeps the dollar figure in dollars. And it still refuses a `tenant` with the 403 panel.
 
-**What that proves:** the production *compilation* renders this page. That is the half W3-C was
+**What that proves:** the production _compilation_ renders this page. That is the half W3-C was
 actually worried about — the cockpit had only ever been driven under the dev compiler.
 
-**What it does not prove:** this is not a production *runtime*. It says nothing about behaviour
+**What it does not prove:** this is not a production _runtime_. It says nothing about behaviour
 under production environment variables, production CSP nonce generation, or a real Supabase
 session. Those need a data plane and the login page, and they stay open.
 
@@ -146,22 +146,22 @@ Found by reading a failure's output, not by looking for it. **The keys all exist
 catalogue** — this is a lookup failure, not a missing translation. Every one of the eight carries
 an ICU placeholder:
 
-| key | placeholder |
-|---|---|
-| `hotel.rebrand.body` | `{formerName}` |
-| `hotel.provenance.more` | `{count}` |
-| `hotel.provenance.conflictSummary` | `{count}` |
-| `hotel.sentiment.distributionOf` | `{total}` |
-| `hotel.platform.syndicatedBy` | `{publisher}` |
-| `hotel.platform.open` | `{platform}` |
-| `hotel.quotes.intro` | `{count}` |
+| key                                | placeholder    |
+| ---------------------------------- | -------------- |
+| `hotel.rebrand.body`               | `{formerName}` |
+| `hotel.provenance.more`            | `{count}`      |
+| `hotel.provenance.conflictSummary` | `{count}`      |
+| `hotel.sentiment.distributionOf`   | `{total}`      |
+| `hotel.platform.syndicatedBy`      | `{publisher}`  |
+| `hotel.platform.open`              | `{platform}`   |
+| `hotel.quotes.intro`               | `{count}`      |
 
 and every call site invokes `t("key")` with **no values object**, then hand-interpolates —
 `t("quotes.intro").replace("{count}", …)`. next-intl parses the message, finds an unsupplied
 argument, and returns the key.
 
-This is precisely the collision W3-C predicted in its handoff §8.5: *"passing an ICU string to
-`interpolate()` renders the ICU source."* The failure mode turned out to be one step worse — it
+This is precisely the collision W3-C predicted in its handoff §8.5: _"passing an ICU string to
+`interpolate()` renders the ICU source."_ The failure mode turned out to be one step worse — it
 renders the key.
 
 **Visible to any visitor, on a public page, in German, English, Turkish and Russian.** Fix is to
@@ -201,19 +201,19 @@ the hard cases is worse than no suite. The inverse also holds: a suite reporting
 own selectors are wrong burns the credibility of every real finding next to it. Six of my
 assertions were wrong first.
 
-| # | What was wrong | Would have been reported as |
-|---|---|---|
-| 1 | `PLAYWRIGHT_BROWSERS_PATH` redirected into an empty `.tmp`, so Playwright looked for the revision it pins (1234) rather than the one installed (1228) | all 263 tests failing at launch |
-| 2 | Declaring both webServers started `next dev` and `next start` against the same `.next`; dev recompiled into what start was serving | 248 of 263 failing on `SyntaxError: Unexpected non-whitespace character after JSON` — a half-written build manifest |
-| 3 | 21 anonymous-access tests asserted a state dev mode cannot produce (with access profiles on, no cookie still resolves to `manager`) | "the guard does not redirect anonymous users" |
-| 4 | `[data-confidence='gap']` matched a status chip reading "Offen" | "a gap fact renders without an em dash" |
-| 5 | `[data-stale]` matched the ladder's `aria-hidden` ticks, which have no text; then `ancestor::tr` assumed markup the panel does not use | "the stale badge is not beside the price" — W3-C's §3 claim, wrongly contradicted |
-| 6 | A python heredoc wrote a literal `0x08` byte where `\b` was intended, and a score regex assumed the scale is adjacent to the figure in `innerText` | "the hotel page shows a score without its scale" |
+| #   | What was wrong                                                                                                                                        | Would have been reported as                                                                                         |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1   | `PLAYWRIGHT_BROWSERS_PATH` redirected into an empty `.tmp`, so Playwright looked for the revision it pins (1234) rather than the one installed (1228) | all 263 tests failing at launch                                                                                     |
+| 2   | Declaring both webServers started `next dev` and `next start` against the same `.next`; dev recompiled into what start was serving                    | 248 of 263 failing on `SyntaxError: Unexpected non-whitespace character after JSON` — a half-written build manifest |
+| 3   | 21 anonymous-access tests asserted a state dev mode cannot produce (with access profiles on, no cookie still resolves to `manager`)                   | "the guard does not redirect anonymous users"                                                                       |
+| 4   | `[data-confidence='gap']` matched a status chip reading "Offen"                                                                                       | "a gap fact renders without an em dash"                                                                             |
+| 5   | `[data-stale]` matched the ladder's `aria-hidden` ticks, which have no text; then `ancestor::tr` assumed markup the panel does not use                | "the stale badge is not beside the price" — W3-C's §3 claim, wrongly contradicted                                   |
+| 6   | A python heredoc wrote a literal `0x08` byte where `\b` was intended, and a score regex assumed the scale is adjacent to the figure in `innerText`    | "the hotel page shows a score without its scale"                                                                    |
 
 Bug 6 is the same class as the NUL byte found in `lib/api-handler.ts`: a control character written
 as a literal byte instead of an escape. Every spec is now swept for stray control bytes.
 
-**No test was weakened to make it pass.** Where an assertion was wrong, it was made *more*
+**No test was weakened to make it pass.** Where an assertion was wrong, it was made _more_
 specific — `[data-slot="observation-row"][data-stale="true"]`, the price cell's composition, the
 score card rather than the flattened page.
 
@@ -273,15 +273,15 @@ projects silently skips every production-truth assertion.
 
 ## 8. Requests for other windows
 
-| # | Owner | Request |
-|---|---|---|
-| 1 | **W1-B** | **BLOCKING — build `app/[locale]/login/page.tsx`.** Until it exists nobody can sign in, this suite cannot test authentication, and the seeded-session half of W3-C's verification stays open. `actions.ts` and `safeNextPath()` are already written. |
-| 2 | **W3-G + W1-C** | **Eight strings render as their own message key on the public hotel page, in four locales** (§4.2). Pass the values to `t()` — `t("quotes.intro", { count })` — and delete the `.replace()` calls. `e2e/public/public.spec.ts` guards it. |
-| 3 | **W3-C** | Two `<main>` landmarks on the evidence cockpit (§4.3). The page should use a `<section>` inside the layout's `<main>`. |
-| 4 | **W3-C + W3-B** | **SEC-003 reproduces here** (§4.4). Assert `evidence:view` server-side in the page before any repository read. Independently found by two harnesses now. |
-| 5 | **W0-A** | Install `@axe-core/playwright` so §6.5 can close, and add `test:e2e:prod` to `apps/web/package.json` — the production project needs `AZURA_E2E_MODE=prod` and there is no script for it. |
-| 6 | **W4-D** | Gates 10 and 11 have a target. Wire **all three** project runs, not two: the production project is where the access-profile kill-switch and W3-C's verification live, and it is the one a naive `--project=chromium --project=mobile-chrome` invocation misses. |
-| 7 | **W5** | §6 is the manual plan's input. Items 1, 4 and 5 are the ones no automated suite in this repository covers today. |
+| #   | Owner           | Request                                                                                                                                                                                                                                                         |
+| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **W1-B**        | **BLOCKING — build `app/[locale]/login/page.tsx`.** Until it exists nobody can sign in, this suite cannot test authentication, and the seeded-session half of W3-C's verification stays open. `actions.ts` and `safeNextPath()` are already written.            |
+| 2   | **W3-G + W1-C** | **Eight strings render as their own message key on the public hotel page, in four locales** (§4.2). Pass the values to `t()` — `t("quotes.intro", { count })` — and delete the `.replace()` calls. `e2e/public/public.spec.ts` guards it.                       |
+| 3   | **W3-C**        | Two `<main>` landmarks on the evidence cockpit (§4.3). The page should use a `<section>` inside the layout's `<main>`.                                                                                                                                          |
+| 4   | **W3-C + W3-B** | **SEC-003 reproduces here** (§4.4). Assert `evidence:view` server-side in the page before any repository read. Independently found by two harnesses now.                                                                                                        |
+| 5   | **W0-A**        | Install `@axe-core/playwright` so §6.5 can close, and add `test:e2e:prod` to `apps/web/package.json` — the production project needs `AZURA_E2E_MODE=prod` and there is no script for it.                                                                        |
+| 6   | **W4-D**        | Gates 10 and 11 have a target. Wire **all three** project runs, not two: the production project is where the access-profile kill-switch and W3-C's verification live, and it is the one a naive `--project=chromium --project=mobile-chrome` invocation misses. |
+| 7   | **W5**          | §6 is the manual plan's input. Items 1, 4 and 5 are the ones no automated suite in this repository covers today.                                                                                                                                                |
 
 ---
 

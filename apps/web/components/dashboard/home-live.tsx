@@ -104,7 +104,9 @@ export function DashboardHomeLive({
         }}
       >
         <RotateCw
-          className={refreshing ? "animate-spin motion-reduce:animate-none" : undefined}
+          className={
+            refreshing ? "animate-spin motion-reduce:animate-none" : undefined
+          }
           aria-hidden="true"
         />
         {refreshLabel}

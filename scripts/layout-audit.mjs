@@ -25,9 +25,9 @@
  * violation.
  */
 
-import { mkdirSync } from "node:fs"
-import { join } from "node:path"
-import { inflateSync } from "node:zlib"
+import { mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { inflateSync } from "node:zlib";
 
 import {
   LOCALES,
@@ -45,17 +45,17 @@ import {
   startServer,
   urlFor,
   writeJson,
-} from "./qa-lib.mjs"
+} from "./qa-lib.mjs";
 
-const args = parseArgs(process.argv.slice(2))
-const PORT = Number(args.values.get("port") ?? 3260)
-const HEADED = args.flags.has("headed")
-const MAX_SHOTS = Number(args.values.get("max-shots") ?? 40)
-const ONLY_WIDTH = args.values.get("width")
-const ONLY_LOCALE = args.values.get("locale")
+const args = parseArgs(process.argv.slice(2));
+const PORT = Number(args.values.get("port") ?? 3260);
+const HEADED = args.flags.has("headed");
+const MAX_SHOTS = Number(args.values.get("max-shots") ?? 40);
+const ONLY_WIDTH = args.values.get("width");
+const ONLY_LOCALE = args.values.get("locale");
 /** Phase 2 samples one width; contrast is a function of colour, not viewport. */
-const PIXEL_CONTRAST_WIDTH = Number(args.values.get("contrast-width") ?? 375)
-const PIXEL_CONTRAST_LOCALE = args.values.get("contrast-locale") ?? "de"
+const PIXEL_CONTRAST_WIDTH = Number(args.values.get("contrast-width") ?? 375);
+const PIXEL_CONTRAST_LOCALE = args.values.get("contrast-locale") ?? "de";
 
 const BLIND_SPOTS = [
   "Contrast is sampled, not exhaustive: one representative text node per distinct " +
@@ -94,7 +94,7 @@ const BLIND_SPOTS = [
   "The theme the harness ASKS for is not necessarily the one the app renders. It is read " +
     "back on the first load of each theme and reported as `theme-not-applied` when they " +
     "disagree, because a silently-substituted theme turns an unaudited surface into a pass.",
-]
+];
 
 /**
  * The whole audit, executed inside the page.
@@ -112,36 +112,41 @@ const AUDIT = () => {
     contrastIndeterminate: [],
     truncation: [],
     stats: {},
-  }
+  };
 
   const describe = (el) => {
-    const id = el.id ? `#${el.id}` : ""
+    const id = el.id ? `#${el.id}` : "";
     const cls =
       typeof el.className === "string" && el.className
         ? `.${el.className.trim().split(/\s+/).slice(0, 3).join(".")}`
-        : ""
-    const slot = el.getAttribute?.("data-slot")
-    return `${el.tagName.toLowerCase()}${id}${cls}${slot ? `[data-slot=${slot}]` : ""}`
-  }
+        : "";
+    const slot = el.getAttribute?.("data-slot");
+    return `${el.tagName.toLowerCase()}${id}${cls}${slot ? `[data-slot=${slot}]` : ""}`;
+  };
 
   const rectOf = (el) => {
-    const r = el.getBoundingClientRect()
-    return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) }
-  }
+    const r = el.getBoundingClientRect();
+    return {
+      x: Math.round(r.x),
+      y: Math.round(r.y),
+      w: Math.round(r.width),
+      h: Math.round(r.height),
+    };
+  };
 
   const isRendered = (el, style) =>
     style.display !== "none" &&
     style.visibility !== "hidden" &&
     Number(style.opacity) !== 0 &&
     el.getBoundingClientRect().width > 0 &&
-    el.getBoundingClientRect().height > 0
+    el.getBoundingClientRect().height > 0;
 
   // `sr-only` is a 1px clipped box on purpose; it is content for screen readers
   // and must not be judged as a tap target or an overflow.
   const isScreenReaderOnly = (el, style) =>
     style.position === "absolute" &&
     style.clipPath !== "none" &&
-    el.getBoundingClientRect().width <= 2
+    el.getBoundingClientRect().width <= 2;
 
   /**
    * True when some ancestor constrains the element horizontally — by scrolling
@@ -165,14 +170,14 @@ const AUDIT = () => {
    * belongs, with the words it loses; the decorative sea is not caught at all.
    */
   const clippedOrScrolledByAncestor = (el) => {
-    let node = el.parentElement
+    let node = el.parentElement;
     while (node && node !== document.documentElement) {
-      const s = getComputedStyle(node)
-      if (s.overflowX !== "visible") return true
-      node = node.parentElement
+      const s = getComputedStyle(node);
+      if (s.overflowX !== "visible") return true;
+      node = node.parentElement;
     }
-    return false
-  }
+    return false;
+  };
 
   /**
    * Text that a clipping box actually cuts off, measured with Range rects
@@ -185,157 +190,181 @@ const AUDIT = () => {
    * measured, and the finding carries the text so a human can judge it.
    */
   const cutText = (el, box) => {
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
-    const cut = []
-    let node
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const cut = [];
+    let node;
     while ((node = walker.nextNode()) && cut.length < 6) {
-      const value = node.nodeValue
-      if (!value || !value.trim()) continue
-      const parent = node.parentElement
+      const value = node.nodeValue;
+      if (!value || !value.trim()) continue;
+      const parent = node.parentElement;
       if (parent) {
-        const ps = getComputedStyle(parent)
-        if (!isRendered(parent, ps) || isScreenReaderOnly(parent, ps)) continue
+        const ps = getComputedStyle(parent);
+        if (!isRendered(parent, ps) || isScreenReaderOnly(parent, ps)) continue;
       }
-      const range = document.createRange()
-      range.selectNodeContents(node)
+      const range = document.createRange();
+      range.selectNodeContents(node);
       for (const r of range.getClientRects()) {
-        if (r.width === 0 || r.height === 0) continue
-        const right = Math.round(r.right - box.right)
-        const bottom = Math.round(r.bottom - box.bottom)
-        const left = Math.round(box.left - r.left)
-        const by = Math.max(right, bottom, left)
+        if (r.width === 0 || r.height === 0) continue;
+        const right = Math.round(r.right - box.right);
+        const bottom = Math.round(r.bottom - box.bottom);
+        const left = Math.round(box.left - r.left);
+        const by = Math.max(right, bottom, left);
         if (by > 1) {
-          cut.push({ text: value.trim().slice(0, 60), by, axis: right >= bottom && right >= left ? "x" : bottom >= left ? "y" : "x" })
-          break
+          cut.push({
+            text: value.trim().slice(0, 60),
+            by,
+            axis:
+              right >= bottom && right >= left
+                ? "x"
+                : bottom >= left
+                  ? "y"
+                  : "x",
+          });
+          break;
         }
       }
     }
-    return cut
-  }
+    return cut;
+  };
 
   // Violating elements are tagged so a single annotated screenshot can show
   // every one of them in place, rather than a clipped crop per finding.
   const tag = (el, kind) => {
-    const existing = el.getAttribute("data-qa-violation")
-    el.setAttribute("data-qa-violation", existing ? `${existing} ${kind}` : kind)
-  }
+    const existing = el.getAttribute("data-qa-violation");
+    el.setAttribute(
+      "data-qa-violation",
+      existing ? `${existing} ${kind}` : kind,
+    );
+  };
 
-  const all = [...document.querySelectorAll("*")].filter((el) => !el.closest("svg"))
-  out.stats.elements = all.length
+  const all = [...document.querySelectorAll("*")].filter(
+    (el) => !el.closest("svg"),
+  );
+  out.stats.elements = all.length;
 
   // ---- 1. horizontal overflow ---------------------------------------------
-  const docEl = document.documentElement
+  const docEl = document.documentElement;
   if (docEl.scrollWidth > docEl.clientWidth + 1) {
     out.overflow.push({
       selector: "document",
       scrollWidth: docEl.scrollWidth,
       clientWidth: docEl.clientWidth,
       by: docEl.scrollWidth - docEl.clientWidth,
-    })
+    });
   }
   // The element actually sticking out, so the report names a culprit rather
   // than only the symptom.
   for (const el of all) {
-    const r = el.getBoundingClientRect()
-    if (r.width === 0 || r.height === 0) continue
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
     if (r.right > docEl.clientWidth + 1) {
-      const style = getComputedStyle(el)
-      if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue
-      if (style.position === "fixed") continue // fixed elements are positioned, not flowed
-      if (clippedOrScrolledByAncestor(el)) continue
-      tag(el, "overflow")
+      const style = getComputedStyle(el);
+      if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue;
+      if (style.position === "fixed") continue; // fixed elements are positioned, not flowed
+      if (clippedOrScrolledByAncestor(el)) continue;
+      tag(el, "overflow");
       out.overflow.push({
         selector: describe(el),
         rect: rectOf(el),
         overhang: Math.round(r.right - docEl.clientWidth),
         kind: "element-past-viewport",
-      })
-      if (out.overflow.length > 12) break
+      });
+      if (out.overflow.length > 12) break;
     }
   }
 
   // ---- 2. clipping: content wider/taller than a hidden-overflow box --------
   for (const el of all) {
-    const style = getComputedStyle(el)
-    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue
-    const hiddenX = style.overflowX === "hidden" || style.overflowX === "clip"
-    const hiddenY = style.overflowY === "hidden" || style.overflowY === "clip"
-    if (!hiddenX && !hiddenY) continue
+    const style = getComputedStyle(el);
+    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue;
+    const hiddenX = style.overflowX === "hidden" || style.overflowX === "clip";
+    const hiddenY = style.overflowY === "hidden" || style.overflowY === "clip";
+    if (!hiddenX && !hiddenY) continue;
     // A line-clamp or an ellipsis is an intentional clip, and the truncation
     // check below judges whether it has an affordance. Reporting the same
     // element under both kinds doubled every count in the first run — 13
     // .truncate spans became 26 findings — which makes a report read as twice
     // as broken as the page is.
-    if (style.webkitLineClamp && style.webkitLineClamp !== "none") continue
-    if (style.textOverflow === "ellipsis") continue
-    const overX = hiddenX && el.scrollWidth > el.clientWidth + 1
-    const overY = hiddenY && el.scrollHeight > el.clientHeight + 1
-    if (!overX && !overY) continue
-    if ((el.textContent ?? "").trim().length === 0) continue
+    if (style.webkitLineClamp && style.webkitLineClamp !== "none") continue;
+    if (style.textOverflow === "ellipsis") continue;
+    const overX = hiddenX && el.scrollWidth > el.clientWidth + 1;
+    const overY = hiddenY && el.scrollHeight > el.clientHeight + 1;
+    if (!overX && !overY) continue;
+    if ((el.textContent ?? "").trim().length === 0) continue;
     // The box overflows — but does a reader lose anything by it?
-    const lost = cutText(el, el.getBoundingClientRect())
-    if (lost.length === 0) continue
-    tag(el, "clipping")
+    const lost = cutText(el, el.getBoundingClientRect());
+    if (lost.length === 0) continue;
+    tag(el, "clipping");
     out.clipping.push({
       selector: describe(el),
       rect: rectOf(el),
       axis: overX ? "x" : "y",
-      hiddenBy: overX ? el.scrollWidth - el.clientWidth : el.scrollHeight - el.clientHeight,
+      hiddenBy: overX
+        ? el.scrollWidth - el.clientWidth
+        : el.scrollHeight - el.clientHeight,
       cutText: lost,
       text: (el.textContent ?? "").trim().slice(0, 80),
-    })
-    if (out.clipping.length > 12) break
+    });
+    if (out.clipping.length > 12) break;
   }
 
   // ---- 3. tap targets ------------------------------------------------------
-  const INTERACTIVE = "a[href], button, input, select, textarea, [role=button], [role=link], [tabindex]:not([tabindex='-1'])"
-  const interactive = [...document.querySelectorAll(INTERACTIVE)].filter((el) => !el.closest("svg"))
-  out.stats.interactive = interactive.length
+  const INTERACTIVE =
+    "a[href], button, input, select, textarea, [role=button], [role=link], [tabindex]:not([tabindex='-1'])";
+  const interactive = [...document.querySelectorAll(INTERACTIVE)].filter(
+    (el) => !el.closest("svg"),
+  );
+  out.stats.interactive = interactive.length;
 
   for (const el of interactive) {
-    const style = getComputedStyle(el)
-    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue
+    const style = getComputedStyle(el);
+    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue;
     // WCAG 2.2 SC 2.5.8 exempts a link inside a sentence of text.
-    const parent = el.parentElement
+    const parent = el.parentElement;
     const inlineInText =
       el.tagName === "A" &&
       style.display.startsWith("inline") &&
       parent !== null &&
-      (parent.textContent ?? "").trim().length > (el.textContent ?? "").trim().length + 12
-    if (inlineInText) continue
+      (parent.textContent ?? "").trim().length >
+        (el.textContent ?? "").trim().length + 12;
+    if (inlineInText) continue;
     // A small control inside a bigger hit area is fine.
-    const enclosing = el.parentElement?.closest(INTERACTIVE)
-    if (enclosing && enclosing !== el) continue
+    const enclosing = el.parentElement?.closest(INTERACTIVE);
+    if (enclosing && enclosing !== el) continue;
 
-    const r = el.getBoundingClientRect()
+    const r = el.getBoundingClientRect();
     if (r.width < 24 || r.height < 24) {
-      tag(el, "tap-target")
+      tag(el, "tap-target");
       out.tapTargets.push({
         selector: describe(el),
         rect: rectOf(el),
         text: (el.textContent ?? "").trim().slice(0, 40),
-      })
+      });
     }
   }
 
   // ---- 4. overlap between interactive elements ----------------------------
   const boxes = interactive
     .map((el) => ({ el, style: getComputedStyle(el) }))
-    .filter(({ el, style }) => isRendered(el, style) && !isScreenReaderOnly(el, style))
-    .map(({ el }) => ({ el, r: el.getBoundingClientRect() }))
+    .filter(
+      ({ el, style }) =>
+        isRendered(el, style) && !isScreenReaderOnly(el, style),
+    )
+    .map(({ el }) => ({ el, r: el.getBoundingClientRect() }));
 
   for (let i = 0; i < boxes.length; i += 1) {
     for (let j = i + 1; j < boxes.length; j += 1) {
-      const a = boxes[i]
-      const b = boxes[j]
-      if (a.el.contains(b.el) || b.el.contains(a.el)) continue
-      const ix = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left)
-      const iy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top)
-      if (ix <= 1 || iy <= 1) continue
-      const area = ix * iy
-      const smaller = Math.min(a.r.width * a.r.height, b.r.width * b.r.height)
-      if (smaller === 0 || area / smaller < 0.25) continue
-      tag(a.el, "overlap"); tag(b.el, "overlap")
+      const a = boxes[i];
+      const b = boxes[j];
+      if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      const ix = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
+      const iy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      if (ix <= 1 || iy <= 1) continue;
+      const area = ix * iy;
+      const smaller = Math.min(a.r.width * a.r.height, b.r.width * b.r.height);
+      if (smaller === 0 || area / smaller < 0.25) continue;
+      tag(a.el, "overlap");
+      tag(b.el, "overlap");
       out.overlap.push({
         a: describe(a.el),
         b: describe(b.el),
@@ -346,105 +375,115 @@ const AUDIT = () => {
           h: Math.round(iy),
         },
         share: Number((area / smaller).toFixed(2)),
-      })
-      if (out.overlap.length > 12) break
+      });
+      if (out.overlap.length > 12) break;
     }
-    if (out.overlap.length > 12) break
+    if (out.overlap.length > 12) break;
   }
 
   // ---- 5. truncation without an affordance --------------------------------
   for (const el of all) {
-    const style = getComputedStyle(el)
-    if (!isRendered(el, style)) continue
-    const clamped = style.webkitLineClamp && style.webkitLineClamp !== "none"
-    const ellipsis = style.textOverflow === "ellipsis"
-    if (!clamped && !ellipsis) continue
+    const style = getComputedStyle(el);
+    if (!isRendered(el, style)) continue;
+    const clamped = style.webkitLineClamp && style.webkitLineClamp !== "none";
+    const ellipsis = style.textOverflow === "ellipsis";
+    if (!clamped && !ellipsis) continue;
     const truncated = clamped
       ? el.scrollHeight > el.clientHeight + 1
-      : el.scrollWidth > el.clientWidth + 1
-    if (!truncated) continue
+      : el.scrollWidth > el.clientWidth + 1;
+    if (!truncated) continue;
     // An affordance is a title, or an expand control that points at this box.
-    const hasTitle = el.hasAttribute("title")
-    const id = el.id
+    const hasTitle = el.hasAttribute("title");
+    const id = el.id;
     const controlled =
-      id !== "" && document.querySelector(`[aria-controls="${CSS.escape(id)}"]`) !== null
-    const siblingButton = el.parentElement?.querySelector("button[aria-expanded]") !== null &&
-      el.parentElement?.querySelector("button[aria-expanded]") !== undefined
-    if (hasTitle || controlled || siblingButton) continue
-    tag(el, "truncation")
+      id !== "" &&
+      document.querySelector(`[aria-controls="${CSS.escape(id)}"]`) !== null;
+    const siblingButton =
+      el.parentElement?.querySelector("button[aria-expanded]") !== null &&
+      el.parentElement?.querySelector("button[aria-expanded]") !== undefined;
+    if (hasTitle || controlled || siblingButton) continue;
+    tag(el, "truncation");
     out.truncation.push({
       selector: describe(el),
       rect: rectOf(el),
       mode: clamped ? "line-clamp" : "ellipsis",
       text: (el.textContent ?? "").trim().slice(0, 80),
-    })
-    if (out.truncation.length > 12) break
+    });
+    if (out.truncation.length > 12) break;
   }
 
   // ---- 6. contrast (sampled) ----------------------------------------------
   const parseRgb = (value) => {
-    const m = /rgba?\(([^)]+)\)/.exec(value)
-    if (!m) return null
-    const parts = m[1].split(/[\s,/]+/).filter(Boolean).map(Number)
-    if (parts.length < 3 || parts.some(Number.isNaN)) return null
-    return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 }
-  }
+    const m = /rgba?\(([^)]+)\)/.exec(value);
+    if (!m) return null;
+    const parts = m[1]
+      .split(/[\s,/]+/)
+      .filter(Boolean)
+      .map(Number);
+    if (parts.length < 3 || parts.some(Number.isNaN)) return null;
+    return {
+      r: parts[0],
+      g: parts[1],
+      b: parts[2],
+      a: parts.length > 3 ? parts[3] : 1,
+    };
+  };
   const luminance = ({ r, g, b }) => {
     const f = (c) => {
-      const s = c / 255
-      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
-    }
-    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
-  }
+      const s = c / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
   const ratio = (fg, bg) => {
-    const l1 = luminance(fg)
-    const l2 = luminance(bg)
-    const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
-    return (hi + 0.05) / (lo + 0.05)
-  }
+    const l1 = luminance(fg);
+    const l2 = luminance(bg);
+    const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1];
+    return (hi + 0.05) / (lo + 0.05);
+  };
 
-  const seen = new Set()
+  const seen = new Set();
   for (const el of all) {
     // Only elements whose own text is a direct child.
     const own = [...el.childNodes].some(
       (n) => n.nodeType === 3 && (n.textContent ?? "").trim().length > 1,
-    )
-    if (!own) continue
-    const style = getComputedStyle(el)
-    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue
+    );
+    if (!own) continue;
+    const style = getComputedStyle(el);
+    if (!isRendered(el, style) || isScreenReaderOnly(el, style)) continue;
 
-    const fg = parseRgb(style.color)
-    if (fg === null) continue
-    const size = parseFloat(style.fontSize)
-    const weight = Number(style.fontWeight) || 400
+    const fg = parseRgb(style.color);
+    if (fg === null) continue;
+    const size = parseFloat(style.fontSize);
+    const weight = Number(style.fontWeight) || 400;
     // WCAG large text: ≥24px, or ≥18.66px bold.
-    const large = size >= 24 || (size >= 18.66 && weight >= 700)
-    const required = large ? 3 : 4.5
+    const large = size >= 24 || (size >= 18.66 && weight >= 700);
+    const required = large ? 3 : 4.5;
 
-    let node = el
-    let bg = null
-    let indeterminate = false
+    let node = el;
+    let bg = null;
+    let indeterminate = false;
     while (node && node !== document.documentElement.parentElement) {
-      const s = getComputedStyle(node)
+      const s = getComputedStyle(node);
       if (s.backgroundImage && s.backgroundImage !== "none") {
-        indeterminate = true
-        break
+        indeterminate = true;
+        break;
       }
-      const candidate = parseRgb(s.backgroundColor)
+      const candidate = parseRgb(s.backgroundColor);
       if (candidate && candidate.a === 1) {
-        bg = candidate
-        break
+        bg = candidate;
+        break;
       }
       if (candidate && candidate.a > 0 && candidate.a < 1) {
-        indeterminate = true
-        break
+        indeterminate = true;
+        break;
       }
-      node = node.parentElement
+      node = node.parentElement;
     }
 
-    const key = `${style.color}|${bg ? `${bg.r},${bg.g},${bg.b}` : indeterminate ? "img" : "none"}|${Math.round(size)}|${weight}`
-    if (seen.has(key)) continue
-    seen.add(key)
+    const key = `${style.color}|${bg ? `${bg.r},${bg.g},${bg.b}` : indeterminate ? "img" : "none"}|${Math.round(size)}|${weight}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
 
     if (indeterminate) {
       out.contrastIndeterminate.push({
@@ -452,15 +491,15 @@ const AUDIT = () => {
         rect: rectOf(el),
         colour: style.color,
         reason: "background is a gradient, image or semi-transparent layer",
-      })
-      continue
+      });
+      continue;
     }
     if (bg === null) {
-      bg = { r: 255, g: 255, b: 255, a: 1 }
+      bg = { r: 255, g: 255, b: 255, a: 1 };
     }
-    const value = ratio(fg, bg)
+    const value = ratio(fg, bg);
     if (value + 0.01 < required) {
-      tag(el, "contrast")
+      tag(el, "contrast");
       out.contrast.push({
         selector: describe(el),
         rect: rectOf(el),
@@ -470,13 +509,13 @@ const AUDIT = () => {
         background: `rgb(${bg.r}, ${bg.g}, ${bg.b})`,
         fontSize: Math.round(size),
         text: (el.textContent ?? "").trim().slice(0, 60),
-      })
+      });
     }
   }
-  out.stats.contrastSamples = seen.size
+  out.stats.contrastSamples = seen.size;
 
-  return out
-}
+  return out;
+};
 
 // ---------------------------------------------------------------------------
 // Phase 2 — contrast against gradients, measured from rendered pixels
@@ -490,78 +529,78 @@ const AUDIT = () => {
  * `pnpm install`, which is W0-A's to run and must not run concurrently.
  */
 function decodePng(buffer) {
-  if (buffer.readUInt32BE(0) !== 0x89504e47) throw new Error("not a PNG")
-  let offset = 8
-  let width = 0
-  let height = 0
-  let channels = 0
-  const idat = []
+  if (buffer.readUInt32BE(0) !== 0x89504e47) throw new Error("not a PNG");
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let channels = 0;
+  const idat = [];
   while (offset < buffer.length) {
-    const length = buffer.readUInt32BE(offset)
-    const type = buffer.toString("ascii", offset + 4, offset + 8)
-    const body = buffer.subarray(offset + 8, offset + 8 + length)
+    const length = buffer.readUInt32BE(offset);
+    const type = buffer.toString("ascii", offset + 4, offset + 8);
+    const body = buffer.subarray(offset + 8, offset + 8 + length);
     if (type === "IHDR") {
-      width = body.readUInt32BE(0)
-      height = body.readUInt32BE(4)
-      const depth = body[8]
-      const colourType = body[9]
-      if (depth !== 8) throw new Error(`unsupported bit depth ${depth}`)
-      if (colourType === 2) channels = 3
-      else if (colourType === 6) channels = 4
-      else throw new Error(`unsupported colour type ${colourType}`)
+      width = body.readUInt32BE(0);
+      height = body.readUInt32BE(4);
+      const depth = body[8];
+      const colourType = body[9];
+      if (depth !== 8) throw new Error(`unsupported bit depth ${depth}`);
+      if (colourType === 2) channels = 3;
+      else if (colourType === 6) channels = 4;
+      else throw new Error(`unsupported colour type ${colourType}`);
     } else if (type === "IDAT") {
-      idat.push(body)
+      idat.push(body);
     } else if (type === "IEND") {
-      break
+      break;
     }
-    offset += 12 + length
+    offset += 12 + length;
   }
-  const raw = inflateSync(Buffer.concat(idat))
-  const stride = width * channels
-  const pixels = Buffer.alloc(height * stride)
-  let pos = 0
+  const raw = inflateSync(Buffer.concat(idat));
+  const stride = width * channels;
+  const pixels = Buffer.alloc(height * stride);
+  let pos = 0;
   for (let y = 0; y < height; y += 1) {
-    const filter = raw[pos]
-    pos += 1
-    const line = raw.subarray(pos, pos + stride)
-    pos += stride
-    const target = pixels.subarray(y * stride, (y + 1) * stride)
-    const prior = y > 0 ? pixels.subarray((y - 1) * stride, y * stride) : null
+    const filter = raw[pos];
+    pos += 1;
+    const line = raw.subarray(pos, pos + stride);
+    pos += stride;
+    const target = pixels.subarray(y * stride, (y + 1) * stride);
+    const prior = y > 0 ? pixels.subarray((y - 1) * stride, y * stride) : null;
     for (let x = 0; x < stride; x += 1) {
-      const a = x >= channels ? target[x - channels] : 0
-      const b = prior ? prior[x] : 0
-      const c = prior && x >= channels ? prior[x - channels] : 0
-      let value = line[x]
-      if (filter === 1) value += a
-      else if (filter === 2) value += b
-      else if (filter === 3) value += (a + b) >> 1
+      const a = x >= channels ? target[x - channels] : 0;
+      const b = prior ? prior[x] : 0;
+      const c = prior && x >= channels ? prior[x - channels] : 0;
+      let value = line[x];
+      if (filter === 1) value += a;
+      else if (filter === 2) value += b;
+      else if (filter === 3) value += (a + b) >> 1;
       else if (filter === 4) {
-        const p = a + b - c
-        const pa = Math.abs(p - a)
-        const pb = Math.abs(p - b)
-        const pc = Math.abs(p - c)
-        value += pa <= pb && pa <= pc ? a : pb <= pc ? b : c
+        const p = a + b - c;
+        const pa = Math.abs(p - a);
+        const pb = Math.abs(p - b);
+        const pc = Math.abs(p - c);
+        value += pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
       } else if (filter !== 0) {
-        throw new Error(`unsupported filter ${filter}`)
+        throw new Error(`unsupported filter ${filter}`);
       }
-      target[x] = value & 0xff
+      target[x] = value & 0xff;
     }
   }
-  return { width, height, channels, pixels }
+  return { width, height, channels, pixels };
 }
 
 const relativeLuminance = (r, g, b) => {
   const f = (c) => {
-    const s = c / 255
-    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
-  }
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
-}
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
 
 const contrastOf = (l1, l2) => {
-  const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
-  return (hi + 0.05) / (lo + 0.05)
-}
+  const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1];
+  return (hi + 0.05) / (lo + 0.05);
+};
 
 /**
  * Contrast where the background is a gradient, an image or a translucent stack.
@@ -582,45 +621,66 @@ const contrastOf = (l1, l2) => {
  */
 const FIND_INDETERMINATE = () => {
   const parseRgb = (value) => {
-    const m = /rgba?\(([^)]+)\)/.exec(value)
-    if (!m) return null
-    const parts = m[1].split(/[\s,/]+/).filter(Boolean).map(Number)
-    if (parts.length < 3 || parts.some(Number.isNaN)) return null
-    return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 }
-  }
-  const found = []
-  const seen = new Set()
+    const m = /rgba?\(([^)]+)\)/.exec(value);
+    if (!m) return null;
+    const parts = m[1]
+      .split(/[\s,/]+/)
+      .filter(Boolean)
+      .map(Number);
+    if (parts.length < 3 || parts.some(Number.isNaN)) return null;
+    return {
+      r: parts[0],
+      g: parts[1],
+      b: parts[2],
+      a: parts.length > 3 ? parts[3] : 1,
+    };
+  };
+  const found = [];
+  const seen = new Set();
   for (const el of document.querySelectorAll("*")) {
-    if (el.closest("svg")) continue
-    const own = [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim().length > 1)
-    if (!own) continue
-    const style = getComputedStyle(el)
-    if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) continue
-    const rect = el.getBoundingClientRect()
-    if (rect.width < 4 || rect.height < 4) continue
-    const fg = parseRgb(style.color)
-    if (fg === null) continue
+    if (el.closest("svg")) continue;
+    const own = [...el.childNodes].some(
+      (n) => n.nodeType === 3 && (n.textContent ?? "").trim().length > 1,
+    );
+    if (!own) continue;
+    const style = getComputedStyle(el);
+    if (
+      style.display === "none" ||
+      style.visibility === "hidden" ||
+      Number(style.opacity) === 0
+    )
+      continue;
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 4 || rect.height < 4) continue;
+    const fg = parseRgb(style.color);
+    if (fg === null) continue;
 
-    let node = el
-    let indeterminate = false
+    let node = el;
+    let indeterminate = false;
     while (node && node !== document.documentElement.parentElement) {
-      const s = getComputedStyle(node)
-      if (s.backgroundImage && s.backgroundImage !== "none") { indeterminate = true; break }
-      const candidate = parseRgb(s.backgroundColor)
-      if (candidate && candidate.a === 1) break
-      if (candidate && candidate.a > 0 && candidate.a < 1) { indeterminate = true; break }
-      node = node.parentElement
+      const s = getComputedStyle(node);
+      if (s.backgroundImage && s.backgroundImage !== "none") {
+        indeterminate = true;
+        break;
+      }
+      const candidate = parseRgb(s.backgroundColor);
+      if (candidate && candidate.a === 1) break;
+      if (candidate && candidate.a > 0 && candidate.a < 1) {
+        indeterminate = true;
+        break;
+      }
+      node = node.parentElement;
     }
-    if (!indeterminate) continue
+    if (!indeterminate) continue;
 
-    const size = parseFloat(style.fontSize)
-    const weight = Number(style.fontWeight) || 400
-    const key = `${style.color}|${Math.round(size)}|${weight}|${el.tagName}`
-    if (seen.has(key)) continue
-    seen.add(key)
+    const size = parseFloat(style.fontSize);
+    const weight = Number(style.fontWeight) || 400;
+    const key = `${style.color}|${Math.round(size)}|${weight}|${el.tagName}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
 
-    const id = `qa-contrast-${found.length}`
-    el.setAttribute("data-qa-contrast", String(found.length))
+    const id = `qa-contrast-${found.length}`;
+    el.setAttribute("data-qa-contrast", String(found.length));
     found.push({
       id,
       index: found.length,
@@ -640,60 +700,66 @@ const FIND_INDETERMINATE = () => {
         w: Math.round(rect.width),
         h: Math.round(rect.height),
       },
-    })
+    });
   }
-  return found
-}
+  return found;
+};
 
 async function measurePixelContrast(page, reporter) {
-  const targets = await page.evaluate(FIND_INDETERMINATE)
-  const results = []
+  const targets = await page.evaluate(FIND_INDETERMINATE);
+  const results = [];
 
   for (const target of targets) {
     // Hide only this element's own text, leaving every layer behind it intact.
     await page.evaluate((index) => {
-      const el = document.querySelector(`[data-qa-contrast="${index}"]`)
-      if (!el) return
-      el.dataset.qaPrevColor = el.style.color
-      el.style.setProperty("color", "transparent", "important")
-      el.style.setProperty("text-shadow", "none", "important")
-    }, target.index)
+      const el = document.querySelector(`[data-qa-contrast="${index}"]`);
+      if (!el) return;
+      el.dataset.qaPrevColor = el.style.color;
+      el.style.setProperty("color", "transparent", "important");
+      el.style.setProperty("text-shadow", "none", "important");
+    }, target.index);
 
-    let shot = null
+    let shot = null;
     try {
       // An ELEMENT screenshot, not a clipped page screenshot. `clip` on a
       // viewport screenshot is measured against the viewport, so every target
       // below the fold came back "clipped area outside the resulting image" —
       // 30 of 34 samples silently skipped. The locator scrolls the element in
       // and captures its own box, which is the box we want anyway.
-      shot = await page.locator(`[data-qa-contrast="${target.index}"]`).screenshot({ animations: "disabled", timeout: 10_000 })
+      shot = await page
+        .locator(`[data-qa-contrast="${target.index}"]`)
+        .screenshot({ animations: "disabled", timeout: 10_000 });
     } catch (error) {
-      reporter.note(`contrast sample skipped (${target.selector}): ${String(error).split("\n")[0].slice(0, 100)}`)
+      reporter.note(
+        `contrast sample skipped (${target.selector}): ${String(error).split("\n")[0].slice(0, 100)}`,
+      );
     }
 
     await page.evaluate((index) => {
-      const el = document.querySelector(`[data-qa-contrast="${index}"]`)
-      if (!el) return
-      el.style.removeProperty("color")
-      el.style.removeProperty("text-shadow")
-      if (el.dataset.qaPrevColor) el.style.color = el.dataset.qaPrevColor
-      delete el.dataset.qaPrevColor
-    }, target.index)
+      const el = document.querySelector(`[data-qa-contrast="${index}"]`);
+      if (!el) return;
+      el.style.removeProperty("color");
+      el.style.removeProperty("text-shadow");
+      if (el.dataset.qaPrevColor) el.style.color = el.dataset.qaPrevColor;
+      delete el.dataset.qaPrevColor;
+    }, target.index);
 
-    if (shot === null) continue
+    if (shot === null) continue;
 
-    let image
+    let image;
     try {
-      image = decodePng(shot)
+      image = decodePng(shot);
     } catch (error) {
-      reporter.note(`PNG decode failed for ${target.selector}: ${String(error).slice(0, 80)}`)
-      continue
+      reporter.note(
+        `PNG decode failed for ${target.selector}: ${String(error).slice(0, 80)}`,
+      );
+      continue;
     }
 
-    const fgL = relativeLuminance(target.fg.r, target.fg.g, target.fg.b)
-    let worst = Infinity
-    let worstPixel = null
-    const { width, height, channels, pixels } = image
+    const fgL = relativeLuminance(target.fg.r, target.fg.g, target.fg.b);
+    let worst = Infinity;
+    let worstPixel = null;
+    const { width, height, channels, pixels } = image;
     // Sample the middle of the box, not its border.
     //
     // A word-split heading puts each word in its own inline-block, and the
@@ -702,27 +768,30 @@ async function measurePixelContrast(page, reporter) {
     // background and reported near-black text on near-black — 1.07:1 on a 30px
     // heading that is, in fact, dark text on pale blue. Glyphs sit in the middle
     // band, so that is where "what is behind the text" actually is.
-    const insetX = Math.max(2, Math.round(width * 0.15))
-    const insetY = Math.max(2, Math.round(height * 0.15))
-    const x0 = width > insetX * 2 ? insetX : 0
-    const x1 = width > insetX * 2 ? width - insetX : width
-    const y0 = height > insetY * 2 ? insetY : 0
-    const y1 = height > insetY * 2 ? height - insetY : height
+    const insetX = Math.max(2, Math.round(width * 0.15));
+    const insetY = Math.max(2, Math.round(height * 0.15));
+    const x0 = width > insetX * 2 ? insetX : 0;
+    const x1 = width > insetX * 2 ? width - insetX : width;
+    const y0 = height > insetY * 2 ? insetY : 0;
+    const y1 = height > insetY * 2 ? height - insetY : height;
     // Every pixel in that region, not a corner sample: the failing end of a
     // gradient is usually a band, and a corner sample walks straight past it.
     for (let y = y0; y < y1; y += 1) {
       for (let x = x0; x < x1; x += 1) {
-        const i = (y * width + x) * channels
-        const value = contrastOf(fgL, relativeLuminance(pixels[i], pixels[i + 1], pixels[i + 2]))
+        const i = (y * width + x) * channels;
+        const value = contrastOf(
+          fgL,
+          relativeLuminance(pixels[i], pixels[i + 1], pixels[i + 2]),
+        );
         if (value < worst) {
-          worst = value
-          worstPixel = { r: pixels[i], g: pixels[i + 1], b: pixels[i + 2] }
+          worst = value;
+          worstPixel = { r: pixels[i], g: pixels[i + 1], b: pixels[i + 2] };
         }
       }
     }
-    if (worstPixel === null) continue
+    if (worstPixel === null) continue;
 
-    const required = target.large ? 3 : 4.5
+    const required = target.large ? 3 : 4.5;
     results.push({
       selector: target.selector,
       colour: target.colour,
@@ -733,82 +802,91 @@ async function measurePixelContrast(page, reporter) {
       worstBackground: `rgb(${worstPixel.r}, ${worstPixel.g}, ${worstPixel.b})`,
       pixelsSampled: (x1 - x0) * (y1 - y0),
       pass: worst + 0.01 >= required,
-    })
+    });
   }
 
   await page.evaluate(() => {
-    for (const el of document.querySelectorAll("[data-qa-contrast]")) el.removeAttribute("data-qa-contrast")
-  })
-  return results
+    for (const el of document.querySelectorAll("[data-qa-contrast]"))
+      el.removeAttribute("data-qa-contrast");
+  });
+  return results;
 }
 
 async function main() {
-  const reporter = createReporter("layout-audit")
-  const dir = resultDir("layout")
-  const shotDir = join(dir, "violations")
-  mkdirSync(shotDir, { recursive: true })
+  const reporter = createReporter("layout-audit");
+  const dir = resultDir("layout");
+  const shotDir = join(dir, "violations");
+  mkdirSync(shotDir, { recursive: true });
 
-  reporter.section(`layout-audit — ${WIDTHS.length} widths × ${LOCALES.length} locales × ${THEMES.length} themes`)
-  const spots = reportBlindSpots(reporter, BLIND_SPOTS)
+  reporter.section(
+    `layout-audit — ${WIDTHS.length} widths × ${LOCALES.length} locales × ${THEMES.length} themes`,
+  );
+  const spots = reportBlindSpots(reporter, BLIND_SPOTS);
 
-  const server = startServer(PORT)
-  let browser
-  let executablePath
-  const violations = []
-  const pixelContrast = []
-  const themeResolution = {}
-  let shots = 0
-  const startedAt = Date.now()
+  const server = startServer(PORT);
+  let browser;
+  let executablePath;
+  const violations = [];
+  const pixelContrast = [];
+  const themeResolution = {};
+  let shots = 0;
+  const startedAt = Date.now();
 
   try {
-    await server.ready()
-    ;({ browser, executablePath } = await launchBrowser({ headed: HEADED }))
-    reporter.section("Matrix")
-    console.log(`  chromium: ${executablePath}`)
+    await server.ready();
+    ({ browser, executablePath } = await launchBrowser({ headed: HEADED }));
+    reporter.section("Matrix");
+    console.log(`  chromium: ${executablePath}`);
 
-    const widths = ONLY_WIDTH ? [Number(ONLY_WIDTH)] : WIDTHS
-    const locales = ONLY_LOCALE ? [ONLY_LOCALE] : LOCALES
-    const routes = publicRoutes()
-    let loads = 0
+    const widths = ONLY_WIDTH ? [Number(ONLY_WIDTH)] : WIDTHS;
+    const locales = ONLY_LOCALE ? [ONLY_LOCALE] : LOCALES;
+    const routes = publicRoutes();
+    let loads = 0;
 
     for (const theme of THEMES) {
-      const context = await browser.newContext({ colorScheme: theme })
-      await applyTheme(context, theme)
-      const page = await context.newPage()
-      let themeChecked = false
+      const context = await browser.newContext({ colorScheme: theme });
+      await applyTheme(context, theme);
+      const page = await context.newPage();
+      let themeChecked = false;
 
       for (const width of widths) {
-        await page.setViewportSize({ width, height: 900 })
+        await page.setViewportSize({ width, height: 900 });
 
         for (const locale of locales) {
           for (const route of routes) {
-            const url = urlFor(server.base, locale, route)
-            let result
+            const url = urlFor(server.base, locale, route);
+            let result;
             try {
-              const response = await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 })
-              loads += 1
+              const response = await page.goto(url, {
+                waitUntil: "networkidle",
+                timeout: 45_000,
+              });
+              loads += 1;
               if (response !== null && response.status() >= 400) {
-                reporter.check(`${locale}${route.path || "/"} @${width} ${theme}`, false,
-                  `HTTP ${response.status()}`)
-                continue
+                reporter.check(
+                  `${locale}${route.path || "/"} @${width} ${theme}`,
+                  false,
+                  `HTTP ${response.status()}`,
+                );
+                continue;
               }
-              await preparePage(page)
+              await preparePage(page);
 
               // Did the page render in the theme we asked for? `forcedTheme` in
               // the provider overrides storage, class and preference silently,
               // so without this the harness reports 96 "dark" cells that were
               // light — an unaudited theme, presented as a green tick.
               if (!themeChecked) {
-                themeChecked = true
-                const actual = await resolveTheme(page)
-                themeResolution[theme] = actual
+                themeChecked = true;
+                const actual = await resolveTheme(page);
+                themeResolution[theme] = actual;
                 if (actual.resolved !== theme) {
                   reporter.check(
                     `theme "${theme}" actually renders as "${theme}"`,
                     false,
                     `rendered "${actual.resolved}" (html class "${actual.htmlClass}", body ${actual.background}) — ` +
                       `every "${theme}" row below is really "${actual.resolved}"`,
-                  )
+                  );
                   violations.push({
                     kind: "theme-not-applied",
                     theme,
@@ -821,15 +899,18 @@ async function main() {
                     detail:
                       "The harness asked for this theme and the app rendered another. " +
                       "Every result for this theme describes the rendered one instead.",
-                  })
+                  });
                 }
               }
 
-              result = await page.evaluate(AUDIT)
+              result = await page.evaluate(AUDIT);
             } catch (error) {
-              reporter.check(`${locale}${route.path || "/"} @${width} ${theme}`, false,
-                String(error).slice(0, 110))
-              continue
+              reporter.check(
+                `${locale}${route.path || "/"} @${width} ${theme}`,
+                false,
+                String(error).slice(0, 110),
+              );
+              continue;
             }
 
             const kinds = [
@@ -839,17 +920,24 @@ async function main() {
               ["tap-target", result.tapTargets],
               ["contrast", result.contrast],
               ["truncation", result.truncation],
-            ]
+            ];
 
-            let found = 0
-            const pageRecords = []
+            let found = 0;
+            const pageRecords = [];
             for (const [kind, entries] of kinds) {
               for (const entry of entries) {
-                found += 1
-                const record = { kind, width, theme, locale, route: route.name, ...entry }
-                violations.push(record)
-                pageRecords.push(record)
-                reporter.finding(record)
+                found += 1;
+                const record = {
+                  kind,
+                  width,
+                  theme,
+                  locale,
+                  route: route.name,
+                  ...entry,
+                };
+                violations.push(record);
+                pageRecords.push(record);
+                reporter.finding(record);
               }
             }
             // ---- annotated evidence -------------------------------------
@@ -863,57 +951,81 @@ async function main() {
             // more useful: a 40px crop of an overhanging cell tells you nothing
             // about what pushed it there.
             if (found > 0 && shots < MAX_SHOTS) {
-              const name = `${route.name}-${locale}-${width}-${theme}.png`
+              const name = `${route.name}-${locale}-${width}-${theme}.png`;
               try {
                 await page.addStyleTag({
                   content: `[data-qa-violation] {
                     outline: 3px solid #e11d48 !important;
                     outline-offset: 1px !important;
                   }`,
-                })
-                await page.screenshot({ path: join(shotDir, name), fullPage: true })
-                for (const record of pageRecords) record.screenshot = `violations/${name}`
-                shots += 1
+                });
+                await page.screenshot({
+                  path: join(shotDir, name),
+                  fullPage: true,
+                });
+                for (const record of pageRecords)
+                  record.screenshot = `violations/${name}`;
+                shots += 1;
               } catch (error) {
-                reporter.note(`screenshot failed for ${name}: ${String(error).slice(0, 80)}`)
+                reporter.note(
+                  `screenshot failed for ${name}: ${String(error).slice(0, 80)}`,
+                );
               }
             }
 
             // Indeterminate contrast is reported, never counted as a pass.
             for (const entry of result.contrastIndeterminate) {
-              violations.push({ kind: "contrast-indeterminate", width, theme, locale, route: route.name, ...entry })
+              violations.push({
+                kind: "contrast-indeterminate",
+                width,
+                theme,
+                locale,
+                route: route.name,
+                ...entry,
+              });
             }
 
             reporter.check(
               `${locale}${route.path || "/"} @${width} ${theme}`,
               found === 0,
               found === 0 ? "" : `${found} violation(s)`,
-            )
+            );
           }
         }
       }
-      await context.close()
+      await context.close();
     }
 
     // ---- Phase 2 — contrast against gradients, from rendered pixels --------
-    reporter.section(`Contrast over gradients — pixel-sampled at ${PIXEL_CONTRAST_WIDTH}px`)
+    reporter.section(
+      `Contrast over gradients — pixel-sampled at ${PIXEL_CONTRAST_WIDTH}px`,
+    );
     console.log(
       `  The sampled pass can only read a solid background-color, so everything on a\n` +
         `  gradient came back indeterminate. These are measured from the rendered page.`,
-    )
+    );
     for (const theme of THEMES) {
-      const context = await browser.newContext({ colorScheme: theme })
-      await applyTheme(context, theme)
-      const page = await context.newPage()
-      await page.setViewportSize({ width: PIXEL_CONTRAST_WIDTH, height: 900 })
+      const context = await browser.newContext({ colorScheme: theme });
+      await applyTheme(context, theme);
+      const page = await context.newPage();
+      await page.setViewportSize({ width: PIXEL_CONTRAST_WIDTH, height: 900 });
       for (const route of routes) {
-        await page.goto(urlFor(server.base, PIXEL_CONTRAST_LOCALE, route), { waitUntil: "load", timeout: 60_000 })
-        await preparePage(page)
-        const measured = await measurePixelContrast(page, reporter)
+        await page.goto(urlFor(server.base, PIXEL_CONTRAST_LOCALE, route), {
+          waitUntil: "load",
+          timeout: 60_000,
+        });
+        await preparePage(page);
+        const measured = await measurePixelContrast(page, reporter);
         pixelContrast.push(
-          ...measured.map((m) => ({ ...m, theme, locale: PIXEL_CONTRAST_LOCALE, route: route.name, width: PIXEL_CONTRAST_WIDTH })),
-        )
-        const failed = measured.filter((m) => !m.pass)
+          ...measured.map((m) => ({
+            ...m,
+            theme,
+            locale: PIXEL_CONTRAST_LOCALE,
+            route: route.name,
+            width: PIXEL_CONTRAST_WIDTH,
+          })),
+        );
+        const failed = measured.filter((m) => !m.pass);
         reporter.check(
           `${route.name} ${theme} — ${measured.length} gradient-backed text style(s)`,
           failed.length === 0,
@@ -922,7 +1034,7 @@ async function main() {
               ? "none found"
               : `worst ${Math.min(...measured.map((m) => m.ratio)).toFixed(2)}:1`
             : `${failed.length} below threshold`,
-        )
+        );
         for (const f of failed) {
           const record = {
             kind: "contrast",
@@ -938,28 +1050,35 @@ async function main() {
             fontSize: f.fontSize,
             text: f.text,
             measuredFrom: "rendered pixels",
-          }
-          violations.push(record)
-          reporter.finding(record)
+          };
+          violations.push(record);
+          reporter.finding(record);
         }
       }
-      await context.close()
+      await context.close();
     }
 
-    reporter.section("Summary by kind")
-    const byKind = {}
-    for (const v of violations) byKind[v.kind] = (byKind[v.kind] ?? 0) + 1
-    if (Object.keys(byKind).length === 0) console.log("  no violations")
-    for (const [kind, count] of Object.entries(byKind).sort((a, b) => b[1] - a[1])) {
-      console.log(`  ${String(count).padStart(4)}  ${kind}`)
+    reporter.section("Summary by kind");
+    const byKind = {};
+    for (const v of violations) byKind[v.kind] = (byKind[v.kind] ?? 0) + 1;
+    if (Object.keys(byKind).length === 0) console.log("  no violations");
+    for (const [kind, count] of Object.entries(byKind).sort(
+      (a, b) => b[1] - a[1],
+    )) {
+      console.log(`  ${String(count).padStart(4)}  ${kind}`);
     }
 
-    const runtimeMs = Date.now() - startedAt
+    const runtimeMs = Date.now() - startedAt;
     const report = {
       harness: "layout-audit",
       generatedAt: new Date().toISOString(),
       chromium: executablePath,
-      matrix: { widths, locales, themes: THEMES, routes: routes.map((r) => r.name) },
+      matrix: {
+        widths,
+        locales,
+        themes: THEMES,
+        routes: routes.map((r) => r.name),
+      },
       pageLoads: loads,
       runtimeMs,
       blindSpots: spots,
@@ -973,24 +1092,24 @@ async function main() {
         samples: pixelContrast,
       },
       violations,
-    }
-    const path = writeJson(dir, "report.json", report)
-    console.log(`\n  report:      ${path}`)
-    console.log(`  screenshots: ${shots} in ${shotDir}`)
+    };
+    const path = writeJson(dir, "report.json", report);
+    console.log(`\n  report:      ${path}`);
+    console.log(`  screenshots: ${shots} in ${shotDir}`);
     console.log(
       `  contrast:    ${pixelContrast.length} gradient-backed styles measured from pixels, ` +
         `${pixelContrast.filter((m) => !m.pass).length} below threshold`,
-    )
-    console.log(`  page loads:  ${loads} in ${(runtimeMs / 1000).toFixed(1)}s`)
+    );
+    console.log(`  page loads:  ${loads} in ${(runtimeMs / 1000).toFixed(1)}s`);
   } finally {
-    if (browser) await browser.close()
-    server.stop()
+    if (browser) await browser.close();
+    server.stop();
   }
 
-  process.exit(reporter.summary())
+  process.exit(reporter.summary());
 }
 
 main().catch((error) => {
-  console.error(`\nlayout-audit failed to run: ${error?.stack ?? error}`)
-  process.exit(2)
-})
+  console.error(`\nlayout-audit failed to run: ${error?.stack ?? error}`);
+  process.exit(2);
+});

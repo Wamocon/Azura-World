@@ -20,7 +20,9 @@ export const GET = createManifestHandler("getPortalListings", {
     offset,
     query,
   }): Promise<
-    HandlerResult<CompetingPriceRecord[] | PriceSpreadBucket[] | PortalListingRecord[]>
+    HandlerResult<
+      CompetingPriceRecord[] | PriceSpreadBucket[] | PortalListingRecord[]
+    >
   > => {
     const unitId = readId(query, "unitId")
     if (unitId !== undefined) {

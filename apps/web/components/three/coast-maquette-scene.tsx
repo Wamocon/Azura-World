@@ -104,7 +104,11 @@ function Cluster({ reduced }: { reduced: boolean }) {
       {/* Plinth. */}
       <mesh position={[0, -0.62, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[5.2, 48]} />
-        <meshStandardMaterial color="#04101a" metalness={0.7} roughness={0.45} />
+        <meshStandardMaterial
+          color="#04101a"
+          metalness={0.7}
+          roughness={0.45}
+        />
       </mesh>
     </group>
   )
@@ -213,7 +217,11 @@ export default function CoastMaquetteScene({
 
       <ambientLight intensity={0.55} />
       <directionalLight position={[4, 8, 5]} intensity={1.15} />
-      <directionalLight position={[-6, 3, -4]} intensity={0.35} color="#4fc9e8" />
+      <directionalLight
+        position={[-6, 3, -4]}
+        intensity={0.35}
+        color="#4fc9e8"
+      />
 
       <Cluster reduced={reduced} />
 

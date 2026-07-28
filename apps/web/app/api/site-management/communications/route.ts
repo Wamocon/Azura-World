@@ -59,11 +59,18 @@ export const GET = createManifestHandler("getCommunications", {
       // takes a thread id and does not re-derive the caller's scope, so without
       // this the endpoint would read any thread's messages for anyone holding
       // `communications:view`.
-      const thread = await getThread(threadId, { role: profile.role, profileId: profile.id ?? "" })
+      const thread = await getThread(threadId, {
+        role: profile.role,
+        profileId: profile.id ?? "",
+      })
       if (thread.data === null) {
         throw new RepositoryError(notFound("That conversation was not found."))
       }
-      const result = await getMessages(threadId, { role: profile.role, limit, offset })
+      const result = await getMessages(threadId, {
+        role: profile.role,
+        limit,
+        offset,
+      })
       return { data: result.data, source: result.source }
     }
 

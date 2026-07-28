@@ -28,7 +28,9 @@ export const GET = createManifestHandler("getBuyerPipeline", {
       ...(unitId === undefined ? {} : { unitId }),
     }
 
-    if (readEnum(query, "view", ["entries", "summary"] as const) === "summary") {
+    if (
+      readEnum(query, "view", ["entries", "summary"] as const) === "summary"
+    ) {
       const summary = await getPipelineSummary(options)
       return { data: summary.data, source: summary.source }
     }
@@ -40,6 +42,8 @@ export const GET = createManifestHandler("getBuyerPipeline", {
 export const PATCH = createManifestHandler("updateBuyerPipelineEntry", {
   schema: updatePipelineSchema,
   handler: () => {
-    throw new Error("unreachable: updateBuyerPipelineEntry declares a write gap")
+    throw new Error(
+      "unreachable: updateBuyerPipelineEntry declares a write gap"
+    )
   },
 })

@@ -36,6 +36,7 @@ yourself — an unreviewed security patch from outside the owning window is its 
 ## Attack surface — work through all of it
 
 ### 1. Authentication & session
+
 - Access-profile picker reachable in a production build? **Try to defeat W1-B's module-load
   guard.** Env manipulation, build-flag combinations, direct route access.
 - Session fixation; token in a URL; session surviving deactivation.
@@ -44,6 +45,7 @@ yourself — an unreviewed security patch from outside the owning window is its 
 - Password reset flow, if present: token entropy, expiry, single use.
 
 ### 2. Authorisation — the big one
+
 - **Every route × every one of 11 roles.** Script it. Vertical escalation: can `tenant` reach
   finance? Horizontal: can `owner` A reach `owner` B's units, statements, documents?
 - **`child_*` escalation via the guardian relation** — the most likely real hole in this model.
@@ -54,6 +56,7 @@ yourself — an unreviewed security patch from outside the owning window is its 
 - Does the API re-check permission, or does it trust that the UI hid the button?
 
 ### 3. Injection
+
 - SQL injection through every filter, sort, and search parameter. `?sort=` is the usual one.
 - **XSS**: stored (report form → dashboard triage), reflected (search), DOM-based. Scraped
   competitor content is untrusted input — check every render path for it.
@@ -64,6 +67,7 @@ yourself — an unreviewed security patch from outside the owning window is its 
 - ICS injection through activity titles (`\n` breaking the calendar format).
 
 ### 4. Data exposure
+
 - Does any error response leak `postgres`, `PGRST`, a stack frame, a file path, or a table name?
   **Grep every captured response body.**
 - Is the service-role key reachable from the client bundle? Search the built output.
@@ -73,12 +77,14 @@ yourself — an unreviewed security patch from outside the owning window is its 
 - Timing differences that reveal whether a record exists.
 
 ### 5. Rate limiting & abuse
+
 - Public report and public chat: is the limit real, and keyed on more than IP?
 - Idempotency: can a replay create two records? Can a different body reuse a key?
 - Denial-of-wallet on the AI endpoint: concurrent requests per user.
 - Large payloads, deeply nested JSON, zip bombs in attachments.
 
 ### 6. Integrity
+
 - Can a posted ledger entry be modified through any path — API, RPC, direct table?
 - Can an audit event be edited or deleted?
 - Is the last admin protected?
@@ -110,9 +116,10 @@ Per finding:
 
 ```markdown
 ### SEC-001 — <title>
+
 **Severity:** Critical | High | Medium | Low | Info
 **Category:** authz | injection | exposure | integrity | abuse | honesty
-**Owner:** W3-F  (the window that must fix it)
+**Owner:** W3-F (the window that must fix it)
 **Status:** OPEN | FIXED | ACCEPTED-RISK | FALSE-POSITIVE
 
 **Finding:** what is wrong

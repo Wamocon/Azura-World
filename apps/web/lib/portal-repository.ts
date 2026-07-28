@@ -47,7 +47,10 @@ import type {
 } from "@/lib/contracts"
 import type { CurrencyCode, SeedCitation } from "@/lib/inventory-data"
 import { median, seedSourceRegister } from "@/lib/inventory-data"
-import { seedCompetingPriceRows, seedPortalListingRows } from "@/lib/portal-data"
+import {
+  seedCompetingPriceRows,
+  seedPortalListingRows,
+} from "@/lib/portal-data"
 import {
   asBoolean,
   asMoney,
@@ -141,11 +144,18 @@ function rowsOf(data: unknown): Array<Record<string, unknown>> {
 }
 
 function toArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : value === null || value === undefined ? [] : [value]
+  return Array.isArray(value)
+    ? value
+    : value === null || value === undefined
+      ? []
+      : [value]
 }
 
 function asCurrency(value: unknown): CurrencyCode | null {
-  return value === "EUR" || value === "USD" || value === "TRY" || value === "GBP"
+  return value === "EUR" ||
+    value === "USD" ||
+    value === "TRY" ||
+    value === "GBP"
     ? value
     : null
 }
@@ -197,7 +207,8 @@ async function loadSourceRegister(
       const fetchedAt = asNullableString(snapshot["fetched_at"])
       const snapshotHash = asNullableString(snapshot["snapshot_sha256"])
       if (fetchedAt === null || snapshotHash === null) continue
-      if (best === null || fetchedAt > best.fetchedAt) best = { fetchedAt, snapshotHash }
+      if (best === null || fetchedAt > best.fetchedAt)
+        best = { fetchedAt, snapshotHash }
     }
     if (best === null) continue
 
@@ -252,7 +263,12 @@ function mapCompetingPrice(
   // A price with no amount, no unit or no observation date cannot be aged or
   // attributed. CONVENTIONS §5: a stale price shown as current is the most
   // damaging error available to this project.
-  if (money === null || unitId === null || sourceUrl === null || observedAt === null) {
+  if (
+    money === null ||
+    unitId === null ||
+    sourceUrl === null ||
+    observedAt === null
+  ) {
     return null
   }
   const citation = register.get(sourceUrl)
@@ -295,8 +311,10 @@ export async function getPortalListings(
       if (options.publisher !== undefined) {
         query = query.eq("publisher", options.publisher)
       }
-      if (options.layout !== undefined) query = query.eq("layout", options.layout)
-      if (options.isStale !== undefined) query = query.eq("is_stale", options.isStale)
+      if (options.layout !== undefined)
+        query = query.eq("layout", options.layout)
+      if (options.isStale !== undefined)
+        query = query.eq("is_stale", options.isStale)
       if (options.priceKind !== undefined) {
         query = query.eq("price_kind", options.priceKind)
       }
@@ -308,12 +326,21 @@ export async function getPortalListings(
     () =>
       seedPortalListingRows()
         .filter(
-          (row) => options.publisher === undefined || row.publisher === options.publisher
+          (row) =>
+            options.publisher === undefined ||
+            row.publisher === options.publisher
         )
-        .filter((row) => options.layout === undefined || row.layout === options.layout)
-        .filter((row) => options.isStale === undefined || row.is_stale === options.isStale)
         .filter(
-          (row) => options.priceKind === undefined || row.price_kind === options.priceKind
+          (row) => options.layout === undefined || row.layout === options.layout
+        )
+        .filter(
+          (row) =>
+            options.isStale === undefined || row.is_stale === options.isStale
+        )
+        .filter(
+          (row) =>
+            options.priceKind === undefined ||
+            row.price_kind === options.priceKind
         )
         .sort(
           (a, b) =>
@@ -358,7 +385,9 @@ export async function getCompetingPricesForUnit(
     async (client) => {
       const { data, error } = await client
         .from("competing_prices")
-        .select("id, unit_id, amount, currency, source_url, publisher, observed_at")
+        .select(
+          "id, unit_id, amount, currency, source_url, publisher, observed_at"
+        )
         .eq("unit_id", unitId)
         .order("observed_at", { ascending: false })
         .limit(limit)
@@ -404,7 +433,11 @@ export async function getPriceSpread(): Promise<
   return withRepository(
     async (client) => {
       const rows: Array<Record<string, unknown>> = []
-      for (let offset = 0; offset < SPREAD_MAX_ROWS; offset += SPREAD_PAGE_SIZE) {
+      for (
+        let offset = 0;
+        offset < SPREAD_MAX_ROWS;
+        offset += SPREAD_PAGE_SIZE
+      ) {
         const { data, error } = await client
           .from("portal_listings")
           .select("publisher, layout, price_amount, price_currency, price_kind")
@@ -417,7 +450,9 @@ export async function getPriceSpread(): Promise<
         if (rows.length >= SPREAD_MAX_ROWS) {
           // A spread computed over a truncated set is a wrong number wearing a
           // confident label. Refuse instead.
-          throw new Error("Portal listings exceed the bounded price-spread limit.")
+          throw new Error(
+            "Portal listings exceed the bounded price-spread limit."
+          )
         }
       }
       return buildSpread(rows)

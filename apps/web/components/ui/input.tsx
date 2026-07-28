@@ -34,7 +34,7 @@ function Label({ className, ...props }: ComponentProps<"label">) {
     <label
       data-slot="label"
       className={cn(
-        "flex items-center gap-2 text-sm font-medium leading-none text-foreground",
+        "flex items-center gap-2 text-sm leading-none font-medium text-foreground",
         "has-[+_:disabled]:opacity-50",
         className
       )}
@@ -55,10 +55,7 @@ function Label({ className, ...props }: ComponentProps<"label">) {
  * with any content — a plain input, a select, a composite control, or two
  * inputs side by side. `cloneElement` would only support the first.
  */
-export function fieldDescriptionId(
-  htmlFor: string,
-  hasError: boolean
-): string {
+export function fieldDescriptionId(htmlFor: string, hasError: boolean): string {
   return hasError ? `${htmlFor}-error` : `${htmlFor}-hint`
 }
 

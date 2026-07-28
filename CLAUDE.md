@@ -68,23 +68,23 @@ Left column is what `package.json` / `apps/web/package.json` **declare**; right 
 **installed** under `node_modules`. Both read 2026-07-27. They agree with `CONVENTIONS.md` §1.
 Do not float them.
 
-| Package | Declared | Installed |
-|---|---|---|
-| `next` | `16.2.6` (exact) | 16.2.6 |
-| `react` / `react-dom` | `19.2.4` (exact) | 19.2.4 |
-| `typescript` | `^5` | 5.9.3 |
-| `tailwindcss` + `@tailwindcss/postcss` | `^4` | 4.3.3 |
-| `next-intl` | `^4.13.0` | 4.13.4 |
-| `@supabase/ssr` / `@supabase/supabase-js` | `^0.12.0` / `^2.108.2` | 0.12.3 / 2.110.8 |
-| `@base-ui/react` / `shadcn` | `^1.6.0` / `^4.11.0` | 1.6.0 / 4.15.0 |
-| `framer-motion` | `^12.40.0` | 12.42.2 |
-| `gsap` / `@gsap/react` | `^3.15.0` / `^2.1.2` | 3.15.0 / 2.1.2 |
-| `lenis` | `^1.3.25` | 1.3.25 |
-| `three` / `@react-three/fiber` / `drei` | `^0.185.1` / `^9.6.1` / `^10.7.7` | 0.185.1 / 9.6.1 / 10.7.7 |
-| `lucide-react` (the only icon library) | `^1.21.0` | 1.27.0 |
-| `@playwright/test` | `^1.61.0` | 1.62.0 |
-| `zod` | `^4.4.3` | 4.4.3 |
-| pnpm / Node | `pnpm@10.0.0` / `>=20.0.0` | `.nvmrc` = 22.14.0 |
+| Package                                   | Declared                          | Installed                |
+| ----------------------------------------- | --------------------------------- | ------------------------ |
+| `next`                                    | `16.2.6` (exact)                  | 16.2.6                   |
+| `react` / `react-dom`                     | `19.2.4` (exact)                  | 19.2.4                   |
+| `typescript`                              | `^5`                              | 5.9.3                    |
+| `tailwindcss` + `@tailwindcss/postcss`    | `^4`                              | 4.3.3                    |
+| `next-intl`                               | `^4.13.0`                         | 4.13.4                   |
+| `@supabase/ssr` / `@supabase/supabase-js` | `^0.12.0` / `^2.108.2`            | 0.12.3 / 2.110.8         |
+| `@base-ui/react` / `shadcn`               | `^1.6.0` / `^4.11.0`              | 1.6.0 / 4.15.0           |
+| `framer-motion`                           | `^12.40.0`                        | 12.42.2                  |
+| `gsap` / `@gsap/react`                    | `^3.15.0` / `^2.1.2`              | 3.15.0 / 2.1.2           |
+| `lenis`                                   | `^1.3.25`                         | 1.3.25                   |
+| `three` / `@react-three/fiber` / `drei`   | `^0.185.1` / `^9.6.1` / `^10.7.7` | 0.185.1 / 9.6.1 / 10.7.7 |
+| `lucide-react` (the only icon library)    | `^1.21.0`                         | 1.27.0                   |
+| `@playwright/test`                        | `^1.61.0`                         | 1.62.0                   |
+| `zod`                                     | `^4.4.3`                          | 4.4.3                    |
+| pnpm / Node                               | `pnpm@10.0.0` / `>=20.0.0`        | `.nvmrc` = 22.14.0       |
 
 Declared but not listed in CONVENTIONS §1: `next-themes`, `clsx`, `tailwind-merge`,
 `class-variance-authority`, `tw-animate-css`, `prettier` + `prettier-plugin-tailwindcss`,
@@ -96,15 +96,15 @@ Declared but not listed in CONVENTIONS §1: `next-themes`, `clsx`, `tailwind-mer
 
 **Target exists and has been run at least once:**
 
-| Command | Target | Last observed |
-|---|---|---|
-| `pnpm --dir apps/web dev` | `next dev --hostname 127.0.0.1 --port 3200` | ready in 1.3s |
-| `pnpm --dir apps/web build` | `next build --webpack` | exit 0 |
-| `pnpm --dir apps/web typecheck` | `tsc --noEmit` | exit 0 |
-| `pnpm --dir apps/web lint` | `eslint` | exit 0, `--max-warnings 0` |
-| `pnpm smoke:contracts` | `scripts/smoke-contracts.mts` | 33 pass · 0 fail |
-| `pnpm verify:supabase` | `scripts/verify-supabase.mjs` | 25 pass · 0 fail · 3 warn |
-| `pnpm setup:supabase` | `scripts/setup-supabase.mjs` | `--dry-run` only; buckets NOT created |
+| Command                         | Target                                      | Last observed                         |
+| ------------------------------- | ------------------------------------------- | ------------------------------------- |
+| `pnpm --dir apps/web dev`       | `next dev --hostname 127.0.0.1 --port 3200` | ready in 1.3s                         |
+| `pnpm --dir apps/web build`     | `next build --webpack`                      | exit 0                                |
+| `pnpm --dir apps/web typecheck` | `tsc --noEmit`                              | exit 0                                |
+| `pnpm --dir apps/web lint`      | `eslint`                                    | exit 0, `--max-warnings 0`            |
+| `pnpm smoke:contracts`          | `scripts/smoke-contracts.mts`               | 33 pass · 0 fail                      |
+| `pnpm verify:supabase`          | `scripts/verify-supabase.mjs`               | 25 pass · 0 fail · 3 warn             |
+| `pnpm setup:supabase`           | `scripts/setup-supabase.mjs`                | `--dry-run` only; buckets NOT created |
 
 Pasted output for all of these is in `HANDOFF/W0-A.md`, not here.
 
@@ -114,13 +114,13 @@ qa:evidence` (`scripts/verify-evidence.mjs`) — all W0-B's, which was still run
 
 **Command defined, target does not exist yet — it will fail, and that is correct:**
 
-| Command | Missing target | Written by |
-|---|---|---|
-| `pnpm test:contract` | `scripts/validate-openapi.mjs` | W2-B |
-| `pnpm qa:layout` / `pnpm qa:perf` | `scripts/layout-audit.mjs` / `scripts/perf.mjs` | W4-B |
-| `pnpm quality:gate` | `scripts/quality-gate.mjs` | W4-D |
-| `pnpm db:test` | no `supabase/config.toml`, no migrations | W1-A |
-| `pnpm --dir apps/web test:e2e` | `apps/web/playwright.config.ts` | W4-A |
+| Command                           | Missing target                                  | Written by |
+| --------------------------------- | ----------------------------------------------- | ---------- |
+| `pnpm test:contract`              | `scripts/validate-openapi.mjs`                  | W2-B       |
+| `pnpm qa:layout` / `pnpm qa:perf` | `scripts/layout-audit.mjs` / `scripts/perf.mjs` | W4-B       |
+| `pnpm quality:gate`               | `scripts/quality-gate.mjs`                      | W4-D       |
+| `pnpm db:test`                    | no `supabase/config.toml`, no migrations        | W1-A       |
+| `pnpm --dir apps/web test:e2e`    | `apps/web/playwright.config.ts`                 | W4-A       |
 
 Do not stub a missing target to make a script "pass". A failing script that names its owner is
 information; a stub is a lie the next window builds on.
@@ -136,7 +136,7 @@ information; a stub is a lie the next window builds on.
   Do not create `apps/web/middleware.ts` for any reason.
 - **`params` is a Promise.** `const { locale } = await params` — likewise `searchParams`.
 - **Production build is `next build --webpack`.** Turbopack is fine for `dev` (and is what `next
-  dev` uses); Turbopack production builds are not the validated path here.
+dev` uses); Turbopack production builds are not the validated path here.
 - **Tailwind v4 has no `tailwind.config.js`.** Tokens are CSS custom properties in
   `@theme inline` inside `app/globals.css` (W1-D owns that file). Adding a JS config breaks the
   build silently in dev and loudly in prod.
@@ -168,16 +168,16 @@ CLAUDE.md · AGENTS.md · HANDOFF/W0-A.md
 
 **Does not exist yet — do not assume it:**
 
-| Missing | Owner |
-|---|---|
-| `apps/web/app/globals.css` | W1-D (plus the one-line import seam in `app/layout.tsx`) |
-| `apps/web/lib/cn.ts` | W1-D — class merging lives there, **not** in `lib/utils.ts` |
-| `apps/web/i18n*.ts`, `apps/web/messages/*.json` | W1-C (plus the plugin seam in `next.config.ts`) |
-| the Supabase and route-guard bodies in `apps/web/proxy.ts` | W1-B — two marked `TODO(W1-B)` seams |
-| `apps/web/lib/rbac.ts`, `auth.ts`, `lib/supabase/*` | W1-B |
-| migrations, `seed.sql`, `config.toml`, pgTAP tests | W1-A |
-| `docs/api/openapi.yaml` | W2-B |
-| any `app/[locale]/**` route | W1-C / W3-* |
+| Missing                                                    | Owner                                                       |
+| ---------------------------------------------------------- | ----------------------------------------------------------- |
+| `apps/web/app/globals.css`                                 | W1-D (plus the one-line import seam in `app/layout.tsx`)    |
+| `apps/web/lib/cn.ts`                                       | W1-D — class merging lives there, **not** in `lib/utils.ts` |
+| `apps/web/i18n*.ts`, `apps/web/messages/*.json`            | W1-C (plus the plugin seam in `next.config.ts`)             |
+| the Supabase and route-guard bodies in `apps/web/proxy.ts` | W1-B — two marked `TODO(W1-B)` seams                        |
+| `apps/web/lib/rbac.ts`, `auth.ts`, `lib/supabase/*`        | W1-B                                                        |
+| migrations, `seed.sql`, `config.toml`, pgTAP tests         | W1-A                                                        |
+| `docs/api/openapi.yaml`                                    | W2-B                                                        |
+| any `app/[locale]/**` route                                | W1-C / W3-*                                                 |
 
 There is **no routable page yet**: `/` redirects to `/de` and `/de` renders `app/not-found.tsx`
 with a 404. That is the correct state until W3-A adds `app/[locale]/page.tsx`.

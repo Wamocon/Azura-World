@@ -18,7 +18,7 @@ accountant. Two rules govern everything here:
    an edit affordance that the database will reject — a disabled control that explains itself
    beats an enabled one that fails.
 2. **Never aggregate across currencies.** This project's data has EUR and USD in it. `sum(EUR) +
-   sum(USD)` is a meaningless number that will look authoritative on a dashboard.
+sum(USD)` is a meaningless number that will look authoritative on a dashboard.
 
 ---
 
@@ -68,7 +68,7 @@ explicit overdraft flag — otherwise rejected at the database (W1-A).
 ### 4. Owner finance projection
 
 For `owner` role: their units' income, costs, net position, distribution history. **Scoped by the
-repository *and* by RLS** — an owner seeing another owner's finances is the worst possible
+repository _and_ by RLS** — an owner seeing another owner's finances is the worst possible
 failure in this module. Test it adversarially.
 
 ### 5. Vendor invoices — `/dashboard/vendor-invoices`
@@ -108,6 +108,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, evidence pasted:
+
 1. Ledger with mixed EUR/USD → **separate totals**, screenshot
 2. Attempt to edit a posted entry → blocked in UI, and 409/403 from the API
 3. Double-submit a payment with the same idempotency key → posted **once**; show both responses

@@ -158,20 +158,21 @@ export function Masterplan({
 
           {/* The hotel sits between the blocks and the water, which is the one
               spatial relationship every source agrees on. */}
-          <div
-            className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-[var(--radius-sm)] border border-dashed border-[color-mix(in_srgb,var(--foreground)_22%,transparent)] bg-card/60 px-3 py-3"
-          >
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-[var(--radius-sm)] border border-dashed border-[color-mix(in_srgb,var(--foreground)_22%,transparent)] bg-card/60 px-3 py-3">
             <span className="font-display text-base leading-none tracking-[-0.01em]">
               {labels.hotelLabel}
             </span>
-            <span data-numeric className="text-[0.8125rem] text-muted-foreground">
+            <span
+              data-numeric
+              className="text-[0.8125rem] text-muted-foreground"
+            >
               {hotelRooms}
             </span>
           </div>
 
           <p
             aria-hidden="true"
-            className="text-center text-[0.6875rem] uppercase tracking-[0.06em] text-muted-foreground"
+            className="text-center text-[0.6875rem] tracking-[0.06em] text-muted-foreground uppercase"
           >
             {labels.seaLabel}
           </p>

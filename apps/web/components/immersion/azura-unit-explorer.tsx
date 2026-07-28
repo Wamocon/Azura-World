@@ -129,9 +129,8 @@ export function AzuraUnitExplorer({
       if (block !== "all" && unit.blockCode !== block) return false
       if (layout !== "all" && unit.layout !== layout) return false
       if (needle === "") return true
-      const haystack = `${unit.id} ${unit.blockCode} ${unit.layout}`.toLocaleLowerCase(
-        locale
-      )
+      const haystack =
+        `${unit.id} ${unit.blockCode} ${unit.layout}`.toLocaleLowerCase(locale)
       return haystack.includes(needle)
     })
   }, [units, deferredQuery, block, layout, locale])
@@ -179,7 +178,7 @@ export function AzuraUnitExplorer({
           <Label htmlFor="explorer-search">{labels.searchLabel}</Label>
           <div className="relative min-w-0">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
               aria-hidden="true"
             />
             <Input
@@ -192,7 +191,10 @@ export function AzuraUnitExplorer({
               data-testid="explorer-search"
             />
           </div>
-          <p id="explorer-search-hint" className="text-xs text-muted-foreground">
+          <p
+            id="explorer-search-hint"
+            className="text-xs text-muted-foreground"
+          >
             {labels.searchHint}
           </p>
         </div>
@@ -240,8 +242,14 @@ export function AzuraUnitExplorer({
         data-testid="explorer-count"
       >
         {labels.count
-          .replace("{visible}", new Intl.NumberFormat(locale).format(visible.length))
-          .replace("{total}", new Intl.NumberFormat(locale).format(units.length))}
+          .replace(
+            "{visible}",
+            new Intl.NumberFormat(locale).format(visible.length)
+          )
+          .replace(
+            "{total}",
+            new Intl.NumberFormat(locale).format(units.length)
+          )}
       </p>
 
       {visible.length === 0 ? (

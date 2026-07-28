@@ -13,12 +13,12 @@
 Every image, floor plan, render, brochure and video the 23 sources expose — collected, validated,
 optimised, and **attributed**.
 
-W0-B harvests *facts*. You harvest *media*. Split deliberately: W0-B's job is narrow and the
+W0-B harvests _facts_. You harvest _media_. Split deliberately: W0-B's job is narrow and the
 acceptance criteria depend on it, and a slow image pipeline must not block the dataset.
 
 Ataberg's lesson governs this task: its first pass checked HTTP status codes and kept the body
 regardless, so **51 of 154 "downloaded" photos were 404 pages wearing a `.jpg` extension** and
-5 were HEIC. *Validate the bytes, not the status line.*
+5 were HEIC. _Validate the bytes, not the status line._
 
 ---
 
@@ -43,6 +43,7 @@ Playwright-driven, sharing W0-B's politeness settings (`HARVEST_MIN_DELAY_MS`, �
 host, robots.txt respected).
 
 Collect from all 23 sources:
+
 - Project renders and photography
 - **Floor plans and site plans** — the highest-value assets; portals often expose them as PDFs
 - Hotel photography (rooms, pools, aquapark, restaurants)
@@ -53,6 +54,7 @@ Collect from all 23 sources:
   only, no login, no scraping behind auth
 
 **Validation, per asset:**
+
 - Decode with `sharp` (or `ffprobe` for video). If it does not decode, it is not an image —
   reject it, do not store it.
 - Reject anything under 10KB or below 200px on the long edge (thumbnails, tracking pixels, icons)
@@ -78,19 +80,26 @@ Typed, generated, with the same provenance discipline as the dataset:
 
 ```ts
 export interface MediaAsset {
-  id: string
-  category: "render" | "photo" | "floorplan" | "siteplan" | "logo" | "video" | "document"
-  subject: "project" | "hotel" | "unit" | "amenity" | "location" | "developer"
-  sources: SourceRef[]          // every page that carried it
-  originalUrl: string
-  width: number
-  height: number
-  formats: { avif: string[]; webp: string[]; jpeg: string[] }
-  lqip: string
-  sha256: string
-  caption: Record<Locale, string> | null
+  id: string;
+  category:
+    | "render"
+    | "photo"
+    | "floorplan"
+    | "siteplan"
+    | "logo"
+    | "video"
+    | "document";
+  subject: "project" | "hotel" | "unit" | "amenity" | "location" | "developer";
+  sources: SourceRef[]; // every page that carried it
+  originalUrl: string;
+  width: number;
+  height: number;
+  formats: { avif: string[]; webp: string[]; jpeg: string[] };
+  lqip: string;
+  sha256: string;
+  caption: Record<Locale, string> | null;
   /** Rights posture — see MEDIA-LICENSE.md. Drives whether it may be displayed. */
-  usage: "internal_only" | "attributed_display" | "unknown"
+  usage: "internal_only" | "attributed_display" | "unknown";
 }
 ```
 
@@ -154,6 +163,7 @@ pnpm --dir apps/web typecheck
 ```
 
 Paste:
+
 1. Asset counts by category and by source
 2. **Validation table: attempted / decoded / rejected, with rejection reasons** — the Ataberg
    number to beat is "51 of 154 were 404 pages"

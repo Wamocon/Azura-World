@@ -50,11 +50,26 @@ Read `lib/rbac.ts`. Show only resources the role can `view`. Nav config lives in
 
 ```ts
 export const dashboardRoutes: DashboardRoute[] = [
-  { href: "/dashboard",            icon: "LayoutDashboard", permission: "dashboard:view", group: "overview" },
-  { href: "/dashboard/evidence",   icon: "ShieldCheck",     permission: "evidence:view",  group: "intelligence" },
-  { href: "/dashboard/units",      icon: "Building2",       permission: "units:view",     group: "inventory" },
+  {
+    href: "/dashboard",
+    icon: "LayoutDashboard",
+    permission: "dashboard:view",
+    group: "overview",
+  },
+  {
+    href: "/dashboard/evidence",
+    icon: "ShieldCheck",
+    permission: "evidence:view",
+    group: "intelligence",
+  },
+  {
+    href: "/dashboard/units",
+    icon: "Building2",
+    permission: "units:view",
+    group: "inventory",
+  },
   // ... all 18
-]
+];
 ```
 
 Groups: `overview · intelligence · inventory · commercial · finance · operations · governance`.
@@ -63,17 +78,17 @@ Groups: `overview · intelligence · inventory · commercial · finance · opera
 
 Different roles need different first screens. Same shell, different content:
 
-| Role | Lands on |
-|---|---|
-| `admin` | System health, evidence coverage, user activity, all KPIs |
-| `manager` | Site KPIs, availability, open tickets, conflicts needing review |
-| `accountant` | Ledger summary, outstanding payments, invoices |
-| `staff` | My assigned tasks, today's activities |
-| `owner` | My units, my finance position, my documents |
-| `tenant` | My unit, my tickets, my payments |
-| `service_provider` | Assigned work orders only |
-| `guest` | Public information + access request |
-| `child_*` | Read-only subset of the guardian's view |
+| Role               | Lands on                                                        |
+| ------------------ | --------------------------------------------------------------- |
+| `admin`            | System health, evidence coverage, user activity, all KPIs       |
+| `manager`          | Site KPIs, availability, open tickets, conflicts needing review |
+| `accountant`       | Ledger summary, outstanding payments, invoices                  |
+| `staff`            | My assigned tasks, today's activities                           |
+| `owner`            | My units, my finance position, my documents                     |
+| `tenant`           | My unit, my tickets, my payments                                |
+| `service_provider` | Assigned work orders only                                       |
+| `guest`            | Public information + access request                             |
+| `child_*`          | Read-only subset of the guardian's view                         |
 
 Every KPI card renders through `useLiveSnapshot` and shows the sync badge state.
 
@@ -125,6 +140,7 @@ pnpm --dir apps/web typecheck && pnpm --dir apps/web lint && pnpm --dir apps/web
 ```
 
 Plus, output pasted:
+
 1. **All 11 roles × the dashboard home render** — no crash, no blank, correct nav set for each.
    Enumerate programmatically; do not spot-check three roles.
 2. Deep link to a forbidden route → 403 for every role that lacks it

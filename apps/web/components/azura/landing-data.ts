@@ -82,7 +82,9 @@ function toCompetingPrice(entry: {
 
 /** All 19 published 1+1 figures, in publication order. */
 export const competingPrices: CompetingPrice[] = (F002?.competingValues ?? [])
-  .map((entry) => toCompetingPrice(entry as { value: unknown; source: SourceRef }))
+  .map((entry) =>
+    toCompetingPrice(entry as { value: unknown; source: SourceRef })
+  )
   .filter((p): p is CompetingPrice => p !== null)
 
 /**
@@ -106,8 +108,11 @@ export const headlinePrices: CompetingPrice[] = (() => {
     if (forPublisher.length === 0) continue
     // The publisher's own extreme: lowest for the cheapest house, highest for
     // the dearest, so the band shows the true span rather than a soft middle.
-    const sorted = [...forPublisher].sort((a, b) => a.money.amount - b.money.amount)
-    const pick = publisher === "Haspo Realty" ? sorted[0] : sorted[sorted.length - 1]
+    const sorted = [...forPublisher].sort(
+      (a, b) => a.money.amount - b.money.amount
+    )
+    const pick =
+      publisher === "Haspo Realty" ? sorted[0] : sorted[sorted.length - 1]
     if (pick !== undefined) out.push(pick)
   }
   return out
@@ -188,14 +193,26 @@ export const renderedFacts: ReadonlyArray<{
   { key: "project.floorsPerBuilding", fact: project.floorsPerBuilding },
   { key: "project.greenAreaSqm", fact: project.greenAreaSqm },
   { key: "project.buildingFootprintSqm", fact: project.buildingFootprintSqm },
-  { key: "project.outdoorFacilityAreaSqm", fact: project.outdoorFacilityAreaSqm },
+  {
+    key: "project.outdoorFacilityAreaSqm",
+    fact: project.outdoorFacilityAreaSqm,
+  },
   { key: "project.constructionStart", fact: project.constructionStart },
   { key: "project.completionDate", fact: project.completionDate },
   { key: "project.buildStatus", fact: project.buildStatus },
   { key: "project.distanceToSeaM", fact: project.distanceToSeaM },
-  { key: "project.distanceToAlanyaCentreKm", fact: project.distanceToAlanyaCentreKm },
-  { key: "project.distanceToGazipasaAirportKm", fact: project.distanceToGazipasaAirportKm },
-  { key: "project.distanceToAntalyaAirportKm", fact: project.distanceToAntalyaAirportKm },
+  {
+    key: "project.distanceToAlanyaCentreKm",
+    fact: project.distanceToAlanyaCentreKm,
+  },
+  {
+    key: "project.distanceToGazipasaAirportKm",
+    fact: project.distanceToGazipasaAirportKm,
+  },
+  {
+    key: "project.distanceToAntalyaAirportKm",
+    fact: project.distanceToAntalyaAirportKm,
+  },
   { key: "project.downPaymentPercent", fact: project.downPaymentPercent },
   { key: "hotel.stars", fact: hotel.stars },
   { key: "hotel.roomCount", fact: hotel.roomCount },

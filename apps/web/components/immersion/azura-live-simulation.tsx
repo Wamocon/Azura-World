@@ -316,7 +316,7 @@ function EventRow({
       <time
         dateTime={event.at.toISOString()}
         data-numeric
-        className="shrink-0 text-xs tabular-nums text-muted-foreground"
+        className="shrink-0 text-xs text-muted-foreground tabular-nums"
       >
         {formatSimulationTime(event.at, locale)}
       </time>

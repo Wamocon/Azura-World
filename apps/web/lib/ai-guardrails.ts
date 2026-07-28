@@ -75,10 +75,7 @@ export type RefusalKind =
 
 /** The frozen `AiResponse["refusalReason"]` values. */
 export type ContractRefusalReason =
-  | "out_of_scope"
-  | "insufficient_permission"
-  | "no_grounding"
-  | "unsafe_request"
+  "out_of_scope" | "insufficient_permission" | "no_grounding" | "unsafe_request"
 
 export function contractRefusalReason(
   kind: RefusalKind
@@ -970,9 +967,58 @@ export function detectLanguage(message: string, fallback: Locale): Locale {
   const score: Record<Locale, number> = { de: 0, en: 0, tr: 0, ru: 0 }
 
   const stopwords: Record<Locale, readonly string[]> = {
-    de: ["was", "wie", "der", "die", "das", "ist", "und", "kostet", "wohnung", "viele", "gibt", "es", "ich", "nicht", "wieviel", "welche", "ein", "eine"],
-    en: ["what", "how", "the", "is", "are", "and", "does", "many", "much", "price", "there", "do", "you", "can", "a", "an"],
-    tr: ["ne", "kadar", "nasil", "kac", "var", "mi", "mu", "bir", "icin", "daire", "fiyat", "midir"],
+    de: [
+      "was",
+      "wie",
+      "der",
+      "die",
+      "das",
+      "ist",
+      "und",
+      "kostet",
+      "wohnung",
+      "viele",
+      "gibt",
+      "es",
+      "ich",
+      "nicht",
+      "wieviel",
+      "welche",
+      "ein",
+      "eine",
+    ],
+    en: [
+      "what",
+      "how",
+      "the",
+      "is",
+      "are",
+      "and",
+      "does",
+      "many",
+      "much",
+      "price",
+      "there",
+      "do",
+      "you",
+      "can",
+      "a",
+      "an",
+    ],
+    tr: [
+      "ne",
+      "kadar",
+      "nasil",
+      "kac",
+      "var",
+      "mi",
+      "mu",
+      "bir",
+      "icin",
+      "daire",
+      "fiyat",
+      "midir",
+    ],
     ru: ["что", "как", "сколько", "есть", "цена", "это", "ли"],
   }
 

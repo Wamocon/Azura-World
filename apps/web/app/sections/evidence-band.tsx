@@ -82,13 +82,13 @@ export async function EvidenceBandSection({
             <div className="grid grid-cols-2 lg:grid-cols-4">
               <Sounding
                 label={t("evidenceBand.sourcesAttempted")}
-                className="border-b border-r border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
+                className="border-r border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
               >
                 {number.format(coverage.sourcesTotal)}
               </Sounding>
               <Sounding
                 label={t("evidenceBand.sourcesReachable")}
-                className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0 lg:border-r"
+                className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-r lg:border-b-0"
               >
                 {number.format(coverage.sourcesValidated)}
               </Sounding>
@@ -109,7 +109,7 @@ export async function EvidenceBandSection({
           {/* Facts by confidence. The badges carry shape as well as colour, so
               the breakdown survives greyscale and a monochrome print. */}
           <Reveal className="min-w-0">
-            <h3 className="mb-4 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <h3 className="mb-4 text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
               {t("evidenceBand.confidenceHeading")}
             </h3>
             <ul className="flex flex-col">
@@ -130,15 +130,18 @@ export async function EvidenceBandSection({
                 </li>
               ))}
               <li className="flex items-center justify-between gap-4 border-t border-border pt-3">
-                <span className="text-[0.8125rem] uppercase tracking-[0.02em] text-muted-foreground">
+                <span className="text-[0.8125rem] tracking-[0.02em] text-muted-foreground uppercase">
                   {t("evidenceBand.factsLabel")}
                 </span>
-                <span data-numeric className="text-[1rem] font-semibold tabular-nums">
+                <span
+                  data-numeric
+                  className="text-[1rem] font-semibold tabular-nums"
+                >
                   {number.format(factTotal)}
                 </span>
               </li>
               <li className="flex items-center justify-between gap-4 border-t border-border/50 pt-3">
-                <span className="text-[0.8125rem] uppercase tracking-[0.02em] text-muted-foreground">
+                <span className="text-[0.8125rem] tracking-[0.02em] text-muted-foreground uppercase">
                   {t("evidenceBand.unitSplitLabel")}
                 </span>
                 <span
@@ -204,7 +207,7 @@ export async function EvidenceBandSection({
                       <th
                         key={head}
                         scope="col"
-                        className="pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
+                        className="pb-2 text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase"
                       >
                         {head}
                       </th>
@@ -235,7 +238,7 @@ export async function EvidenceBandSection({
                       </td>
                       <td
                         data-numeric
-                        className="py-3 pr-4 text-[0.875rem] tabular-nums text-muted-foreground"
+                        className="py-3 pr-4 text-[0.875rem] text-muted-foreground tabular-nums"
                       >
                         {price.interiorM2 === null
                           ? provenance.gap

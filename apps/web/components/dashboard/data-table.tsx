@@ -1,6 +1,12 @@
 "use client"
 
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download, Settings2 } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronsUpDown,
+  Download,
+  Settings2,
+} from "lucide-react"
 import {
   useCallback,
   useId,
@@ -20,7 +26,11 @@ import {
 import type { ProvenanceFormat } from "@/components/evidence/format"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DataSurface, EmptyState, ErrorState } from "@/components/ui/empty-state"
+import {
+  DataSurface,
+  EmptyState,
+  ErrorState,
+} from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
@@ -284,7 +294,7 @@ export function DataTable<TRow>({
    */
   const defaultHidden = useMemo(
     () => columns.filter((c) => c.hiddenByDefault === true).map((c) => c.id),
-    [columns],
+    [columns]
   )
 
   const hiddenColumns = useHiddenColumns(columnVisibilityKey, defaultHidden)
@@ -293,7 +303,10 @@ export function DataTable<TRow>({
     (next: ReadonlySet<string>) => {
       if (columnVisibilityKey === undefined) return
       try {
-        window.localStorage.setItem(columnVisibilityKey, JSON.stringify([...next]))
+        window.localStorage.setItem(
+          columnVisibilityKey,
+          JSON.stringify([...next])
+        )
         // `storage` does not fire in the tab that wrote it, so the store is
         // nudged directly. Without this the checkbox would not move.
         window.dispatchEvent(new Event(COLUMN_STORE_EVENT))
@@ -302,12 +315,12 @@ export function DataTable<TRow>({
         // preference simply does not persist.
       }
     },
-    [columnVisibilityKey],
+    [columnVisibilityKey]
   )
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => !hiddenColumns.has(column.id)),
-    [columns, hiddenColumns],
+    [columns, hiddenColumns]
   )
 
   const selectable = onSelectionChange !== undefined
@@ -318,14 +331,18 @@ export function DataTable<TRow>({
     () =>
       (bulkActions ?? []).filter(
         (action) =>
-          action.permission === undefined || can === undefined || can(action.permission),
+          action.permission === undefined ||
+          can === undefined ||
+          can(action.permission)
       ),
-    [bulkActions, can],
+    [bulkActions, can]
   )
 
   const exportAllowed =
     onExportCsv !== undefined &&
-    (exportPermission === undefined || can === undefined || can(exportPermission))
+    (exportPermission === undefined ||
+      can === undefined ||
+      can(exportPermission))
 
   const toggleSort = useCallback(
     (columnId: string) => {
@@ -336,9 +353,11 @@ export function DataTable<TRow>({
       }
       // asc → desc → unsorted. The third press restoring the natural order is
       // what makes sorting feel reversible rather than sticky.
-      onSortChange(sort.direction === "asc" ? { columnId, direction: "desc" } : null)
+      onSortChange(
+        sort.direction === "asc" ? { columnId, direction: "desc" } : null
+      )
     },
-    [onSortChange, sort],
+    [onSortChange, sort]
   )
 
   const toggleRow = useCallback(
@@ -349,7 +368,7 @@ export function DataTable<TRow>({
       else next.add(id)
       onSelectionChange(next)
     },
-    [onSelectionChange, selected],
+    [onSelectionChange, selected]
   )
 
   const allOnPageSelected =
@@ -400,7 +419,9 @@ export function DataTable<TRow>({
           {visibleColumns.map((column) => (
             <TableCell
               key={column.id}
-              style={column.width === undefined ? undefined : { width: column.width }}
+              style={
+                column.width === undefined ? undefined : { width: column.width }
+              }
             >
               <Cell
                 column={column}
@@ -425,7 +446,7 @@ export function DataTable<TRow>({
       selected,
       toggleRow,
       visibleColumns,
-    ],
+    ]
   )
 
   const header = (
@@ -444,16 +465,23 @@ export function DataTable<TRow>({
         ) : null}
         {visibleColumns.map((column) => {
           const active = sort?.columnId === column.id
-          const sortable = column.sortable === true && onSortChange !== undefined
+          const sortable =
+            column.sortable === true && onSortChange !== undefined
           return (
             <TableHead
               key={column.id}
-              style={column.width === undefined ? undefined : { width: column.width }}
+              style={
+                column.width === undefined ? undefined : { width: column.width }
+              }
               // `aria-sort` is what a screen reader announces. Without it the
               // arrow icon is the only signal, and an icon is not an
               // announcement.
               aria-sort={
-                active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined
+                active
+                  ? sort.direction === "asc"
+                    ? "ascending"
+                    : "descending"
+                  : undefined
               }
             >
               {sortable ? (
@@ -463,7 +491,7 @@ export function DataTable<TRow>({
                   className={cn(
                     "inline-flex min-h-6 items-center gap-1 rounded-sm text-left",
                     "outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                    active && "text-foreground",
+                    active && "text-foreground"
                   )}
                   title={
                     active
@@ -481,7 +509,10 @@ export function DataTable<TRow>({
                       <ArrowDown className="size-3" aria-hidden="true" />
                     )
                   ) : (
-                    <ChevronsUpDown className="size-3 opacity-40" aria-hidden="true" />
+                    <ChevronsUpDown
+                      className="size-3 opacity-40"
+                      aria-hidden="true"
+                    />
                   )}
                 </button>
               ) : (
@@ -502,7 +533,10 @@ export function DataTable<TRow>({
       {/* Toolbar. Quiet by default: the controls that do nothing for this
           table are absent rather than disabled. */}
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground" data-testid="data-table-count">
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="data-table-count"
+        >
           {formatCount(labels.countTemplate, rows.length, totalRows, locale)}
         </p>
 
@@ -510,15 +544,22 @@ export function DataTable<TRow>({
           {selected.size > 0 ? (
             <>
               <Badge variant="secondary">
-                {labels.selectedTemplate.replace("{count}", String(selected.size))}
+                {labels.selectedTemplate.replace(
+                  "{count}",
+                  String(selected.size)
+                )}
               </Badge>
               {permittedBulkActions.map((action) => (
                 <Button
                   key={action.id}
                   size="sm"
-                  variant={action.variant === "destructive" ? "destructive" : "outline"}
+                  variant={
+                    action.variant === "destructive" ? "destructive" : "outline"
+                  }
                   onClick={() =>
-                    action.onRun(rows.filter((row) => selected.has(getRowId(row))))
+                    action.onRun(
+                      rows.filter((row) => selected.has(getRowId(row)))
+                    )
                   }
                 >
                   {action.label}
@@ -542,8 +583,8 @@ export function DataTable<TRow>({
               {columnMenuOpen ? (
                 <div
                   className={cn(
-                    "absolute right-0 top-full z-20 mt-1 flex w-56 flex-col gap-1 rounded-lg border border-border",
-                    "bg-popover p-2 shadow-lg",
+                    "absolute top-full right-0 z-20 mt-1 flex w-56 flex-col gap-1 rounded-lg border border-border",
+                    "bg-popover p-2 shadow-lg"
                   )}
                 >
                   {columns.map((column) => (
@@ -616,7 +657,9 @@ export function DataTable<TRow>({
                 renderRow={renderRow}
               />
             ) : (
-              <tbody data-slot="table-body">{rows.map((row) => renderRow(row))}</tbody>
+              <tbody data-slot="table-body">
+                {rows.map((row) => renderRow(row))}
+              </tbody>
             )}
           </Table>
         </TableScrollArea>
@@ -639,7 +682,7 @@ const COLUMN_STORE_EVENT = "azura:column-visibility"
  */
 function useHiddenColumns(
   storageKey: string | undefined,
-  defaults: readonly string[],
+  defaults: readonly string[]
 ): ReadonlySet<string> {
   const defaultsKey = defaults.join(",")
 
@@ -665,11 +708,14 @@ function useHiddenColumns(
   const raw = useSyncExternalStore(subscribe, getSnapshot, () => null)
 
   return useMemo(() => {
-    if (raw === null) return new Set(defaultsKey === "" ? [] : defaultsKey.split(","))
+    if (raw === null)
+      return new Set(defaultsKey === "" ? [] : defaultsKey.split(","))
     try {
       const parsed: unknown = JSON.parse(raw)
       if (!Array.isArray(parsed)) throw new Error("not an array")
-      return new Set(parsed.filter((value): value is string => typeof value === "string"))
+      return new Set(
+        parsed.filter((value): value is string => typeof value === "string")
+      )
     } catch {
       // A corrupt entry falls back to the defaults rather than throwing. A
       // table that will not render because a preference is malformed is a
@@ -704,7 +750,13 @@ function Cell<TRow>({
       if (value === null || value === "") {
         return <span className="text-confidence-gap">{labels.noValue}</span>
       }
-      return <span className={column.align === "end" ? "block text-right" : undefined}>{value}</span>
+      return (
+        <span
+          className={column.align === "end" ? "block text-right" : undefined}
+        >
+          {value}
+        </span>
+      )
     }
 
     case "number": {
@@ -757,7 +809,7 @@ function formatCount(
   template: string,
   visible: number,
   total: number | null,
-  locale: string,
+  locale: string
 ): string {
   const format = new Intl.NumberFormat(locale)
   return template

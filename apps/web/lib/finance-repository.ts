@@ -154,7 +154,10 @@ function requireEnum<T extends string>(
       details: { column },
       retryable: true,
     }
-    throw new RepositoryError(apiError, new Error(`Unrecognised value for ${column}`))
+    throw new RepositoryError(
+      apiError,
+      new Error(`Unrecognised value for ${column}`)
+    )
   }
   return match
 }
@@ -217,7 +220,9 @@ function mapWallet(value: unknown): Wallet {
     balanceAmount: asNullableNumber(row["balance_amount"]),
     allowsOverdraft: asBoolean(row["allows_overdraft"]),
     overdraftLimitAmount: asNullableNumber(row["overdraft_limit_amount"]),
-    lowBalanceThresholdAmount: asNullableNumber(row["low_balance_threshold_amount"]),
+    lowBalanceThresholdAmount: asNullableNumber(
+      row["low_balance_threshold_amount"]
+    ),
     status: requireEnum(row["status"], walletStatuses, "status"),
     version: asNullableNumber(row["version"]) ?? 1,
     createdAt: asString(row["created_at"]),
@@ -243,7 +248,9 @@ function mapVendorInvoice(value: unknown): VendorInvoice {
     // Derived here rather than in SQL so seed mode and Supabase mode compute it
     // identically. Unreadable on either side ⟹ unreadable outstanding, not 0.
     outstandingAmount:
-      totalAmount === null || paidAmount === null ? null : totalAmount - paidAmount,
+      totalAmount === null || paidAmount === null
+        ? null
+        : totalAmount - paidAmount,
     currency: asCurrency(row["currency"]),
     issuedOn: asString(row["issued_on"]),
     dueOn: asNullableString(row["due_on"]),
@@ -354,7 +361,10 @@ function canReadCompanyFinance(role: Role): boolean {
   return isFinanceVisibleRole(role) && roleLevel[role] >= roleLevel.accountant
 }
 
-function financeScope(access: FinanceAccess, resolvedUnitIds: readonly string[]): FinanceScope {
+function financeScope(
+  access: FinanceAccess,
+  resolvedUnitIds: readonly string[]
+): FinanceScope {
   const { role } = access
   if (!isFinanceVisibleRole(role)) return DENIED_SCOPE
 
@@ -377,7 +387,9 @@ function financeScope(access: FinanceAccess, resolvedUnitIds: readonly string[])
  */
 function seedScopeProfileId(profileId: string | null): string | null {
   if (profileId === null) return null
-  const guardianship = seedGuardianships().find((row) => row.childProfileId === profileId)
+  const guardianship = seedGuardianships().find(
+    (row) => row.childProfileId === profileId
+  )
   return guardianship?.guardianProfileId ?? profileId
 }
 
@@ -590,11 +602,15 @@ function walletVisible(wallet: Wallet, scope: FinanceScope): boolean {
   if (scope.companyWide) return true
   // can_read_own_wallet(): the holder, and nobody else below manager.
   return (
-    scope.selfProfileId !== null && wallet.owningProfileId === scope.selfProfileId
+    scope.selfProfileId !== null &&
+    wallet.owningProfileId === scope.selfProfileId
   )
 }
 
-function vendorInvoiceVisible(invoice: VendorInvoice, scope: FinanceScope): boolean {
+function vendorInvoiceVisible(
+  invoice: VendorInvoice,
+  scope: FinanceScope
+): boolean {
   if (scope.denied) return false
   if (scope.companyWide) return true
   // is_invoice_vendor(): restricted to the service_provider role itself, so an
@@ -613,8 +629,10 @@ function paymentVisible(
 ): boolean {
   if (scope.denied) return false
   if (scope.companyWide) return true
-  if (payment.unitId !== null && scope.unitIds.includes(payment.unitId)) return true
-  if (payment.walletId !== null && ownWalletIds.includes(payment.walletId)) return true
+  if (payment.unitId !== null && scope.unitIds.includes(payment.unitId))
+    return true
+  if (payment.walletId !== null && ownWalletIds.includes(payment.walletId))
+    return true
   return false
 }
 
@@ -652,7 +670,13 @@ function daysOverdue(dueOn: string | null, asOfIso: string): number | null {
 }
 
 function emptyAgeing(): AgeingBuckets {
-  return { current: 0, days1To30: 0, days31To60: 0, days61To90: 0, days90Plus: 0 }
+  return {
+    current: 0,
+    days1To30: 0,
+    days31To60: 0,
+    days61To90: 0,
+    days90Plus: 0,
+  }
 }
 
 function ageingBucketFor(days: number | null): keyof AgeingBuckets {
@@ -674,37 +698,66 @@ function isOpenInvoice(invoice: VendorInvoice): boolean {
 // Ledger
 // ---------------------------------------------------------------------------
 
-function seedLedgerFiltered(query: LedgerEntryQuery, scope: FinanceScope): LedgerEntry[] {
+function seedLedgerFiltered(
+  query: LedgerEntryQuery,
+  scope: FinanceScope
+): LedgerEntry[] {
   const rows = seedLedgerEntries()
     .filter((entry) => ledgerVisible(entry, scope))
-    .filter((entry) => query.companyId === undefined || entry.companyId === query.companyId)
-    .filter((entry) => query.siteId === undefined || entry.siteId === query.siteId)
-    .filter((entry) => query.unitId === undefined || entry.unitId === query.unitId)
-    .filter((entry) => query.residentId === undefined || entry.residentId === query.residentId)
+    .filter(
+      (entry) =>
+        query.companyId === undefined || entry.companyId === query.companyId
+    )
+    .filter(
+      (entry) => query.siteId === undefined || entry.siteId === query.siteId
+    )
+    .filter(
+      (entry) => query.unitId === undefined || entry.unitId === query.unitId
+    )
+    .filter(
+      (entry) =>
+        query.residentId === undefined || entry.residentId === query.residentId
+    )
     .filter(
       (entry) =>
         query.transactionGroupId === undefined ||
         entry.transactionGroupId === query.transactionGroupId
     )
-    .filter((entry) => query.entryType === undefined || entry.entryType === query.entryType)
-    .filter((entry) => query.status === undefined || entry.status === query.status)
-    .filter((entry) => query.period === undefined || entry.period === query.period)
-    .filter((entry) => query.currency === undefined || entry.currency === query.currency)
     .filter(
       (entry) =>
-        query.dueFrom === undefined || (entry.dueDate !== null && entry.dueDate >= query.dueFrom)
+        query.entryType === undefined || entry.entryType === query.entryType
+    )
+    .filter(
+      (entry) => query.status === undefined || entry.status === query.status
+    )
+    .filter(
+      (entry) => query.period === undefined || entry.period === query.period
     )
     .filter(
       (entry) =>
-        query.dueTo === undefined || (entry.dueDate !== null && entry.dueDate <= query.dueTo)
+        query.currency === undefined || entry.currency === query.currency
+    )
+    .filter(
+      (entry) =>
+        query.dueFrom === undefined ||
+        (entry.dueDate !== null && entry.dueDate >= query.dueFrom)
+    )
+    .filter(
+      (entry) =>
+        query.dueTo === undefined ||
+        (entry.dueDate !== null && entry.dueDate <= query.dueTo)
     )
     .filter(
       (entry) =>
         query.isReversal === undefined ||
-        (query.isReversal ? entry.reversalOf !== null : entry.reversalOf === null)
+        (query.isReversal
+          ? entry.reversalOf !== null
+          : entry.reversalOf === null)
     )
     .sort(
-      (a, b) => compareDesc(a.postedAt, b.postedAt) || compareDesc(a.createdAt, b.createdAt)
+      (a, b) =>
+        compareDesc(a.postedAt, b.postedAt) ||
+        compareDesc(a.createdAt, b.createdAt)
     )
   return paginate(rows, query)
 }
@@ -724,20 +777,26 @@ async function fetchLedgerRows(
   let builder = client.from(T_LEDGER).select(LEDGER_COLUMNS)
 
   if (!scope.companyWide) builder = builder.in("unit_id", [...scope.unitIds])
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.unitId !== undefined) builder = builder.eq("unit_id", query.unitId)
-  if (query.residentId !== undefined) builder = builder.eq("resident_id", query.residentId)
+  if (query.residentId !== undefined)
+    builder = builder.eq("resident_id", query.residentId)
   if (query.transactionGroupId !== undefined) {
     builder = builder.eq("transaction_group_id", query.transactionGroupId)
   }
-  if (query.entryType !== undefined) builder = builder.eq("entry_type", query.entryType)
+  if (query.entryType !== undefined)
+    builder = builder.eq("entry_type", query.entryType)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
   if (query.period !== undefined) builder = builder.eq("period", query.period)
-  if (query.currency !== undefined) builder = builder.eq("currency", query.currency)
-  if (query.dueFrom !== undefined) builder = builder.gte("due_date", query.dueFrom)
+  if (query.currency !== undefined)
+    builder = builder.eq("currency", query.currency)
+  if (query.dueFrom !== undefined)
+    builder = builder.gte("due_date", query.dueFrom)
   if (query.dueTo !== undefined) builder = builder.lte("due_date", query.dueTo)
-  if (query.isReversal === true) builder = builder.not("reversal_of", "is", null)
+  if (query.isReversal === true)
+    builder = builder.not("reversal_of", "is", null)
   if (query.isReversal === false) builder = builder.is("reversal_of", null)
 
   const limit = clampLimit(page.limit)
@@ -813,16 +872,31 @@ export async function getLedgerEntry(
 // Wallets
 // ---------------------------------------------------------------------------
 
-function seedWalletsFiltered(query: WalletQuery, scope: FinanceScope): Wallet[] {
+function seedWalletsFiltered(
+  query: WalletQuery,
+  scope: FinanceScope
+): Wallet[] {
   const rows = seedWallets()
     .filter((wallet) => walletVisible(wallet, scope))
-    .filter((wallet) => query.companyId === undefined || wallet.companyId === query.companyId)
+    .filter(
+      (wallet) =>
+        query.companyId === undefined || wallet.companyId === query.companyId
+    )
     .filter((wallet) => query.kind === undefined || wallet.kind === query.kind)
-    .filter((wallet) => query.status === undefined || wallet.status === query.status)
-    .filter((wallet) => query.currency === undefined || wallet.currency === query.currency)
+    .filter(
+      (wallet) => query.status === undefined || wallet.status === query.status
+    )
+    .filter(
+      (wallet) =>
+        query.currency === undefined || wallet.currency === query.currency
+    )
     .filter((wallet) => {
       if (query.lowBalanceOnly !== true) return true
-      if (wallet.balanceAmount === null || wallet.lowBalanceThresholdAmount === null) return false
+      if (
+        wallet.balanceAmount === null ||
+        wallet.lowBalanceThresholdAmount === null
+      )
+        return false
       return wallet.balanceAmount < wallet.lowBalanceThresholdAmount
     })
     .sort((a, b) => compareDesc(a.updatedAt, b.updatedAt))
@@ -842,10 +916,12 @@ async function fetchWalletRows(
   if (!scope.companyWide && scope.selfProfileId !== null) {
     builder = builder.eq("owner_profile_id", scope.selfProfileId)
   }
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.kind !== undefined) builder = builder.eq("kind", query.kind)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
-  if (query.currency !== undefined) builder = builder.eq("currency", query.currency)
+  if (query.currency !== undefined)
+    builder = builder.eq("currency", query.currency)
 
   const limit = clampLimit(page.limit)
   const offset = clampOffset(page.offset)
@@ -873,7 +949,8 @@ export async function getWallets(
       const scope = await scopeFor(client, query)
       return fetchWalletRows(client, query, scope, query)
     },
-    () => seedWalletsFiltered(query, financeScope(query, seedScopeUnits(query))),
+    () =>
+      seedWalletsFiltered(query, financeScope(query, seedScopeUnits(query))),
     "finance.getWallets"
   )
 }
@@ -927,21 +1004,34 @@ function seedVendorInvoicesFiltered(
 ): VendorInvoice[] {
   const rows = seedVendorInvoices()
     .filter((invoice) => vendorInvoiceVisible(invoice, scope))
-    .filter((invoice) => query.companyId === undefined || invoice.companyId === query.companyId)
-    .filter((invoice) => query.siteId === undefined || invoice.siteId === query.siteId)
+    .filter(
+      (invoice) =>
+        query.companyId === undefined || invoice.companyId === query.companyId
+    )
+    .filter(
+      (invoice) => query.siteId === undefined || invoice.siteId === query.siteId
+    )
     .filter(
       (invoice) =>
         query.vendorProfileId === undefined ||
         invoice.vendorProfileId === query.vendorProfileId
     )
-    .filter((invoice) => query.status === undefined || invoice.status === query.status)
-    .filter((invoice) => query.currency === undefined || invoice.currency === query.currency)
+    .filter(
+      (invoice) => query.status === undefined || invoice.status === query.status
+    )
+    .filter(
+      (invoice) =>
+        query.currency === undefined || invoice.currency === query.currency
+    )
     .filter((invoice) => {
       if (query.overdueOnly !== true) return true
       const days = daysOverdue(invoice.dueOn, asOf)
       return isOpenInvoice(invoice) && days !== null && days > 0
     })
-    .sort((a, b) => compareDesc(a.dueOn, b.dueOn) || compareDesc(a.issuedOn, b.issuedOn))
+    .sort(
+      (a, b) =>
+        compareDesc(a.dueOn, b.dueOn) || compareDesc(a.issuedOn, b.issuedOn)
+    )
   return paginate(rows, query)
 }
 
@@ -953,24 +1043,29 @@ async function fetchVendorInvoiceRows(
   asOf: string
 ): Promise<VendorInvoice[]> {
   if (scope.denied) return []
-  if (!scope.companyWide && !(scope.isVendor && scope.selfProfileId !== null)) return []
+  if (!scope.companyWide && !(scope.isVendor && scope.selfProfileId !== null))
+    return []
 
   let builder = client.from(T_VENDOR_INVOICES).select(VENDOR_INVOICE_COLUMNS)
   if (!scope.companyWide && scope.selfProfileId !== null) {
     builder = builder.eq("vendor_profile_id", scope.selfProfileId)
   }
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.vendorProfileId !== undefined) {
     builder = builder.eq("vendor_profile_id", query.vendorProfileId)
   }
   if (query.status !== undefined) builder = builder.eq("status", query.status)
-  if (query.currency !== undefined) builder = builder.eq("currency", query.currency)
+  if (query.currency !== undefined)
+    builder = builder.eq("currency", query.currency)
   if (query.overdueOnly === true) {
     // "Overdue" is derived. `status in (open, partially_paid)` plus a past due
     // date is the SQL half; the unpaid-remainder half is applied after mapping,
     // because `paid_amount < total_amount` compares two columns.
-    builder = builder.in("status", ["open", "partially_paid"]).lt("due_on", asOf.slice(0, 10))
+    builder = builder
+      .in("status", ["open", "partially_paid"])
+      .lt("due_on", asOf.slice(0, 10))
   }
 
   const limit = clampLimit(page.limit)
@@ -994,7 +1089,12 @@ export async function getVendorInvoices(
       const scope = await scopeFor(client, query)
       return fetchVendorInvoiceRows(client, query, scope, query, asOf)
     },
-    () => seedVendorInvoicesFiltered(query, financeScope(query, seedScopeUnits(query)), asOf),
+    () =>
+      seedVendorInvoicesFiltered(
+        query,
+        financeScope(query, seedScopeUnits(query)),
+        asOf
+      ),
     "finance.getVendorInvoices"
   )
 }
@@ -1019,7 +1119,9 @@ export async function getVendorInvoice(
     },
     () => {
       const scope = financeScope(access, seedScopeUnits(access))
-      const invoice = seedVendorInvoices().find((candidate) => candidate.id === id)
+      const invoice = seedVendorInvoices().find(
+        (candidate) => candidate.id === id
+      )
       if (invoice === undefined) return null
       return vendorInvoiceVisible(invoice, scope) ? invoice : null
     },
@@ -1060,12 +1162,22 @@ function seedPaymentsFiltered(
   const ownWalletIds = seedOwnWalletIds(scope)
   const rows = seedPaymentTransactions()
     .filter((payment) => paymentVisible(payment, scope, ownWalletIds))
-    .filter((payment) => query.companyId === undefined || payment.companyId === query.companyId)
-    .filter((payment) => query.unitId === undefined || payment.unitId === query.unitId)
     .filter(
-      (payment) => query.residentId === undefined || payment.residentId === query.residentId
+      (payment) =>
+        query.companyId === undefined || payment.companyId === query.companyId
     )
-    .filter((payment) => query.walletId === undefined || payment.walletId === query.walletId)
+    .filter(
+      (payment) => query.unitId === undefined || payment.unitId === query.unitId
+    )
+    .filter(
+      (payment) =>
+        query.residentId === undefined ||
+        payment.residentId === query.residentId
+    )
+    .filter(
+      (payment) =>
+        query.walletId === undefined || payment.walletId === query.walletId
+    )
     .filter(
       (payment) =>
         query.vendorInvoiceId === undefined ||
@@ -1073,13 +1185,28 @@ function seedPaymentsFiltered(
     )
     .filter(
       (payment) =>
-        query.ledgerEntryId === undefined || payment.ledgerEntryId === query.ledgerEntryId
+        query.ledgerEntryId === undefined ||
+        payment.ledgerEntryId === query.ledgerEntryId
     )
-    .filter((payment) => query.direction === undefined || payment.direction === query.direction)
-    .filter((payment) => query.status === undefined || payment.status === query.status)
-    .filter((payment) => query.currency === undefined || payment.currency === query.currency)
-    .filter((payment) => query.provider === undefined || payment.provider === query.provider)
-    .sort((a, b) => compareDesc(a.paidAt, b.paidAt) || compareDesc(a.createdAt, b.createdAt))
+    .filter(
+      (payment) =>
+        query.direction === undefined || payment.direction === query.direction
+    )
+    .filter(
+      (payment) => query.status === undefined || payment.status === query.status
+    )
+    .filter(
+      (payment) =>
+        query.currency === undefined || payment.currency === query.currency
+    )
+    .filter(
+      (payment) =>
+        query.provider === undefined || payment.provider === query.provider
+    )
+    .sort(
+      (a, b) =>
+        compareDesc(a.paidAt, b.paidAt) || compareDesc(a.createdAt, b.createdAt)
+    )
   return paginate(rows, query)
 }
 
@@ -1096,27 +1223,35 @@ async function fetchPaymentRows(
   if (!scope.companyWide) {
     const ownWalletIds = await fetchOwnWalletIds(client, scope)
     const clauses: string[] = []
-    if (scope.unitIds.length > 0) clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
-    if (ownWalletIds.length > 0) clauses.push(`wallet_id.in.(${ownWalletIds.join(",")})`)
+    if (scope.unitIds.length > 0)
+      clauses.push(`unit_id.in.(${scope.unitIds.join(",")})`)
+    if (ownWalletIds.length > 0)
+      clauses.push(`wallet_id.in.(${ownWalletIds.join(",")})`)
     // No unit and no wallet ⟹ nothing visible. Still `source: "supabase"`.
     if (clauses.length === 0) return []
     builder = builder.or(clauses.join(","))
   }
 
-  if (query.companyId !== undefined) builder = builder.eq("company_id", query.companyId)
+  if (query.companyId !== undefined)
+    builder = builder.eq("company_id", query.companyId)
   if (query.unitId !== undefined) builder = builder.eq("unit_id", query.unitId)
-  if (query.residentId !== undefined) builder = builder.eq("resident_id", query.residentId)
-  if (query.walletId !== undefined) builder = builder.eq("wallet_id", query.walletId)
+  if (query.residentId !== undefined)
+    builder = builder.eq("resident_id", query.residentId)
+  if (query.walletId !== undefined)
+    builder = builder.eq("wallet_id", query.walletId)
   if (query.vendorInvoiceId !== undefined) {
     builder = builder.eq("vendor_invoice_id", query.vendorInvoiceId)
   }
   if (query.ledgerEntryId !== undefined) {
     builder = builder.eq("ledger_entry_id", query.ledgerEntryId)
   }
-  if (query.direction !== undefined) builder = builder.eq("direction", query.direction)
+  if (query.direction !== undefined)
+    builder = builder.eq("direction", query.direction)
   if (query.status !== undefined) builder = builder.eq("status", query.status)
-  if (query.currency !== undefined) builder = builder.eq("currency", query.currency)
-  if (query.provider !== undefined) builder = builder.eq("provider", query.provider)
+  if (query.currency !== undefined)
+    builder = builder.eq("currency", query.currency)
+  if (query.provider !== undefined)
+    builder = builder.eq("provider", query.provider)
 
   const limit = clampLimit(page.limit)
   const offset = clampOffset(page.offset)
@@ -1136,7 +1271,8 @@ export async function getPaymentTransactions(
       const scope = await scopeFor(client, query)
       return fetchPaymentRows(client, query, scope, query)
     },
-    () => seedPaymentsFiltered(query, financeScope(query, seedScopeUnits(query))),
+    () =>
+      seedPaymentsFiltered(query, financeScope(query, seedScopeUnits(query))),
     "finance.getPaymentTransactions"
   )
 }
@@ -1216,7 +1352,9 @@ function buildSummary(
   )
   const settledVendorInvoiceByCurrency = totalsByCurrency(
     readable(
-      invoices.filter((invoice) => invoice.status !== "draft" && invoice.status !== "void"),
+      invoices.filter(
+        (invoice) => invoice.status !== "draft" && invoice.status !== "void"
+      ),
       (invoice) => invoice.paidAmount,
       (invoice) => invoice.currency
     )
@@ -1277,13 +1415,15 @@ function buildSummary(
       postedEntries: posted.length,
       draftEntries: drafts.length,
       voidEntries: entries.filter((entry) => entry.status === "void").length,
-      reversalEntries: entries.filter((entry) => entry.reversalOf !== null).length,
+      reversalEntries: entries.filter((entry) => entry.reversalOf !== null)
+        .length,
       vendorInvoices: invoices.length,
       openVendorInvoices: openInvoices.length,
       overdueVendorInvoices,
       payments: payments.length,
       capturedPayments: captured.length,
-      failedPayments: payments.filter((payment) => payment.status === "failed").length,
+      failedPayments: payments.filter((payment) => payment.status === "failed")
+        .length,
       wallets: wallets.length,
       walletsInOverdraft: wallets.filter(
         (wallet) => wallet.balanceAmount !== null && wallet.balanceAmount < 0
@@ -1315,7 +1455,9 @@ export async function getFinanceSummary(
 ): Promise<RepositoryResult<FinanceSummary>> {
   const asOf = query.asOf ?? nowIso()
   const base: FinanceAccess = { ...query }
-  const scoped: LedgerEntryQuery & VendorInvoiceQuery & PaymentTransactionQuery = {
+  const scoped: LedgerEntryQuery &
+    VendorInvoiceQuery &
+    PaymentTransactionQuery = {
     ...base,
     ...SUMMARY_PAGE,
     ...(query.companyId === undefined ? {} : { companyId: query.companyId }),
@@ -1329,8 +1471,19 @@ export async function getFinanceSummary(
       // queries running after the first rejection, and a throwing query is the
       // signal this repository must not swallow.
       const entries = await fetchLedgerRows(client, scoped, scope, SUMMARY_PAGE)
-      const invoices = await fetchVendorInvoiceRows(client, scoped, scope, SUMMARY_PAGE, asOf)
-      const payments = await fetchPaymentRows(client, scoped, scope, SUMMARY_PAGE)
+      const invoices = await fetchVendorInvoiceRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE,
+        asOf
+      )
+      const payments = await fetchPaymentRows(
+        client,
+        scoped,
+        scope,
+        SUMMARY_PAGE
+      )
       const wallets = await fetchWalletRows(client, scoped, scope, SUMMARY_PAGE)
       return buildSummary(entries, invoices, payments, wallets, asOf)
     },
@@ -1400,7 +1553,8 @@ function reversalRowsFor(
     // The mirror image: what was debited is credited back.
     debitAmount: original.creditAmount,
     creditAmount: original.debitAmount,
-    signedAmount: original.signedAmount === null ? null : -original.signedAmount,
+    signedAmount:
+      original.signedAmount === null ? null : -original.signedAmount,
     description: input.reason,
     reference: original.reference,
     idempotencyKey: null,
@@ -1420,7 +1574,8 @@ function reversalRowsFor(
     entryType: input.counterEntryType ?? "adjustment",
     debitAmount: reversal.creditAmount,
     creditAmount: reversal.debitAmount,
-    signedAmount: reversal.signedAmount === null ? null : -reversal.signedAmount,
+    signedAmount:
+      reversal.signedAmount === null ? null : -reversal.signedAmount,
     reversalOf: null,
     description: `Gegenbuchung: ${input.reason}`,
   }
@@ -1477,7 +1632,8 @@ export async function reverseLedgerEntry(
     if (original.status !== "posted") {
       throw new RepositoryError({
         code: "validation_failed",
-        message: "Only a posted entry can be reversed. Edit or void the draft instead.",
+        message:
+          "Only a posted entry can be reversed. Edit or void the draft instead.",
         retryable: false,
       })
     }
@@ -1517,7 +1673,8 @@ export async function reverseLedgerEntry(
     },
     () => {
       const scope = financeScope(input, seedScopeUnits(input))
-      const found = seedLedgerEntries().find((entry) => entry.id === input.entryId) ?? null
+      const found =
+        seedLedgerEntries().find((entry) => entry.id === input.entryId) ?? null
       const original = guard(found)
       if (!ledgerVisible(original, scope)) {
         throw new RepositoryError({
@@ -1561,7 +1718,8 @@ export async function settleVendorInvoice(
   const conflict = (): never => {
     throw new RepositoryError({
       code: "conflict",
-      message: "The record changed while you were editing it. Reload and try again.",
+      message:
+        "The record changed while you were editing it. Reload and try again.",
       retryable: true,
     })
   }
@@ -1603,7 +1761,8 @@ export async function settleVendorInvoice(
       return {
         ...invoice,
         paidAmount,
-        outstandingAmount: totalAmount === null ? null : totalAmount - paidAmount,
+        outstandingAmount:
+          totalAmount === null ? null : totalAmount - paidAmount,
         ...(input.status === undefined ? {} : { status: input.status }),
         version: invoice.version + 1,
       }

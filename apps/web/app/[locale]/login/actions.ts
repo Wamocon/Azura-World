@@ -62,7 +62,8 @@ const credentialsSchema = z.object({
 })
 
 function asLocale(value: unknown): Locale {
-  return typeof value === "string" && (locales as readonly string[]).includes(value)
+  return typeof value === "string" &&
+    (locales as readonly string[]).includes(value)
     ? (value as Locale)
     : defaultLocale
 }

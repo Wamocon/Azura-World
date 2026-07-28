@@ -1,4 +1,4 @@
-# HANDOFF — W1-B  Auth, RBAC, Supabase clients
+# HANDOFF — W1-B Auth, RBAC, Supabase clients
 
 STATUS: COMPLETE
 Completed: 2026-07-27
@@ -12,7 +12,7 @@ Window: 2 · Branch: `feature/INTERNAL-107-w1b-w2c-auth-ai` · Commit: `2f4615f`
   additive-authority rule proved **at compile time**: each added role's list is declared
   `as const satisfies readonly ParentPermission[]`, so giving `child_owner` a permission `owner`
   lacks is a `tsc` error. `verifyAdditiveAuthority()` re-proves it at runtime.
-- **`apps/web/lib/auth-resolution.ts`** *(new file, see Decisions)* — every auth **decision** as a
+- **`apps/web/lib/auth-resolution.ts`** _(new file, see Decisions)_ — every auth **decision** as a
   pure function: `resolveSupabaseProfile`, `buildAccessProfileFor`, `normalizeRoleList`,
   `ANONYMOUS_PROFILE`, `profileCan`, `profileScope`. No I/O, no `next/headers`, no `zod`.
 - **`apps/web/lib/auth.ts`** — the **reads**: `getUserProfile()`, `isAccessProfileEnabled()`,
@@ -26,7 +26,7 @@ Window: 2 · Branch: `feature/INTERNAL-107-w1b-w2c-auth-ai` · Commit: `2f4615f`
 - **`apps/web/app/api/access-profile/route.ts`** — GET/POST/DELETE for the QA role picker.
   **404 when disabled**, origin-checked, byte-bounded body, Zod-validated, `ApiResponse` envelope.
 - **`apps/web/components/user-provider.tsx`** — client context `{ profile, role, can(), canAny(),
-  accessibleResources, hasAnyAccess, readOnly }`.
+accessibleResources, hasAnyAccess, readOnly }`.
 - **`apps/web/app/[locale]/login/actions.ts`** — `signIn` / `signOut` server actions with an
   open-redirect-safe `next` and locale-preserving destinations.
 - **`apps/web/proxy.ts`** — both W0-A seams filled (exact lines below).
@@ -37,17 +37,17 @@ Window: 2 · Branch: `feature/INTERNAL-107-w1b-w2c-auth-ai` · Commit: `2f4615f`
 
 ## Verification actually run
 
-| Command | Result | Evidence |
-|---|---|---|
-| `pnpm --dir apps/web typecheck` | **PASS** | `tsc --noEmit`, no output, `TYPECHECK_EXIT=0` |
-| `pnpm --dir apps/web lint` | **PASS** | `eslint`, no output, `LINT_EXIT=0` (0 errors, 0 warnings) |
-| `node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/rbac-probe.mts` | **PASS** | `OK  157 pass · 0 fail`, `PROBE_EXIT=0` |
-| SQL enum diff vs `lib/rbac.ts` | **PASS** | `supabase/migrations/…0001_rbac.sql:30-42` — identical list, identical order |
-| SQL `role_level()` diff vs `roleLevel` | **PASS** | `…0001_rbac.sql:74-86` — all 11 values identical |
-| SQL `guardian_role_for()` vs `additiveParent` | **PASS** | `…0001_rbac.sql:120-125` — identical for all three `child_*` |
-| `git status --porcelain` | **PASS** | only my 14 paths staged; see the commit's `--name-status` |
+| Command                                                                                             | Result   | Evidence                                                                     |
+| --------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------- |
+| `pnpm --dir apps/web typecheck`                                                                     | **PASS** | `tsc --noEmit`, no output, `TYPECHECK_EXIT=0`                                |
+| `pnpm --dir apps/web lint`                                                                          | **PASS** | `eslint`, no output, `LINT_EXIT=0` (0 errors, 0 warnings)                    |
+| `node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/rbac-probe.mts` | **PASS** | `OK  157 pass · 0 fail`, `PROBE_EXIT=0`                                      |
+| SQL enum diff vs `lib/rbac.ts`                                                                      | **PASS** | `supabase/migrations/…0001_rbac.sql:30-42` — identical list, identical order |
+| SQL `role_level()` diff vs `roleLevel`                                                              | **PASS** | `…0001_rbac.sql:74-86` — all 11 values identical                             |
+| SQL `guardian_role_for()` vs `additiveParent`                                                       | **PASS** | `…0001_rbac.sql:120-125` — identical for all three `child_*`                 |
+| `git status --porcelain`                                                                            | **PASS** | only my 14 paths staged; see the commit's `--name-status`                    |
 
-| `pnpm --dir apps/web build` | **PASS** *(re-run at 20:05, see below)* | exit 0; `/api/access-profile` and `ƒ Proxy (Middleware)` both in the route table |
+| `pnpm --dir apps/web build` | **PASS** _(re-run at 20:05, see below)_ | exit 0; `/api/access-profile` and `ƒ Proxy (Middleware)` both in the route table |
 
 `build` was deliberately not run at commit time — three other windows were mid-write in the shared
 tree and the result would have described their work, not this task's. It was re-run once the tree
@@ -55,6 +55,7 @@ settled and passes; the route table confirms this task's route and proxy seams a
 into the production output rather than only typechecking.
 
 **NOT RUN**, with reasons:
+
 - `pnpm --dir apps/web test:e2e` — no `playwright.config.ts` yet (W4-A).
 - `safeNextPath()` is **not covered by the probe.** It lives in a `"use server"` module that
   imports `next/navigation` and `@/lib/supabase/server`, so plain Node cannot load it. Its logic
@@ -63,16 +64,16 @@ into the production output rather than only typechecking.
 
 ### Probe coverage against the brief's eight required tests
 
-| # | Required | Where | Result |
-|---|---|---|---|
-| 1 | All 11 roles, in CONTRACTS §3 order | `[DoD 1]` | PASS (5 assertions) |
-| 2 | `roleLevel` strictly ordered | `[DoD 2]` | PASS (13 assertions) |
-| 3 | Subset proof, every added role ⊆ parent | `[DoD 3]` | PASS (13 assertions + a non-vacuity control) |
-| 4 | `admin` has everything; `guest` writes nothing | `[DoD 4]`, `[DoD 4b]` | PASS (20 assertions) |
-| 5 | Malformed permission string rejected | `[DoD 5]` | PASS (27 assertions) |
-| 6 | Production + flag + no escape hatch → **throws** | `[DoD 6]`, `[DoD 6b]`, `[DoD 6c]` | PASS (17 assertions, incl. a real child process) |
-| 7 | No Supabase → local profile; unknown cookie → `manager` | `[DoD 7]` | PASS (13 assertions) |
-| 8 | Authenticated, no `profiles` row → `tenant`, never `admin` | `[DoD 8]`, `[DoD 8b]` | PASS (20 assertions) |
+| #   | Required                                                   | Where                             | Result                                           |
+| --- | ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------ |
+| 1   | All 11 roles, in CONTRACTS §3 order                        | `[DoD 1]`                         | PASS (5 assertions)                              |
+| 2   | `roleLevel` strictly ordered                               | `[DoD 2]`                         | PASS (13 assertions)                             |
+| 3   | Subset proof, every added role ⊆ parent                    | `[DoD 3]`                         | PASS (13 assertions + a non-vacuity control)     |
+| 4   | `admin` has everything; `guest` writes nothing             | `[DoD 4]`, `[DoD 4b]`             | PASS (20 assertions)                             |
+| 5   | Malformed permission string rejected                       | `[DoD 5]`                         | PASS (27 assertions)                             |
+| 6   | Production + flag + no escape hatch → **throws**           | `[DoD 6]`, `[DoD 6b]`, `[DoD 6c]` | PASS (17 assertions, incl. a real child process) |
+| 7   | No Supabase → local profile; unknown cookie → `manager`    | `[DoD 7]`                         | PASS (13 assertions)                             |
+| 8   | Authenticated, no `profiles` row → `tenant`, never `admin` | `[DoD 8]`, `[DoD 8b]`             | PASS (20 assertions)                             |
 
 Every fail-closed case is paired with a **positive control** — `control: a valid admin row
 resolves to admin`, `control: tenant ⊄ guest`, `control: the same import succeeds in
@@ -85,45 +86,45 @@ while being completely broken. The suite also fails itself if it drops below 120
 
 `V`iew · `C`reate · `U`pdate · `D`elete · `M`anage · e`X`port · `A`pprove · a`S`sign · `·` = none.
 
-| Resource | admin | manager | accountant | staff | owner | tenant | guest | service_provider | child_owner | child_tenant | child_guest |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| dashboard | **all** | V | V | V | V | V | V | V | V | V | V |
-| listings | **all** | VCUDXAS | · | V | V | V | V | · | · | · | · |
-| units | **all** | VCUDXS | V | V | V | V | V | V | V | V | V |
-| leads | **all** | VCUDXS | · | · | · | · | · | · | · | · | · |
-| buyer_pipeline | **all** | VCUDXS | · | · | · | · | · | · | · | · | · |
-| deals | **all** | VCUDXA | VX | · | · | · | · | · | · | · | · |
-| tickets | **all** | VCUDAS | V | VCU | VCA | VC | · | VU | · | · | · |
-| activities | **all** | VCUDX | · | VCU | VC | VC | V | VC | VC | VC | V |
-| calendar | **all** | VCUDA | · | VCU | VC | VC | V | V | V | V | V |
-| documents | **all** | VCUDX | VCUX | VC | VC | V | · | V | · | · | · |
-| compliance | **all** | VUXA | VX | · | · | · | · | · | · | · | · |
-| finance | **all** | VX | VCUXA | · | V | · | · | · | · | · | · |
-| wallet | **all** | V | VCUXA | V | VC | V | · | · | V | V | · |
-| vendor_invoices | **all** | VA | VCUXA | VC | · | · | · | VC | · | · | · |
-| reports | **all** | VCX | VCX | V | V | V | · | · | V | V | · |
-| users | **all** | V | · | · | · | · | · | · | · | · | · |
-| settings | **all** | V | · | · | · | · | · | · | · | · | · |
-| communications | **all** | VCUD | VC | VC | VC | VC | V | VC | V | V | V |
-| hotel | **all** | VCUX | V | V | V | V | V | · | V | V | V |
-| reviews | **all** | VCUX | · | V | V | V | V | · | V | V | V |
-| evidence | **all** | VX | · | · | · | · | · | · | · | · | · |
+| Resource        | admin   | manager | accountant | staff | owner | tenant | guest | service_provider | child_owner | child_tenant | child_guest |
+| --------------- | ------- | ------- | ---------- | ----- | ----- | ------ | ----- | ---------------- | ----------- | ------------ | ----------- |
+| dashboard       | **all** | V       | V          | V     | V     | V      | V     | V                | V           | V            | V           |
+| listings        | **all** | VCUDXAS | ·          | V     | V     | V      | V     | ·                | ·           | ·            | ·           |
+| units           | **all** | VCUDXS  | V          | V     | V     | V      | V     | V                | V           | V            | V           |
+| leads           | **all** | VCUDXS  | ·          | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| buyer_pipeline  | **all** | VCUDXS  | ·          | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| deals           | **all** | VCUDXA  | VX         | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| tickets         | **all** | VCUDAS  | V          | VCU   | VCA   | VC     | ·     | VU               | ·           | ·            | ·           |
+| activities      | **all** | VCUDX   | ·          | VCU   | VC    | VC     | V     | VC               | VC          | VC           | V           |
+| calendar        | **all** | VCUDA   | ·          | VCU   | VC    | VC     | V     | V                | V           | V            | V           |
+| documents       | **all** | VCUDX   | VCUX       | VC    | VC    | V      | ·     | V                | ·           | ·            | ·           |
+| compliance      | **all** | VUXA    | VX         | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| finance         | **all** | VX      | VCUXA      | ·     | V     | ·      | ·     | ·                | ·           | ·            | ·           |
+| wallet          | **all** | V       | VCUXA      | V     | VC    | V      | ·     | ·                | V           | V            | ·           |
+| vendor_invoices | **all** | VA      | VCUXA      | VC    | ·     | ·      | ·     | VC               | ·           | ·            | ·           |
+| reports         | **all** | VCX     | VCX        | V     | V     | V      | ·     | ·                | V           | V            | ·           |
+| users           | **all** | V       | ·          | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| settings        | **all** | V       | ·          | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
+| communications  | **all** | VCUD    | VC         | VC    | VC    | VC     | V     | VC               | V           | V            | V           |
+| hotel           | **all** | VCUX    | V          | V     | V     | V      | V     | ·                | V           | V            | V           |
+| reviews         | **all** | VCUX    | ·          | V     | V     | V      | V     | ·                | V           | V            | V           |
+| evidence        | **all** | VX      | ·          | ·     | ·     | ·      | ·     | ·                | ·           | ·            | ·           |
 
-| Role | Level | Scope | Permissions | Resources | Additive parent |
-|---|---|---|---|---|---|
-| `admin` | 90 | company | 168 | 21 | — |
-| `manager` | 70 | site | 81 | 21 | — |
-| `accountant` | 60 | finance | 32 | 12 | — |
-| `staff` | 40 | field | 22 | 13 | — |
-| `owner` | 20 | owned_unit | 20 | 13 | — |
-| `tenant` | 10 | rented_unit | 16 | 12 | — |
-| `guest` | 5 | public | 8 | 8 | `tenant` |
-| `service_provider` | 30 | field | 12 | 8 | `staff` |
-| `child_owner` | 15 | owned_unit | 10 | 9 | `owner` |
-| `child_tenant` | 8 | rented_unit | 10 | 9 | `tenant` |
-| `child_guest` | 3 | public | 7 | 7 | `guest` |
+| Role               | Level | Scope       | Permissions | Resources | Additive parent |
+| ------------------ | ----- | ----------- | ----------- | --------- | --------------- |
+| `admin`            | 90    | company     | 168         | 21        | —               |
+| `manager`          | 70    | site        | 81          | 21        | —               |
+| `accountant`       | 60    | finance     | 32          | 12        | —               |
+| `staff`            | 40    | field       | 22          | 13        | —               |
+| `owner`            | 20    | owned_unit  | 20          | 13        | —               |
+| `tenant`           | 10    | rented_unit | 16          | 12        | —               |
+| `guest`            | 5     | public      | 8           | 8         | `tenant`        |
+| `service_provider` | 30    | field       | 12          | 8         | `staff`         |
+| `child_owner`      | 15    | owned_unit  | 10          | 9         | `owner`         |
+| `child_tenant`     | 8     | rented_unit | 10          | 9         | `tenant`        |
+| `child_guest`      | 3     | public      | 7           | 7         | `guest`         |
 
-**Reading it for a W3-* surface:** call `hasPermission(role, "units:view")`, never
+_*Reading it for a W3-* surface:_* call `hasPermission(role, "units:view")`, never
 `role === "manager" || role === "admin"` (CONTRACTS §8). Server-side, always, even when the UI
 already hid the entry point.
 
@@ -144,11 +145,11 @@ Three cells that will be asked about:
 
 `HANDOFF/W1-A.md` did not exist when this was written, so the migrations themselves were diffed:
 
-| Thing | `apps/web/lib/rbac.ts` / `lib/contracts.ts` | `supabase/migrations/…0001_rbac.sql` | Match |
-|---|---|---|---|
-| Role list + order | `roles` (contracts.ts:266-278) | `create type public.app_role` (L30-42) | **identical** |
-| `roleLevel` | contracts.ts:337-349 | `role_level()` (L74-86) | **identical**, all 11 |
-| Guardian mapping | `additiveParent` child rows | `guardian_role_for()` (L120-125) | **identical** |
+| Thing             | `apps/web/lib/rbac.ts` / `lib/contracts.ts` | `supabase/migrations/…0001_rbac.sql`   | Match                 |
+| ----------------- | ------------------------------------------- | -------------------------------------- | --------------------- |
+| Role list + order | `roles` (contracts.ts:266-278)              | `create type public.app_role` (L30-42) | **identical**         |
+| `roleLevel`       | contracts.ts:337-349                        | `role_level()` (L74-86)                | **identical**, all 11 |
+| Guardian mapping  | `additiveParent` child rows                 | `guardian_role_for()` (L120-125)       | **identical**         |
 
 Both sides also independently rejected the 1Çatı reference's different level values
 (`service_provider 25, guest 15, child_owner 7, …`) in favour of CONTRACTS §3. That is the
@@ -165,13 +166,13 @@ agreement the brief asks for, and it is not a BLOCKED handoff.
 inside the two marked seams plus one import block. Nothing was restructured; the proxy's
 composition order, CSP, nonce handling, header absorption and matcher are byte-identical.
 
-| Region (new line numbers) | Change |
-|---|---|
-| 22-27 | **Added** two imports: `accessProfilesEnabledForEnvironment` and `updateSession`. Both modules are proxy-runtime safe — neither reaches `next/headers`, neither can build a service-role client. `lib/auth.ts` is deliberately *not* imported for that reason. |
-| 134, 138 | Section headers `— TODO(W1-B)` → `— filled by W1-B`. Comment text only. |
-| 158-176 | `refreshSupabaseSession` doc + body. The body is one line: `return updateSession(request, response)`. |
-| 180-188 | New `PROTECTED_PREFIXES` constant, inside section 3. |
-| 209-264 | `guardRoute` doc + body. |
+| Region (new line numbers) | Change                                                                                                                                                                                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 22-27                     | **Added** two imports: `accessProfilesEnabledForEnvironment` and `updateSession`. Both modules are proxy-runtime safe — neither reaches `next/headers`, neither can build a service-role client. `lib/auth.ts` is deliberately _not_ imported for that reason. |
+| 134, 138                  | Section headers `— TODO(W1-B)` → `— filled by W1-B`. Comment text only.                                                                                                                                                                                        |
+| 158-176                   | `refreshSupabaseSession` doc + body. The body is one line: `return updateSession(request, response)`.                                                                                                                                                          |
+| 180-188                   | New `PROTECTED_PREFIXES` constant, inside section 3.                                                                                                                                                                                                           |
+| 209-264                   | `guardRoute` doc + body.                                                                                                                                                                                                                                       |
 
 No other line of the file changed.
 
@@ -184,12 +185,12 @@ No other line of the file changed.
    redirects every `/dashboard/*` request to a login page that cannot authenticate anyone —
    the app is unusable without a database, which CONVENTIONS §2 requires to work. The two
    functions agree exactly in production (both hard `false`), and the policy module additionally
-   *throws at module load* if a production process is configured otherwise. This is not a second
+   _throws at module load_ if a production process is configured otherwise. This is not a second
    bypass; it is the same one, specified completely.
 2. The **403-not-redirect** rule for a forbidden route is not enforced in the proxy. This seam
    knows only whether a session exists, not which role it carries — resolving the role needs
    `cookies()` and a `profiles` read, neither available in the proxy runtime. Per-role 403s belong
-   in the route segments and handlers, where the profile *is* resolvable. What the seam does
+   in the route segments and handlers, where the profile _is_ resolvable. What the seam does
    guarantee is the property that rule protects: an authenticated user is never redirected to
    login, so the loop cannot form.
 
@@ -200,7 +201,7 @@ No other line of the file changed.
 Three layers, in `apps/web/lib/access-profile-policy.ts`:
 
 1. **Runtime gate** — `accessProfilesEnabledForEnvironment()` returns `false` for any production
-   runtime (`NODE_ENV`) *or* production deployment (`VERCEL_ENV`, `AZURA_ENV`) **before it reads a
+   runtime (`NODE_ENV`) _or_ production deployment (`VERCEL_ENV`, `AZURA_ENV`) **before it reads a
    single flag**. Below production: Supabase unconfigured ⟹ enabled (the supported seed-fallback
    mode); Supabase configured ⟹ all three of `ENABLE_ACCESS_PROFILES`,
    `AZURA_ALLOW_REMOTE_ACCESS_PROFILES`, `AZURA_DEMO_DATA_ISOLATED` must be `"true"`. None is
@@ -211,7 +212,7 @@ Three layers, in `apps/web/lib/access-profile-policy.ts`:
    **and** no Supabase data plane variable present at all (`NEXT_PUBLIC_SUPABASE_URL`,
    `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
    `SUPABASE_DB_URL`, `SUPABASE_PROJECT_REF`). Claiming isolation while a URL sits in the
-   environment is precisely the misconfiguration this catches. Even when isolation *is* proven,
+   environment is precisely the misconfiguration this catches. Even when isolation _is_ proven,
    layer 1 still returns `false` — the escape hatch downgrades the crash to a no-op, it never
    opens the picker.
 3. **Role resolution** — an unparseable or unknown role resolves to `manager`, never `admin`.
@@ -231,7 +232,7 @@ node --experimental-strip-types --import <register-ts-resolve.mjs> \
   PASS  control: the same import succeeds in development — exit status 0
 ```
 
-The control matters: without it, a resolver hook that failed to load *anything* would make the
+The control matters: without it, a resolver hook that failed to load _anything_ would make the
 first three assertions pass for the wrong reason.
 
 **W4-C, the attack surface to aim at:** the guard fires on `process.env` at import time, and
@@ -245,14 +246,14 @@ transitively importing the policy module, and (b) whether Next's bundler can eva
 
 ## Contracts I consumed
 
-| Contract | Fitted? |
-|---|---|
-| §3 `roles`, `resources`, `actions`, `roleLevel` | Yes. Imported from `lib/contracts.ts`, never redeclared. |
-| §3 additive-authority rule | Yes — and the `roleLevel` numbers turned out to *encode* the parent map: every parent's level is strictly greater than its child's (`tenant 10 > guest 5`, `staff 40 > service_provider 30`, `owner 20 > child_owner 15`, `tenant 10 > child_tenant 8`, `guest 5 > child_guest 3`). That is not a coincidence and it is what made the subset design self-evident. |
-| §3 `evidence` gating | Yes. |
-| §5 `ApiResponse` / `ApiError` / `apiErrorStatus` | Yes, in the access-profile route. |
-| §7 `locales`, `defaultLocale` | Yes, in `login/actions.ts` and the proxy guard. |
-| §4 `RepositoryResult` | Not consumed — no repository here. `ProfileSource` plays the analogous "where did this come from" role for auth. |
+| Contract                                         | Fitted?                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| §3 `roles`, `resources`, `actions`, `roleLevel`  | Yes. Imported from `lib/contracts.ts`, never redeclared.                                                                                                                                                                                                                                                                                                          |
+| §3 additive-authority rule                       | Yes — and the `roleLevel` numbers turned out to _encode_ the parent map: every parent's level is strictly greater than its child's (`tenant 10 > guest 5`, `staff 40 > service_provider 30`, `owner 20 > child_owner 15`, `tenant 10 > child_tenant 8`, `guest 5 > child_guest 3`). That is not a coincidence and it is what made the subset design self-evident. |
+| §3 `evidence` gating                             | Yes.                                                                                                                                                                                                                                                                                                                                                              |
+| §5 `ApiResponse` / `ApiError` / `apiErrorStatus` | Yes, in the access-profile route.                                                                                                                                                                                                                                                                                                                                 |
+| §7 `locales`, `defaultLocale`                    | Yes, in `login/actions.ts` and the proxy guard.                                                                                                                                                                                                                                                                                                                   |
+| §4 `RepositoryResult`                            | Not consumed — no repository here. `ProfileSource` plays the analogous "where did this come from" role for auth.                                                                                                                                                                                                                                                  |
 
 **No contract needed amending. `CONTRACT_VERSION` stays 1.**
 
@@ -280,7 +281,7 @@ re-exports the whole surface, so no other window needs to know the file exists.
 **A `profiles` read error and a missing row both resolve to `tenant`.** They are different
 situations — the first is usually "migrations not applied yet", the second is incomplete
 onboarding — and `degradedReason` keeps them distinguishable at the call site. But neither may
-widen authority, so the safe *role* is the same for both. Throwing instead would 500 every
+widen authority, so the safe _role_ is the same for both. Throwing instead would 500 every
 dashboard page until W1-A's migrations land, trading a fail-closed outcome for an outage and
 buying nothing.
 
@@ -298,7 +299,7 @@ surface in the proxy; `login/actions.ts` handles `next` after a successful sign-
 validated.
 
 **`scripts/ts-resolve-hooks.mjs` + `register-ts-resolve.mjs`.** Node's `--experimental-strip-types`
-executes `.ts` but will not *resolve* an extensionless relative specifier, which is what
+executes `.ts` but will not _resolve_ an extensionless relative specifier, which is what
 `moduleResolution: "bundler"` requires the source to write. W0-A's `smoke-contracts.mts` avoids
 this only because `lib/contracts.ts` has no imports at all. The alternatives were: edit
 `apps/web/tsconfig.json` (W0-A's file), write `./contracts.ts` in application source (a compile
@@ -316,16 +317,16 @@ auditing this branch should know its commits were never checked out.
 
 ## Requests for other windows
 
-| File | Owner | What is needed | Why |
-|---|---|---|---|
-| `apps/web/package.json` | **W0-A** | add `"server-only"` to `dependencies` | `lib/supabase/server.ts` should carry `import "server-only"` so a client-bundle import is a **build** failure. The package is not installed and only W0-A may run `pnpm install`. The seam is marked `TODO(W0-A)` in that file's header with the exact line. Until then the guarantee rests on two live runtime mechanisms: `serverEnv`'s Proxy throws on any read in a browser, and the module throws at load if `typeof window !== "undefined"`. **The service-role key cannot leak today** — but the failure is at runtime, not at build. |
-| `package.json` | **W0-A** | add `"smoke:rbac": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/rbac-probe.mts"` | so the probe joins `pnpm smoke:contracts` as a named gate. W4-D's `quality-gate.mjs` should call it. |
-| `.env.example` + `apps/web/lib/env.ts` | **W0-A** | add `ACCESS_PROFILE_ROLE` (optional, one of the 11 roles) | the brief's chain is cookie → **env** → `manager`. The env layer is implemented in `lib/access-profile-policy.ts`, which reads raw `process.env` by design (it must inspect an *unvalidated* environment — a guard that only fires after validation succeeds can be skipped by supplying something malformed). Documenting the variable in `.env.example` closes the loop. |
-| `apps/web/lib/database.types.ts` | **W1-A** (or W2-A) | generate it | all three Supabase clients are currently untyped. Once it exists, add the `<Database>` generic to `client.ts`, `server.ts` and `middleware.ts` **together, in one commit**. |
-| `supabase/migrations/…0001_rbac.sql` | **W1-A** | reconcile `public.role_scope()` labels with `roleScope()` in `lib/rbac.ts`, **or** confirm the divergence is intended | SQL returns `vendor` for `service_provider` and `managed_minor` for the three `child_*`; TS returns `field` / the guardian's scope. The TS union is frozen by the W1-B brief and does not contain those two labels, so I could not change my side. **Not a security issue today**: `public.role_scope()` is defined but referenced by **no policy in any migration** (grepped all 10) — RLS uses `role_level()`, `guardian_role_for()` and `current_user_scope_profile_id()`, all of which agree with the TS side. It is a label mismatch waiting to mislead someone. |
-| `apps/web/app/layout.tsx` or the dashboard layout | **W0-A / W3-B** | wrap `{children}` in `<UserProvider profile={await getUserProfile()}>` | the client `can()` gate needs the profile injected from a Server Component. It is not wired anywhere yet, so `useUser()` currently throws by design. |
-| `apps/web/app/[locale]/login/page.tsx` | **W3-H** | build the form against `signIn` / `initialLoginFormState` from `./actions` | `useActionState(signIn, initialLoginFormState)`; pass hidden `locale` and `next` inputs. When `isAccessProfileEnabled()`, also render the role picker against `POST /api/access-profile`. |
-| `apps/web/app/[locale]/**` 403 page | **W3-B / W3-F** | render a 403, not a redirect, for an authenticated-but-forbidden route | the proxy deliberately cannot do this (see the proxy section above). |
+| File                                              | Owner              | What is needed                                                                                                          | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/package.json`                           | **W0-A**           | add `"server-only"` to `dependencies`                                                                                   | `lib/supabase/server.ts` should carry `import "server-only"` so a client-bundle import is a **build** failure. The package is not installed and only W0-A may run `pnpm install`. The seam is marked `TODO(W0-A)` in that file's header with the exact line. Until then the guarantee rests on two live runtime mechanisms: `serverEnv`'s Proxy throws on any read in a browser, and the module throws at load if `typeof window !== "undefined"`. **The service-role key cannot leak today** — but the failure is at runtime, not at build.                          |
+| `package.json`                                    | **W0-A**           | add `"smoke:rbac": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/rbac-probe.mts"` | so the probe joins `pnpm smoke:contracts` as a named gate. W4-D's `quality-gate.mjs` should call it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `.env.example` + `apps/web/lib/env.ts`            | **W0-A**           | add `ACCESS_PROFILE_ROLE` (optional, one of the 11 roles)                                                               | the brief's chain is cookie → **env** → `manager`. The env layer is implemented in `lib/access-profile-policy.ts`, which reads raw `process.env` by design (it must inspect an _unvalidated_ environment — a guard that only fires after validation succeeds can be skipped by supplying something malformed). Documenting the variable in `.env.example` closes the loop.                                                                                                                                                                                            |
+| `apps/web/lib/database.types.ts`                  | **W1-A** (or W2-A) | generate it                                                                                                             | all three Supabase clients are currently untyped. Once it exists, add the `<Database>` generic to `client.ts`, `server.ts` and `middleware.ts` **together, in one commit**.                                                                                                                                                                                                                                                                                                                                                                                           |
+| `supabase/migrations/…0001_rbac.sql`              | **W1-A**           | reconcile `public.role_scope()` labels with `roleScope()` in `lib/rbac.ts`, **or** confirm the divergence is intended   | SQL returns `vendor` for `service_provider` and `managed_minor` for the three `child_*`; TS returns `field` / the guardian's scope. The TS union is frozen by the W1-B brief and does not contain those two labels, so I could not change my side. **Not a security issue today**: `public.role_scope()` is defined but referenced by **no policy in any migration** (grepped all 10) — RLS uses `role_level()`, `guardian_role_for()` and `current_user_scope_profile_id()`, all of which agree with the TS side. It is a label mismatch waiting to mislead someone. |
+| `apps/web/app/layout.tsx` or the dashboard layout | **W0-A / W3-B**    | wrap `{children}` in `<UserProvider profile={await getUserProfile()}>`                                                  | the client `can()` gate needs the profile injected from a Server Component. It is not wired anywhere yet, so `useUser()` currently throws by design.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `apps/web/app/[locale]/login/page.tsx`            | **W3-H**           | build the form against `signIn` / `initialLoginFormState` from `./actions`                                              | `useActionState(signIn, initialLoginFormState)`; pass hidden `locale` and `next` inputs. When `isAccessProfileEnabled()`, also render the role picker against `POST /api/access-profile`.                                                                                                                                                                                                                                                                                                                                                                             |
+| `apps/web/app/[locale]/**` 403 page               | **W3-B / W3-F**    | render a 403, not a redirect, for an authenticated-but-forbidden route                                                  | the proxy deliberately cannot do this (see the proxy section above).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ---
 
@@ -343,19 +344,19 @@ auditing this branch should know its commits were never checked out.
   itself has never run — there is no user in the project and no route that calls it yet. First
   real exercise will be W3-H's login page.
 - **`[GAP]` `safeNextPath()` is not unit-tested** (`"use server"` module, see above).
-- **Deferred edge case — session expires mid-form.** The proxy preserves the *destination*
-  (`?next=<path><search>`), so the user returns to the right URL. Preserving *typed form values*
+- **Deferred edge case — session expires mid-form.** The proxy preserves the _destination_
+  (`?next=<path><search>`), so the user returns to the right URL. Preserving _typed form values_
   across a re-auth needs client-side draft persistence in the form component, which belongs to the
   window that owns the form (W3-*). Named here so it is not lost.
 - **Deferred edge case — concurrent tabs with different access profiles.** The cookie is shared;
   last write wins. Documented, not fixed; per-tab roles are not attempted, per the brief.
 - **Deferred edge case — role with no accessible resources.** `hasAnyAccess` is exposed on the
-  user context for exactly this, but the empty-state *UI* is W3-B's. No role in the current matrix
+  user context for exactly this, but the empty-state _UI_ is W3-B's. No role in the current matrix
   reaches zero resources (the minimum is `child_guest` at 7), so this only bites if a future matrix
   edit empties one.
 - **`child_*` escalation was tested adversarially at the RBAC layer only** — 21 assertions that the
   three child roles cannot reach `documents`, `finance`, `tickets:create`, `users`, `settings`,
-  `evidence` or `vendor_invoices`. Escalation *through a guardian relation join* is an RLS property
+  `evidence` or `vendor_invoices`. Escalation _through a guardian relation join_ is an RLS property
   and belongs to W1-A's pgTAP suite; `guardian_role_for()` exists there and agrees with
   `additiveParent`.
 - The suite asserts the **TS** matrix. It does not compare the TS matrix against SQL RLS policy

@@ -7,14 +7,15 @@ Companion to `tasks/W3-A-landing.md` and `DESIGN-RESEARCH.md`. Read all three be
 ## 1. What we actually have
 
 W0-D harvested **833 assets → 8,649 encoded renditions** (AVIF/WebP/JPEG at 400/800/1200/1600/2400
-+ LQIP). By category:
 
-| | Count | | Count |
-|---|---|---|---|
-| photo | 514 | floorplan | 13 |
-| render | 201 | video | 13 |
-| document | 70 | siteplan | 7 |
-| **logo** | **15** *(4 SVG)* | | |
+- LQIP). By category:
+
+|          | Count            |           | Count |
+| -------- | ---------------- | --------- | ----- |
+| photo    | 514              | floorplan | 13    |
+| render   | 201              | video     | 13    |
+| document | 70               | siteplan  | 7     |
+| **logo** | **15** _(4 SVG)_ |           |       |
 
 The brand marks are real vectors, not scrapes of raster headers:
 
@@ -37,14 +38,14 @@ There is a defensible path, and a line it must not cross:
 - **Identification is defensible.** Using Azura World's name and logo to identify the subject of a
   competitive analysis is nominative use — the same reason a review may show the product's box.
   Every use must be visibly attributed and unambiguously analytical.
-- **Promotion is not.** The logo must never appear as *our* branding, in *our* header, or in a way
+- **Promotion is not.** The logo must never appear as _our_ branding, in _our_ header, or in a way
   that implies endorsement, partnership, or that this is an official Azura World property.
 - **Photography is the harder case.** A hero built from Cebeci's marketing renders is republishing
   their creative work at full bleed. Prefer: our own abstractions (the R3F coast maquette),
   schematic masterplans, and data visualisation. Use their photography **small, captioned, and
   sourced** — as evidence inside the analysis, not as decoration.
 
-**Practical rule for W3-A:** the page's *visual identity* is ours; their assets appear as
+**Practical rule for W3-A:** the page's _visual identity_ is ours; their assets appear as
 **cited evidence**, each with a `SourceChip`. Anything promoted from `internal_only` needs the
 decision written into `MEDIA-LICENSE.md` with the term you relied on.
 
@@ -57,14 +58,19 @@ decision written into `MEDIA-LICENSE.md` with the term you relied on.
 
 `CONVENTIONS.md` §1 says "GSAP free tier only — no Club plugins." **That is out of date.** GSAP's
 full plugin set, ScrambleText and SplitText included, is free as of GSAP 3.13. The reference repo
-confirms it in its own README: *"GSAP 3.15 (ScrollTrigger + ScrambleText, all free)."*
+confirms it in its own README: _"GSAP 3.15 (ScrollTrigger + ScrambleText, all free)."_
 
 ```ts
-gsap.registerPlugin(ScrambleTextPlugin)
+gsap.registerPlugin(ScrambleTextPlugin);
 gsap.to(el, {
   duration: 1.2,
-  scrambleText: { text: "Azura World", chars: "upperCase", speed: 0.4, revealDelay: 0.2 },
-})
+  scrambleText: {
+    text: "Azura World",
+    chars: "upperCase",
+    speed: 0.4,
+    revealDelay: 0.2,
+  },
+});
 ```
 
 The mechanic: each letter cycles random characters, then locks to its real value left-to-right, so
@@ -78,7 +84,14 @@ frame.
 
 ```css
 .wordmark {
-  background: linear-gradient(175deg, #0b2b3a 0%, #7fa8bb 42%, #ffffff 50%, #7fa8bb 58%, #0b2b3a 100%);
+  background: linear-gradient(
+    175deg,
+    #0b2b3a 0%,
+    #7fa8bb 42%,
+    #ffffff 50%,
+    #7fa8bb 58%,
+    #0b2b3a 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -99,11 +112,18 @@ wide-tracked display type survives the jump to mobile. Applies to every tracking
 ### 3.4 Video grading in CSS
 
 ```css
-.graded { filter: saturate(1.1) contrast(1.05) sepia(0.15); }
+.graded {
+  filter: saturate(1.1) contrast(1.05) sepia(0.15);
+}
 .vignette::after {
   content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(4,16,26,0.55) 100%);
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 45%,
+    rgba(4, 16, 26, 0.55) 100%
+  );
   pointer-events: none;
 }
 ```
@@ -116,7 +136,7 @@ but see §2: prefer a poster frame plus attribution over rehosting a competitor'
 Do apply: **PBR materials** for believable surfaces, **HDRI lighting** via drei's `Environment`
 (procedural, no external file), subtle bloom via `@react-three/postprocessing`.
 
-**DRACO and KTX2 do not apply here** and should not be added. They compress *imported* geometry
+**DRACO and KTX2 do not apply here** and should not be added. They compress _imported_ geometry
 and textures; our maquette is procedural — there is no GLB to compress. Adding the loaders would
 grow the bundle to solve a problem we do not have. If a real model is ever imported, revisit.
 
@@ -133,7 +153,7 @@ raise the budget with this number or record the decision to drop WebGL. Do not s
 Lenis for scroll feel · GSAP ScrollTrigger for choreography · Framer Motion for component state.
 Three tools, three jobs — do not add a fourth.
 
-Read Codrops' *"The Architecture Behind Trionn: Coordinating GSAP, Three.js, Lenis and Web Audio"*
+Read Codrops' _"The Architecture Behind Trionn: Coordinating GSAP, Three.js, Lenis and Web Audio"_
 (July 2026) before wiring them together; the failure mode is three libraries each running their
 own `requestAnimationFrame` and fighting.
 
@@ -141,12 +161,12 @@ own `requestAnimationFrame` and fighting.
 
 ## 5. Reference libraries — what fits our stack
 
-| | Verdict |
-|---|---|
-| **Animate UI** (animate-ui.com) | ✅ React + TS + Tailwind + Motion + shadcn CLI. Same stack. Best source for primitives. |
-| **Inspira UI** (inspira-ui.com) | ❌ **Vue**, not React. Read for ideas — glow border, lamp effect, particle image — reimplement in React. Do not try to install. |
-| **Lenis** (darkroomengineering) | ✅ Pinned 1.3.25 |
-| **GSAP + ScrollTrigger + ScrambleText** | ✅ Pinned 3.15, all plugins free |
+|                                         | Verdict                                                                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Animate UI** (animate-ui.com)         | ✅ React + TS + Tailwind + Motion + shadcn CLI. Same stack. Best source for primitives.                                         |
+| **Inspira UI** (inspira-ui.com)         | ❌ **Vue**, not React. Read for ideas — glow border, lamp effect, particle image — reimplement in React. Do not try to install. |
+| **Lenis** (darkroomengineering)         | ✅ Pinned 1.3.25                                                                                                                |
+| **GSAP + ScrollTrigger + ScrambleText** | ✅ Pinned 3.15, all plugins free                                                                                                |
 
 Study for judgement, not for copying: Awwwards → Real Estate (Village Properties, Hubtown, ARETÈ
 Immobiliare, Elyse Residence), Refero for product UI, aura.build and Dribbble for direction only —

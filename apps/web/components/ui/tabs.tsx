@@ -60,7 +60,7 @@ function TabsIndicator({
     <TabsPrimitive.Indicator
       data-slot="tabs-indicator"
       className={cn(
-        "absolute left-0 top-1/2 z-0 h-[calc(100%-0.5rem)] -translate-y-1/2 rounded-md bg-card shadow-sm",
+        "absolute top-1/2 left-0 z-0 h-[calc(100%-0.5rem)] -translate-y-1/2 rounded-md bg-card shadow-sm",
         "w-[var(--active-tab-width)] translate-x-[var(--active-tab-left)]",
         "transition-[transform,width] duration-[220ms] ease-[var(--ease-in-out)]",
         "motion-reduce:transition-none",

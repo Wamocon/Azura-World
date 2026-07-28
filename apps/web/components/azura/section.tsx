@@ -51,7 +51,7 @@ export function Section({
         <Reveal as="header" className="mb-8 sm:mb-10">
           {designation !== undefined ? (
             <div className="mb-4 flex items-center gap-3">
-              <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+              <span className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
                 {designation}
               </span>
               <span
@@ -100,7 +100,7 @@ export function FactRow({
         className
       )}
     >
-      <span className="shrink-0 text-[0.8125rem] uppercase tracking-[0.02em] text-muted-foreground sm:text-[0.875rem]">
+      <span className="shrink-0 text-[0.8125rem] tracking-[0.02em] text-muted-foreground uppercase sm:text-[0.875rem]">
         {label}
       </span>
       <span
@@ -108,7 +108,10 @@ export function FactRow({
         className="mx-2 hidden min-w-4 flex-1 translate-y-[-0.28em] self-center border-b border-dotted border-[color-mix(in_srgb,var(--foreground)_22%,transparent)] sm:block"
       />
       <span className="flex min-w-0 flex-col items-start gap-0.5 sm:items-end">
-        <span data-numeric className="text-[1rem] leading-[1.5] text-foreground">
+        <span
+          data-numeric
+          className="text-[1rem] leading-[1.5] text-foreground"
+        >
           {value}
         </span>
         {note !== undefined ? (

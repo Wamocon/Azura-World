@@ -92,7 +92,9 @@ export default async function EvidencePage({
 
   const observations = listingsResult.data
     .map(toObservation)
-    .filter((observation): observation is PriceObservation => observation !== null)
+    .filter(
+      (observation): observation is PriceObservation => observation !== null
+    )
 
   // The listings whose publisher stated a price but no layout. Kept separate
   // from the ladder rather than dropped: Alanya-Home's €220,000 is one of the
@@ -101,7 +103,9 @@ export default async function EvidencePage({
   const unstatedLayoutObservations = allSaleResult.data
     .filter((listing) => listing.layout === null)
     .map(toObservation)
-    .filter((observation): observation is PriceObservation => observation !== null)
+    .filter(
+      (observation): observation is PriceObservation => observation !== null
+    )
 
   // A citation upgrade, not a fabrication: where a listing's URL is in the
   // source register we can link its stored snapshot, and where it is not the
@@ -113,7 +117,8 @@ export default async function EvidencePage({
 
   const finding: Finding | null = findingResult.data
   const degraded =
-    findingResult.source === "local-seed" || listingsResult.source === "local-seed"
+    findingResult.source === "local-seed" ||
+    listingsResult.source === "local-seed"
 
   /**
    * Templates go through `t.raw`, not `t`.

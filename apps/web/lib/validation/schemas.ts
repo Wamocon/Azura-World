@@ -67,20 +67,22 @@ export const updateFindingSchema = z.strictObject({
 // Inventory
 // ---------------------------------------------------------------------------
 
-export const updateUnitSchema = z.strictObject({
-  unitId: identifier,
-  expectedVersion: version,
-  saleStatus: z.enum(["available", "reserved", "sold", "unknown"]).optional(),
-  askingPriceMinor: minorUnits.optional(),
-  askingPriceCurrency: currencyCode.optional(),
-  notes: longText("Notes").optional(),
-})
+export const updateUnitSchema = z
+  .strictObject({
+    unitId: identifier,
+    expectedVersion: version,
+    saleStatus: z.enum(["available", "reserved", "sold", "unknown"]).optional(),
+    askingPriceMinor: minorUnits.optional(),
+    askingPriceCurrency: currencyCode.optional(),
+    notes: longText("Notes").optional(),
+  })
   // A price is an amount AND a currency. Accepting one without the other is how
   // a USD figure silently becomes a EUR figure, which is precisely the error
   // this dataset exists to document in other people's listings.
   .refine(
     (value) =>
-      (value.askingPriceMinor === undefined) === (value.askingPriceCurrency === undefined),
+      (value.askingPriceMinor === undefined) ===
+      (value.askingPriceCurrency === undefined),
     {
       message: "A price needs both an amount and a currency.",
       path: ["askingPriceCurrency"],
@@ -129,19 +131,24 @@ export const createPaymentSchema = z.strictObject({
   note: longText("Note").optional(),
 })
 
-export const createVendorInvoiceSchema = z.strictObject({
-  vendorProfileId: identifier,
-  siteId: identifier.optional(),
-  totalAmountMinor: minorUnits.min(1, "An invoice must be greater than zero."),
-  currency: currencyCode,
-  issuedOn: isoInstant,
-  dueOn: isoInstant,
-  reference: shortText("Invoice reference"),
-  description: longText("Description").optional(),
-}).refine((value) => Date.parse(value.dueOn) >= Date.parse(value.issuedOn), {
-  message: "An invoice cannot fall due before it was issued.",
-  path: ["dueOn"],
-})
+export const createVendorInvoiceSchema = z
+  .strictObject({
+    vendorProfileId: identifier,
+    siteId: identifier.optional(),
+    totalAmountMinor: minorUnits.min(
+      1,
+      "An invoice must be greater than zero."
+    ),
+    currency: currencyCode,
+    issuedOn: isoInstant,
+    dueOn: isoInstant,
+    reference: shortText("Invoice reference"),
+    description: longText("Description").optional(),
+  })
+  .refine((value) => Date.parse(value.dueOn) >= Date.parse(value.issuedOn), {
+    message: "An invoice cannot fall due before it was issued.",
+    path: ["dueOn"],
+  })
 
 // ---------------------------------------------------------------------------
 // Operations
@@ -166,17 +173,19 @@ export const updateTicketStatusSchema = z.strictObject({
   note: longText("Note").optional(),
 })
 
-export const createActivitySchema = z.strictObject({
-  siteId: identifier.optional(),
-  category: z.enum(activityCategories),
-  title: shortText("Title"),
-  description: longText("Description").optional(),
-  startsAt: isoInstant,
-  endsAt: isoInstant,
-}).refine((value) => Date.parse(value.endsAt) > Date.parse(value.startsAt), {
-  message: "An activity must end after it starts.",
-  path: ["endsAt"],
-})
+export const createActivitySchema = z
+  .strictObject({
+    siteId: identifier.optional(),
+    category: z.enum(activityCategories),
+    title: shortText("Title"),
+    description: longText("Description").optional(),
+    startsAt: isoInstant,
+    endsAt: isoInstant,
+  })
+  .refine((value) => Date.parse(value.endsAt) > Date.parse(value.startsAt), {
+    message: "An activity must end after it starts.",
+    path: ["endsAt"],
+  })
 
 export const createReportSchema = z.strictObject({
   unitId: identifier.optional(),
@@ -208,7 +217,10 @@ export const createMessageSchema = z.strictObject({
   body: longText("Message"),
   // No `senderId`. The sender is the session, never the payload — accepting one
   // would let any authenticated caller post as anybody.
-  attachments: z.array(identifier).max(10, "At most 10 attachments.").optional(),
+  attachments: z
+    .array(identifier)
+    .max(10, "At most 10 attachments.")
+    .optional(),
 })
 
 // ---------------------------------------------------------------------------

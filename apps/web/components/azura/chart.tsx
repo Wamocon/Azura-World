@@ -142,14 +142,14 @@ export function Plate({
             )}
           >
             {title !== undefined ? (
-              <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-foreground/80">
+              <span className="text-[0.6875rem] font-semibold tracking-[0.06em] text-foreground/80 uppercase">
                 {title}
               </span>
             ) : null}
             {meta !== undefined ? (
               <span
                 data-numeric
-                className="text-[0.6875rem] uppercase tracking-[0.06em] text-muted-foreground"
+                className="text-[0.6875rem] tracking-[0.06em] text-muted-foreground uppercase"
               >
                 {meta}
               </span>
@@ -241,7 +241,7 @@ export function Sounding({
           : undefined
       }
     >
-      <span className="text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-muted-foreground">
+      <span className="text-[0.6875rem] font-medium tracking-[0.06em] text-muted-foreground uppercase">
         {label}
       </span>
       <span
@@ -285,7 +285,7 @@ export function RecordLine({
     <dl
       className={cn(
         "flex flex-wrap items-baseline gap-x-5 gap-y-1.5",
-        "text-[0.6875rem] uppercase tracking-[0.06em]",
+        "text-[0.6875rem] tracking-[0.06em] uppercase",
         className
       )}
     >
