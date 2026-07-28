@@ -244,10 +244,14 @@
       "figures": {
         "area": "Site area",
         "blocks": "Blocks",
-        "units": "Units"
+        "units": "Units",
+        "entryPrice": "Entry price 1+1"
       },
       "scrollHint": "Scroll",
-      "posterAlt": "View of the Azura World Residence & Hotel development"
+      "posterAlt": "View of the Azura World Residence & Hotel development",
+      "plateTitle": "Survey · Türkler, Alanya",
+      "entryPriceNote": "Shown is the only figure a portal itself labels as a “from” price. The other 18 are in the evidence.",
+      "conflictCallout": "Three of these four figures are corroborated more than once. The fourth is not — and the page says so in the same place, in the same type."
     },
     "why": {
       "title": "What Azura World is",
@@ -255,7 +259,19 @@
       "developerLabel": "Developer",
       "locationLabel": "Location",
       "timelineLabel": "Completion",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "plotLabel": "Plot area",
+      "greenLabel": "Green area",
+      "footprintLabel": "Building footprint",
+      "outdoorLabel": "Outdoor facilities",
+      "blocksLabel": "Residence blocks",
+      "buildingsLabel": "Buildings",
+      "floorsLabel": "Floors per building",
+      "startLabel": "Construction start",
+      "seaLabel": "Distance to the sea",
+      "centreLabel": "Distance to Alanya centre",
+      "airportLabel": "Distance to Gazipaşa airport",
+      "downPaymentLabel": "Down payment"
     },
     "immersion": {
       "title": "A day on site",
@@ -268,7 +284,9 @@
       "title": "Amenities",
       "lead": "Each item is attributed to the page that lists it.",
       "empty": "No sourced amenity data is available.",
-      "categoryLabel": "Category"
+      "categoryLabel": "Category",
+      "gapTitle": "No sourced amenity list",
+      "gapBody": "Across 60 fetched sources, no amenity list could be attributed item by item. The dataset therefore carries zero entries. A plausible list would be quick to write here — it just would not be evidenced."
     },
     "desire": {
       "title": "The hotel on site",
@@ -276,7 +294,13 @@
       "roomsLabel": "Rooms",
       "starsLabel": "Class",
       "boardLabel": "Board",
-      "aquaparkLabel": "Slides"
+      "aquaparkLabel": "Slides",
+      "formerLabel": "Former name",
+      "brandLabel": "Brand affiliation",
+      "openedLabel": "Opened",
+      "beachLabel": "Distance to the beach",
+      "floorsLabel": "Floors",
+      "checkInLabel": "Check-in from"
     },
     "evidenceBand": {
       "title": "Where these figures come from",
@@ -284,7 +308,23 @@
       "sourcesLabel": "Sources reviewed",
       "conflictsLabel": "Disagreements",
       "gapsLabel": "Open items",
-      "cta": "Open the full evidence report"
+      "cta": "Open the full evidence report",
+      "designation": "Evidence position",
+      "sourcesAttempted": "Sources fetched",
+      "sourcesReachable": "Content-validated",
+      "publishersLabel": "Publishers cited",
+      "factsLabel": "Figures on this page",
+      "findingsLabel": "Recorded findings",
+      "confidenceHeading": "By strength of evidence",
+      "priceHeading": "F-002 — four publishers, four prices",
+      "priceIntro": "The same apartment size, four sellers, a factor of {factor}. Two currencies, no observation dates, at least one stale listing. Unresolved — the values stand side by side.",
+      "colPublisher": "Publisher",
+      "colPrice": "Price",
+      "colArea": "Area",
+      "colNote": "Note",
+      "staleNote": "stale",
+      "unitSplitLabel": "Units in inventory",
+      "unitSplitValue": "{listing} real listings · {modelled} modelled · {total} total"
     },
     "action": {
       "title": "Request access",
@@ -294,7 +334,21 @@
     },
     "after": {
       "title": "After the purchase",
-      "lead": "Management, running costs, letting and maintenance — the part sales pages leave out."
+      "lead": "Management, running costs, letting and maintenance — the part sales pages leave out.",
+      "items": {
+        "1": {
+          "title": "Inventory and contracts",
+          "body": "All 656 units with owner, contract and payment status — real listings and modelled records stay distinguishable."
+        },
+        "2": {
+          "title": "Operations and service charges",
+          "body": "Maintenance, allocations and billing per block, with immutable postings in the ledger."
+        },
+        "3": {
+          "title": "A source on every figure",
+          "body": "The same provenance display as this page — in the back office, in the report and in the export."
+        }
+      }
     },
     "share": {
       "title": "Pass it on",
@@ -310,7 +364,100 @@
       "rights": "Analysis for competitive purposes. All trademarks and image rights remain with their owners.",
       "sourcesLink": "Source register",
       "legalLink": "Legal",
-      "updated": "Data as of {date}"
+      "updated": "Data as of {date}",
+      "contactHeading": "Subject contact",
+      "sourcesHeading": "Evidence",
+      "aboutHeading": "About this analysis",
+      "generated": "Generated from the dataset of {date}"
+    },
+    "provenance": {
+      "confidence": {
+        "confirmed": "Confirmed",
+        "official": "Official",
+        "single_source": "One source",
+        "conflicted": "Sources disagree",
+        "inferred": "Derived",
+        "gap": "Not established"
+      },
+      "conflict": {
+        "trigger": "Sources disagree",
+        "heading": "Competing values",
+        "summary": "{count} sources, unresolved",
+        "displayed": "Shown",
+        "unresolvedNote": "Deliberately unresolved. No average, no median, no “most likely” pick — any single number here would be an invention with a citation stapled to it.",
+        "close": "Close",
+        "source": {
+          "openSource": "Open source",
+          "snapshot": "Local snapshot",
+          "unreachable": "Source unreachable",
+          "tier": {
+            "official": "Official",
+            "developer": "Developer",
+            "hotel": "Hotel operator",
+            "portal": "Property portal",
+            "review": "Review platform",
+            "press": "Press"
+          }
+        }
+      },
+      "source": {
+        "openSource": "Open source",
+        "snapshot": "Local snapshot",
+        "unreachable": "Source unreachable",
+        "tier": {
+          "official": "Official",
+          "developer": "Developer",
+          "hotel": "Hotel operator",
+          "portal": "Property portal",
+          "review": "Review platform",
+          "press": "Press"
+        }
+      },
+      "gap": "Not established",
+      "inferred": "derived",
+      "more": "+{count} more",
+      "sources": "Sources"
+    },
+    "sourceCount": "{count, plural, one {# source} other {# sources}}",
+    "skipToContent": "Skip to content",
+    "nav": {
+      "project": "Project",
+      "site": "Site",
+      "hotel": "Hotel",
+      "evidence": "Evidence",
+      "access": "Access"
+    },
+    "record": {
+      "idLabel": "Subject",
+      "placeLabel": "Location",
+      "dataLabel": "Data as of",
+      "sheetLabel": "Sheet",
+      "sheetValue": "1 of 1 · public"
+    },
+    "designation": {
+      "interest": "What it is",
+      "search": "The site",
+      "desire": "The hotel",
+      "trust": "Evidence",
+      "action": "Access",
+      "loyalty": "After purchase",
+      "share": "Pass it on",
+      "love": "Why it is built this way"
+    },
+    "masterplan": {
+      "title": "Site plan",
+      "blockLabel": "Block",
+      "unitsLabel": "units",
+      "hotelLabel": "Hotel",
+      "seaLabel": "Mediterranean",
+      "selectedLabel": "Selected:",
+      "schematicNote": "Schematic. No source publishes the building geometry — this shows the composition, not the layout. Select a block for detail.",
+      "quality": {
+        "portal_listing": "Real listing",
+        "official": "Official statement",
+        "modelled": "Modelled",
+        "source_missing": "No source"
+      }
     }
   },
   "dashboard": {

@@ -244,10 +244,14 @@
       "figures": {
         "area": "Grundstück",
         "blocks": "Blöcke",
-        "units": "Wohnungen"
+        "units": "Wohnungen",
+        "entryPrice": "Einstiegspreis 1+1"
       },
       "scrollHint": "Scrollen",
-      "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel"
+      "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel",
+      "plateTitle": "Aufnahme · Türkler, Alanya",
+      "entryPriceNote": "Angezeigt wird der einzige Wert, den ein Portal selbst als „ab“-Preis ausweist. Die übrigen 18 Angaben stehen im Beleg.",
+      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht — und die Seite sagt das an derselben Stelle, in derselben Schrift."
     },
     "why": {
       "title": "Was Azura World ist",
@@ -255,7 +259,19 @@
       "developerLabel": "Bauträger",
       "locationLabel": "Standort",
       "timelineLabel": "Fertigstellung",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "plotLabel": "Grundstücksfläche",
+      "greenLabel": "Grünfläche",
+      "footprintLabel": "Bebaute Fläche",
+      "outdoorLabel": "Außenanlagen",
+      "blocksLabel": "Wohnblöcke",
+      "buildingsLabel": "Gebäude",
+      "floorsLabel": "Geschosse je Gebäude",
+      "startLabel": "Baubeginn",
+      "seaLabel": "Entfernung zum Meer",
+      "centreLabel": "Entfernung Alanya-Zentrum",
+      "airportLabel": "Entfernung Flughafen Gazipaşa",
+      "downPaymentLabel": "Anzahlung"
     },
     "immersion": {
       "title": "Ein Tag vor Ort",
@@ -268,7 +284,9 @@
       "title": "Ausstattung",
       "lead": "Jede Position ist der Seite zugeordnet, die sie nennt.",
       "empty": "Für die Ausstattung liegt keine belegte Quelle vor.",
-      "categoryLabel": "Kategorie"
+      "categoryLabel": "Kategorie",
+      "gapTitle": "Keine belegte Ausstattungsliste",
+      "gapBody": "Aus 60 abgerufenen Quellen liess sich keine Ausstattungsliste gewinnen, die einzeln zuordenbar wäre. Der Datensatz führt deshalb null Positionen. Eine plausible Liste stünde hier schnell — sie wäre nur nicht belegt."
     },
     "desire": {
       "title": "Das Hotel vor Ort",
@@ -276,7 +294,13 @@
       "roomsLabel": "Zimmer",
       "starsLabel": "Kategorie",
       "boardLabel": "Verpflegung",
-      "aquaparkLabel": "Rutschen"
+      "aquaparkLabel": "Rutschen",
+      "formerLabel": "Früherer Name",
+      "brandLabel": "Markenbindung",
+      "openedLabel": "Eröffnung",
+      "beachLabel": "Entfernung zum Strand",
+      "floorsLabel": "Geschosse",
+      "checkInLabel": "Anreise ab"
     },
     "evidenceBand": {
       "title": "Woher diese Zahlen kommen",
@@ -284,7 +308,23 @@
       "sourcesLabel": "Ausgewertete Quellen",
       "conflictsLabel": "Widersprüche",
       "gapsLabel": "Offene Punkte",
-      "cta": "Vollständigen Beleg-Report öffnen"
+      "cta": "Vollständigen Beleg-Report öffnen",
+      "designation": "Beleglage",
+      "sourcesAttempted": "Abgerufene Quellen",
+      "sourcesReachable": "Inhalt bestätigt",
+      "publishersLabel": "Zitierte Herausgeber",
+      "factsLabel": "Zahlen auf dieser Seite",
+      "findingsLabel": "Erfasste Befunde",
+      "confidenceHeading": "Nach Belegstärke",
+      "priceHeading": "F-002 — vier Herausgeber, vier Preise",
+      "priceIntro": "Dieselbe Wohnungsgrösse, vier Anbieter, ein Faktor von {factor}. Zwei Währungen, keine Beobachtungsdaten, mindestens ein veraltetes Inserat. Nicht aufgelöst — die Werte stehen nebeneinander.",
+      "colPublisher": "Herausgeber",
+      "colPrice": "Preis",
+      "colArea": "Fläche",
+      "colNote": "Hinweis",
+      "staleNote": "veraltet",
+      "unitSplitLabel": "Wohnungen im Bestand",
+      "unitSplitValue": "{listing} reale Inserate · {modelled} modelliert · {total} gesamt"
     },
     "action": {
       "title": "Zugang anfragen",
@@ -294,7 +334,21 @@
     },
     "after": {
       "title": "Nach dem Kauf",
-      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung — der Teil, den Verkaufsseiten auslassen."
+      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung — der Teil, den Verkaufsseiten auslassen.",
+      "items": {
+        "1": {
+          "title": "Bestand und Verträge",
+          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand — reale Inserate und modellierte Datensätze bleiben unterscheidbar."
+        },
+        "2": {
+          "title": "Betrieb und Nebenkosten",
+          "body": "Instandhaltung, Umlagen und Abrechnung je Block, mit unveränderlichen Buchungen im Hauptbuch."
+        },
+        "3": {
+          "title": "Beleg an jeder Zahl",
+          "body": "Dieselbe Herkunftsanzeige wie auf dieser Seite — in der Verwaltung, im Report und im Export."
+        }
+      }
     },
     "share": {
       "title": "Weitergeben",
@@ -310,7 +364,100 @@
       "rights": "Analyse zu Wettbewerbszwecken. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
       "sourcesLink": "Quellenverzeichnis",
       "legalLink": "Rechtliches",
-      "updated": "Datenstand {date}"
+      "updated": "Datenstand {date}",
+      "contactHeading": "Kontakt zum Objekt",
+      "sourcesHeading": "Belege",
+      "aboutHeading": "Zu dieser Analyse",
+      "generated": "Erzeugt aus dem Datensatz vom {date}"
+    },
+    "provenance": {
+      "confidence": {
+        "confirmed": "Bestätigt",
+        "official": "Offiziell",
+        "single_source": "Eine Quelle",
+        "conflicted": "Widerspruch",
+        "inferred": "Berechnet",
+        "gap": "Nicht belegt"
+      },
+      "conflict": {
+        "trigger": "Widerspruch",
+        "heading": "Konkurrierende Werte",
+        "summary": "{count} Quellen, keine Auflösung",
+        "displayed": "Angezeigt",
+        "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl — jede einzelne Zahl hier wäre eine Erfindung mit einer Quellenangabe daran.",
+        "close": "Schließen",
+        "source": {
+          "openSource": "Quelle öffnen",
+          "snapshot": "Lokaler Snapshot",
+          "unreachable": "Quelle nicht erreichbar",
+          "tier": {
+            "official": "Offiziell",
+            "developer": "Bauträger",
+            "hotel": "Hotelbetrieb",
+            "portal": "Immobilienportal",
+            "review": "Bewertungsportal",
+            "press": "Presse"
+          }
+        }
+      },
+      "source": {
+        "openSource": "Quelle öffnen",
+        "snapshot": "Lokaler Snapshot",
+        "unreachable": "Quelle nicht erreichbar",
+        "tier": {
+          "official": "Offiziell",
+          "developer": "Bauträger",
+          "hotel": "Hotelbetrieb",
+          "portal": "Immobilienportal",
+          "review": "Bewertungsportal",
+          "press": "Presse"
+        }
+      },
+      "gap": "Nicht belegt",
+      "inferred": "berechnet",
+      "more": "+{count} weitere",
+      "sources": "Quellen"
+    },
+    "sourceCount": "{count, plural, one {# Quelle} other {# Quellen}}",
+    "skipToContent": "Zum Inhalt springen",
+    "nav": {
+      "project": "Projekt",
+      "site": "Anlage",
+      "hotel": "Hotel",
+      "evidence": "Belege",
+      "access": "Zugang"
+    },
+    "record": {
+      "idLabel": "Objekt",
+      "placeLabel": "Lage",
+      "dataLabel": "Datenstand",
+      "sheetLabel": "Blatt",
+      "sheetValue": "1 von 1 · öffentlich"
+    },
+    "designation": {
+      "interest": "Was es ist",
+      "search": "Die Anlage",
+      "desire": "Das Hotel",
+      "trust": "Belege",
+      "action": "Zugang",
+      "loyalty": "Nach dem Kauf",
+      "share": "Weitergeben",
+      "love": "Warum so"
+    },
+    "masterplan": {
+      "title": "Lageplan",
+      "blockLabel": "Block",
+      "unitsLabel": "Wohnungen",
+      "hotelLabel": "Hotel",
+      "seaLabel": "Mittelmeer",
+      "selectedLabel": "Ausgewählt:",
+      "schematicNote": "Schematisch. Keine Quelle veröffentlicht die Gebäudegeometrie — dargestellt ist die Zusammensetzung, nicht der Grundriss. Block wählen für Details.",
+      "quality": {
+        "portal_listing": "Reales Inserat",
+        "official": "Offizielle Angabe",
+        "modelled": "Modelliert",
+        "source_missing": "Ohne Quelle"
+      }
     }
   },
   "dashboard": {

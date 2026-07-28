@@ -126,6 +126,12 @@ export default function GlobalError({
             </button>
             {/* Plain anchor, not next/link: a full reload is the correct
                 recovery when the router may itself be the thing that failed. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
+            W3-A: `/de` became a real page route in wave 3, so this rule now
+            fires. The plain anchor is deliberate and documented above: a full
+            navigation is the correct recovery when the router may itself be
+            the thing that failed. `<Link>` here would prefetch and soft-navigate
+            with the same broken router. Reported to W0-A in HANDOFF/W3-A.md. */}
             <a href="/de" style={link}>
               Zur Startseite · Back to start
             </a>
