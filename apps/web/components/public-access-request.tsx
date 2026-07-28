@@ -21,9 +21,22 @@ import { Field, Input, fieldDescriptionId } from "@/components/ui/input"
  *
  * There is also no role selector. `tasks/W3-H` §2 requires elevation to be an
  * admin action and never self-service, and the cheapest way to guarantee that
- * is to never accept a role as input at any layer. The schema in `actions.ts`
- * is `strictObject`, so a hand-crafted POST carrying `role: "admin"` is rejected
- * outright rather than ignored — mass assignment cannot start here.
+ * is to never accept a role as input at any layer.
+ *
+ * Two independent things stop a hand-crafted POST carrying `role: "admin"`,
+ * and it is worth being precise about which does what:
+ *
+ *  1. `requestAccess` reads **exactly four named fields** off the `FormData`
+ *     and builds its own object from them. An injected `role` field is never
+ *     read, so it does not reach the schema at all. Verified by submitting this
+ *     form with `role`, `roles`, `is_active` and `company_id` appended: the
+ *     outcome was unchanged and no cookie, session or account appeared.
+ *  2. The schema is a `strictObject`, so if that construction were ever
+ *     refactored into a pass-through, an unknown key would become a validation
+ *     failure rather than a silently accepted field.
+ *
+ * The first is what holds today; the second is what stops a future edit from
+ * quietly removing it.
  */
 export interface AccessRequestLabels {
   fullName: string

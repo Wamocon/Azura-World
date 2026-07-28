@@ -169,10 +169,14 @@ export function PublicReportTracker({
  *
  * `{value}` is a JSX text child, so React escapes it. That is the whole XSS
  * defence for this surface and it is deliberately not supplemented with manual
- * escaping — `dangerouslySetInnerHTML` is banned repo-wide (CONVENTIONS §4), and
- * a hand-rolled escaper next to React's would be the thing that eventually gets
- * it wrong. `whitespace-pre-wrap` preserves the reporter's line breaks without
- * interpreting anything.
+ * escaping: a hand-rolled escaper sitting next to React's is the one that
+ * eventually gets it wrong. `whitespace-pre-wrap` preserves the reporter's line
+ * breaks without interpreting anything.
+ *
+ * CONVENTIONS §4 bans `dangerouslySetInnerHTML`, and there is none in the report
+ * flow. There is exactly one in the app — the JSON-LD block in W3-A's
+ * `app/[locale]/page.tsx` — and it is raised as a finding in `HANDOFF/W3-H.md`
+ * rather than described here as if it did not exist.
  */
 function Row({
   label,
