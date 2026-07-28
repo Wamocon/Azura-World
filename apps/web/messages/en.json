@@ -76,7 +76,7 @@
     "pagination": {
       "page": "Page",
       "pageOf": "Page {page} of {total}",
-      "rowsPerPage": "Rows per page",
+      "rowsPerPage": "Entries per page",
       "showing": "{from}–{to} of {total}",
       "first": "First page",
       "last": "Last page"
@@ -84,7 +84,7 @@
     "table": {
       "sortAscending": "Sort ascending",
       "sortDescending": "Sort descending",
-      "noRows": "No rows",
+      "noRows": "No entries",
       "selectRow": "Select row",
       "selectAll": "Select all",
       "columns": "Columns",
@@ -178,9 +178,9 @@
       "official": "Official statement",
       "single_source": "Single source",
       "conflicted": "Sources disagree",
-      "conflicted_long": "Sources disagree — both values are on record",
+      "conflicted_long": "Sources disagree: both values are on record",
       "inferred": "Inferred",
-      "gap": "Not established"
+      "gap": "Not stated"
     },
     "confidenceShort": {
       "confirmed": "Confirmed",
@@ -188,10 +188,10 @@
       "single_source": "Single source",
       "conflicted": "Disagreement",
       "inferred": "Inferred",
-      "gap": "Open"
+      "gap": "Not stated"
     },
     "stale": "Stale listing",
-    "modelled": "Modelled record — not a real listing",
+    "modelled": "Price not confirmed by the source",
     "sourceUnreachable": "Source unreachable",
     "label": {
       "source": "Source",
@@ -203,7 +203,7 @@
       "openSource": "Open source",
       "method": "Collection method",
       "value": "Value",
-      "noValue": "—"
+      "noValue": "Not stated"
     },
     "conflict": {
       "title": "The sources disagree",
@@ -225,20 +225,20 @@
       "review": "Review platform",
       "press": "Press",
       "registry": "Registry",
-      "modelled": "Modelled"
+      "modelled": "Price not confirmed by the source"
     },
     "disclaimer": "Competitive analysis for INTERNAL-107. All figures come from publicly accessible sources and link to their origin.",
     "gapNotice": "No reliable source was found for this figure. It is deliberately left empty."
   },
   "landing": {
     "topBar": {
-      "notice": "Evidence-backed competitive analysis — every figure sourced",
+      "notice": "Evidence-backed competitive analysis: every figure sourced",
       "cta": "See the evidence"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "A residence and five-star hotel on Türkiye's Mediterranean coast — documented, figure by figure.",
+      "subtitle": "A residence and five-star hotel on Türkiye's Mediterranean coast. Documented, figure by figure.",
       "ctaPrimary": "See the project",
       "ctaSecondary": "Check the sources",
       "figures": {
@@ -251,7 +251,7 @@
       "posterAlt": "View of the Azura World Residence & Hotel development",
       "plateTitle": "Survey · Türkler, Alanya",
       "entryPriceNote": "Shown is the only figure a portal itself labels as a “from” price. The other 18 are in the evidence.",
-      "conflictCallout": "Three of these four figures are corroborated more than once. The fourth is not — and the page says so in the same place, in the same type."
+      "conflictCallout": "Three of these four figures are corroborated more than once. The fourth is not, and the page says so in the same place, in the same type."
     },
     "why": {
       "title": "What Azura World is",
@@ -275,7 +275,7 @@
     },
     "immersion": {
       "title": "A day on site",
-      "lead": "The same development across the day — light, occupancy and operations change; the data behind them does not.",
+      "lead": "The same development across the day. Light, occupancy and operations change; the data behind them does not.",
       "timeLabel": "Time of day",
       "reducedMotionNotice": "Motion is reduced. The view stays static.",
       "noWebglNotice": "The 3D view is unavailable on this device. A still image is shown."
@@ -286,11 +286,11 @@
       "empty": "No sourced amenity data is available.",
       "categoryLabel": "Category",
       "gapTitle": "No sourced amenity list",
-      "gapBody": "Across 60 fetched sources, no amenity list could be attributed item by item. The dataset therefore carries zero entries. A plausible list would be quick to write here — it just would not be evidenced."
+      "gapBody": "Across 60 fetched sources, no amenity list could be attributed item by item. The dataset therefore carries zero entries. A plausible list would be quick to write here. It just would not be evidenced."
     },
     "desire": {
       "title": "The hotel on site",
-      "lead": "A five-star all-inclusive hotel inside the development — the difference from comparable projects in the region.",
+      "lead": "A five-star all-inclusive hotel inside the development, the difference from comparable projects in the region.",
       "roomsLabel": "Rooms",
       "starsLabel": "Class",
       "boardLabel": "Board",
@@ -304,7 +304,7 @@
     },
     "evidenceBand": {
       "title": "Where these figures come from",
-      "lead": "Every figure on this page is linked to its source. Where sources disagree, the disagreement is shown here — it is not resolved.",
+      "lead": "Every figure on this page is linked to its source. Where sources disagree, the disagreement is shown here. It is not resolved.",
       "sourcesLabel": "Sources reviewed",
       "conflictsLabel": "Disagreements",
       "gapsLabel": "Open items",
@@ -316,8 +316,8 @@
       "factsLabel": "Figures on this page",
       "findingsLabel": "Recorded findings",
       "confidenceHeading": "By strength of evidence",
-      "priceHeading": "F-002 — four publishers, four prices",
-      "priceIntro": "The same apartment size, four sellers, a factor of {factor}. Two currencies, no observation dates, at least one stale listing. Unresolved — the values stand side by side.",
+      "priceHeading": "F-002: four publishers, four prices",
+      "priceIntro": "The same apartment size, four sellers, a factor of {factor}. Two currencies, no observation dates, at least one stale listing. Unresolved, the values stand side by side.",
       "colPublisher": "Publisher",
       "colPrice": "Price",
       "colArea": "Area",
@@ -334,11 +334,11 @@
     },
     "after": {
       "title": "After the purchase",
-      "lead": "Management, running costs, letting and maintenance — the part sales pages leave out.",
+      "lead": "Management, running costs, letting and maintenance, the part sales pages leave out.",
       "items": {
         "1": {
           "title": "Inventory and contracts",
-          "body": "All 656 units with owner, contract and payment status — real listings and modelled records stay distinguishable."
+          "body": "All 656 units with owner, contract and payment status. Real listings and modelled records stay distinguishable."
         },
         "2": {
           "title": "Operations and service charges",
@@ -346,7 +346,7 @@
         },
         "3": {
           "title": "A source on every figure",
-          "body": "The same provenance display as this page — in the back office, in the report and in the export."
+          "body": "The same provenance display as this page, in the back office, in the report and in the export."
         }
       }
     },
@@ -384,7 +384,7 @@
         "heading": "Competing values",
         "summary": "{count} sources, unresolved",
         "displayed": "Shown",
-        "unresolvedNote": "Deliberately unresolved. No average, no median, no “most likely” pick — any single number here would be an invention with a citation stapled to it.",
+        "unresolvedNote": "Deliberately unresolved. No average, no median, no “most likely” pick. Any single number here would be an invention with a citation stapled to it.",
         "close": "Close",
         "source": {
           "openSource": "Open source",
@@ -451,7 +451,7 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mediterranean",
       "selectedLabel": "Selected:",
-      "schematicNote": "Schematic. No source publishes the building geometry — this shows the composition, not the layout. Select a block for detail.",
+      "schematicNote": "Schematic. No source publishes the building geometry. This shows the composition, not the layout. Select a block for detail.",
       "quality": {
         "portal_listing": "Real listing",
         "official": "Official statement",
@@ -504,7 +504,7 @@
       "groupPeople": "People"
     },
     "evidence": {
-      "title": "Evidence cockpit",
+      "title": "Sources and evidence",
       "lead": "Coverage, disagreements and gaps across the dataset.",
       "coverage": "Coverage",
       "conflicts": "Disagreements",
@@ -575,7 +575,7 @@
         }
       },
       "unstatedHeading": "Further sale listings with no layout stated",
-      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above — the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names."
+      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above, the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names."
     },
     "units": {
       "title": "Units",
@@ -609,7 +609,7 @@
     },
     "listings": {
       "title": "Portal listings",
-      "lead": "The same unit across several portals — with price, date and variance.",
+      "lead": "The same unit across several portals, with price, date and variance.",
       "count": "{count, plural, one {# listing} other {# listings}}",
       "empty": "No listings on record.",
       "columns": {
@@ -872,7 +872,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "The 5-star hotel on the complex's grounds — with its reviews, its contradictions, and the sources behind both.",
+    "lead": "The 5-star hotel on the complex's grounds, with its reviews, its contradictions, and the sources behind both.",
     "formerNameNotice": "Previously operated as {formerName}. The rebrand is recorded as a finding.",
     "rooms": "Rooms",
     "stars": "Class",
@@ -889,19 +889,19 @@
     "bookExternal": "View on the portal",
     "eyebrow": "Hotel operation · review position",
     "meta": {
-      "title": "Azura World Hotel — reviews and sources",
+      "title": "Azura World Hotel: reviews and sources",
       "description": "The complex's 5-star hotel: operating figures, review platforms and contradictions, each with its source."
     },
     "rebrand": {
       "heading": "The hotel was renamed",
-      "body": "Until the rebrand the hotel traded as {formerName}. Some booking platforms still index it under the old name and the old address — a reader who does not know this finds two properties where there is only one.",
+      "body": "Until the rebrand the hotel traded as {formerName}. Some booking platforms still index it under the old name and the old address, a reader who does not know this finds two properties where there is only one.",
       "currentName": "Current name",
       "formerName": "Former name",
       "finding": "Finding F-007"
     },
     "facts": {
       "heading": "Operating figures",
-      "intro": "Every figure leads back to the source it came from. Where sources disagree, the disagreement sits on the number itself — not in a footnote."
+      "intro": "Every figure leads back to the source it came from. Where sources disagree, the disagreement sits on the number itself, not in a footnote."
     },
     "floors": "Floors",
     "distance": {
@@ -913,7 +913,7 @@
     },
     "reviews": {
       "intro": "Each platform stands on its own, on its own scale.",
-      "noAverageNote": "There is no overall score here. 4.6 out of 5 and 6.7 out of 10 cannot be combined — any number that came out of it would have no source. The platforms sit beside each other, not on top of each other."
+      "noAverageNote": "There is no overall score here. 4.6 out of 5 and 6.7 out of 10 cannot be combined. Any number that came out of it would have no source. The platforms sit beside each other, not on top of each other."
     },
     "platform": {
       "tripadvisor": "Tripadvisor",
@@ -927,7 +927,7 @@
       "fetchedAt": "fetched",
       "open": "View on {platform}",
       "syndicatedBy": "Same score at {publisher}",
-      "syndicatedNote": "The same score is served by other sites as well. That is not a second, independent rating — it is the same number with a different logo in front of it.",
+      "syndicatedNote": "The same score is served by other sites as well. That is not a second, independent rating. It is the same number with a different logo in front of it.",
       "noReviews": "no reviews"
     },
     "sentiment": {
@@ -948,7 +948,7 @@
     },
     "verdict": {
       "heading": "Both ends of the scale",
-      "intro": "On the left the lowest-rated review this harvest recovered, on the right the highest — equal width, equal type size. Both are derived from the same list; a view that shows only the good ones is not structurally possible here.",
+      "intro": "On the left the lowest-rated review this harvest recovered, on the right the highest. Equal width, equal type size. Both are derived from the same list; a view that shows only the good ones is not structurally possible here.",
       "best": "Highest rating",
       "worst": "Lowest rating",
       "degenerate": "Only one rated review is available. Two ends cannot be formed from it.",
@@ -970,7 +970,7 @@
     },
     "unrecovered": {
       "heading": "Booking platforms not recovered",
-      "intro": "These platforms were requested and returned nothing usable. They are not missing — they were attempted, and the result is here. A Booking.com-produced score does exist nonetheless: it was found as a badge on a third-party page, not on booking.com itself. That is why the platform card above names the site that served it.",
+      "intro": "These platforms were requested and returned nothing usable. They are not missing. They were attempted, and the result is here. A Booking.com-produced score does exist nonetheless: it was found as a badge on a third-party page, not on booking.com itself. That is why the platform card above names the site that served it.",
       "status": "Status",
       "attempted": "Attempted",
       "statusValue": {
@@ -992,14 +992,14 @@
         "press": "Press"
       },
       "conflictSummary": "{count} sources, unresolved",
-      "unresolvedNote": "Deliberately unresolved. No mean, no median, no “most likely” pick — any single number that came out of that would be an invention with a citation attached to it.",
+      "unresolvedNote": "Deliberately unresolved. No mean, no median, no “most likely” pick. Any single number that came out of that would be an invention with a citation attached to it.",
       "close": "Close",
       "more": "+{count} more"
     }
   },
   "report": {
     "title": "Public report",
-    "lead": "The Azura World dataset — same figures, same sources, no sign-in.",
+    "lead": "The Azura World dataset. Same figures, same sources, no sign-in.",
     "generatedAt": "Generated {date}",
     "sectionProject": "Project",
     "sectionHotel": "Hotel",
@@ -1013,7 +1013,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Questions about the project — answered from the sourced dataset only.",
+    "subtitle": "Questions about the project. Answered from the sourced dataset only.",
     "placeholder": "Ask a question …",
     "send": "Send",
     "thinking": "Preparing an answer …",

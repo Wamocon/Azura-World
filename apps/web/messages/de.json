@@ -76,7 +76,7 @@
     "pagination": {
       "page": "Seite",
       "pageOf": "Seite {page} von {total}",
-      "rowsPerPage": "Zeilen pro Seite",
+      "rowsPerPage": "Einträge pro Seite",
       "showing": "{from}–{to} von {total}",
       "first": "Erste Seite",
       "last": "Letzte Seite"
@@ -84,7 +84,7 @@
     "table": {
       "sortAscending": "Aufsteigend",
       "sortDescending": "Absteigend",
-      "noRows": "Keine Zeilen",
+      "noRows": "Keine Einträge",
       "selectRow": "Zeile auswählen",
       "selectAll": "Alle auswählen",
       "columns": "Spalten",
@@ -178,9 +178,9 @@
       "official": "Offizielle Angabe",
       "single_source": "Einzelquelle",
       "conflicted": "Quellen widersprechen sich",
-      "conflicted_long": "Quellen widersprechen sich — beide Werte sind erfasst",
+      "conflicted_long": "Quellen widersprechen sich. Beide Werte sind erfasst.",
       "inferred": "Abgeleitet",
-      "gap": "Nicht belegt"
+      "gap": "Keine Angabe"
     },
     "confidenceShort": {
       "confirmed": "Bestätigt",
@@ -188,10 +188,10 @@
       "single_source": "Einzelquelle",
       "conflicted": "Widerspruch",
       "inferred": "Abgeleitet",
-      "gap": "Offen"
+      "gap": "Keine Angabe"
     },
     "stale": "Veraltetes Inserat",
-    "modelled": "Modellierter Datensatz — kein reales Inserat",
+    "modelled": "Preis nicht von der Quelle bestätigt",
     "sourceUnreachable": "Quelle nicht erreichbar",
     "label": {
       "source": "Quelle",
@@ -203,7 +203,7 @@
       "openSource": "Quelle öffnen",
       "method": "Erhebungsart",
       "value": "Wert",
-      "noValue": "—"
+      "noValue": "Keine Angabe"
     },
     "conflict": {
       "title": "Quellen widersprechen sich",
@@ -225,20 +225,20 @@
       "review": "Bewertungsportal",
       "press": "Presse",
       "registry": "Register",
-      "modelled": "Modelliert"
+      "modelled": "Preis nicht von der Quelle bestätigt"
     },
     "disclaimer": "Wettbewerbsanalyse zu INTERNAL-107. Alle Angaben stammen aus öffentlich zugänglichen Quellen und sind mit ihrer Herkunft verlinkt.",
     "gapNotice": "Zu dieser Angabe wurde keine belastbare Quelle gefunden. Sie bleibt bewusst leer."
   },
   "landing": {
     "topBar": {
-      "notice": "Evidenzbasierte Wettbewerbsanalyse — jede Zahl mit Quelle",
+      "notice": "Evidenzbasierte Wettbewerbsanalyse. Jede Zahl mit Quelle.",
       "cta": "Belege ansehen"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste — vollständig belegt, Zahl für Zahl.",
+      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste, vollständig belegt, Zahl für Zahl.",
       "ctaPrimary": "Projekt ansehen",
       "ctaSecondary": "Quellen prüfen",
       "figures": {
@@ -251,7 +251,7 @@
       "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel",
       "plateTitle": "Aufnahme · Türkler, Alanya",
       "entryPriceNote": "Angezeigt wird der einzige Wert, den ein Portal selbst als „ab“-Preis ausweist. Die übrigen 18 Angaben stehen im Beleg.",
-      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht — und die Seite sagt das an derselben Stelle, in derselben Schrift."
+      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht. Die Seite sagt das an derselben Stelle, in derselben Schrift."
     },
     "why": {
       "title": "Was Azura World ist",
@@ -275,7 +275,7 @@
     },
     "immersion": {
       "title": "Ein Tag vor Ort",
-      "lead": "Dieselbe Anlage über den Tagesverlauf — Licht, Belegung und Betrieb ändern sich, die Daten dahinter bleiben dieselben.",
+      "lead": "Dieselbe Anlage über den Tagesverlauf. Licht, Belegung und Betrieb ändern sich, die Daten dahinter bleiben dieselben.",
       "timeLabel": "Uhrzeit",
       "reducedMotionNotice": "Bewegung ist reduziert. Die Darstellung bleibt statisch.",
       "noWebglNotice": "Die 3D-Ansicht ist auf diesem Gerät nicht verfügbar. Es wird ein Standbild gezeigt."
@@ -286,11 +286,11 @@
       "empty": "Für die Ausstattung liegt keine belegte Quelle vor.",
       "categoryLabel": "Kategorie",
       "gapTitle": "Keine belegte Ausstattungsliste",
-      "gapBody": "Aus 60 abgerufenen Quellen liess sich keine Ausstattungsliste gewinnen, die einzeln zuordenbar wäre. Der Datensatz führt deshalb null Positionen. Eine plausible Liste stünde hier schnell — sie wäre nur nicht belegt."
+      "gapBody": "Aus 60 abgerufenen Quellen liess sich keine Ausstattungsliste gewinnen, die einzeln zuordenbar wäre. Der Datensatz führt deshalb null Positionen. Eine plausible Liste stünde hier schnell. Sie wäre nur nicht belegt."
     },
     "desire": {
       "title": "Das Hotel vor Ort",
-      "lead": "Ein 5-Sterne-Haus mit All-inclusive-Betrieb direkt auf der Anlage — der Unterschied zu vergleichbaren Projekten in der Region.",
+      "lead": "Ein 5-Sterne-Haus mit All-inclusive-Betrieb direkt auf der Anlage. Das ist der Unterschied zu vergleichbaren Projekten in der Region.",
       "roomsLabel": "Zimmer",
       "starsLabel": "Kategorie",
       "boardLabel": "Verpflegung",
@@ -304,7 +304,7 @@
     },
     "evidenceBand": {
       "title": "Woher diese Zahlen kommen",
-      "lead": "Jede Angabe auf dieser Seite ist mit ihrer Quelle verknüpft. Wo Quellen sich widersprechen, steht der Widerspruch hier — er wird nicht aufgelöst.",
+      "lead": "Jede Angabe auf dieser Seite ist mit ihrer Quelle verknüpft. Wo Quellen sich widersprechen, steht der Widerspruch hier. Er wird nicht aufgelöst.",
       "sourcesLabel": "Ausgewertete Quellen",
       "conflictsLabel": "Widersprüche",
       "gapsLabel": "Offene Punkte",
@@ -316,8 +316,8 @@
       "factsLabel": "Zahlen auf dieser Seite",
       "findingsLabel": "Erfasste Befunde",
       "confidenceHeading": "Nach Belegstärke",
-      "priceHeading": "F-002 — vier Herausgeber, vier Preise",
-      "priceIntro": "Dieselbe Wohnungsgrösse, vier Anbieter, ein Faktor von {factor}. Zwei Währungen, keine Beobachtungsdaten, mindestens ein veraltetes Inserat. Nicht aufgelöst — die Werte stehen nebeneinander.",
+      "priceHeading": "F-002: vier Herausgeber, vier Preise",
+      "priceIntro": "Dieselbe Wohnungsgrösse, vier Anbieter, ein Faktor von {factor}. Zwei Währungen, keine Beobachtungsdaten, mindestens ein veraltetes Inserat. Nicht aufgelöst. Die Werte stehen nebeneinander.",
       "colPublisher": "Herausgeber",
       "colPrice": "Preis",
       "colArea": "Fläche",
@@ -334,11 +334,11 @@
     },
     "after": {
       "title": "Nach dem Kauf",
-      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung — der Teil, den Verkaufsseiten auslassen.",
+      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung. Der Teil, den Verkaufsseiten auslassen.",
       "items": {
         "1": {
           "title": "Bestand und Verträge",
-          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand — reale Inserate und modellierte Datensätze bleiben unterscheidbar."
+          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand. Reale Inserate und modellierte Datensätze bleiben unterscheidbar."
         },
         "2": {
           "title": "Betrieb und Nebenkosten",
@@ -346,7 +346,7 @@
         },
         "3": {
           "title": "Beleg an jeder Zahl",
-          "body": "Dieselbe Herkunftsanzeige wie auf dieser Seite — in der Verwaltung, im Report und im Export."
+          "body": "Dieselbe Herkunftsanzeige wie auf dieser Seite, in der Verwaltung, im Report und im Export."
         }
       }
     },
@@ -384,7 +384,7 @@
         "heading": "Konkurrierende Werte",
         "summary": "{count} Quellen, keine Auflösung",
         "displayed": "Angezeigt",
-        "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl — jede einzelne Zahl hier wäre eine Erfindung mit einer Quellenangabe daran.",
+        "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl. Jede einzelne Zahl hier wäre eine Erfindung mit einer Quellenangabe daran.",
         "close": "Schließen",
         "source": {
           "openSource": "Quelle öffnen",
@@ -451,7 +451,7 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mittelmeer",
       "selectedLabel": "Ausgewählt:",
-      "schematicNote": "Schematisch. Keine Quelle veröffentlicht die Gebäudegeometrie — dargestellt ist die Zusammensetzung, nicht der Grundriss. Block wählen für Details.",
+      "schematicNote": "Schematisch. Keine Quelle veröffentlicht die Gebäudegeometrie. Dargestellt ist die Zusammensetzung, nicht der Grundriss. Block wählen für Details.",
       "quality": {
         "portal_listing": "Reales Inserat",
         "official": "Offizielle Angabe",
@@ -504,7 +504,7 @@
       "groupPeople": "Personen"
     },
     "evidence": {
-      "title": "Beleg-Cockpit",
+      "title": "Quellen und Nachweise",
       "lead": "Vollständigkeit, Widersprüche und Lücken des Datenbestands.",
       "coverage": "Belegquote",
       "conflicts": "Widersprüche",
@@ -575,7 +575,7 @@
         }
       },
       "unstatedHeading": "Weitere Verkaufsangebote ohne Grundriss-Angabe",
-      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben — welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt."
+      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben. Welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt."
     },
     "units": {
       "title": "Wohnungen",
@@ -609,7 +609,7 @@
     },
     "listings": {
       "title": "Portal-Inserate",
-      "lead": "Dieselbe Wohnung auf mehreren Portalen — mit Preis, Datum und Abweichung.",
+      "lead": "Dieselbe Wohnung auf mehreren Portalen, mit Preis, Datum und Abweichung.",
       "count": "{count, plural, one {# Inserat} other {# Inserate}}",
       "empty": "Keine Inserate erfasst.",
       "columns": {
@@ -872,7 +872,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage — mit seinen Bewertungen, seinen Widersprüchen und den Quellen, die beides belegen.",
+    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage, mit seinen Bewertungen, seinen Widersprüchen und den Quellen, die beides belegen.",
     "formerNameNotice": "Zuvor unter dem Namen {formerName} geführt. Die Umbenennung ist als Befund erfasst.",
     "rooms": "Zimmer",
     "stars": "Kategorie",
@@ -889,19 +889,19 @@
     "bookExternal": "Beim Portal ansehen",
     "eyebrow": "Hotelbetrieb · Bewertungslage",
     "meta": {
-      "title": "Azura World Hotel — Bewertungen und Quellen",
+      "title": "Azura World Hotel: Bewertungen und Quellen",
       "description": "Das 5-Sterne-Haus der Anlage: Kennzahlen, Bewertungsportale und Widersprüche, jeweils mit Quelle."
     },
     "rebrand": {
       "heading": "Das Haus wurde umbenannt",
-      "body": "Bis zur Umbenennung lief das Haus unter {formerName}. Buchungsportale führen es teilweise weiter unter dem alten Namen und der alten Adresse — wer das nicht weiß, findet zwei Objekte, wo nur eines ist.",
+      "body": "Bis zur Umbenennung lief das Haus unter {formerName}. Buchungsportale führen es teilweise weiter unter dem alten Namen und der alten Adresse. Wer das nicht weiß, findet zwei Objekte, wo nur eines ist.",
       "currentName": "Aktueller Name",
       "formerName": "Früherer Name",
       "finding": "Befund F-007"
     },
     "facts": {
       "heading": "Kennzahlen des Betriebs",
-      "intro": "Jede Angabe führt auf die Quelle zurück, aus der sie stammt. Wo Quellen sich widersprechen, steht der Widerspruch an der Zahl — nicht in einer Fußnote."
+      "intro": "Jede Angabe führt auf die Quelle zurück, aus der sie stammt. Wo Quellen sich widersprechen, steht der Widerspruch an der Zahl, nicht in einer Fußnote."
     },
     "floors": "Etagen",
     "distance": {
@@ -913,7 +913,7 @@
     },
     "reviews": {
       "intro": "Jede Plattform steht für sich, auf ihrer eigenen Skala.",
-      "noAverageNote": "Es gibt hier keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen — jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander."
+      "noAverageNote": "Es gibt hier keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen. Jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander."
     },
     "platform": {
       "tripadvisor": "Tripadvisor",
@@ -927,7 +927,7 @@
       "fetchedAt": "abgerufen am",
       "open": "Bei {platform} ansehen",
       "syndicatedBy": "Dieselbe Zahl bei {publisher}",
-      "syndicatedNote": "Dieselbe Wertung wird von weiteren Seiten ausgeliefert. Das ist keine zweite, unabhängige Bewertung — es ist dieselbe Zahl mit einem anderen Logo davor.",
+      "syndicatedNote": "Dieselbe Wertung wird von weiteren Seiten ausgeliefert. Das ist keine zweite, unabhängige Bewertung. Es ist dieselbe Zahl mit einem anderen Logo davor.",
       "noReviews": "keine Bewertungen"
     },
     "sentiment": {
@@ -948,7 +948,7 @@
     },
     "verdict": {
       "heading": "Beide Enden der Skala",
-      "intro": "Links die niedrigste, rechts die höchste Bewertung, die dieser Abruf gefunden hat — gleiche Breite, gleiche Schriftgröße. Beide werden rechnerisch aus derselben Liste bestimmt; eine Ansicht, die nur die guten zeigt, ist hier baulich nicht möglich.",
+      "intro": "Links die niedrigste, rechts die höchste Bewertung, die dieser Abruf gefunden hat, bei gleicher Breite und gleicher Schriftgröße. Beide werden rechnerisch aus derselben Liste bestimmt. Eine Ansicht, die nur die guten zeigt, ist hier baulich nicht möglich.",
       "best": "Höchste Wertung",
       "worst": "Niedrigste Wertung",
       "degenerate": "Es liegt nur eine bewertete Rezension vor. Zwei Enden lassen sich daraus nicht bilden.",
@@ -970,7 +970,7 @@
     },
     "unrecovered": {
       "heading": "Nicht abgerufene Buchungsportale",
-      "intro": "Diese Portale wurden angefragt und lieferten keinen verwertbaren Inhalt. Sie fehlen nicht — sie wurden versucht, und das Ergebnis steht hier. Eine von Booking.com erzeugte Wertung liegt trotzdem vor: sie wurde als Badge auf einer fremden Seite gefunden, nicht auf booking.com selbst. Die Plattformkarte oben nennt deshalb die Seite, die sie ausgeliefert hat.",
+      "intro": "Diese Portale wurden angefragt und lieferten keinen verwertbaren Inhalt. Sie fehlen nicht. Sie wurden versucht, und das Ergebnis steht hier. Eine von Booking.com erzeugte Wertung liegt trotzdem vor: sie wurde als Badge auf einer fremden Seite gefunden, nicht auf booking.com selbst. Die Plattformkarte oben nennt deshalb die Seite, die sie ausgeliefert hat.",
       "status": "Status",
       "attempted": "Versuch am",
       "statusValue": {
@@ -992,14 +992,14 @@
         "press": "Presse"
       },
       "conflictSummary": "{count} Quellen, keine Auflösung",
-      "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl — jede einzelne Zahl, die dabei herauskäme, wäre eine Erfindung mit einer Quellenangabe daran.",
+      "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl. Jede einzelne Zahl, die dabei herauskäme, wäre eine Erfindung mit einer Quellenangabe daran.",
       "close": "Schließen",
       "more": "+{count} weitere"
     }
   },
   "report": {
     "title": "Offener Report",
-    "lead": "Der Datenbestand zu Azura World — dieselben Zahlen, dieselben Quellen, ohne Anmeldung.",
+    "lead": "Der Datenbestand zu Azura World. Dieselben Zahlen, dieselben Quellen, ohne Anmeldung.",
     "generatedAt": "Erstellt am {date}",
     "sectionProject": "Projekt",
     "sectionHotel": "Hotel",
@@ -1013,7 +1013,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Fragen zum Projekt — beantwortet ausschließlich aus dem belegten Datenbestand.",
+    "subtitle": "Fragen zum Projekt, beantwortet ausschließlich aus dem belegten Datenbestand.",
     "placeholder": "Frage stellen …",
     "send": "Senden",
     "thinking": "Antwort wird erstellt …",

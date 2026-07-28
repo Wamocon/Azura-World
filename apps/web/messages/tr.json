@@ -76,7 +76,7 @@
     "pagination": {
       "page": "Sayfa",
       "pageOf": "Sayfa {page} / {total}",
-      "rowsPerPage": "Sayfa başına satır",
+      "rowsPerPage": "Sayfa başına kayıt",
       "showing": "{from}–{to} / {total}",
       "first": "İlk sayfa",
       "last": "Son sayfa"
@@ -84,7 +84,7 @@
     "table": {
       "sortAscending": "Artan sırala",
       "sortDescending": "Azalan sırala",
-      "noRows": "Satır yok",
+      "noRows": "Kayıt yok",
       "selectRow": "Satır seç",
       "selectAll": "Tümünü seç",
       "columns": "Sütunlar",
@@ -178,9 +178,9 @@
       "official": "Resmî beyan",
       "single_source": "Tek kaynak",
       "conflicted": "Kaynaklar çelişiyor",
-      "conflicted_long": "Kaynaklar çelişiyor — her iki değer de kayıtlı",
+      "conflicted_long": "Kaynaklar çelişiyor: her iki değer de kayıtlı",
       "inferred": "Çıkarım",
-      "gap": "Belgelenmedi"
+      "gap": "Belirtilmemiş"
     },
     "confidenceShort": {
       "confirmed": "Doğrulandı",
@@ -188,10 +188,10 @@
       "single_source": "Tek kaynak",
       "conflicted": "Çelişki",
       "inferred": "Çıkarım",
-      "gap": "Açık"
+      "gap": "Belirtilmemiş"
     },
     "stale": "Güncelliğini yitirmiş ilan",
-    "modelled": "Modellenmiş kayıt — gerçek bir ilan değildir",
+    "modelled": "Fiyat kaynak tarafından doğrulanmadı",
     "sourceUnreachable": "Kaynağa ulaşılamadı",
     "label": {
       "source": "Kaynak",
@@ -203,7 +203,7 @@
       "openSource": "Kaynağı aç",
       "method": "Derleme yöntemi",
       "value": "Değer",
-      "noValue": "—"
+      "noValue": "Belirtilmemiş"
     },
     "conflict": {
       "title": "Kaynaklar çelişiyor",
@@ -225,20 +225,20 @@
       "review": "Değerlendirme platformu",
       "press": "Basın",
       "registry": "Sicil",
-      "modelled": "Modellenmiş"
+      "modelled": "Fiyat kaynak tarafından doğrulanmadı"
     },
     "disclaimer": "INTERNAL-107 kapsamında rekabet analizi. Tüm veriler kamuya açık kaynaklardan alınmış ve kaynağına bağlanmıştır.",
     "gapNotice": "Bu veri için güvenilir bir kaynak bulunamadı. Bilinçli olarak boş bırakılmıştır."
   },
   "landing": {
     "topBar": {
-      "notice": "Kanıta dayalı rekabet analizi — her veri kaynaklı",
+      "notice": "Kanıta dayalı rekabet analizi: her veri kaynaklı",
       "cta": "Kaynakları gör"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "Türkiye'nin Akdeniz kıyısında konut sitesi ve beş yıldızlı otel — veri veri belgelenmiş.",
+      "subtitle": "Türkiye'nin Akdeniz kıyısında konut sitesi ve beş yıldızlı otel. Veri veri belgelenmiş.",
       "ctaPrimary": "Projeyi gör",
       "ctaSecondary": "Kaynakları incele",
       "figures": {
@@ -251,7 +251,7 @@
       "posterAlt": "Azura World Residence & Hotel projesinin görünümü",
       "plateTitle": "Tespit · Türkler, Alanya",
       "entryPriceNote": "Gösterilen, bir portalın kendi ifadesiyle „başlangıç“ fiyatı olarak verdiği tek değerdir. Diğer 18 değer belgelerde.",
-      "conflictCallout": "Bu dört sayıdan üçü birden fazla kaynakla doğrulanmıştır. Dördüncüsü değil — ve sayfa bunu aynı yerde, aynı yazıyla söyler."
+      "conflictCallout": "Bu dört sayıdan üçü birden fazla kaynakla doğrulanmıştır. Dördüncüsü değil, ve sayfa bunu aynı yerde, aynı yazıyla söyler."
     },
     "why": {
       "title": "Azura World nedir",
@@ -275,7 +275,7 @@
     },
     "immersion": {
       "title": "Sitede bir gün",
-      "lead": "Aynı proje gün boyunca — ışık, doluluk ve işleyiş değişir; arkasındaki veri değişmez.",
+      "lead": "Aynı proje gün boyunca. Işık, doluluk ve işleyiş değişir; arkasındaki veri değişmez.",
       "timeLabel": "Saat",
       "reducedMotionNotice": "Hareket azaltıldı. Görünüm sabit kalır.",
       "noWebglNotice": "3B görünüm bu cihazda kullanılamıyor. Sabit görsel gösteriliyor."
@@ -286,11 +286,11 @@
       "empty": "Olanaklar için kaynaklı veri bulunmuyor.",
       "categoryLabel": "Kategori",
       "gapTitle": "Belgelenmiş donatı listesi yok",
-      "gapBody": "Alınan 60 kaynağın hiçbirinden kalem kalem atfedilebilir bir donatı listesi çıkarılamadı. Bu nedenle veri kümesinde sıfır kayıt var. Makul görünen bir liste buraya hızlıca yazılabilirdi — yalnızca belgeli olmazdı."
+      "gapBody": "Alınan 60 kaynağın hiçbirinden kalem kalem atfedilebilir bir donatı listesi çıkarılamadı. Bu nedenle veri kümesinde sıfır kayıt var. Makul görünen bir liste buraya hızlıca yazılabilirdi. Yalnızca belgeli olmazdı."
     },
     "desire": {
       "title": "Site içindeki otel",
-      "lead": "Site içinde her şey dahil beş yıldızlı otel — bölgedeki benzer projelerden farkı budur.",
+      "lead": "Site içinde her şey dahil beş yıldızlı otel. Bölgedeki benzer projelerden farkı budur.",
       "roomsLabel": "Oda",
       "starsLabel": "Sınıf",
       "boardLabel": "Pansiyon",
@@ -304,7 +304,7 @@
     },
     "evidenceBand": {
       "title": "Bu veriler nereden geliyor",
-      "lead": "Bu sayfadaki her veri kaynağına bağlıdır. Kaynaklar çeliştiğinde çelişki burada gösterilir — giderilmez.",
+      "lead": "Bu sayfadaki her veri kaynağına bağlıdır. Kaynaklar çeliştiğinde çelişki burada gösterilir. Giderilmez.",
       "sourcesLabel": "İncelenen kaynak",
       "conflictsLabel": "Çelişki",
       "gapsLabel": "Açık madde",
@@ -316,8 +316,8 @@
       "factsLabel": "Bu sayfadaki sayı",
       "findingsLabel": "Kayıtlı bulgu",
       "confidenceHeading": "Belge gücüne göre",
-      "priceHeading": "F-002 — dört yayıncı, dört fiyat",
-      "priceIntro": "Aynı daire büyüklüğü, dört satıcı, {factor} katlık fark. İki para birimi, gözlem tarihi yok, en az bir bayat ilan. Çözülmedi — değerler yan yana duruyor.",
+      "priceHeading": "F-002: dört yayıncı, dört fiyat",
+      "priceIntro": "Aynı daire büyüklüğü, dört satıcı, {factor} katlık fark. İki para birimi, gözlem tarihi yok, en az bir bayat ilan. Çözülmedi. Değerler yan yana duruyor.",
       "colPublisher": "Yayıncı",
       "colPrice": "Fiyat",
       "colArea": "Alan",
@@ -334,11 +334,11 @@
     },
     "after": {
       "title": "Satın alma sonrası",
-      "lead": "Yönetim, aidat, kiralama ve bakım — satış sayfalarının atladığı kısım.",
+      "lead": "Yönetim, aidat, kiralama ve bakım. Satış sayfalarının atladığı kısım.",
       "items": {
         "1": {
           "title": "Envanter ve sözleşmeler",
-          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu ile — gerçek ilanlar ve modellenmiş kayıtlar ayırt edilebilir kalır."
+          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu ile. Gerçek ilanlar ve modellenmiş kayıtlar ayırt edilebilir kalır."
         },
         "2": {
           "title": "İşletme ve aidatlar",
@@ -346,7 +346,7 @@
         },
         "3": {
           "title": "Her sayıda kaynak",
-          "body": "Bu sayfadaki köken gösterimi aynen — yönetimde, raporda ve dışa aktarımda."
+          "body": "Bu sayfadaki köken gösterimi aynen. Yönetimde, raporda ve dışa aktarımda."
         }
       }
     },
@@ -384,7 +384,7 @@
         "heading": "Çelişen değerler",
         "summary": "{count} kaynak, çözülmedi",
         "displayed": "Gösterilen",
-        "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, „en olası“ seçim yok — buradaki tek bir sayı bile kaynak etiketi iliştirilmiş bir uydurma olurdu.",
+        "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, „en olası“ seçim yok. Buradaki tek bir sayı bile kaynak etiketi iliştirilmiş bir uydurma olurdu.",
         "close": "Kapat",
         "source": {
           "openSource": "Kaynağı aç",
@@ -451,7 +451,7 @@
       "hotelLabel": "Otel",
       "seaLabel": "Akdeniz",
       "selectedLabel": "Seçili:",
-      "schematicNote": "Şematiktir. Hiçbir kaynak yapı geometrisini yayımlamıyor — burada dizilim değil, bileşim gösterilir. Ayrıntı için blok seçin.",
+      "schematicNote": "Şematiktir. Hiçbir kaynak yapı geometrisini yayımlamıyor. Burada dizilim değil, bileşim gösterilir. Ayrıntı için blok seçin.",
       "quality": {
         "portal_listing": "Gerçek ilan",
         "official": "Resmî beyan",
@@ -504,7 +504,7 @@
       "groupPeople": "Kişiler"
     },
     "evidence": {
-      "title": "Kaynak paneli",
+      "title": "Kaynaklar ve belgeler",
       "lead": "Veri kümesinin kapsamı, çelişkileri ve boşlukları.",
       "coverage": "Kapsam",
       "conflicts": "Çelişkiler",
@@ -609,7 +609,7 @@
     },
     "listings": {
       "title": "Portal ilanları",
-      "lead": "Aynı daire birden çok portalda — fiyat, tarih ve farkla birlikte.",
+      "lead": "Aynı daire birden çok portalda. Fiyat, tarih ve farkla birlikte.",
       "count": "{count, plural, other {# ilan}}",
       "empty": "Kayıtlı ilan yok.",
       "columns": {
@@ -872,7 +872,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Sitenin arazisindeki 5 yıldızlı otel — değerlendirmeleri, çelişkileri ve her ikisini de belgeleyen kaynaklarıyla.",
+    "lead": "Sitenin arazisindeki 5 yıldızlı otel. Değerlendirmeleri, çelişkileri ve her ikisini de belgeleyen kaynaklarıyla.",
     "formerNameNotice": "Daha önce {formerName} adıyla işletiliyordu. Ad değişikliği bulgu olarak kayıtlıdır.",
     "rooms": "Oda",
     "stars": "Sınıf",
@@ -889,12 +889,12 @@
     "bookExternal": "Portalda gör",
     "eyebrow": "Otel işletmesi · değerlendirme durumu",
     "meta": {
-      "title": "Azura World Hotel — değerlendirmeler ve kaynaklar",
+      "title": "Azura World Hotel: değerlendirmeler ve kaynaklar",
       "description": "Sitenin 5 yıldızlı oteli: işletme verileri, değerlendirme platformları ve çelişkiler, her biri kaynağıyla birlikte."
     },
     "rebrand": {
       "heading": "Otelin adı değişti",
-      "body": "Ad değişikliğine kadar otel {formerName} adıyla işletiliyordu. Bazı rezervasyon platformları oteli hâlâ eski adı ve eski adresiyle listeliyor — bunu bilmeyen, tek bir tesis varken iki tesis bulur.",
+      "body": "Ad değişikliğine kadar otel {formerName} adıyla işletiliyordu. Bazı rezervasyon platformları oteli hâlâ eski adı ve eski adresiyle listeliyor. Bunu bilmeyen, tek bir tesis varken iki tesis bulur.",
       "currentName": "Güncel ad",
       "formerName": "Önceki ad",
       "finding": "Bulgu F-007"
@@ -913,7 +913,7 @@
     },
     "reviews": {
       "intro": "Her platform kendi ölçeğinde, kendi başına durur.",
-      "noAverageNote": "Burada genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez — çıkacak her sayının kaynağı olmaz. Bu nedenle platformlar üst üste değil, yan yana durur."
+      "noAverageNote": "Burada genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez. Çıkacak her sayının kaynağı olmaz. Bu nedenle platformlar üst üste değil, yan yana durur."
     },
     "platform": {
       "tripadvisor": "Tripadvisor",
@@ -927,7 +927,7 @@
       "fetchedAt": "alındığı tarih",
       "open": "{platform} üzerinde görüntüle",
       "syndicatedBy": "Aynı puan: {publisher}",
-      "syndicatedNote": "Aynı puan başka siteler tarafından da yayınlanıyor. Bu ikinci, bağımsız bir değerlendirme değil — önünde başka bir logo olan aynı sayı.",
+      "syndicatedNote": "Aynı puan başka siteler tarafından da yayınlanıyor. Bu ikinci, bağımsız bir değerlendirme değil. Önünde başka bir logo olan aynı sayı.",
       "noReviews": "değerlendirme yok"
     },
     "sentiment": {
@@ -948,7 +948,7 @@
     },
     "verdict": {
       "heading": "Ölçeğin iki ucu",
-      "intro": "Solda bu taramada bulunan en düşük, sağda en yüksek puanlı değerlendirme — eşit genişlik, eşit punto. İkisi de aynı listeden hesaplanarak seçilir; yalnızca olumluları gösteren bir görünüm burada yapısal olarak mümkün değildir.",
+      "intro": "Solda bu taramada bulunan en düşük, sağda en yüksek puanlı değerlendirme. Eşit genişlik, eşit punto. İkisi de aynı listeden hesaplanarak seçilir; yalnızca olumluları gösteren bir görünüm burada yapısal olarak mümkün değildir.",
       "best": "En yüksek puan",
       "worst": "En düşük puan",
       "degenerate": "Puanlanmış yalnızca bir değerlendirme var. Bundan iki uç oluşturulamaz.",
@@ -970,7 +970,7 @@
     },
     "unrecovered": {
       "heading": "Alınamayan rezervasyon platformları",
-      "intro": "Bu platformlara istek gönderildi ve kullanılabilir içerik dönmedi. Eksik değiller — denendiler ve sonuç burada. Yine de Booking.com kaynaklı bir puan mevcut: booking.com üzerinde değil, üçüncü taraf bir sayfada rozet olarak bulundu. Yukarıdaki platform kartı bu nedenle puanı yayınlayan siteyi belirtiyor.",
+      "intro": "Bu platformlara istek gönderildi ve kullanılabilir içerik dönmedi. Eksik değiller. Denendiler ve sonuç burada. Yine de Booking.com kaynaklı bir puan mevcut: booking.com üzerinde değil, üçüncü taraf bir sayfada rozet olarak bulundu. Yukarıdaki platform kartı bu nedenle puanı yayınlayan siteyi belirtiyor.",
       "status": "Durum",
       "attempted": "Deneme tarihi",
       "statusValue": {
@@ -992,14 +992,14 @@
         "press": "Basın"
       },
       "conflictSummary": "{count} kaynak, çözülmedi",
-      "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, “en olası” seçim yok — bunlardan çıkacak her sayı, yanına kaynak iliştirilmiş bir uydurma olurdu.",
+      "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, “en olası” seçim yok. Bunlardan çıkacak her sayı, yanına kaynak iliştirilmiş bir uydurma olurdu.",
       "close": "Kapat",
       "more": "+{count} daha"
     }
   },
   "report": {
     "title": "Genel rapor",
-    "lead": "Azura World veri kümesi — aynı veriler, aynı kaynaklar, girişsiz.",
+    "lead": "Azura World veri kümesi. Aynı veriler, aynı kaynaklar, girişsiz.",
     "generatedAt": "{date} tarihinde oluşturuldu",
     "sectionProject": "Proje",
     "sectionHotel": "Otel",
@@ -1013,7 +1013,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Proje hakkında sorular — yalnızca kaynaklı veri kümesinden yanıtlanır.",
+    "subtitle": "Proje hakkında sorular. Yalnızca kaynaklı veri kümesinden yanıtlanır.",
     "placeholder": "Soru sorun …",
     "send": "Gönder",
     "thinking": "Yanıt hazırlanıyor …",
