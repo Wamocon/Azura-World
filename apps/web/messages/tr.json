@@ -365,7 +365,70 @@
       "findings": "Bulgular",
       "sourceRegister": "Kaynak listesi",
       "lastHarvest": "Son derleme",
-      "empty": "Henüz kayıtlı kaynak yok."
+      "empty": "Henüz kayıtlı kaynak yok.",
+      "seedNotice": "Demo verisi: kanıt havuzunun tamamı değil, temsili bir kesiti gösteriliyor.",
+      "observedRange": "Gözlenen aralık",
+      "finding": {
+        "id": "Bulgu {id}",
+        "severity": {
+          "critical": "Kritik",
+          "high": "Yüksek",
+          "medium": "Orta",
+          "low": "Düşük",
+          "info": "Bilgi"
+        },
+        "area": {
+          "structure": "Yapı",
+          "pricing": "Fiyat",
+          "timeline": "Takvim",
+          "geography": "Konum",
+          "branding": "Marka",
+          "availability": "Müsaitlik",
+          "harvest": "Derleme"
+        },
+        "resolutionHeading": "Çelişki nasıl ele alındı",
+        "resolvedHeading": "Şu değere bağlandı",
+        "unresolved": "Bilinçli olarak açık bırakıldı",
+        "unresolvedNote": "Bu alan için bir değer seçilmedi. Ortalama almak ya da “en olası” rakamı seçmek, yanına kaynak iliştirilmiş uydurma bir sayı olurdu.",
+        "observationSummary": "{publishers} portaldan {count} gözlem",
+        "headline": "Aynı 1+1 daire için dört portal, dört fiyat",
+        "recordLabel": "Bulgu metni, özgün hâli"
+      },
+      "ladder": {
+        "railSummary": "{count} gözlem · {publishers}",
+        "notComparable": "karşılaştırılamaz · dönüştürme yok",
+        "spread": "aralık {ratio}× (yalnızca {currency})",
+        "stale": "Eskimiş ilan",
+        "lowest": "en düşük fiyat",
+        "highest": "en yüksek fiyat",
+        "singleObservation": "yalnızca bir gözlem",
+        "negligible": "neredeyse aynı · {percent} fark"
+      },
+      "table": {
+        "caption": "Kaynağı, derleme tarihi ve kanıt bağlantısıyla birlikte gözlenen tüm fiyatlar",
+        "price": "Fiyat",
+        "layout": "Tip",
+        "area": "Alan",
+        "publisher": "Portal",
+        "observed": "Derlendi",
+        "evidence": "Kanıt",
+        "stale": "Eskimiş",
+        "note": "Derleme notu",
+        "layoutUnstated": "belirtilmemiş",
+        "areaUnstated": "belirtilmemiş"
+      },
+      "source": {
+        "tier": {
+          "official": "Resmî kaynak",
+          "developer": "Geliştirici",
+          "hotel": "Otel işletmesi",
+          "portal": "Emlak portalı",
+          "review": "Değerlendirme platformu",
+          "press": "Basın"
+        }
+      },
+      "unstatedHeading": "Tip belirtilmeyen diğer satış ilanları",
+      "unstatedLead": "Bu portallar fiyat veriyor ancak hangi tipe ait olduğunu söylemiyor; bu yüzden yukarıdaki ölçekte yer almıyorlar. Yine de listeleniyorlar: Alanya-Home’un giriş fiyatı, F-002 bulgusunun andığı dört rakamdan biri."
     },
     "units": {
       "title": "Daireler",

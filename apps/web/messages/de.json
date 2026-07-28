@@ -365,7 +365,70 @@
       "findings": "Befunde",
       "sourceRegister": "Quellenverzeichnis",
       "lastHarvest": "Letzte Erhebung",
-      "empty": "Es liegen noch keine Belege vor."
+      "empty": "Es liegen noch keine Belege vor.",
+      "seedNotice": "Demodaten: Es wird ein repräsentativer Ausschnitt des Belegbestands angezeigt, keine vollständige Erhebung.",
+      "observedRange": "Beobachtete Spanne",
+      "finding": {
+        "id": "Befund {id}",
+        "severity": {
+          "critical": "Kritisch",
+          "high": "Hoch",
+          "medium": "Mittel",
+          "low": "Gering",
+          "info": "Hinweis"
+        },
+        "area": {
+          "structure": "Struktur",
+          "pricing": "Preis",
+          "timeline": "Termine",
+          "geography": "Lage",
+          "branding": "Marke",
+          "availability": "Verfügbarkeit",
+          "harvest": "Erhebung"
+        },
+        "resolutionHeading": "Umgang mit dem Widerspruch",
+        "resolvedHeading": "Aufgelöst zu",
+        "unresolved": "Bewusst offen gelassen",
+        "unresolvedNote": "Für dieses Feld wurde kein Wert festgelegt. Ein Mittelwert oder eine Auswahl der „wahrscheinlichsten“ Angabe wäre eine erfundene Zahl mit einer Quellenangabe daneben.",
+        "observationSummary": "{count} Beobachtungen von {publishers} Portalen",
+        "headline": "Vier Portale, vier Preise für dieselbe 1+1-Wohnung",
+        "recordLabel": "Befundtext im Original"
+      },
+      "ladder": {
+        "railSummary": "{count} Beobachtungen · {publishers}",
+        "notComparable": "nicht vergleichbar · keine Umrechnung",
+        "spread": "Spanne {ratio}× (nur {currency})",
+        "stale": "Veraltetes Inserat",
+        "lowest": "günstigste Angabe",
+        "highest": "teuerste Angabe",
+        "singleObservation": "nur eine Beobachtung",
+        "negligible": "praktisch identisch · {percent} Unterschied"
+      },
+      "table": {
+        "caption": "Alle beobachteten Preisangaben mit Quelle, Erhebungsdatum und Beleg",
+        "price": "Preis",
+        "layout": "Grundriss",
+        "area": "Fläche",
+        "publisher": "Portal",
+        "observed": "Erhoben",
+        "evidence": "Beleg",
+        "stale": "Veraltet",
+        "note": "Erhebungsnotiz",
+        "layoutUnstated": "nicht angegeben",
+        "areaUnstated": "nicht angegeben"
+      },
+      "source": {
+        "tier": {
+          "official": "Offizielle Quelle",
+          "developer": "Bauträger",
+          "hotel": "Hotelbetrieb",
+          "portal": "Immobilienportal",
+          "review": "Bewertungsportal",
+          "press": "Presse"
+        }
+      },
+      "unstatedHeading": "Weitere Verkaufsangebote ohne Grundriss-Angabe",
+      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben — welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt."
     },
     "units": {
       "title": "Wohnungen",

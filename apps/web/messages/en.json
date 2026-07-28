@@ -365,7 +365,70 @@
       "findings": "Findings",
       "sourceRegister": "Source register",
       "lastHarvest": "Last harvest",
-      "empty": "No evidence on record yet."
+      "empty": "No evidence on record yet.",
+      "seedNotice": "Demo data: showing a representative slice of the evidence store, not the full harvest.",
+      "observedRange": "Observed range",
+      "finding": {
+        "id": "Finding {id}",
+        "severity": {
+          "critical": "Critical",
+          "high": "High",
+          "medium": "Medium",
+          "low": "Low",
+          "info": "Info"
+        },
+        "area": {
+          "structure": "Structure",
+          "pricing": "Pricing",
+          "timeline": "Timeline",
+          "geography": "Location",
+          "branding": "Branding",
+          "availability": "Availability",
+          "harvest": "Harvest"
+        },
+        "resolutionHeading": "How the conflict is handled",
+        "resolvedHeading": "Resolved to",
+        "unresolved": "Deliberately left open",
+        "unresolvedNote": "No value was chosen for this field. An average, or picking the “most likely” figure, would be an invented number with a citation stapled to it.",
+        "observationSummary": "{count} observations from {publishers} portals",
+        "headline": "Four portals, four prices for the same 1+1 apartment",
+        "recordLabel": "Finding text, original wording"
+      },
+      "ladder": {
+        "railSummary": "{count} observations · {publishers}",
+        "notComparable": "not comparable · no conversion",
+        "spread": "spread {ratio}× ({currency} only)",
+        "stale": "Stale listing",
+        "lowest": "lowest quoted",
+        "highest": "highest quoted",
+        "singleObservation": "one observation only",
+        "negligible": "practically identical · {percent} apart"
+      },
+      "table": {
+        "caption": "Every observed price with its source, collection date and evidence link",
+        "price": "Price",
+        "layout": "Layout",
+        "area": "Area",
+        "publisher": "Portal",
+        "observed": "Collected",
+        "evidence": "Evidence",
+        "stale": "Stale",
+        "note": "Harvest note",
+        "layoutUnstated": "not stated",
+        "areaUnstated": "not stated"
+      },
+      "source": {
+        "tier": {
+          "official": "Official source",
+          "developer": "Developer",
+          "hotel": "Hotel operation",
+          "portal": "Property portal",
+          "review": "Review platform",
+          "press": "Press"
+        }
+      },
+      "unstatedHeading": "Further sale listings with no layout stated",
+      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above — the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names."
     },
     "units": {
       "title": "Units",
