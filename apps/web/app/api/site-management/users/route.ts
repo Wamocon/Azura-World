@@ -12,7 +12,13 @@ import {
   getProfiles,
 } from "@/lib/governance-repository"
 import {
+  createProfile,
+  deleteProfile,
+  updateProfileAuthority,
+} from "@/lib/admin-capability"
+import {
   createProfileSchema,
+  deleteProfileSchema,
   updateProfileRoleSchema,
 } from "@/lib/validation/schemas"
 import { readBoolean, readEnum, readText } from "@/lib/validation/query"
@@ -78,16 +84,61 @@ export const GET = createManifestHandler("getProfiles", {
   },
 })
 
+/**
+ * The three write paths.                                    Owner: W3-H / N5
+ *
+ * These carried `writeGap` until tonight and answered 503 to everything, which
+ * meant an administrator could read the people directory and change nothing in
+ * it. W-UX §5 requires the opposite: "an administrator can do anything, without
+ * a developer."
+ *
+ * All three are thin. Validation is the schema's, authorisation is
+ * `createHandler`'s, the guards are Postgres's, and the plain-language mapping
+ * of a Postgres outcome is `lib/admin-capability.ts`'s. What is left here is
+ * naming the operation and handing over the caller's identity.
+ *
+ * `source: "supabase"` is returned literally rather than from a repository
+ * result because these functions have no seed fallback — by design. Step 7b of
+ * `createHandler` turns any other value into a 503, and a seeded "success" for
+ * a role change would be the fake success the whole project is built to avoid.
+ */
+
 export const POST = createManifestHandler("createProfile", {
   schema: createProfileSchema,
-  handler: () => {
-    throw new Error("unreachable: createProfile declares a write gap")
+  handler: async ({ body, profile }) => {
+    const created = await createProfile({
+      email: body.email,
+      fullName: body.fullName,
+      role: body.role,
+      companyId: body.companyId,
+      language: body.language,
+      actorCompanyId: profile.companyId,
+    })
+    return { data: created, source: "supabase" as const }
   },
 })
 
 export const PATCH = createManifestHandler("updateProfileRole", {
   schema: updateProfileRoleSchema,
-  handler: () => {
-    throw new Error("unreachable: updateProfileRole declares a write gap")
+  handler: async ({ body, profile }) => {
+    const updated = await updateProfileAuthority({
+      profileId: body.profileId,
+      actorId: profile.id,
+      role: body.role,
+      isActive: body.isActive,
+      expectedVersion: body.expectedVersion,
+    })
+    return { data: updated, source: "supabase" as const }
+  },
+})
+
+export const DELETE = createManifestHandler("deleteProfile", {
+  schema: deleteProfileSchema,
+  handler: async ({ body, profile }) => {
+    const removed = await deleteProfile({
+      profileId: body.profileId,
+      actorId: profile.id,
+    })
+    return { data: removed, source: "supabase" as const }
   },
 })
