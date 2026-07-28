@@ -605,7 +605,23 @@
         "areaRange": "Alan",
         "status": "Durum"
       },
-      "modelledNotice": "Bu envanter modellenmiştir ve gerçek bir ilanı temsil etmez."
+      "modelledNotice": "Bu envanter modellenmiştir ve gerçek bir ilanı temsil etmez.",
+      "provenance": {
+        "label": "Kaynak",
+        "portal_listing": "Gerçek ilan",
+        "official": "Resmî beyan",
+        "modelled": "Modellenmiş",
+        "source_missing": "Kaynak yok",
+        "portalMeaning": "Gerçek bir portal ilanından alındı",
+        "modelledMeaning": "Modellenmiş kayıt — gerçek bir ilan değildir",
+        "filterLabel": "Kaynağa göre filtrele",
+        "filterAll": "Tüm kaynaklar"
+      },
+      "split": {
+        "heading": "Envanterin kaynağı",
+        "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir — envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
+        "rowNote": "Modellenmiş — gerçek ilan değil"
+      }
     },
     "listings": {
       "title": "Portal ilanları",
