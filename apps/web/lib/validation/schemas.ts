@@ -235,10 +235,44 @@ export const createProfileSchema = z.strictObject({
   language: z.enum(["de", "en", "tr", "ru"]).optional(),
 })
 
-export const updateProfileRoleSchema = z.strictObject({
+/**
+ * Change a person's role, their active state, or both.
+ *
+ * `role` and `isActive` are each optional and at least one is required. The
+ * refinement is what makes "at least one" a 422 rather than a silent no-op
+ * write — a body of `{ profileId, expectedVersion, reason }` is a caller bug,
+ * and answering 200 to it would report a change that did not happen.
+ *
+ * Deactivation lives here rather than at its own endpoint because it is the same
+ * mutation to Postgres: `is_active` is one of the three authority columns
+ * `prevent_profile_privilege_escalation()` and `enforce_last_admin_survives()`
+ * both gate on. Splitting it into a second route would have produced a second
+ * place for those guards to be forgotten.
+ */
+export const updateProfileRoleSchema = z
+  .strictObject({
+    profileId: identifier,
+    expectedVersion: version,
+    role: z.enum(roles).optional(),
+    isActive: z.boolean().optional(),
+    reason,
+  })
+  .refine((value) => value.role !== undefined || value.isActive !== undefined, {
+    message: "Give a new role or a new active state.",
+    path: ["role"],
+  })
+
+/**
+ * Delete a person's record outright.
+ *
+ * Separate from deactivation on purpose. Deactivation is reversible and is what
+ * an administrator wants almost every time; deletion is not, and for anyone who
+ * has ever acted it is refused by `audit_events.actor_profile_id ... on delete
+ * restrict` rather than by policy. `reason` is required for the same purpose it
+ * serves on a role change.
+ */
+export const deleteProfileSchema = z.strictObject({
   profileId: identifier,
-  expectedVersion: version,
-  role: z.enum(roles),
   reason,
 })
 
