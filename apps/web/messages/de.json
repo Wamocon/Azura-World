@@ -575,7 +575,21 @@
         }
       },
       "unstatedHeading": "Weitere Verkaufsangebote ohne Grundriss-Angabe",
-      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben. Welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt."
+      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben. Welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt.",
+      "forbidden": "Diese Ansicht ist für Ihre Rolle nicht freigegeben. Das Beleg-Cockpit setzt die Berechtigung „evidence:view“ voraus.",
+      "export": {
+        "link": "Belege als CSV exportieren",
+        "note": "Mit Quell-URL, Abrufdatum und Snapshot-Hash je Zeile."
+      },
+      "annotation": {
+        "heading": "Befund annotieren",
+        "hint": "Nur für Administratoren. Die Notiz wird dem Befund zugeordnet und ersetzt keinen Quellenbeleg.",
+        "placeholder": "Was an diesem Befund geprüft wurde und was offen bleibt …",
+        "submit": "Notiz speichern",
+        "pending": "Wird gespeichert …",
+        "forbidden": "Ihre Rolle darf Befunde lesen, aber nicht annotieren.",
+        "saved": "Notiz gespeichert."
+      }
     },
     "units": {
       "title": "Wohnungen",

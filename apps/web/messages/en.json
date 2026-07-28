@@ -575,7 +575,21 @@
         }
       },
       "unstatedHeading": "Further sale listings with no layout stated",
-      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above, the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names."
+      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above, the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names.",
+      "forbidden": "This view is not available for your role. The evidence cockpit requires the “evidence:view” permission.",
+      "export": {
+        "link": "Export evidence as CSV",
+        "note": "With source URL, fetch date and snapshot hash on every row."
+      },
+      "annotation": {
+        "heading": "Annotate finding",
+        "hint": "Administrators only. The note is attached to the finding and does not stand in for a source.",
+        "placeholder": "What was checked on this finding, and what stays open …",
+        "submit": "Save note",
+        "pending": "Saving …",
+        "forbidden": "Your role may read findings but not annotate them.",
+        "saved": "Note saved."
+      }
     },
     "units": {
       "title": "Units",

@@ -575,7 +575,21 @@
         }
       },
       "unstatedHeading": "Tip belirtilmeyen diğer satış ilanları",
-      "unstatedLead": "Bu portallar fiyat veriyor ancak hangi tipe ait olduğunu söylemiyor; bu yüzden yukarıdaki ölçekte yer almıyorlar. Yine de listeleniyorlar: Alanya-Home’un giriş fiyatı, F-002 bulgusunun andığı dört rakamdan biri."
+      "unstatedLead": "Bu portallar fiyat veriyor ancak hangi tipe ait olduğunu söylemiyor; bu yüzden yukarıdaki ölçekte yer almıyorlar. Yine de listeleniyorlar: Alanya-Home’un giriş fiyatı, F-002 bulgusunun andığı dört rakamdan biri.",
+      "forbidden": "Bu görünüm rolünüze açık değil. Kanıt kokpiti “evidence:view” iznini gerektirir.",
+      "export": {
+        "link": "Kanıtları CSV olarak dışa aktar",
+        "note": "Her satırda kaynak URL’si, erişim tarihi ve anlık görüntü özeti ile."
+      },
+      "annotation": {
+        "heading": "Bulguya not ekle",
+        "hint": "Yalnızca yöneticiler. Not bulguya iliştirilir ve kaynak belgesinin yerine geçmez.",
+        "placeholder": "Bu bulguda ne denetlendi ve ne açık kaldı …",
+        "submit": "Notu kaydet",
+        "pending": "Kaydediliyor …",
+        "forbidden": "Rolünüz bulguları okuyabilir ancak not ekleyemez.",
+        "saved": "Not kaydedildi."
+      }
     },
     "units": {
       "title": "Daireler",

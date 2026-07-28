@@ -1,9 +1,14 @@
+import { Download } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 import { PriceConflictPanel } from "@/components/inventory/price-conflict-panel"
 import type { PriceObservation } from "@/components/inventory/price-conflict-ladder"
+import { AnnotationForm } from "@/components/inventory/annotation-form"
+import { getUserProfile } from "@/lib/auth"
+import { hasPermission } from "@/lib/rbac"
+import { cn } from "@/lib/cn"
 import { getFinding } from "@/lib/evidence-repository"
 import { getPortalListings } from "@/lib/portal-repository"
 import { getSources } from "@/lib/evidence-repository"
@@ -81,6 +86,44 @@ export default async function EvidencePage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard.evidence" })
   const tEvidence = await getTranslations({ locale, namespace: "evidence" })
+
+  /**
+   * The permission is re-checked HERE, before a single repository call.
+   *
+   * `DashboardRouteGuard` is a client component: by the time it decides, this
+   * Server Component has already rendered and its output is in the RSC flight
+   * payload. W4-C (SEC-003) and W4-A independently measured the consequence — a
+   * `tenant` received `Housearch`, `239.171` and `F-002` in the response body
+   * of this route while the visible page showed a correct 403. Nine of eleven
+   * roles hold `dashboard:view` without `evidence:view`.
+   *
+   * The guard's own header predicted it: *"If this component is the only thing
+   * between a `tenant` and the finance ledger, the ledger is public — the user
+   * can disable JavaScript, or read the RSC payload."* It was the only thing.
+   *
+   * Refusing before the reads is what matters: an early return after fetching
+   * would still put the evidence in this function's scope and, worse, would
+   * invite a later edit to "just render the header" with the data already in
+   * hand. Nothing is fetched for a caller who may not see it.
+   */
+  const profile = await getUserProfile()
+  const mayView = profile.authenticated && hasPermission(profile.role, "evidence:view")
+  const mayExport = profile.authenticated && hasPermission(profile.role, "evidence:export")
+  const mayAnnotate = profile.authenticated && hasPermission(profile.role, "evidence:manage")
+
+  if (!mayView) {
+    // Rendered server-side rather than left to the client guard, so it holds
+    // with JavaScript disabled and so the payload carries the refusal instead
+    // of the evidence.
+    return (
+      <section className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-10 sm:px-6">
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("title")}</h1>
+        <p role="alert" data-testid="evidence-forbidden" className="max-w-prose text-sm text-muted-foreground">
+          {t("forbidden")}
+        </p>
+      </section>
+    )
+  }
 
   const [findingResult, listingsResult, allSaleResult, sourcesResult] =
     await Promise.all([
@@ -202,7 +245,11 @@ export default async function EvidencePage({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6">
+    // `<section>`, not `<main>`: `dashboard/layout.tsx` already renders
+    // `<main id="main">` and WCAG 2.2 allows exactly one `main` landmark per
+    // document. W4-A measured two here — a screen-reader user got two "main"
+    // regions and no way to tell which held the content.
+    <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-2xl font-semibold sm:text-3xl">
           {t("title")}
@@ -219,6 +266,33 @@ export default async function EvidencePage({
             className="mt-1 rounded-lg border border-quality-modelled/40 bg-quality-modelled/10 px-3 py-2 text-xs leading-relaxed text-quality-modelled"
           >
             {t("seedNotice")}
+          </p>
+        ) : null}
+
+        {/*
+          The export is a plain anchor to a route handler, not a button running
+          a client fetch: it works with JavaScript disabled, it is a URL a
+          reviewer can paste into a ticket, and the browser handles the download
+          without this page holding the file in memory. `download` is advisory —
+          `Content-Disposition` on the route is what actually decides.
+        */}
+        {mayExport ? (
+          <p className="mt-1">
+            <a
+              href={`/${locale}/dashboard/evidence/export`}
+              download
+              data-testid="evidence-export"
+              className={cn(
+                "inline-flex min-h-6 items-center gap-1.5 rounded-sm text-sm font-medium",
+                "text-primary underline underline-offset-4",
+                "transition-transform duration-150 ease-out active:scale-[0.97]",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              )}
+            >
+              <Download className="size-4 shrink-0" aria-hidden="true" />
+              {t("export.link")}
+            </a>
+            <span className="ml-2 text-xs text-muted-foreground">{t("export.note")}</span>
           </p>
         ) : null}
       </header>
@@ -238,6 +312,26 @@ export default async function EvidencePage({
           snapshotBasePath="/api/evidence/snapshot"
         />
       )}
-    </main>
+
+      {/*
+        `evidence:manage`, which only `admin` holds. The form is hidden from
+        everyone else and `annotateFinding` refuses them regardless — hiding a
+        control is a courtesy, the action refusing is the boundary.
+      */}
+      {mayAnnotate && finding !== null ? (
+        <AnnotationForm
+          findingId={finding.id}
+          labels={{
+            heading: t("annotation.heading"),
+            hint: t("annotation.hint"),
+            placeholder: t("annotation.placeholder"),
+            submit: t("annotation.submit"),
+            pending: t("annotation.pending"),
+            forbidden: t("annotation.forbidden"),
+            saved: t("annotation.saved"),
+          }}
+        />
+      ) : null}
+    </section>
   )
 }

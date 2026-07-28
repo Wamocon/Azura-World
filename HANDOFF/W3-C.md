@@ -1,8 +1,16 @@
 # HANDOFF — W3-C Inventory, evidence cockpit, leads, buyer pipeline
 
-STATUS: PARTIAL
-Completed: 2026-07-28
+STATUS: PARTIAL — **all four §9 gaps are CLOSED**; two deliverables remain unbuilt (§12.7)
+Completed: 2026-07-28 · gap closure on branch `feature/INTERNAL-107-w3c-gaps`
 Branch: `feature/INTERNAL-107-w3c-inventory` · Worktree: `D:\azura-w3c` · Commit: `cae2e9b`
+
+> **2026-07-28 — gap closure (§12).** The four open items this handoff shipped with are closed and
+> verified against a production build, along with three of the four the §11 addendum left open.
+> §12.1 states the one claim the fixture deliberately does not make.
+>
+> **`STATUS: COMPLETE` is blocked by §12.7**, and it is scope that was never started rather than a
+> gap in what was: `/dashboard/listings` and the leads/pipeline deliverables have no route. The
+> contract they waited on has since landed, so they are buildable now — just not built.
 
 **What is done:** the F-002 conflict view — the surface the W3-C brief names as the one to build
 first, and the one acceptance criteria 2 and 3 rest on. It is complete, rendered, measured in a
@@ -453,3 +461,196 @@ namespace was touched, reformatted or re-sorted. Pagination strings reuse the ex
   access-profile flags. W4-A still owns closing this.
 - `[GAP]` **Turkish and Russian unreviewed visually.** The new keys are real translations, not
   stubs, but only `de` was rendered.
+
+---
+
+# §12 — ADDENDUM (W3C-3, 2026-07-28): the four gaps are closed
+
+Branch `feature/INTERNAL-107-w3c-gaps`, from `origin/main` @ `1de48e4`.
+
+This closes the four items in §9 **and** three of the four the W3C-2 addendum left open. It is the
+first time this module has been verified from a production build.
+
+## 12.1 The fixture all four were waiting on
+
+Every gap needed the same thing and none had it: **this page, served from a production build, with
+a session.** Under `next dev` it was verified a hundred assertions deep; under `next start` it had
+never rendered at all, because it 307s to `/de/login` without one.
+
+That is three independent blockers, not a forgotten step:
+
+1. **`next start` cannot carry a QA session.** `accessProfilesEnabledForEnvironment()` returns
+   `false` for any process where `NODE_ENV` is `production`, *before it reads a flag*, and
+   `next start` sets exactly that. W4-C verified the consequence 39/39 at the HTTP boundary.
+2. **No data plane.** `docker info` exits 1 and there is no `psql`, so `supabase start` cannot run
+   and no real session can be seeded.
+3. **No login form.** `/[locale]/login` is a 404 — the directory holds `actions.ts` and no
+   `page.tsx` (W4-B §4.1).
+
+W4-A solved it in `e2e/production/evidence-render.spec.ts` by booting Next **programmatically with
+`dev: false`** — the same `.next` artifact `next start` serves, in a process where the access
+profile is reachable. `scripts/evidence-production-verify.mjs` uses that fixture for all four gaps.
+
+**What this proves:** the production *compilation* renders and gates these pages — the half that
+was actually in doubt, since the module had only ever run under the dev compiler.
+**What it does not prove:** this is not a production *runtime*. It says nothing about production
+environment variables, production nonce generation, or a real session. Those need the login page
+and a database, and they stay open in §12.7.
+
+## 12.2 Gap 1 — the cockpit renders in a production build · CLOSED
+
+```
+manager receives 200 · not redirected to login · F-002 renders
+112.000 · 185.000 · 220.000 · 239.171 all present
+the USD figure is not converted
+exactly one <main> landmark (was two)
+the seed notice is shown, so seed data is not presented as live
+```
+
+The `<main>` count is a defect W4-A measured and this closure fixes. `dashboard/layout.tsx` already
+renders `<main id="main">` and this page rendered a second one; WCAG 2.2 allows exactly one `main`
+landmark per document, so a screen-reader user got two "main" regions and no way to tell which held
+the content. It is a `<section>` now.
+
+## 12.3 Gap 2 — CSV export, carrying provenance · CLOSED
+
+`GET /[locale]/dashboard/evidence/export`, gated on `evidence:export` (admin, manager).
+
+The requirement was the whole point: *"an export that strips sources recreates the exact problem
+this system exists to solve."* So provenance is **structural**, not conventional.
+`PROVENANCE_COLUMNS` names `source_url`, `source_publisher`, `source_fetched_at` and
+`snapshot_hash`, and `assertProvenanceColumns()` runs at serialisation — trimming the export to
+"just the prices" throws rather than ships.
+
+```
+21 rows · 21/21 carry a source URL
+provenance columns present: source_url, source_publisher, source_fetched_at, snapshot_hash
+price_amount and price_currency are adjacent, separate columns
+no converted-currency column · no total or average row
+both currencies survive unconverted: USD, EUR
+filename: azura-evidence-F-002-LOCAL-SEED-2026-07-28.csv
+tenant is refused: 403
+```
+
+Five decisions worth recording:
+
+- **No total, no average, no midpoint.** F-002 is deliberately unresolved and `qa:evidence` fails
+  the build if anyone sets `resolvedTo`. A spreadsheet shipping a SUM row invents the number the
+  product refuses to state.
+- **No converted currency.** Amount and currency are adjacent columns; there is no third "price in
+  EUR". No source publishes a rate or a rate date (CONVENTIONS §5).
+- **The seed says so in the filename.** A CSV cannot hold a banner, and a silent seed export is the
+  "seed presented as live" failure the honesty audit calls a HIGH. `LOCAL-SEED` goes in the
+  filename, where it survives being forwarded, plus `X-Azura-Data-Source` on the response.
+- **Formula injection is neutralised.** A cell beginning `=`, `+`, `-` or `@` executes when Excel
+  or Sheets opens the file, and this dataset carries verbatim publisher notes — free text this
+  project did not write. Those cells are prefixed with `'`. The value is otherwise unchanged:
+  truncating a parser's caveat to make it safe would be editing evidence.
+- **An empty cell where a snapshot hash is unknown**, never a fabricated one. §8.4 records that
+  `PortalListing` carries no `snapshotHash`; an empty cell says that honestly.
+
+This also closes the W3C-2 addendum's *"No CSV export"* gap. Its requirement was the `Herkunft`
+column; the equivalent here is the four provenance columns, because this export is observations
+rather than units.
+
+## 12.4 Gap 3 — the permission matrix · CLOSED, and it fixes SEC-003
+
+```
+manager  200 · reads · offered the export · NOT offered the annotation form
+admin    200 · reads · offered the annotation form
+tenant   refused server-side; no Housearch, 239.171, 112.000, Haspo or Seaside in the response
+accountant · staff · owner · guest · service_provider · child_owner — all clean
+```
+
+**The refusal now happens before a single repository call.** W4-C (SEC-003) and W4-A independently
+measured a `tenant` receiving `Housearch`, `239.171` and `F-002` in this route's response body
+while the visible page showed a correct 403: `DashboardRouteGuard` is a client component, and by
+the time it decides, this Server Component has already rendered into the RSC flight payload. Nine
+of eleven roles hold `dashboard:view` without `evidence:view`.
+
+The guard's own header predicted it — *"if this component is the only thing between a `tenant` and
+the finance ledger, the ledger is public"* — and it was the only thing. It is not now.
+
+**Annotation refuses to fake persistence.** There is no `finding_annotations` table and no
+repository write path, so an `admin` reaches the write path and is told the store is missing. A 2xx
+there would be the fake-write-success the honesty audit calls a HIGH. What is proven today is the
+**authorisation** half, completely: admin reaches it, manager is refused before the store is
+consulted, and the two answers are observably different. When W1-A adds the table, the only edit is
+the 503 branch.
+
+This also closes the W3C-2 addendum's *"per-role render test"* gap: nine roles were rendered, not
+asserted statically.
+
+## 12.5 Gap 4 — the modelled vs portal_listing split · CLOSED
+
+```
+/dashboard/units renders 200 from the production build
+25 · 631 · 656 all stated
+26 rows carry data-quality="modelled" · 26 carry data-quality="portal_listing"
+two distinct marks, not one badge for everything
+```
+
+W3C-2 built the surface and verified it under `next dev`; this re-verifies it from the built
+artifact, which is what its own *"never served under `next start`"* gap asked for.
+
+## 12.6 Gates, all run on this branch
+
+| Gate | Result |
+|---|---|
+| `node scripts/evidence-production-verify.mjs` | **48 pass · 0 fail** · exit 0 |
+| `node scripts/evidence-review.mjs` | **100 pass · 0 fail** · exit 0 — the original suite, still green |
+| `node scripts/csp-probe.mjs` | **30 pass · 0 fail** · exit 0 |
+| `node scripts/check-i18n.mjs` | **PASS** — 841 keys × 4 locales, identical key sets |
+| `node scripts/verify-evidence.mjs` | **PASS** — 25 portal_listing + 631 modelled = 656, no violations |
+| `pnpm --dir apps/web typecheck` | exit 0 |
+| `pnpm --dir apps/web lint` | exit 0 |
+| `pnpm --dir apps/web build` | exit 0 · `ƒ /[locale]/dashboard/evidence/export` |
+
+One process note: `csp-probe` first reported `25 pass · 5 fail` with *"is NODE_ENV=production? this
+gate is meaningless in dev"*. A stale dev server from another worktree was holding the port. Killed
+it, re-ran, `30 pass · 0 fail`. Recorded because the failure looked like a real CSP regression and
+was not.
+
+## 12.7 What still blocks `STATUS: COMPLETE`
+
+Two things, both scope never started rather than a defect in what exists.
+
+1. **Deliverables 3 and 4 have no route.** `tasks/W3-C` lists four: the evidence cockpit (built),
+   units (built), **portal listings `/dashboard/listings`**, and **leads + buyer pipeline**.
+   Neither of the last two has a `page.tsx`; `dashboard-routing.ts` marks both `pending` and W4-A's
+   matrix records that they answer 404 for every role. **The blocker they were waiting on is
+   gone** — `HANDOFF/W3-B.md` is published and `components/dashboard/data-table.tsx` is on `main`.
+   They are buildable now; they are simply not built.
+2. **Annotation persists nothing.** §12.4. Needs `finding_annotations` from W1-A and a repository
+   write from W2-A.
+
+Still open from W3C-2 and not addressed here: **Turkish and Russian have not been visually
+reviewed.** The new keys are real translations, not stubs, and `check-i18n` passes — but only `de`
+was rendered.
+
+## 12.8 Three of my own assertions were wrong first
+
+Recorded because two would have been reported as application defects.
+
+1. *"an anonymous caller cannot export"* measured **200**. This fixture has no anonymous state —
+   access profiles are on, and a missing cookie resolves to `manager`, which holds
+   `evidence:export`. Asserting it here would have reported a hole that does not exist. The
+   genuinely anonymous case belongs to a real `next start`, where the proxy 307s every `/dashboard`
+   path before a handler runs; W4-A's `production` project covers it.
+2. *"tenant is refused server-side"* looked for this page's own `data-testid`. The refusal is real,
+   but what the browser shows is W3-B's guard panel in its place. Both are a refusal, and the check
+   now accepts either.
+3. *"the tenant's body does not contain F-002"* failed on the **i18n catalogue**, not on data:
+   next-intl ships the `dashboard.evidence` namespace to the client provider and one label reads
+   *"F-002: vier Herausgeber, vier Preise"*. That is the product's vocabulary, not its evidence.
+   The check now asserts on the values — publishers and figures — and the label observation is
+   filed below rather than mixed into a security assertion.
+
+## 12.9 Further requests
+
+| # | Owner | Request |
+|---|---|---|
+| 9 | **W1-A + W2-A** | `finding_annotations` and its repository write. The action, its permission check and its validation are in place; only the 503 branch changes. |
+| 10 | **W1-C / W3-B** | next-intl ships the whole `dashboard.evidence` namespace to the client provider, so a `tenant` who is correctly refused the evidence still receives labels like *"F-002: vier Herausgeber, vier Preise"*. Vocabulary, not data — but a role that may not see a finding arguably should not receive its headline either. Worth deciding rather than discovering. |
+| 11 | **W2-B** | `app/[locale]/dashboard/evidence/export/route.ts` is a route handler outside `app/api/site-management/**`, which is your tree. It is one screen's download gated by that screen's permission rather than a public API surface, so it lives with the screen — flagging the boundary call rather than burying it. |
+| 12 | **W4-D** | `node scripts/evidence-production-verify.mjs` is a new gate: 48 assertions, exit non-zero on any failure, and it needs only a production build. It is the only check in the repository that exercises this module from the built artifact. |
