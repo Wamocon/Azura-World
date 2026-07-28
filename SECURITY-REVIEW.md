@@ -439,9 +439,11 @@ connection string carrying inline credentials — returns **zero** hits, and `cr
 / `service_role` appear in no chunk at all.
 
 The edge is [`apps/web/hooks/use-live-snapshot.ts:36`](apps/web/hooks/use-live-snapshot.ts:36) —
-`import { isSupabaseConfigured } from "@/lib/env"` inside a `"use client"` module. Traced by walking
-the value-import graph from all 44 client entry points; a second path runs through
-`dashboard-topbar.tsx` → `login/actions.ts` → `lib/env.ts`.
+`import { isSupabaseConfigured } from "@/lib/env"` inside a `"use client"` module. Found by walking
+the value-import graph (`import type` excluded, since it is erased) from every client entry point;
+a second path runs `dashboard-topbar.tsx` → `login/actions.ts` → `lib/env.ts`. The walk seeded from
+the 44 modules whose `"use client"` directive is in the first 200 bytes, out of 49 in the tree, so
+it is a lower bound on the paths that exist — not an exhaustive list.
 
 **Impact.** Reconnaissance, not compromise: it publishes the complete inventory of server
 integrations and the exact variable names to target. The structural problem is larger than the
