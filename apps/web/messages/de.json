@@ -642,15 +642,110 @@
       "lead": "Dieselbe Wohnung auf mehreren Portalen, mit Preis, Datum und Abweichung.",
       "count": "{count, plural, one {# Inserat} other {# Inserate}}",
       "empty": "Keine Inserate erfasst.",
+      "seedNotice": "Demodaten: Es wird ein Ausschnitt des erfassten Bestands gezeigt, keine Live-Daten.",
+      "openListing": "Inserat öffnen",
+      "openSource": "Quelle öffnen",
       "columns": {
         "portal": "Portal",
         "title": "Titel",
         "price": "Preis",
         "currency": "Währung",
         "observedAt": "Erhoben",
-        "status": "Status"
+        "status": "Status",
+        "layout": "Grundriss",
+        "area": "Fläche",
+        "kind": "Art",
+        "source": "Quelle"
       },
-      "staleNotice": "Dieses Inserat wurde seit {days} Tagen nicht bestätigt."
+      "staleNotice": "Dieses Inserat wurde seit {days} Tagen nicht bestätigt.",
+      "overview": {
+        "heading": "Was erfasst wurde",
+        "listings": "Inserate",
+        "publishers": "Portale",
+        "currencies": "Währungen",
+        "stale": "Veraltet",
+        "caveat": "Gezählt wird, was diese Erhebung gefunden hat. Das sagt nichts darüber aus, wie viele Wohnungen tatsächlich angeboten werden.",
+        "withoutPrice": "{count} Inserate nennen keinen Preis. Sie werden gezählt, nie als 0 gerechnet."
+      },
+      "compare": {
+        "heading": "Vier Portale, vier Preise",
+        "lead": "Derselbe Grundriss bei jedem Portal, das ihn anbietet. Preise so, wie sie dort stehen. Nichts wird umgerechnet.",
+        "layoutFilterLabel": "Grundriss wählen",
+        "caption": "Preise je Portal, getrennt nach Währung",
+        "countHeader": "Inserate",
+        "notComparable": "nicht vergleichbar, keine Umrechnung",
+        "spread": "Spanne {ratio}-fach (nur {currency})",
+        "singlePrice": "nur ein Preis",
+        "listingCount": "{count} Inserate",
+        "upTo": "bis",
+        "empty": "Kein Portal nennt einen Verkaufspreis für {layout}.",
+        "unstatedHeading": "Portale ohne Grundrissangabe",
+        "unstatedLead": "Diese Portale nennen einen Einstiegspreis, ohne den Grundriss zu benennen. Sie bleiben getrennt, damit ihr Preis nicht einem Grundriss zugerechnet wird.",
+        "findingNote": "Befund F-002 nennt eine Spanne von 2,1-fach über vier Portale. Diese Zahl vergleicht einen Euro-Preis mit einem Dollar-Preis. Wir rechnen nicht um, deshalb steht oben je Währung eine eigene Spanne."
+      },
+      "claims": {
+        "heading": "Was sagt welches Portal über das Projekt?",
+        "lead": "Preise sind das eine. Hier steht, was jedes Portal über den Bau selbst behauptet.",
+        "blocks": "Blöcke",
+        "units": "Wohnungen",
+        "buildStatus": "Baustatus",
+        "notStated": "Keine Angabe",
+        "dissenting": "Abweichend",
+        "caption": "Angaben der Portale zum Projekt, je Portal eine Zeile",
+        "empty": "Zu diesen Angaben liegt noch keine Quelle vor.",
+        "harvestGap": "Die Erhebung hat die Projektangaben je Inserat nicht mitgeschrieben. Alle 47 Zeilen sind dort leer. Die Tabelle oben stammt deshalb aus dem Quellenverzeichnis, nicht aus den Inseraten."
+      },
+      "buildStatus": {
+        "completed": "Fertiggestellt",
+        "underConstruction": "Im Bau",
+        "planned": "Geplant"
+      },
+      "tier": {
+        "official": "Offizielle Seite",
+        "developer": "Bauträger",
+        "hotel": "Hotelbetreiber",
+        "portal": "Immobilienportal",
+        "review": "Bewertungsportal",
+        "press": "Presse"
+      },
+      "kind": {
+        "sale": "Verkauf",
+        "rent": "Miete",
+        "unknown": "Nicht angegeben"
+      },
+      "unstated": {
+        "layout": "Kein Grundriss",
+        "area": "Keine Fläche",
+        "price": "Keine Angabe"
+      },
+      "stale": {
+        "badge": "Veraltet",
+        "reason": "Das Portal nennt das Projekt noch im Bau, obwohl es 2024 fertig wurde."
+      },
+      "group": {
+        "caption": "Alle Inserate von {publisher}",
+        "note": "Anmerkung",
+        "listingCount": "{count} Inserate",
+        "pageCount": "{count} Seiten",
+        "staleCount": "{count} veraltet",
+        "rentCount": "{count} zur Miete",
+        "lastFetched": "Zuletzt erhoben"
+      },
+      "register": {
+        "heading": "Alle Inserate nach Portal",
+        "lead": "Jede erfasste Zeile, gruppiert nach dem Portal, das sie veröffentlicht hat.",
+        "filterLabel": "Inserate filtern",
+        "filterAll": "Alle",
+        "filterStale": "Nur veraltete",
+        "showing": "{shown} von {total} Inseraten",
+        "clearFilters": "Filter zurücksetzen",
+        "emptyCombination": "Diese Kombination von Filtern trifft auf kein Inserat zu.",
+        "emptyBy": {
+          "publisher": "Der gewählte Portal-Filter schließt alle Inserate aus.",
+          "priceKind": "Der Filter für Verkauf oder Miete schließt alle Inserate aus.",
+          "staleOnly": "Kein Inserat im aktuellen Filter ist als veraltet markiert."
+        }
+      }
     },
     "leads": {
       "title": "Anfragen",

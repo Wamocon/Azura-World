@@ -642,15 +642,110 @@
       "lead": "The same unit across several portals, with price, date and variance.",
       "count": "{count, plural, one {# listing} other {# listings}}",
       "empty": "No listings on record.",
+      "seedNotice": "Demo data: a section of the collected records is shown, not live data.",
+      "openListing": "Open listing",
+      "openSource": "Open source",
       "columns": {
         "portal": "Portal",
         "title": "Title",
         "price": "Price",
         "currency": "Currency",
         "observedAt": "Observed",
-        "status": "Status"
+        "status": "Status",
+        "layout": "Layout",
+        "area": "Size",
+        "kind": "Type",
+        "source": "Source"
       },
-      "staleNotice": "This listing has not been confirmed for {days} days."
+      "staleNotice": "This listing has not been confirmed for {days} days.",
+      "overview": {
+        "heading": "What was collected",
+        "listings": "Listings",
+        "publishers": "Portals",
+        "currencies": "Currencies",
+        "stale": "Outdated",
+        "caveat": "These are counts of what this collection found. They say nothing about how many apartments are actually on the market.",
+        "withoutPrice": "{count} listings state no price. They are counted, never treated as 0."
+      },
+      "compare": {
+        "heading": "Four portals, four prices",
+        "lead": "The same layout at every portal that offers it. Prices exactly as published. Nothing is converted.",
+        "layoutFilterLabel": "Choose layout",
+        "caption": "Prices per portal, separated by currency",
+        "countHeader": "Listings",
+        "notComparable": "not comparable, no conversion",
+        "spread": "Spread {ratio}x ({currency} only)",
+        "singlePrice": "one price only",
+        "listingCount": "{count} listings",
+        "upTo": "up to",
+        "empty": "No portal states a sale price for {layout}.",
+        "unstatedHeading": "Portals stating no layout",
+        "unstatedLead": "These portals state an entry price without naming the layout. They stay separate so their price is not attributed to a layout.",
+        "findingNote": "Finding F-002 quotes a 2.1x spread across four portals. That number compares a euro price with a dollar price. We do not convert, so each currency above carries its own spread."
+      },
+      "claims": {
+        "heading": "What does each portal say about the project?",
+        "lead": "Prices are one thing. This is what each portal claims about the building itself.",
+        "blocks": "Blocks",
+        "units": "Apartments",
+        "buildStatus": "Build status",
+        "notStated": "Not stated",
+        "dissenting": "Differs",
+        "caption": "Portal statements about the project, one row per portal",
+        "empty": "No source is on record for these statements yet.",
+        "harvestGap": "The collection did not record the project figures per listing. All 47 rows are empty there. The table above therefore comes from the source register, not from the listings."
+      },
+      "buildStatus": {
+        "completed": "Completed",
+        "underConstruction": "Under construction",
+        "planned": "Planned"
+      },
+      "tier": {
+        "official": "Official site",
+        "developer": "Developer",
+        "hotel": "Hotel operator",
+        "portal": "Property portal",
+        "review": "Review platform",
+        "press": "Press"
+      },
+      "kind": {
+        "sale": "Sale",
+        "rent": "Rent",
+        "unknown": "Not stated"
+      },
+      "unstated": {
+        "layout": "No layout",
+        "area": "No size",
+        "price": "Not stated"
+      },
+      "stale": {
+        "badge": "Outdated",
+        "reason": "The portal still calls the project under construction, though it finished in 2024."
+      },
+      "group": {
+        "caption": "All listings from {publisher}",
+        "note": "Note",
+        "listingCount": "{count} listings",
+        "pageCount": "{count} pages",
+        "staleCount": "{count} outdated",
+        "rentCount": "{count} to rent",
+        "lastFetched": "Last collected"
+      },
+      "register": {
+        "heading": "All listings by portal",
+        "lead": "Every collected row, grouped by the portal that published it.",
+        "filterLabel": "Filter listings",
+        "filterAll": "All",
+        "filterStale": "Outdated only",
+        "showing": "{shown} of {total} listings",
+        "clearFilters": "Clear filters",
+        "emptyCombination": "This combination of filters matches no listing.",
+        "emptyBy": {
+          "publisher": "The selected portal filter excludes every listing.",
+          "priceKind": "The sale or rent filter excludes every listing.",
+          "staleOnly": "No listing in the current filter is marked outdated."
+        }
+      }
     },
     "leads": {
       "title": "Leads",

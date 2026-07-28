@@ -164,7 +164,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "listings:view",
     group: "inventory",
     resource: "listings",
-    pending: true,
   },
   {
     href: "/dashboard/hotel",
