@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-07-28T08:52:59.040Z",
+  "base": "http://127.0.0.1:3211",
+  "servedFrom": "next start (production build)",
+  "acs": [
+    {
+      "ac": "AC1",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "met": true
+    },
+    {
+      "ac": "AC2",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "met": true
+    },
+    {
+      "ac": "AC3",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "met": true
+    },
+    {
+      "ac": "AC4",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "met": true
+    }
+  ],
+  "assertions": [
+    {
+      "ac": "AC1",
+      "id": "AC1.1",
+      "description": "`/` redirects to the default locale `/de`",
+      "ok": true,
+      "evidence": "HTTP 307 → /de"
+    },
+    {
+      "ac": "AC1",
+      "id": "AC1.2",
+      "description": "landing route serves 200 from a production server",
+      "ok": true,
+      "evidence": "HTTP 200, 303193 bytes"
+    },
+    {
+      "ac": "AC1",
+      "id": "AC1.3",
+      "description": "landing HTML is a real document, not an error shell",
+      "ok": true,
+      "evidence": "303193 bytes, no __next_error__ marker"
+    },
+    {
+      "ac": "AC1",
+      "id": "AC1.4",
+      "description": "public hotel route serves 200",
+      "ok": true,
+      "evidence": "HTTP 200, 187492 bytes"
+    },
+    {
+      "ac": "AC1",
+      "id": "AC1.5",
+      "description": "protected route redirects to login rather than leaking (route guard live in prod)",
+      "ok": true,
+      "evidence": "HTTP 307 → /de/login?next=%2Fdashboard"
+    },
+    {
+      "ac": "AC1",
+      "id": "AC1.6",
+      "description": "unknown locale 404s rather than silently serving German",
+      "ok": true,
+      "evidence": "HTTP 404"
+    },
+    {
+      "ac": "AC2",
+      "id": "AC2.1",
+      "description": "landing page renders outbound source links",
+      "ok": true,
+      "evidence": "203 https:// occurrences in server HTML"
+    },
+    {
+      "ac": "AC2",
+      "id": "AC2.2",
+      "description": "official/developer sources (tier 1-2) are cited on the landing page",
+      "ok": true,
+      "evidence": "azuraworld.com, cebecigroup"
+    },
+    {
+      "ac": "AC2",
+      "id": "AC2.3",
+      "description": "provenance vocabulary is rendered (gaps are shown, not hidden)",
+      "ok": true,
+      "evidence": "Nicht belegt, Quellen present"
+    },
+    {
+      "ac": "AC2",
+      "id": "AC2.4",
+      "description": "evidence invariants hold across the dataset (`verify-evidence.mjs`)",
+      "ok": true,
+      "evidence": "exit 0 · no violations"
+    },
+    {
+      "ac": "AC3",
+      "id": "AC3.1",
+      "description": "property portals are cited on the landing page",
+      "ok": true,
+      "evidence": "5/6: terrarealestate, housearch, seaside-alanya, alanya-home, hasporealty"
+    },
+    {
+      "ac": "AC3",
+      "id": "AC3.2",
+      "description": "portal listings are distinguished from modelled records in the dataset",
+      "ok": true,
+      "evidence": "25 portal_listing + 631 modelled = 656"
+    },
+    {
+      "ac": "AC4",
+      "id": "AC4.1",
+      "description": "review and booking platforms are cited on the public hotel page",
+      "ok": true,
+      "evidence": "4/4: tripadvisor×58, booking.com×12, agoda×4, onthebeach×9"
+    },
+    {
+      "ac": "AC4",
+      "id": "AC4.2",
+      "description": "hotel page links out to the booking/review sources",
+      "ok": true,
+      "evidence": "148 https:// occurrences"
+    },
+    {
+      "ac": "AC4",
+      "id": "AC4.3",
+      "description": "Tripadvisor is cited repeatedly, not once in passing",
+      "ok": true,
+      "evidence": "58 occurrences"
+    }
+  ],
+  "totals": {
+    "assertions": 15,
+    "passed": 15,
+    "failed": 0
+  }
+}

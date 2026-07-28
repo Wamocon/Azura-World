@@ -1,0 +1,25 @@
+
+Traceability probe — production server at http://127.0.0.1:3211
+────────────────────────────────────────────────────────────────────────────────────────────────────────
+PASS  AC1.1   `/` redirects to the default locale `/de`                        HTTP 307 → /de
+PASS  AC1.2   landing route serves 200 from a production server                HTTP 200, 303193 bytes
+PASS  AC1.3   landing HTML is a real document, not an error shell              303193 bytes, no __next_error_
+PASS  AC1.4   public hotel route serves 200                                    HTTP 200, 187492 bytes
+PASS  AC1.5   protected route redirects to login rather than leaking (route    HTTP 307 → /de/login?next=%2Fd
+PASS  AC1.6   unknown locale 404s rather than silently serving German          HTTP 404
+PASS  AC2.1   landing page renders outbound source links                       203 https:// occurrences in se
+PASS  AC2.2   official/developer sources (tier 1-2) are cited on the landing   azuraworld.com, cebecigroup
+PASS  AC2.3   provenance vocabulary is rendered (gaps are shown, not hidden)   Nicht belegt, Quellen present
+PASS  AC2.4   evidence invariants hold across the dataset (`verify-evidence.   exit 0 · no violations
+PASS  AC3.1   property portals are cited on the landing page                   5/6: terrarealestate, housearc
+PASS  AC3.2   portal listings are distinguished from modelled records in the   25 portal_listing + 631 modell
+PASS  AC4.1   review and booking platforms are cited on the public hotel pag   4/4: tripadvisor×58, booking.c
+PASS  AC4.2   hotel page links out to the booking/review sources               148 https:// occurrences
+PASS  AC4.3   Tripadvisor is cited repeatedly, not once in passing             58 occurrences
+────────────────────────────────────────────────────────────────────────────────────────────────────────
+AC1: MET  (6/6 assertions passed)
+AC2: MET  (4/4 assertions passed)
+AC3: MET  (2/2 assertions passed)
+AC4: MET  (3/3 assertions passed)
+
+15 pass · 0 fail

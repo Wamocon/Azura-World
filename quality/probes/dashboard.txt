@@ -1,0 +1,24 @@
+
+> azura-world@0.1.0 qa:dashboard D:\azura-w4d
+> node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/dashboard-probe.mts
+
+(node:38956) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+── Config integrity
+
+── The full matrix — 11 roles × every route
+   matrix cells crossed: 231 (11 roles × 21 routes)
+
+── Unauthenticated is distinguished from forbidden
+
+── Every role lands somewhere coherent
+   nav size by role: admin=21 manager=21 accountant=12 staff=13 owner=13 tenant=12 guest=8 service_provider=8 child_owner=9 child_tenant=9 child_guest=7
+
+── Additive authority holds in the navigation too
+
+── Path resolution
+
+── admin sees everything; guest writes nothing
+
+647 pass · 0 fail

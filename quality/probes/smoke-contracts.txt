@@ -1,0 +1,59 @@
+
+> azura-world@0.1.0 smoke:contracts D:\azura-w4d
+> node --experimental-strip-types scripts/smoke-contracts.mts
+
+(node:2668) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Azura World — contract invariant smoke test
+Module under test: apps/web/lib/contracts.ts  (CONTRACTS.md §1, six invariants)
+
+0. Contract version
+  PASS  CONTRACT_VERSION is 1 — = 1
+
+1. Rejection cases — assertFactInvariants MUST throw
+  PASS  [inv 1] gap carrying a non-null value (an invented number) — FactInvariantError(invariant=1) cites "project.totalUnits"
+  PASS  [inv 1] gap with an empty note (an unexplained absence) — FactInvariantError(invariant=1) cites "project.plotAreaSqm"
+  PASS  [inv 2] conflicted with no conflictsWith — FactInvariantError(invariant=2) cites "project.residenceBlockCount"
+  PASS  [inv 2] conflicted with an empty conflictsWith — FactInvariantError(invariant=2) cites "project.buildingCount"
+  PASS  [inv 3] confirmed by two URLs on the SAME host (two pages is not two sources) — FactInvariantError(invariant=3) cites "hotel.roomCount"
+  PASS  [inv 3] confirmed by a single source — FactInvariantError(invariant=3) cites "project.floorsPerBuilding"
+  PASS  [inv 4] inferred with no note explaining the derivation — FactInvariantError(invariant=4) cites "project.buildingFootprintSqm"
+  PASS  [inv 5] zero sources with confidence other than gap — FactInvariantError(invariant=5) cites "units[0].askingPrice"
+  PASS  [inv 6] snapshotHash that does not resolve (a citation you cannot re-open) — FactInvariantError(invariant=6) cites "hotel.stars"
+  PASS  [inv 6] snapshotHash that is not 64 hex characters — FactInvariantError(invariant=6) cites "hotel.floors"
+
+2. Acceptance cases — assertFactInvariants MUST NOT throw
+  PASS  well-formed official fact, one tier-1 source — accepted "project.developer" (confidence: official)
+  PASS  well-formed confirmed fact, two DISTINCT hosts — accepted "project.totalUnits" (confidence: confirmed)
+  PASS  well-formed gap — null value with a note — accepted "project.completionDate" (confidence: gap)
+  PASS  well-formed conflicted fact with conflictsWith populated — accepted "project.residenceBlockCount" (confidence: conflicted)
+  PASS  well-formed inferred fact with a note explaining the computation — accepted "project.buildingFootprintSqm" (confidence: inferred)
+  PASS  single_source whose snapshotHash DOES resolve (inv 6, passing direction) — accepted "hotel.stars" (confidence: single_source)
+
+3. displayValue — a gap never leaks a value
+  PASS  displayValue(well-formed gap) is null — = null
+  PASS  displayValue(malformed gap holding 656) is still null — = null
+  PASS  displayValue(official) returns the value — = "Cebeci Group"
+
+4. tierWins — lower tier wins, tie-break is documented
+  PASS  tier 4 vs tier 1 → tier 1 — = Azura World (tier 1)
+  PASS  tier 1 vs tier 4 → tier 1 (argument order irrelevant) — = Azura World (tier 1)
+  PASS  tier 2 vs tier 4 → tier 2 — = Cebeci Group (tier 2)
+  PASS  equal tier, TERRA_FRESHER newer → TERRA_FRESHER — = Terra (tier 4)
+  PASS  equal tier, reversed → still TERRA_FRESHER (recency, not position) — = Terra (tier 4)
+  PASS  equal tier and equal fetchedAt → first argument wins — = Seaside Alanya (tier 4)
+  PASS  equal tier and equal fetchedAt, reversed → first argument wins — = Seaside Alanya (tier 4)
+  PASS  tie-break is deterministic across calls — = Seaside Alanya (tier 4)
+
+5. isSourcedFact — guards the boundary
+  PASS  isSourcedFact(well-formed fact) — = true
+  PASS  isSourcedFact(null) — = false
+  PASS  isSourcedFact(bare number) — = false
+  PASS  isSourcedFact({ value } only — no sources) — = false
+  PASS  isSourcedFact({ confidence: "maybe" }) — not a Confidence — = false
+
+Summary  33 pass · 0 fail
+
+All six invariants reject; well-formed facts are accepted.
+

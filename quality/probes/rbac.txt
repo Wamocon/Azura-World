@@ -1,0 +1,189 @@
+(node:26800) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[DoD 1] Role list — CONTRACTS §3, exact order
+  PASS  contracts.roles length — = 11
+  PASS  contracts.roles is CONTRACTS §3 verbatim, in order — admin, manager, accountant, staff, owner, tenant, guest, service_provider, child_owner, child_tenant, child_guest
+  PASS  permissionMatrix keys match the role list, in order — admin, manager, accountant, staff, owner, tenant, guest, service_provider, child_owner, child_tenant, child_guest
+  PASS  every role has a non-empty permission set — admin=168 manager=81 accountant=32 staff=22 owner=20 tenant=16 guest=8 service_provider=12 child_owner=10 child_tenant=10 child_guest=7
+  PASS  roleScope is total over all 11 roles
+
+[DoD 2] roleLevel — CONTRACTS §3 values, strictly ordered
+  PASS  roleLevel.admin — = 90
+  PASS  roleLevel.manager — = 70
+  PASS  roleLevel.accountant — = 60
+  PASS  roleLevel.staff — = 40
+  PASS  roleLevel.owner — = 20
+  PASS  roleLevel.tenant — = 10
+  PASS  roleLevel.guest — = 5
+  PASS  roleLevel.service_provider — = 30
+  PASS  roleLevel.child_owner — = 15
+  PASS  roleLevel.child_tenant — = 8
+  PASS  roleLevel.child_guest — = 3
+  PASS  all eleven levels are distinct
+  PASS  levels are strictly ordered admin > … > child_guest — admin:90 > manager:70 > accountant:60 > staff:40 > service_provider:30 > owner:20 > child_owner:15 > tenant:10 > child_tenant:8 > guest:5 > child_guest:3
+
+[DoD 3] Additive authority — every added role ⊆ its parent
+  PASS  verifyAdditiveAuthority() reports no violations — 0 violations
+  PASS  guest ⊆ tenant — 8 ⊆ 16 permissions
+  PASS  roleLevel.guest (5) < roleLevel.tenant (10)
+  PASS  service_provider ⊆ staff — 12 ⊆ 22 permissions
+  PASS  roleLevel.service_provider (30) < roleLevel.staff (40)
+  PASS  child_owner ⊆ owner — 10 ⊆ 20 permissions
+  PASS  roleLevel.child_owner (15) < roleLevel.owner (20)
+  PASS  child_tenant ⊆ tenant — 10 ⊆ 16 permissions
+  PASS  roleLevel.child_tenant (8) < roleLevel.tenant (10)
+  PASS  child_guest ⊆ guest — 7 ⊆ 8 permissions
+  PASS  roleLevel.child_guest (3) < roleLevel.guest (5)
+  PASS  all five added roles have a declared parent — guest, service_provider, child_owner, child_tenant, child_guest
+  PASS  control: tenant ⊄ guest, so the subset test is not vacuous — tenant holds 8 permissions guest does not
+
+[DoD 4] admin holds everything; guest writes nothing
+  PASS  allPermissions length (21 resources × 8 actions) — = 168
+  PASS  admin holds every one of the 168 permissions — 168 held
+  PASS  guest holds no create/update/delete/manage/approve/assign anywhere — 8 permissions, all reads
+  PASS  isReadOnlyRole(guest)
+  PASS  isReadOnlyRole(child_guest)
+  PASS  control: isReadOnlyRole(manager) is false — so the read-only test is not vacuous
+
+[DoD 4b] evidence resource — CONTRACTS §3 gating
+  PASS  admin may evidence:manage
+  PASS  manager may evidence:view
+  PASS  manager may NOT evidence:manage
+  PASS  accountant may NOT evidence:view (level 60 < manager 70)
+  PASS  staff may NOT evidence:view (level 40 < manager 70)
+  PASS  owner may NOT evidence:view (level 20 < manager 70)
+  PASS  tenant may NOT evidence:view (level 10 < manager 70)
+  PASS  guest may NOT evidence:view (level 5 < manager 70)
+  PASS  service_provider may NOT evidence:view (level 30 < manager 70)
+  PASS  child_owner may NOT evidence:view (level 15 < manager 70)
+  PASS  child_tenant may NOT evidence:view (level 8 < manager 70)
+  PASS  child_guest may NOT evidence:view (level 3 < manager 70)
+  PASS  only admin holds evidence:manage
+  PASS  isManagerOrAbove agrees with the evidence:view holders
+
+[DoD 5] Malformed input fails closed
+  PASS  hasPermission("admin", "units:viwe") is false
+  PASS  hasPermission("admin", "units") is false
+  PASS  hasPermission("admin", ":view") is false
+  PASS  hasPermission("admin", "units:") is false
+  PASS  hasPermission("admin", "UNITS:VIEW") is false
+  PASS  hasPermission("admin", "units:view:extra") is false
+  PASS  hasPermission("admin", "") is false
+  PASS  hasPermission("admin", "__proto__:view") is false
+  PASS  hasPermission("admin", "toString:view") is false
+  PASS  control: hasPermission("admin", "units:view") is true — so the malformed-input test is not vacuous
+  PASS  isPermission rejects a typo
+  PASS  isPermission accepts a real permission
+  PASS  hasPermission("", "dashboard:view") is false
+  PASS  isValidRole("") is false
+  PASS  getAccessibleResources("") is empty
+  PASS  hasPermission("root", "dashboard:view") is false
+  PASS  isValidRole("root") is false
+  PASS  getAccessibleResources("root") is empty
+  PASS  hasPermission("Admin", "dashboard:view") is false
+  PASS  isValidRole("Admin") is false
+  PASS  getAccessibleResources("Admin") is empty
+  PASS  hasPermission("__proto__", "dashboard:view") is false
+  PASS  isValidRole("__proto__") is false
+  PASS  getAccessibleResources("__proto__") is empty
+  PASS  hasPermission("superuser", "dashboard:view") is false
+  PASS  isValidRole("superuser") is false
+  PASS  getAccessibleResources("superuser") is empty
+  PASS  hasAnyPermission is false for an empty list
+
+[DoD 6] Access profiles cannot reach production
+  PASS  production + ENABLE_ACCESS_PROFILES=true + Supabase ⟹ THROWS
+  PASS  production + all three flags + Supabase still configured ⟹ THROWS — claiming isolation while a data plane is configured is the misconfiguration
+  PASS  VERCEL_ENV=production (NODE_ENV unset) + flag ⟹ THROWS
+  PASS  AZURA_ENV=production + flag ⟹ THROWS
+  PASS  production + flag + SUPABASE_DB_URL only ⟹ THROWS — any single data-plane variable is enough
+  PASS  production + provably isolated (no data plane at all) ⟹ does NOT throw — the escape hatch downgrades the throw; it never enables the picker
+  PASS  production + no flag ⟹ does NOT throw
+  PASS  development + all three flags ⟹ does NOT throw
+
+[DoD 6b] The runtime gate is false in production, always
+  PASS  production + all three flags ⟹ accessProfilesEnabledForEnvironment() === false
+  PASS  production + no Supabase at all ⟹ still false — the unconfigured-Supabase clause must not open a hole in production
+  PASS  dev + Supabase configured + only two flags ⟹ false
+  PASS  dev + Supabase configured + all three flags ⟹ true
+  PASS  dev + Supabase unconfigured ⟹ true (the seed-fallback mode)
+
+[DoD 6c] The module-load guard fires in a real process
+  PASS  importing the module in NODE_ENV=production with the flag exits non-zero — exit status 1
+  PASS  the failure is an AccessProfileSafetyError — throw new AccessProfileSafetyError(
+  PASS  the error names the variable and never a value
+  PASS  control: the same import succeeds in development — exit status 0
+
+[DoD 7] Access profile — cookie → env → manager
+  PASS  no cookie, no env ⟹ manager — = "manager"
+  PASS  unknown cookie value ⟹ manager (no crash) — = "manager"
+  PASS  unknown cookie, env set ⟹ env value — = "accountant"
+  PASS  unknown cookie, unknown env ⟹ manager — = "manager"
+  PASS  valid cookie wins over env — = "staff"
+  PASS  empty-string cookie ⟹ manager — = "manager"
+  PASS  profile from unknown cookie: role — = "manager"
+  PASS  profile from unknown cookie: authenticated
+  PASS  profile from unknown cookie: source — = "access-profile"
+  PASS  profile from unknown cookie: degradedReason explains the substitution — access_profile_role cookie held an unrecognised value; resolved to "manager"
+  PASS  control: explicit cookie is honoured — = "owner"
+  PASS  control: explicit cookie sets no degradedReason — = null
+  PASS  every role is reachable through the cookie
+
+[DoD 8] Fail-closed profile resolution
+  PASS  no profiles row: authenticated
+  PASS  no profiles row: role — = "tenant"
+  PASS  no profiles row: role is NOT admin
+  PASS  no profiles row: degradedReason is set — no profiles row for this user; fell back to the minimal tenant role
+  PASS  no profiles row: cannot reach the evidence cockpit
+  PASS  no profiles row: cannot manage users
+  PASS  profiles read failed: role — = "tenant"
+  PASS  profiles read failed: degradedReason distinguishes it from a missing row — profiles row could not be read; fell back to the minimal tenant role
+  PASS  control: a valid admin row resolves to admin — = "admin"
+  PASS  control: a valid row sets no degradedReason — = null
+  PASS  control: admin may evidence:manage
+  PASS  unrecognised profiles.role ⟹ tenant — = "tenant"
+  PASS  suspended admin ⟹ not authenticated
+  PASS  suspended admin ⟹ guest role — = "guest"
+  PASS  anonymised admin ⟹ not authenticated
+  PASS  no user ⟹ ANONYMOUS_PROFILE
+
+[DoD 8b] The anonymous profile cannot write anything
+  PASS  anonymous is not authenticated
+  PASS  anonymous role — = "guest"
+  PASS  profileCan(anonymous, …) is false for every one of the 168 permissions
+  PASS  ANONYMOUS_PROFILE is frozen
+
+[extra] child_* roles cannot reach guardian-only surfaces
+  PASS  child_owner may NOT documents:view
+  PASS  child_owner may NOT finance:view
+  PASS  child_owner may NOT tickets:create
+  PASS  child_owner may NOT users:view
+  PASS  child_owner may NOT settings:view
+  PASS  child_owner may NOT evidence:view
+  PASS  child_owner may NOT vendor_invoices:view
+  PASS  child_owner is not read-only-empty (it has a coherent surface) — dashboard, units, activities, calendar, wallet, reports, communications, hotel, reviews
+  PASS  child_tenant may NOT documents:view
+  PASS  child_tenant may NOT finance:view
+  PASS  child_tenant may NOT tickets:create
+  PASS  child_tenant may NOT users:view
+  PASS  child_tenant may NOT settings:view
+  PASS  child_tenant may NOT evidence:view
+  PASS  child_tenant may NOT vendor_invoices:view
+  PASS  child_tenant is not read-only-empty (it has a coherent surface) — dashboard, units, activities, calendar, wallet, reports, communications, hotel, reviews
+  PASS  child_guest may NOT documents:view
+  PASS  child_guest may NOT finance:view
+  PASS  child_guest may NOT tickets:create
+  PASS  child_guest may NOT users:view
+  PASS  child_guest may NOT settings:view
+  PASS  child_guest may NOT evidence:view
+  PASS  child_guest may NOT vendor_invoices:view
+  PASS  child_guest is not read-only-empty (it has a coherent surface) — dashboard, units, activities, calendar, communications, hotel, reviews
+  PASS  control: owner MAY documents:view, so the child tests are not vacuous
+
+[extra] role list normalisation
+  PASS  normalizeRoleList drops unknown values and keeps the primary
+  PASS  normalizeRoleList sorts highest authority first
+  PASS  normalizeRoleList on a non-array returns just the primary
+
+OK  157 pass · 0 fail

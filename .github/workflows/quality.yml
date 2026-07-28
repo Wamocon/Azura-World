@@ -1,0 +1,146 @@
+# W4-D — the aggregate quality gate.
+#
+# Relationship to `ci.yml`: that workflow is the REQUIRED protection on `main`
+# (Secret scan · Typecheck·Lint·Build). This one is broader and is deliberately
+# NOT a required check yet, because 8 of its 19 blocking gates are NOT RUN — the
+# windows that own them (W4-A e2e, W4-B layout/a11y/perf, W4-C security probe,
+# W2-B OpenAPI) were never started. Making it required today would either block
+# every PR or force someone to weaken it, and a gate that gets weakened to go
+# green stops being a gate.
+#
+# Promote it to required once `scripts/quality-gate.mjs --full` exits 0 on
+# `main`. Until then it runs for visibility and the run log is the evidence.
+#
+# Exit codes from scripts/quality-gate.mjs:
+#   0 = every blocking gate passed        1 = a blocking gate FAILED
+#   2 = no failures but a gate NOT RUN — cannot certify
+name: Quality gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    name: Gates 1-8 (fast)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # `--fast` is gates 1-8. It does NOT include pgTAP, e2e, layout, a11y,
+      # perf, the security probe or qa:csp — those need Docker, a browser or a
+      # long build and belong to the full run below.
+      #
+      # `continue-on-error` is on because gate 3 (Format) currently fails with
+      # 174 unformatted files and gate 7 (OpenAPI) is NOT RUN. Removing it is
+      # the last step of turning this into a required check, and the step
+      # summary below always carries the real numbers regardless.
+      - name: Quality gate (fast)
+        id: gate
+        continue-on-error: true
+        run: |
+          node scripts/quality-gate.mjs --fast --out=quality/gate-fast.json
+          echo "gate_exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Summarise
+        if: always()
+        run: |
+          node -e '
+            const g = require("./quality/gate-fast.json");
+            const rows = g.gates.map(x =>
+              `| ${x.n} | ${x.name} | **${x.state}** | ${x.exitCode ?? "-"} | ${(x.metric ?? x.reason ?? "").replace(/\|/g, "\\|")} |`
+            ).join("\n");
+            console.log(`### Quality gate — ${g.mode}\n\n${g.verdict}\n\n| # | Gate | State | Exit | Evidence |\n|---|---|---|---|---|\n${rows}\n`);
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-gate-fast
+          path: quality/gate-fast.json
+
+  full:
+    name: Full gate (19 + CSP)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # qa:csp and the traceability probe both drive Chromium.
+      - name: Install Chromium for Playwright
+        run: pnpm --dir apps/web exec playwright install --with-deps chromium
+
+      - name: Quality gate (full)
+        id: gate
+        continue-on-error: true
+        run: |
+          node scripts/quality-gate.mjs --out=quality/gate.json
+          echo "gate_exit=$?" >> "$GITHUB_OUTPUT"
+
+      # Traceability is separate from the gate on purpose: it answers "is the
+      # ticket closeable", not "is the tree healthy", and it needs a production
+      # server of its own.
+      - name: Acceptance-criteria traceability
+        continue-on-error: true
+        run: |
+          pnpm --dir apps/web build
+          node scripts/traceability.mjs --out=quality/traceability.json
+
+      - name: Summarise
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const g = require("./quality/gate.json");
+            const rows = g.gates.map(x =>
+              `| ${x.n} | ${x.name} | **${x.state}** | ${x.exitCode ?? "-"} | ${(x.metric ?? x.reason ?? "").replace(/\|/g, "\\|")} |`
+            ).join("\n");
+            let out = `### Quality gate — ${g.mode}\n\n${g.verdict}\n\nblocking: ${g.totals.blockingPass} PASS · ${g.totals.blockingFail} FAIL · ${g.totals.blockingNotRun} NOT RUN\n\n| # | Gate | State | Exit | Evidence |\n|---|---|---|---|---|\n${rows}\n`;
+            if (fs.existsSync("quality/traceability.json")) {
+              const t = require("./quality/traceability.json");
+              out += `\n### Acceptance criteria\n\n` + t.acs.map(a => `- **${a.ac}**: ${a.met ? "MET" : "NOT MET"} (${a.passed}/${a.total})`).join("\n") + "\n";
+            }
+            console.log(out);
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-gate-full
+          path: |
+            quality/gate.json
+            quality/traceability.json

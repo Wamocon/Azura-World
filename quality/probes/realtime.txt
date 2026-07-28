@@ -1,0 +1,115 @@
+(node:20196) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[DoD 1-4] Mode resolution — the badge must never overstate liveness
+  PASS  [1] realtime configured and subscribed ⟹ realtime — realtime (expected realtime)
+  PASS  [2] subscription errored ⟹ polling — polling (expected polling)
+  PASS  [2] subscription closed ⟹ polling — polling (expected polling)
+  PASS  [2] still subscribing ⟹ polling, NOT realtime — polling (expected polling)
+  PASS  [3] Supabase unconfigured ⟹ static — static (expected static)
+  PASS  [3] configured but the repository returned local-seed ⟹ static — static (expected static)
+  PASS  [4] offline outranks everything — offline (expected offline)
+  PASS  [4] offline outranks static — offline (expected offline)
+
+[DoD 3] static and offline must NOT poll — zero timers, zero requests
+  PASS  shouldPoll(static) is false
+  PASS  shouldPoll(offline) is false
+  PASS  shouldPoll(realtime) is false — realtime is pushed, not pulled
+  PASS  shouldPoll(polling) is true
+  PASS  exactly one mode polls — polling
+
+[DoD 9] Reconnect backoff — grows, jitters, caps at 30 s
+  PASS  un-jittered sequence is 1s 2s 4s 8s 16s 30s 30s 30s 30s — 1000, 2000, 4000, 8000, 16000, 30000, 30000, 30000, 30000
+  PASS  the sequence is monotonically non-decreasing
+  PASS  nothing exceeds the 30 s cap
+  PASS  jittered delays stay in [0, 30000] with random()=0 (maximum negative jitter) — 750, 1500, 3000, 6000, 12000, 22500, 22500, 22500, 22500
+  PASS  jittered delays stay in [0, 30000] with random()=1 (maximum positive jitter) — 1250, 2500, 5000, 10000, 20000, 30000, 30000, 30000, 30000
+  PASS  jittered delays stay in [0, 30000] with random()=0.5 (no jitter) — 1000, 2000, 4000, 8000, 16000, 30000, 30000, 30000, 30000
+  PASS  jitter actually varies the delay — 6000 vs 10000 — without this, every client retries in lockstep
+  PASS  a negative attempt is clamped, not exponentiated downwards
+
+[DoD 5] 40 rapid updates ⟹ ONE refetch
+  PASS  40 signals have not run anything yet — trailing edge
+  PASS  40 signals are pending
+  PASS  each signal reset the timer — 40 timer resets — the window restarts on every event
+  PASS  the quiet window produced exactly ONE run — 1 run(s)
+  PASS  pending is cleared after the run
+  PASS  a later burst runs again — 2 runs total
+  PASS  an empty window does not run
+  PASS  [DoD 6] cancel() drops pending work — nothing runs after unmount
+  PASS  cancel() clears the pending count
+
+[DoD 7] Optimistic update + server error ⟹ EXACT prior state
+  PASS  failure restores the snapshot by value — [{"id":"a","n":1},{"id":"b","n":2}]
+  PASS  the restored array is a copy, not the caller's reference — so a later in-place mutation cannot corrupt a held snapshot
+  PASS  success keeps the optimistic state
+  PASS  rollbackOnError=false keeps the optimistic state on failure
+
+[DoD 8] No protected route is EVER cached
+  PASS  /de/dashboard ⟹ never cached — never
+  PASS  /de/dashboard/ ⟹ never cached — never
+  PASS  /de/dashboard/finance ⟹ never cached — never
+  PASS  /en/dashboard/units/AZW-B01-0001 ⟹ never cached — never
+  PASS  /tr/dashboard/leads ⟹ never cached — never
+  PASS  /ru/dashboard/reports ⟹ never cached — never
+  PASS  /dashboard ⟹ never cached — never
+  PASS  /dashboard/finance ⟹ never cached — never
+  PASS  /api/ai/chat ⟹ never cached — never
+  PASS  /api/site-management/dashboard ⟹ never cached — never
+  PASS  /de/login ⟹ never cached — never
+  PASS  /en/login?next=/dashboard ⟹ never cached — never
+  PASS  /de/signup ⟹ never cached — never
+  PASS  /de/report/abc ⟹ never cached — never
+  PASS  /auth/callback ⟹ never cached — never
+  PASS  /de ⟹ network-first — network-first
+  PASS  /en ⟹ network-first — network-first
+  PASS  /de/hotel ⟹ network-first — network-first
+  PASS  /offline.html ⟹ network-first — network-first
+  PASS  /_next/static/chunks/main-abc123.js ⟹ cache-first — cache-first
+  PASS  /fonts/inter-latin.woff2 ⟹ cache-first — cache-first
+  PASS  /media/hero-01.avif ⟹ cache-first — cache-first
+  PASS  /_next/image?url=%2Fmedia%2Fa.avif&w=640 ⟹ network-first — network-first
+  PASS  a non-GET request is never cached — a cached response to a mutation is a leak
+  PASS  a cross-origin request is never cached
+  PASS  an unparseable URL is never cached — fails closed
+  PASS  /de/dashboards-public is NOT treated as protected (whole-segment matching)
+  PASS  /de/dashboardx is NOT treated as protected (whole-segment matching)
+  PASS  /de/hotel/dashboard-tour is NOT treated as protected (whole-segment matching)
+  PASS  exactly two cache names are owned; anything else is deleted on activate — azura-v1-static, azura-v1-pages
+
+[DoD 8] The service worker's copy of the policy cannot drift
+  PASS  sw.js carries ^\/(de|en|tr|ru)\/dashboard(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/dashboard(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/api\/ — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/(de|en|tr|ru)\/login(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/(de|en|tr|ru)\/signup(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/(de|en|tr|ru)\/report(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js carries ^\/auth(\/|$) — lib/pwa.ts is the source of truth; this is the drift guard
+  PASS  sw.js checks the deny-list before any positive rule — order is the security property
+  PASS  sw.js does not call skipWaiting() unconditionally — a hot swap under an open form loses the form
+  PASS  sw.js registers no background-sync handler
+  PASS  sw.js has no durable store for queued writes — there is no offline mutation queue, and nothing here may imply one
+  PASS  sw.js registers no push handler
+  PASS  sw.js deletes caches outside the current version on activate
+
+Realtime tables — must match W1-A migration 12
+  PASS  REALTIME_TABLES matches migration 12, in order — units, service_tickets, ticket_events, workforce_tasks, media_reports, activities, threads, messages, notifications, ai_action_logs
+  PASS  finance_ledger_entries is NOT realtime-published — a policy bug on these leaks continuously rather than on request
+  PASS  documents is NOT realtime-published — a policy bug on these leaks continuously rather than on request
+  PASS  audit_events is NOT realtime-published — a policy bug on these leaks continuously rather than on request
+  PASS  access_events is NOT realtime-published — a policy bug on these leaks continuously rather than on request
+  PASS  profiles is NOT realtime-published — a policy bug on these leaks continuously rather than on request
+
+Staleness — server time, not the client clock
+  PASS  fresh data is not stale
+  PASS  data older than two intervals is stale
+  PASS  exactly two intervals is not yet stale
+  PASS  a null timestamp is not stale
+  PASS  an unparseable timestamp IS stale — fails towards saying less about freshness
+  PASS  relativeAge seconds
+  PASS  relativeAge minutes
+  PASS  relativeAge hours
+  PASS  relativeAge null
+  PASS  a future timestamp clamps to 0 rather than going negative — clock skew must not render as '-5 s ago'
+
+OK  93 pass · 0 fail
