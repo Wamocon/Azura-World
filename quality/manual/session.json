@@ -1,0 +1,1287 @@
+{
+  "base": "http://127.0.0.1:3251",
+  "slowMo": 250,
+  "headless": false,
+  "notes": [
+    {
+      "pass": 1,
+      "what": "above the fold captured",
+      "detail": "D:\\Azura World\\quality\\manual\\pass01-landing-1440-above-fold.png"
+    },
+    {
+      "pass": 1,
+      "what": "six scroll stops captured",
+      "detail": null
+    },
+    {
+      "pass": 1,
+      "what": "h1",
+      "detail": "\"Azura World Residence & Hotel\\nAzura World Residence & Hotel\""
+    },
+    {
+      "pass": 1,
+      "what": "canvases",
+      "detail": "1"
+    },
+    {
+      "pass": 2,
+      "what": "conflicted figure",
+      "detail": "\"125.000 €\\nWiderspruch\\n19 Quellen, keine Auflösung\""
+    },
+    {
+      "pass": 2,
+      "what": "conflict affordance clicked",
+      "detail": null
+    },
+    {
+      "pass": 2,
+      "what": "outbound source links on the page",
+      "detail": "29"
+    },
+    {
+      "pass": 3,
+      "what": "de @1440",
+      "detail": "overflow 1425>1425 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "de @375",
+      "detail": "overflow 360>360 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "en @1440",
+      "detail": "overflow 1425>1425 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "en @375",
+      "detail": "overflow 360>360 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "tr @1440",
+      "detail": "overflow 1425>1425 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "tr @375",
+      "detail": "overflow 360>360 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "ru @1440",
+      "detail": "overflow 1425>1425 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 3,
+      "what": "ru @375",
+      "detail": "overflow 360>360 no · tofu false · raw keys 0"
+    },
+    {
+      "pass": 4,
+      "what": "admin",
+      "detail": "HTTP 200 · 42 nav link(s) · 988 chars"
+    },
+    {
+      "pass": 4,
+      "what": "manager",
+      "detail": "HTTP 200 · 42 nav link(s) · 881 chars"
+    },
+    {
+      "pass": 4,
+      "what": "accountant",
+      "detail": "HTTP 200 · 24 nav link(s) · 587 chars"
+    },
+    {
+      "pass": 4,
+      "what": "staff",
+      "detail": "HTTP 200 · 26 nav link(s) · 633 chars"
+    },
+    {
+      "pass": 4,
+      "what": "owner",
+      "detail": "HTTP 200 · 26 nav link(s) · 822 chars"
+    },
+    {
+      "pass": 4,
+      "what": "tenant",
+      "detail": "HTTP 200 · 24 nav link(s) · 679 chars"
+    },
+    {
+      "pass": 4,
+      "what": "guest",
+      "detail": "HTTP 200 · 16 nav link(s) · 450 chars"
+    },
+    {
+      "pass": 4,
+      "what": "service_provider",
+      "detail": "HTTP 200 · 16 nav link(s) · 497 chars"
+    },
+    {
+      "pass": 4,
+      "what": "child_owner",
+      "detail": "HTTP 200 · 18 nav link(s) · 508 chars"
+    },
+    {
+      "pass": 4,
+      "what": "child_tenant",
+      "detail": "HTTP 200 · 18 nav link(s) · 506 chars"
+    },
+    {
+      "pass": 4,
+      "what": "child_guest",
+      "detail": "HTTP 200 · 14 nav link(s) · 429 chars"
+    },
+    {
+      "pass": 5,
+      "what": "units route",
+      "detail": "HTTP 200"
+    },
+    {
+      "pass": 5,
+      "what": "rows rendered",
+      "detail": "50"
+    },
+    {
+      "pass": 5,
+      "what": "modelled marks / portal_listing marks",
+      "detail": "26 / 26"
+    },
+    {
+      "pass": 5,
+      "what": "modelled row captured for visual comparison",
+      "detail": null
+    },
+    {
+      "pass": 6,
+      "what": "evidence cockpit",
+      "detail": "HTTP 200"
+    },
+    {
+      "pass": 6,
+      "what": "price 112.000",
+      "detail": "present"
+    },
+    {
+      "pass": 6,
+      "what": "price 185.000",
+      "detail": "present"
+    },
+    {
+      "pass": 6,
+      "what": "price 220.000",
+      "detail": "present"
+    },
+    {
+      "pass": 6,
+      "what": "price 239.171",
+      "detail": "present"
+    },
+    {
+      "pass": 6,
+      "what": "USD kept as USD",
+      "detail": "yes"
+    },
+    {
+      "pass": 6,
+      "what": "a converted EUR twin appears",
+      "detail": "no"
+    },
+    {
+      "pass": 11,
+      "what": "elements left at opacity 0",
+      "detail": "0"
+    },
+    {
+      "pass": 11,
+      "what": "canvases under reduced motion",
+      "detail": "0"
+    },
+    {
+      "pass": 12,
+      "what": "landing @375",
+      "detail": "scrollWidth 375 vs clientWidth 375"
+    },
+    {
+      "pass": 12,
+      "what": "dashboard @375",
+      "detail": "scrollWidth 375 vs clientWidth 375"
+    },
+    {
+      "pass": 12,
+      "what": "units @375",
+      "detail": "scrollWidth 375 vs clientWidth 375"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "name": "pass1",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass1",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-admin",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-manager",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-accountant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-staff",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-service_provider",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_owner",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass4-child_guest",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass5",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "pass6",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "failedRequests": [
+    {
+      "name": "pass1",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/login?_rsc=6jjooRaMxbEaUzaq"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/deals?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/buyer-pipeline?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/leads?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-admin",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/deals?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/buyer-pipeline?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/leads?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-manager",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/compliance?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/documents?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/deals?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-accountant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/documents?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-staff",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/documents?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/documents?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/documents?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-service_provider",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_owner",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_tenant",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/communications?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/calendar?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/activities?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass4-child_guest",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=keZSzKd5R-E7rv32"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/deals?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/buyer-pipeline?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/leads?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass5",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=eZuoM5etdzY0rCz7"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/tickets?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/vendor-invoices?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/wallet?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/finance?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/deals?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/buyer-pipeline?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/leads?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reviews?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/hotel?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/listings?_rsc=t_Hgj_hOO-KjZ1Xw"
+    },
+    {
+      "name": "pass6",
+      "status": 404,
+      "url": "http://127.0.0.1:3251/de/dashboard/reports?_rsc=t_Hgj_hOO-KjZ1Xw"
+    }
+  ]
+}
