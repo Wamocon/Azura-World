@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline · Azura World</title>
+    <meta name="robots" content="noindex" />
+    <!--
+      The offline fallback, served by `public/sw.js` when a PUBLIC navigation
+      fails and nothing is cached.
+
+      Deliberately self-contained: no stylesheet, no font, no script, no image.
+      Every one of those would be a request that cannot succeed in the exact
+      situation this page exists for, and a fallback that renders unstyled or
+      blank is worse than no fallback at all.
+
+      It never appears for a protected route. `/de/dashboard/*`, `/api/*`,
+      `/login`, `/signup` and `/report` are on the deny-list in
+      `apps/web/lib/pwa.ts`, so the service worker does not intercept them and
+      the browser shows its own error. That is intended: a friendly "you are
+      offline" page over a dashboard URL implies the app has the data locally,
+      and it does not — nothing protected is ever cached.
+    -->
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        background: #0b0f14;
+        color: #e7ecf3;
+        font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      @media (prefers-color-scheme: light) {
+        body { background: #f6f8fb; color: #16202b; }
+      }
+      main { max-width: 34rem; }
+      h1 { font-size: 1.5rem; margin: 0 0 0.75rem; letter-spacing: -0.01em; }
+      p { margin: 0 0 0.75rem; opacity: 0.85; }
+      .note { font-size: 0.875rem; opacity: 0.65; }
+      a.retry {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+        color: inherit;
+        text-decoration: none;
+      }
+      a.retry:hover { background: rgba(127, 127, 127, 0.15); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Keine Verbindung</h1>
+      <p>
+        Diese Seite konnte nicht geladen werden. Sobald die Verbindung wieder
+        steht, laden Sie die Seite neu.
+      </p>
+      <p class="note">
+        Es werden keine Änderungen zwischengespeichert und später gesendet — was
+        offline nicht gespeichert werden kann, wird nicht gespeichert. Geschützte
+        Bereiche sind offline grundsätzlich nicht verfügbar; sie werden aus
+        Datenschutzgründen nie zwischengespeichert.
+      </p>
+      <p class="note" lang="en">
+        No connection. Nothing is queued to be sent later, and protected areas
+        are never cached on this device.
+      </p>
+      <!--
+        A link, not a button with an `onclick`. CONVENTIONS §4 forbids
+        `unsafe-inline` in `script-src`, and an inline event-handler attribute
+        is blocked by exactly that directive — so a retry button would silently
+        do nothing the moment this page were ever served with the app's CSP.
+        Navigating to the start URL has the same effect with no script at all:
+        if the network is still down, the service worker serves this page again.
+      -->
+      <a class="retry" href="/de">Erneut versuchen · Try again</a>
+    </main>
+  </body>
+</html>
