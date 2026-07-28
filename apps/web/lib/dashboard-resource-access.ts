@@ -1,6 +1,9 @@
 /**
  * Server-side access decision for a dashboard path.        Owner: W3-B
  *
+ * Imports are relative for the same reason as `dashboard-routing.ts`: the
+ * probe's loader resolves `./rbac` but not `@/lib/rbac`.
+ *
  * Every module route calls `assertDashboardAccess()` in its own Server
  * Component. That is not belt-and-braces around the client guard — it is the
  * decision, and the client guard is the belt.
@@ -19,8 +22,8 @@
  * forbidden — forms a loop. A 403 is a terminal, honest answer.
  */
 
-import type { Permission, Role } from "@/lib/contracts"
-import { hasPermission } from "@/lib/rbac"
+import type { Permission, Role } from "./contracts"
+import { hasPermission } from "./rbac"
 
 import {
   dashboardRoutes,

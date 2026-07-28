@@ -1,6 +1,12 @@
 /**
  * Dashboard navigation, as data.                           Owner: W3-B
  *
+ * IMPORTS ARE RELATIVE, NOT `@/`. This module is loaded by
+ * `scripts/dashboard-probe.mts` through Node's type-stripping loader, which
+ * resolves relative specifiers but not the tsconfig path alias — the same
+ * reason `lib/rbac.ts` imports `./contracts`. Rewriting these to `@/lib/...`
+ * compiles fine and breaks the probe.
+ *
  * THIS FILE IS THE REGISTRATION POINT FOR EVERY MODULE. Six sibling windows
  * build routes into this shell at the same time; if the sidebar were JSX, each
  * of them would have to edit the same component to appear in it, and the last
@@ -23,8 +29,8 @@
  * maps the name to a component in one place.
  */
 
-import type { Permission, Resource, Role } from "@/lib/contracts"
-import { hasPermission } from "@/lib/rbac"
+import type { Permission, Resource, Role } from "./contracts"
+import { hasPermission } from "./rbac"
 
 /**
  * Cookie holding the sidebar collapse state.
@@ -355,21 +361,37 @@ export function navGroupsForRole(role: Role): readonly DashboardNavGroup[] {
   return groups
 }
 
+/** The index route. Matches EXACTLY — see `routeForPath`. */
+const HOME_HREF = "/dashboard"
+
 /**
  * The route record for a locale-less dashboard path, or `null`.
  *
- * Matches the LONGEST `href` that the path starts with, so
- * `/dashboard/units/AZW-B01-0001` resolves to the `units` route rather than to
- * `/dashboard`, which every dashboard path also starts with. Sorting by length
- * is what makes that deterministic instead of dependent on array order.
+ * Matches the LONGEST `href` the path starts with, so
+ * `/dashboard/units/AZW-B01-0001` resolves to `units` rather than to whichever
+ * route happens to come first in the array.
+ *
+ * THE INDEX ROUTE MATCHES ONLY EXACTLY, AND THAT IS A SECURITY PROPERTY, NOT A
+ * TIDINESS ONE. `/dashboard` is a prefix of every dashboard path, so treating
+ * it as a prefix match made `/dashboard/not-a-module` resolve to the home route
+ * — and `decideDashboardAccess` then answered `allowed: true` for any role
+ * holding `dashboard:view`. An unregistered path would have rendered as
+ * permitted instead of 404ing, and a typo in a module's own folder name would
+ * have looked like it worked. Caught by `scripts/dashboard-probe.mts`, which is
+ * why the probe enumerates near-misses rather than only the happy path.
  */
 export function routeForPath(pathWithoutLocale: string): DashboardRoute | null {
   const path = normalizeDashboardPath(pathWithoutLocale)
 
   let best: DashboardRoute | null = null
   for (const route of dashboardRoutes) {
-    if (path === route.href || path.startsWith(`${route.href}/`)) {
-      if (best === null || route.href.length > best.href.length) best = route
+    const matches =
+      route.href === HOME_HREF
+        ? path === HOME_HREF
+        : path === route.href || path.startsWith(`${route.href}/`)
+
+    if (matches && (best === null || route.href.length > best.href.length)) {
+      best = route
     }
   }
   return best
