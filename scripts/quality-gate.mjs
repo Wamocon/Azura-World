@@ -266,7 +266,7 @@ const GATES = [
     blocking: true,
     cmd: "pnpm --dir apps/web test:e2e -- --project=chromium",
     timeout: 30 * 60 * 1000,
-    precheck: missing("apps/web/playwright.config.ts", "W4-A, never started"),
+    precheck: missing("apps/web/playwright.config.ts", "W4-A"),
   },
   {
     n: 11,
@@ -275,31 +275,35 @@ const GATES = [
     blocking: true,
     cmd: "pnpm --dir apps/web test:e2e -- --project=mobile-chrome",
     timeout: 30 * 60 * 1000,
-    precheck: missing("apps/web/playwright.config.ts", "W4-A, never started"),
+    precheck: missing("apps/web/playwright.config.ts", "W4-A"),
   },
   {
     n: 12,
     key: "layout",
     name: "Layout audit",
     blocking: true,
-    cmd: "node scripts/layout-audit.mjs",
-    precheck: missing("scripts/layout-audit.mjs", "W4-B, never started"),
+    cmd: "node scripts/layout-audit.mjs --port 3231",
+    timeout: 30 * 60 * 1000,
+    precheck: missing("scripts/layout-audit.mjs", "W4-B"),
   },
   {
     n: 13,
     key: "a11y",
     name: "Accessibility",
     blocking: true,
-    cmd: "node scripts/a11y.mjs",
-    precheck: missing("scripts/a11y.mjs", "W4-B, never started — no qa:a11y script exists either"),
+    cmd: "node scripts/a11y-audit.mjs --port 3232",
+    // W4-B shipped this as `a11y-audit.mjs`, not `a11y.mjs`. The gate reported
+    // NOT RUN against a file that never existed under that name.
+    precheck: missing("scripts/a11y-audit.mjs", "W4-B"),
   },
   {
     n: 14,
     key: "perf",
     name: "Performance (LCP/CLS/INP)",
     blocking: true,
-    cmd: "node scripts/perf.mjs",
-    precheck: missing("scripts/perf.mjs", "W4-B, never started"),
+    cmd: "node scripts/perf.mjs --port 3233",
+    timeout: 30 * 60 * 1000,
+    precheck: missing("scripts/perf.mjs", "W4-B"),
   },
   {
     n: 15,
@@ -307,7 +311,7 @@ const GATES = [
     name: "Security probe",
     blocking: true,
     cmd: "node scripts/security-probe.mjs",
-    precheck: missing("scripts/security-probe.mjs", "W4-C, never started"),
+    precheck: missing("scripts/security-probe.mjs", "W4-C"),
   },
   {
     n: 16,
@@ -338,7 +342,7 @@ const GATES = [
     name: "Evidence drift",
     blocking: false,
     cmd: "node scripts/evidence-drift.mjs --report-only",
-    precheck: missing("scripts/evidence-drift.mjs", "W0-B, never written"),
+    precheck: missing("scripts/evidence-drift.mjs", "W0-B"),
   },
   {
     // Beyond the brief's 19. Added on W-INT's explicit request in HANDOFF/W-INT.md
@@ -348,7 +352,7 @@ const GATES = [
     key: "csp",
     name: "CSP / prerender regression (qa:csp)",
     blocking: true,
-    cmd: "node scripts/csp-probe.mjs",
+    cmd: "node scripts/csp-probe.mjs --port 3230",
     timeout: 20 * 60 * 1000,
     precheck: missing("scripts/csp-probe.mjs", "W-INT"),
     metric: (o) => capture(o, /(\d+ pass · \d+ fail)/) ?? "?",

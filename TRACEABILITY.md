@@ -11,6 +11,66 @@ Evidence grading follows `SYSTEM-PROMPT.md` §3 — `[V]` verified by running it
 > criterion is met, the test that proves it is named and re-runnable. Where the proof is
 > narrower than the criterion, §3 says exactly how.
 
+
+> ## SUPERSEDES EVERYTHING BELOW — W-INT2 re-run on merged `main` @ `b5a0c83`, 2026-07-28
+>
+> Eight branches merged into `main` (w1c-w0d, w2b, w3c, w4b, w4c, w4d, wux, w4a). **All eight
+> merged CLEAN** — `git merge-tree --write-tree` predicted zero conflicts cumulatively and the
+> real merges produced zero, including in `messages/*.json` and `HANDOFF/NIGHT-LOG.md`.
+>
+> **The previous table's NOT RUN column was stale.** It reported W4-A, W4-B and W4-C's harnesses
+> as absent because those windows had not pushed when it ran. They exist now. One entry was also
+> wrong on its own terms: the gate looked for `scripts/a11y.mjs`, and W4-B shipped
+> `scripts/a11y-audit.mjs`, so that gate had been reporting NOT RUN against a filename that never
+> existed.
+>
+> | | previous run | **merged `main`** |
+> |---|---|---|
+> | blocking PASS | 9 | **10** |
+> | blocking FAIL | 2 | **8** |
+> | blocking NOT RUN | 8 | **1** |
+> | exit | 1 | **1** |
+>
+> **NOT RUN fell from 8 to 1.** The only remaining one is gate 9, pgTAP, because the Docker daemon
+> is still unavailable (`docker info` exit 1). W1-A's cloud substitute stands at 366/366 and is
+> still recorded as a substitute, not as the gate.
+>
+> **Six gates moved from NOT RUN to FAIL, and that is the point of running them.** e2e chromium,
+> e2e mobile-chrome, layout, a11y, performance and the security probe all execute now, and all six
+> fail. Two moved to PASS: the OpenAPI contract (`13 pass · 0 fail · 23 exempt`) and evidence drift.
+>
+> ### The twelve named gates, exit codes captured directly from each process
+>
+> | Gate | Exit | Result |
+> |---|---|---|
+> | `typecheck` | **0** | PASS |
+> | `lint` | **0** | PASS, 0 errors 0 warnings |
+> | `build` | **0** | PASS, 43 routes, compiled in 15.6s |
+> | `verify-evidence` | **0** | PASS, 1,354 facts, 25 portal_listing + 631 modelled = 656, no violations |
+> | `check-i18n` | **0** | PASS, 831 keys x 4, identical key sets |
+> | `qa:csp` | **0** | PASS, 30 pass · 0 fail |
+> | `validate-openapi` | **0** | PASS, 13 pass · 0 fail · **23 exempt**, 33 paths · 49 operations |
+> | `layout-audit` | **1** | FAIL, **50 pass · 149 fail · 1,822 findings** |
+> | `a11y-audit` | **1** | FAIL, **6 pass · 18 fail** — 1 serious/critical on every locale of `/`, `/hotel`, `/kitchen-sink` |
+> | `perf` | **1** | FAIL, 9 pass · 3 fail — **CLS 0.1244 > 0.1** and **landing JS 264.7 KB gz > 250 KB** |
+> | `security-probe` | **1** | FAIL, **1 critical + 3 high** |
+> | `e2e` (chromium) | **1** | FAIL, **270 passed · 13 failed** |
+>
+> `qa:csp` first reported 26 pass · 4 fail. That was **not** a merge regression: a stray
+> `next dev` (PID 37592) held port 3200, the probe attached to it and correctly refused to pass
+> itself against a dev policy. Re-run on a free port: 30 pass · 0 fail.
+>
+> ### The critical security finding, stated plainly
+>
+> **SEC-A03 [critical]** — `lib/auth.ts` selects `roles` and `anonymized_at` from
+> `public.profiles`, and **no migration creates either column**. PostgREST answers 42703, the read
+> fails, and **every authenticated user degrades to the minimal tenant**. Owner: W1-B / W1-A.
+>
+> Three highs, all W0-B's, all in committed data: F-002's narrative claims "across four
+> publishers" while carrying three `competingValues`; F-002 states a ratio computed across EUR and
+> USD, which can only come from a conversion this product forbids; and **four identifiable staff
+> names are present in `lib/azura-world-data.ts` and `lib/hotel-data.ts` in a PUBLIC repository**.
+
 ---
 
 ## 1. Summary
