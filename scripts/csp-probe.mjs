@@ -191,19 +191,22 @@ function phaseBuildArtefacts() {
 /**
  * Two pages, chosen because they exercise the two rendering paths that matter.
  *
- * `/de/kitchen-sink` is the only route in the tree today that renders real,
- * interactive content — W3-A has not built the landing page yet and `/de`
- * therefore still 404s (CLAUDE.md §7). It calls `notFound()` in a production
- * build unless `AZURA_ENABLE_KITCHEN_SINK=1`, which is why this gate sets that
- * variable on the server it spawns: without it the probe would silently be
- * measuring the 404 page twice and would pass while proving nothing about a
- * content page. Replace it with the landing route once that exists.
+ * `/de` is the landing surface (W3-A) — the page that actually has to survive
+ * this, and the one whose scripts a static render would kill. It is checked
+ * first and it is the reason the gate exists.
+ *
+ * `/de/kitchen-sink` stays because it is the densest interactive route in the
+ * tree. It calls `notFound()` in a production build unless
+ * `AZURA_ENABLE_KITCHEN_SINK=1`, which is why this gate sets that variable on
+ * the server it spawns: without it the probe would silently be measuring the
+ * 404 page and would pass while proving nothing about a content page.
  *
  * `/de/there-is-no-such-page` is the 404, which Next prerenders as
  * `/_not-found`. It is the live reproduction of S-009 in this repository.
  */
 const PROBE_PAGES = [
-  { path: "/de/kitchen-sink", label: "a real page route, rendered on demand" },
+  { path: "/de", label: "the landing surface" },
+  { path: "/de/kitchen-sink", label: "the densest interactive route" },
   { path: "/de/there-is-no-such-page", label: "a 404 under the proxy matcher" },
 ]
 

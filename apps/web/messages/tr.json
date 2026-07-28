@@ -244,10 +244,14 @@
       "figures": {
         "area": "Arsa alanı",
         "blocks": "Blok",
-        "units": "Daire"
+        "units": "Daire",
+        "entryPrice": "Giriş fiyatı 1+1"
       },
       "scrollHint": "Kaydır",
-      "posterAlt": "Azura World Residence & Hotel projesinin görünümü"
+      "posterAlt": "Azura World Residence & Hotel projesinin görünümü",
+      "plateTitle": "Tespit · Türkler, Alanya",
+      "entryPriceNote": "Gösterilen, bir portalın kendi ifadesiyle „başlangıç“ fiyatı olarak verdiği tek değerdir. Diğer 18 değer belgelerde.",
+      "conflictCallout": "Bu dört sayıdan üçü birden fazla kaynakla doğrulanmıştır. Dördüncüsü değil — ve sayfa bunu aynı yerde, aynı yazıyla söyler."
     },
     "why": {
       "title": "Azura World nedir",
@@ -255,7 +259,19 @@
       "developerLabel": "Müteahhit",
       "locationLabel": "Konum",
       "timelineLabel": "Teslim",
-      "statusLabel": "Durum"
+      "statusLabel": "Durum",
+      "plotLabel": "Arsa alanı",
+      "greenLabel": "Yeşil alan",
+      "footprintLabel": "Yapı oturum alanı",
+      "outdoorLabel": "Açık alan tesisleri",
+      "blocksLabel": "Konut bloğu",
+      "buildingsLabel": "Bina",
+      "floorsLabel": "Bina başına kat",
+      "startLabel": "İnşaat başlangıcı",
+      "seaLabel": "Denize uzaklık",
+      "centreLabel": "Alanya merkezine uzaklık",
+      "airportLabel": "Gazipaşa havalimanına uzaklık",
+      "downPaymentLabel": "Peşinat"
     },
     "immersion": {
       "title": "Sitede bir gün",
@@ -268,7 +284,9 @@
       "title": "Olanaklar",
       "lead": "Her madde, onu listeleyen sayfaya bağlanmıştır.",
       "empty": "Olanaklar için kaynaklı veri bulunmuyor.",
-      "categoryLabel": "Kategori"
+      "categoryLabel": "Kategori",
+      "gapTitle": "Belgelenmiş donatı listesi yok",
+      "gapBody": "Alınan 60 kaynağın hiçbirinden kalem kalem atfedilebilir bir donatı listesi çıkarılamadı. Bu nedenle veri kümesinde sıfır kayıt var. Makul görünen bir liste buraya hızlıca yazılabilirdi — yalnızca belgeli olmazdı."
     },
     "desire": {
       "title": "Site içindeki otel",
@@ -276,7 +294,13 @@
       "roomsLabel": "Oda",
       "starsLabel": "Sınıf",
       "boardLabel": "Pansiyon",
-      "aquaparkLabel": "Kaydırak"
+      "aquaparkLabel": "Kaydırak",
+      "formerLabel": "Önceki adı",
+      "brandLabel": "Marka bağlantısı",
+      "openedLabel": "Açılış",
+      "beachLabel": "Plaja uzaklık",
+      "floorsLabel": "Kat",
+      "checkInLabel": "Giriş saati"
     },
     "evidenceBand": {
       "title": "Bu veriler nereden geliyor",
@@ -284,7 +308,23 @@
       "sourcesLabel": "İncelenen kaynak",
       "conflictsLabel": "Çelişki",
       "gapsLabel": "Açık madde",
-      "cta": "Tam kaynak raporunu aç"
+      "cta": "Tam kaynak raporunu aç",
+      "designation": "Belge durumu",
+      "sourcesAttempted": "Alınan kaynak",
+      "sourcesReachable": "İçeriği doğrulanan",
+      "publishersLabel": "Atıf yapılan yayıncı",
+      "factsLabel": "Bu sayfadaki sayı",
+      "findingsLabel": "Kayıtlı bulgu",
+      "confidenceHeading": "Belge gücüne göre",
+      "priceHeading": "F-002 — dört yayıncı, dört fiyat",
+      "priceIntro": "Aynı daire büyüklüğü, dört satıcı, {factor} katlık fark. İki para birimi, gözlem tarihi yok, en az bir bayat ilan. Çözülmedi — değerler yan yana duruyor.",
+      "colPublisher": "Yayıncı",
+      "colPrice": "Fiyat",
+      "colArea": "Alan",
+      "colNote": "Not",
+      "staleNote": "bayat",
+      "unitSplitLabel": "Envanterdeki daire",
+      "unitSplitValue": "{listing} gerçek ilan · {modelled} modellenmiş · {total} toplam"
     },
     "action": {
       "title": "Erişim talebi",
@@ -294,7 +334,21 @@
     },
     "after": {
       "title": "Satın alma sonrası",
-      "lead": "Yönetim, aidat, kiralama ve bakım — satış sayfalarının atladığı kısım."
+      "lead": "Yönetim, aidat, kiralama ve bakım — satış sayfalarının atladığı kısım.",
+      "items": {
+        "1": {
+          "title": "Envanter ve sözleşmeler",
+          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu ile — gerçek ilanlar ve modellenmiş kayıtlar ayırt edilebilir kalır."
+        },
+        "2": {
+          "title": "İşletme ve aidatlar",
+          "body": "Blok bazında bakım, paylaştırma ve faturalama; muhasebe kayıtları değiştirilemez."
+        },
+        "3": {
+          "title": "Her sayıda kaynak",
+          "body": "Bu sayfadaki köken gösterimi aynen — yönetimde, raporda ve dışa aktarımda."
+        }
+      }
     },
     "share": {
       "title": "Paylaş",
@@ -310,7 +364,100 @@
       "rights": "Rekabet amaçlı analiz. Tüm markalar ve görsel haklar sahiplerine aittir.",
       "sourcesLink": "Kaynak listesi",
       "legalLink": "Yasal",
-      "updated": "Veri tarihi {date}"
+      "updated": "Veri tarihi {date}",
+      "contactHeading": "Konu iletişim",
+      "sourcesHeading": "Belgeler",
+      "aboutHeading": "Bu analiz hakkında",
+      "generated": "{date} tarihli veri kümesinden üretildi"
+    },
+    "provenance": {
+      "confidence": {
+        "confirmed": "Doğrulandı",
+        "official": "Resmî",
+        "single_source": "Tek kaynak",
+        "conflicted": "Kaynaklar çelişiyor",
+        "inferred": "Hesaplandı",
+        "gap": "Belgelenmedi"
+      },
+      "conflict": {
+        "trigger": "Kaynaklar çelişiyor",
+        "heading": "Çelişen değerler",
+        "summary": "{count} kaynak, çözülmedi",
+        "displayed": "Gösterilen",
+        "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, „en olası“ seçim yok — buradaki tek bir sayı bile kaynak etiketi iliştirilmiş bir uydurma olurdu.",
+        "close": "Kapat",
+        "source": {
+          "openSource": "Kaynağı aç",
+          "snapshot": "Yerel anlık görüntü",
+          "unreachable": "Kaynağa erişilemiyor",
+          "tier": {
+            "official": "Resmî",
+            "developer": "Müteahhit",
+            "hotel": "Otel işletmesi",
+            "portal": "Emlak portalı",
+            "review": "Değerlendirme portalı",
+            "press": "Basın"
+          }
+        }
+      },
+      "source": {
+        "openSource": "Kaynağı aç",
+        "snapshot": "Yerel anlık görüntü",
+        "unreachable": "Kaynağa erişilemiyor",
+        "tier": {
+          "official": "Resmî",
+          "developer": "Müteahhit",
+          "hotel": "Otel işletmesi",
+          "portal": "Emlak portalı",
+          "review": "Değerlendirme portalı",
+          "press": "Basın"
+        }
+      },
+      "gap": "Belgelenmedi",
+      "inferred": "hesaplandı",
+      "more": "+{count} tane daha",
+      "sources": "Kaynaklar"
+    },
+    "sourceCount": "{count, plural, one {# kaynak} other {# kaynak}}",
+    "skipToContent": "İçeriğe geç",
+    "nav": {
+      "project": "Proje",
+      "site": "Site",
+      "hotel": "Otel",
+      "evidence": "Belgeler",
+      "access": "Erişim"
+    },
+    "record": {
+      "idLabel": "Konu",
+      "placeLabel": "Konum",
+      "dataLabel": "Veri tarihi",
+      "sheetLabel": "Sayfa",
+      "sheetValue": "1 / 1 · genel"
+    },
+    "designation": {
+      "interest": "Nedir",
+      "search": "Site",
+      "desire": "Otel",
+      "trust": "Belgeler",
+      "action": "Erişim",
+      "loyalty": "Satın alma sonrası",
+      "share": "Paylaş",
+      "love": "Neden böyle kurulu"
+    },
+    "masterplan": {
+      "title": "Vaziyet planı",
+      "blockLabel": "Blok",
+      "unitsLabel": "daire",
+      "hotelLabel": "Otel",
+      "seaLabel": "Akdeniz",
+      "selectedLabel": "Seçili:",
+      "schematicNote": "Şematiktir. Hiçbir kaynak yapı geometrisini yayımlamıyor — burada dizilim değil, bileşim gösterilir. Ayrıntı için blok seçin.",
+      "quality": {
+        "portal_listing": "Gerçek ilan",
+        "official": "Resmî beyan",
+        "modelled": "Modellenmiş",
+        "source_missing": "Kaynaksız"
+      }
     }
   },
   "dashboard": {
