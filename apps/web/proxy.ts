@@ -89,6 +89,38 @@ function createNonce(): string {
  * `process.env.NODE_ENV` is a Next build-time constant, not configuration, so
  * reading it here is correct. It is the ONLY `process.env` read permitted in
  * this file — everything else goes through `lib/env.ts`.
+ *
+ * ## S-009 — the constraint this policy creates. Read before adding a route.
+ *
+ * The production policy below is nonce-based, and Next stamps that nonce onto
+ * its <script> tags by reading it back out of the REQUEST header at render
+ * time. **A statically prerendered document is built without a request**, so
+ * its scripts carry no nonce, and `'strict-dynamic'` — which discards `'self'`
+ * and every host allowlist for scripts — blocks all of them. The page renders
+ * from server HTML and looks correct while running ZERO JavaScript. Measured
+ * by W1-D under `next start`: 0 B JS across 0 files, 0 canvases, one CSP
+ * violation per chunk. It does NOT reproduce under `next dev`, because the dev
+ * branch of this function omits `strict-dynamic`.
+ *
+ * A per-request nonce and a build-time-rendered document are mutually
+ * exclusive by construction, and this file cannot bridge them: the proxy runs
+ * *before* the response body exists and has no way to transform it. Three
+ * options were considered (tasks/W-INT-integration.md §2); the policy stays
+ * strict and the rendering mode gives way:
+ *
+ *   **No route in this app may be statically prerendered.**
+ *
+ * Enforced in two places, neither of which is this file:
+ *   - `app/layout.tsx` reads `headers()`, which opts every route beneath the
+ *     root layout out of static generation. The default is therefore correct.
+ *   - `scripts/csp-probe.mjs` (`pnpm qa:csp`) fails the build if any HTML
+ *     route is prerendered outside its documented allowlist, and proves under
+ *     `next start` that every script tag actually carries the nonce.
+ *
+ * Do not "fix" a failing gate by adding `'unsafe-inline'` here. Browsers ignore
+ * `'unsafe-inline'` whenever a nonce is present, so it would only take effect
+ * once the nonce is also removed — which is CONVENTIONS §4's prohibition, for
+ * the public marketing pages specifically.
  */
 const isDevelopment = process.env.NODE_ENV !== "production"
 

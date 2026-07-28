@@ -1,6 +1,7 @@
 import "./globals.css"
 
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 import type { ReactNode } from "react"
 
 // ---------------------------------------------------------------------------
@@ -32,6 +33,36 @@ import type { ReactNode } from "react"
 //                    module-level store, so it works anywhere without one.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// W-INT — S-009. THIS IS THE FILE THAT MAKES EVERY ROUTE RENDER DYNAMICALLY.
+//
+// `proxy.ts` emits a per-request CSP containing `'nonce-…' 'strict-dynamic'`.
+// Next stamps that nonce onto its own <script> tags by reading it back out of
+// the REQUEST header (`parseRequestHeaders` in
+// next/dist/server/app-render/app-render.js — it reads `content-security-policy`
+// and calls `getScriptNonceFromHeader`). A statically prerendered document is
+// built without a request, so it has no nonce to stamp, and under
+// `strict-dynamic` an unnonced script does not load. The page renders, looks
+// correct, and runs ZERO JavaScript.
+//
+// A per-request nonce and a build-time-rendered document are mutually
+// exclusive by construction: the nonce must differ per response, a prerendered
+// document is byte-identical across responses. No amount of proxy cleverness
+// closes that gap — the proxy runs BEFORE the response body exists and cannot
+// transform it.
+//
+// So the rule is: **no route in this app may be statically prerendered.**
+// Reading a request header here is what enforces it. `headers()` is a Dynamic
+// API; using it in the root layout opts every route beneath it out of static
+// generation, so the DEFAULT is correct and a wave-3 window that simply omits
+// `export const dynamic` still ships a working page. `scripts/csp-probe.mjs`
+// is the gate that proves it and fails the build if it ever stops being true.
+//
+// The nonce is not read only for its side effect — it is handed to
+// next-themes, whose no-flash inline <script> is otherwise unnonced and
+// blocked by this same CSP in production.
+// ---------------------------------------------------------------------------
+
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
@@ -55,17 +86,25 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode
 }>) {
+  // `x-nonce` is set by `proxy.ts` on the same request whose CSP carries it.
+  // It is absent only where the proxy did not run — an unmatched path, or a
+  // build-time render, which the gate exists to make impossible.
+  const nonce = (await headers()).get("x-nonce")
+
   return (
     // `suppressHydrationWarning` is here for W1-D's theme provider, which sets
     // a `class`/`data-theme` attribute on <html> before React hydrates.
     <html lang="de" dir="ltr" suppressHydrationWarning>
       <body>
-        <ThemeProvider>
+        {/* Conditional spread rather than `nonce={nonce ?? undefined}`:
+            `exactOptionalPropertyTypes` is on, so `nonce?: string` does not
+            accept an explicit `undefined`. */}
+        <ThemeProvider {...(nonce === null ? {} : { nonce })}>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
       </body>
