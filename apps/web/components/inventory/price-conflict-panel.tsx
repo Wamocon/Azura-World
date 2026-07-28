@@ -131,7 +131,14 @@ export function PriceConflictPanel({
         // `min-w-0` on the panel for the same reason as on the table inside it:
         // without it a flex/grid ancestor lets the widest child set the page
         // width, and the table stops being independently scrollable.
-        "flex min-w-0 flex-col gap-6 rounded-xl border border-border bg-card p-5 sm:p-6",
+        "flex min-w-0 flex-col gap-7 rounded-2xl border border-border bg-card p-5 sm:p-7",
+        // Material weight, per apple-design §12: a large surface should read as
+        // thicker than a chip. A tight contact shadow plus a wide, very soft
+        // ambient one — two shadows, because a single blurred drop reads as a
+        // sticker. Kept far below the strength that would make a data surface
+        // feel like a marketing card.
+        "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-32px_rgb(0_0_0/0.22)]",
+        "dark:shadow-[0_1px_2px_rgb(0_0_0/0.5),0_24px_48px_-28px_rgb(0_0_0/0.65)]",
         className
       )}
     >
@@ -157,9 +164,13 @@ export function PriceConflictPanel({
           </span>
         </div>
 
+        {/* Tracking is size-specific (apple-design §15): display type reads too
+            loose as it grows, so it tightens; the uppercase micro-labels above
+            open up instead. A single letter-spacing value would be wrong at one
+            end or the other. In `em`, never `px`, so it holds at every size. */}
         <h2
           id={`finding-${finding.id}-heading`}
-          className="font-display text-lg leading-snug font-semibold sm:text-xl"
+          className="font-display text-xl font-semibold leading-[1.15] tracking-[-0.018em] text-balance sm:text-2xl"
         >
           {labels.headline}
         </h2>
@@ -190,12 +201,19 @@ export function PriceConflictPanel({
         </figure>
       </header>
 
-      {/* 2. The shape. */}
-      <PriceConflictLadder
-        observations={observations}
-        locale={locale}
-        labels={labels.ladder}
-      />
+      {/* 2. The shape.
+          Set into a recessed well rather than sitting flat on the card. One
+          level of layering is what separates "a page with a chart on it" from
+          "an instrument" — and it also does real work, grouping the two rails
+          and their separator into a single object the eye reads as one
+          comparison. */}
+      <div className="rounded-xl border border-border/60 bg-background/50 p-4 sm:p-5">
+        <PriceConflictLadder
+          observations={observations}
+          locale={locale}
+          labels={labels.ladder}
+        />
+      </div>
 
       {/* 3. The record. */}
       <PriceObservationTable

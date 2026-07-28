@@ -117,12 +117,17 @@ export function PriceObservationTable({
     //                 invisible. `overflow: hidden` alone does NOT fix it;
     //                 measured both ways.
     //   `max-w-full`— belt and braces against a future grid ancestor.
-    <div
-      className={cn(
-        "azura-scrollbar-slim relative min-w-0 max-w-full overflow-x-auto",
-        className
-      )}
-    >
+    <div className={cn("relative min-w-0 max-w-full", className)}>
+      {/* A scroll edge, not a divider (apple-design §12). Below `lg` the 44rem
+          table is wider than the panel, and without a cue the clipped right-hand
+          columns simply look absent. A soft fade says "there is more this way"
+          without spending a row of chrome on saying it. `pointer-events-none`
+          so it never eats a click on the last column. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-card to-transparent lg:hidden"
+      />
+      <div className="azura-scrollbar-slim relative min-w-0 max-w-full overflow-x-auto">
       <table className="w-full min-w-[44rem] border-collapse text-sm">
         <caption className="sr-only">{labels.caption}</caption>
         <thead>
@@ -157,12 +162,25 @@ export function PriceObservationTable({
                 data-stale={observation.stale}
                 className={cn(
                   "border-b border-border/60 align-top",
+                  // Hover gated behind a real pointer. A touch device fires
+                  // hover on tap and the row would latch highlighted after the
+                  // finger leaves — Emil's checklist, and it is the difference
+                  // between a table that feels responsive and one that feels
+                  // stuck. `transition-colors`, never `transition: all`.
+                  "transition-colors duration-150 ease-[var(--ease-out)]",
+                  "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/40",
                   observation.stale && "bg-quality-stale/[0.06]"
                 )}
               >
                 <td className="py-2.5 pr-4">
                   <span className="flex flex-wrap items-center gap-2">
-                    <span data-numeric className="font-display font-semibold">
+                    {/* The figure is the row's subject, so it gets the display
+                        face, a size step up, and the negative tracking that
+                        keeps large numerals from reading loose. */}
+                    <span
+                      data-numeric
+                      className="font-display text-[0.9375rem] font-semibold tracking-[-0.01em]"
+                    >
                       {formatMoney(observation.money, locale)}
                     </span>
                     {observation.stale ? (
@@ -220,7 +238,14 @@ export function PriceObservationTable({
                         target="_blank"
                         rel="noopener noreferrer"
                         title={`${labels.source.openSource}: ${observation.url}`}
-                        className="inline-flex min-h-6 min-w-0 items-center gap-1 rounded-sm font-medium outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                        className={cn(
+                          "inline-flex min-h-6 min-w-0 items-center gap-1 rounded-sm font-medium",
+                          // Press feedback. The interface has to visibly hear
+                          // the tap before the navigation happens, or the delay
+                          // reads as a dead control.
+                          "transition-transform duration-100 ease-[var(--ease-out)] active:scale-[0.97] motion-reduce:active:scale-100",
+                          "outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                        )}
                       >
                         <span className="truncate">{observation.publisher}</span>
                         <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
@@ -237,8 +262,9 @@ export function PriceObservationTable({
               </tr>
             )
           })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

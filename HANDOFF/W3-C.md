@@ -78,7 +78,7 @@ counts and distributions, not rows — and it is the obvious next piece of work.
 | `pnpm --dir apps/web build` | **PASS** | exit 0; `├ ƒ /[locale]/dashboard/evidence` — **dynamic**, as W-INT §8 requires |
 | `node scripts/check-i18n.mjs` | **PASS** | 625 keys × 4 locales, identical key sets, 0 errors 0 warnings |
 | `node scripts/csp-probe.mjs` (`qa:csp`) | **PASS** | **21 pass · 0 fail**, exit 0, on a production build with this route present |
-| `node scripts/evidence-review.mjs` | **PASS** | **40 pass · 0 fail**, exit 0, real Chromium |
+| `node scripts/evidence-review.mjs` | **PASS** | **48 pass · 0 fail**, exit 0, real Chromium |
 
 Screenshots in `quality/w3c/`: `evidence-f002-de-light.png`, `-de-dark.png`, `-de-320.png`,
 `-en-light.png`.
@@ -108,6 +108,54 @@ Screenshots in `quality/w3c/`: `evidence-f002-de-light.png`, `-de-dark.png`, `-d
   `check-i18n`, but only `de` and `en` were rendered. Russian runs ~35% longer than English and
   320px Russian is the case most likely to break.
 - **Lighthouse, LCP, INP, CLS** — `qa:perf` is W4-B's and does not exist.
+
+---
+
+## 3a. The craft pass — what "premium" was allowed to mean here
+
+A second pass took the surface to a higher finish. The constraint it worked inside is the one the
+brief set: **on this screen restraint is the credibility.** Emil Kowalski's own frequency test
+disqualifies most motion here — an analyst opens the evidence cockpit repeatedly, and repeated
+animation reads as lag, not luxury. So the budget went where it compounds on a data surface:
+material, type, and exactly one motion moment.
+
+| Change | Why |
+|---|---|
+| The ladder sits in a **recessed well** (`bg-background/50`, inset border) rather than flat on the card | One level of layering is what separates "a page with a chart on it" from an instrument. It also groups the two rails and their separator into a single object the eye reads as one comparison. |
+| **Two shadows** on the panel — a 1px contact shadow plus a wide, very soft ambient one | apple-design §12: a large surface should read as thicker than a chip. A single blurred drop reads as a sticker. |
+| **Size-specific tracking**: heading `-0.018em`, price figures `-0.01em`, uppercase micro-labels `+0.06em` | apple-design §15. One `letter-spacing` value is wrong at one end of the scale or the other. All in `em`, so it holds at every size. |
+| Axis line is a **gradient that fades at both ends** | It stops the axis reading as a hard container edge, which was competing with the panel border. |
+| Fresh ticks carry a **3px halo** in the conflict surface colour | Separates overlapping ticks — eight Haspo observations sit between 112k and 190k and were merging into a smear. |
+| **Scroll-edge fade** on the right of each table below `lg` | apple-design §12: a scroll edge, not a divider. Below `lg` the 44rem table is wider than the panel and the clipped columns simply looked absent. The fade says "there is more this way" without spending a row of chrome on it. |
+| Row hover gated behind `@media (hover: hover) and (pointer: fine)` | A touch device fires hover on tap and the row latches highlighted after the finger leaves. |
+| `active:scale-[0.97]` on every source link, 100ms | The interface must visibly hear the press before navigation happens. |
+
+### The one motion moment
+
+Each ladder tick **grows out of the axis in price order**, 500ms, `cubic-bezier(0.23, 1, 0.32, 1)`
+(W1-D's `--ease-out`, which is already Emil's strong curve), staggered 50ms. It is a page-load
+animation, not something a user triggers — and what it animates is the data arriving at its
+position, which is the one thing on this screen worth dramatising.
+
+Implemented as a **CSS transition with `@starting-style`**, not a keyframe:
+
+- interruptible and retargetable, per Emil's rule for anything dynamic;
+- runs off the main thread;
+- needs no `@keyframes` in `globals.css`, a file this window does not own;
+- degrades to "already visible" where `@starting-style` is unsupported.
+
+Under `prefers-reduced-motion: reduce` the transition is switched **off entirely**
+(`transition-property: none`) — the finished frame, never a slower journey to it.
+
+Both of these were caught by asserting, not by looking:
+
+1. **The stagger was 0.05ms.** `staggerDelay()` returns **seconds** (W1-D sized it for Framer
+   Motion); I wrote `${…}ms`. Thirteen ticks arrived simultaneously while the code claimed a
+   cascade. The assertion now requires the delays to differ by ≥ 20ms *and* increase — "they
+   differ" would have passed the broken version.
+2. **The reduced-motion assertion tested the wrong property.** Tailwind's `transition-none` leaves
+   a residual `transition-duration` (`1e-05s`), so `duration === 0` would have passed a still-
+   animating element. It now asserts `transition-property: none`.
 
 ---
 

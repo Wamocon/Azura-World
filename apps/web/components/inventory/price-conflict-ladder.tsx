@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 
 import { cn } from "@/lib/cn"
-import { formatMoney } from "@/components/evidence/format"
-import { interpolate } from "@/components/evidence/format"
+import { formatMoney, interpolate } from "@/components/evidence/format"
+import { staggerDelay } from "@/lib/motion"
 import type { Money } from "@/lib/contracts"
 
 /**
@@ -211,7 +211,7 @@ function LadderRail({
 
       {/* The axis. Decoration: every tick below is real text in the table. */}
       <div aria-hidden="true" className="relative h-11 select-none">
-        <div className="absolute inset-x-0 top-5 h-px bg-border" />
+        <div className="absolute inset-x-0 top-5 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         {/* End caps, so an axis with one observation still reads as an axis. */}
         <div className="absolute left-0 top-3 h-5 w-px bg-border" />
         <div className="absolute right-0 top-3 h-5 w-px bg-border" />
@@ -235,16 +235,42 @@ function LadderRail({
               // express an arbitrary percentage per tick, and the CSP allows
               // inline STYLES (`style-src 'self' 'unsafe-inline'`) while
               // forbidding inline scripts — so this costs nothing.
-              style={{ left: `${left}%` }}
+              // Both values are data, so both are inline. The CSP allows inline
+              // STYLES (`style-src 'self' 'unsafe-inline'`) while forbidding
+              // inline scripts, so this costs nothing.
+              //
+              // `staggerDelay` caps its accumulation (W1-D's STAGGER_CAP), so
+              // thirteen ticks still finish arriving in about half a second
+              // rather than marching across the screen for two.
+              style={{
+                left: `${left}%`,
+                // `staggerDelay` returns SECONDS — W1-D's `stagger.base` is
+                // 0.05, sized for Framer Motion, which takes seconds. Writing
+                // `${…}ms` produced a 0.05ms stagger: thirteen ticks arriving
+                // simultaneously while the code claimed a cascade. Caught by
+                // asserting the computed delays differ, not by looking at it.
+                transitionDelay: `${staggerDelay(index)}s`,
+              }}
               className={cn(
-                "absolute top-1 -translate-x-1/2",
+                "absolute top-1 -translate-x-1/2 origin-bottom",
+                // The one motion moment on this screen, and it is the data
+                // landing: each tick grows out of the axis, in price order.
+                // Emil's frequency test permits it — a page-load animation, not
+                // something triggered dozens of times a day — and
+                // `@starting-style` keeps it a pure CSS *transition*: off the
+                // main thread, interruptible, and needing no keyframe in
+                // globals.css, which this window does not own.
+                "transition-[opacity,transform] duration-500 ease-[var(--ease-out)]",
+                "opacity-100 scale-y-100 starting:opacity-0 starting:scale-y-[0.35]",
+                // Reduced motion gets the finished frame, never a slower one.
+                "motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:scale-y-100",
                 // Stale observations are a hollow, dashed, taller mark — a
                 // difference in SHAPE, not only in colour. One man in twelve
                 // cannot use the colour, and a screenshot in a report loses it
                 // entirely (azura-ui-ux §5.5).
                 observation.stale
                   ? "h-9 w-2 rounded-full border-2 border-dashed border-quality-stale bg-transparent"
-                  : "h-9 w-1 rounded-full bg-confidence-conflicted"
+                  : "h-9 w-1 rounded-full bg-confidence-conflicted shadow-[0_0_0_3px_var(--color-surface-conflict)]"
               )}
             />
           )

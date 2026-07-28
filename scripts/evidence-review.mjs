@@ -259,6 +259,63 @@ for (const rail of railTicks) {
   )
 }
 
+// ── the entrance animation actually exists ─────────────────────────────────
+section("Motion — the one moment, and it is real")
+
+const tickMotion = await de.page.evaluate(() => {
+  const ticks = Array.from(document.querySelectorAll('[data-slot="ladder-tick"]'))
+  return ticks.slice(0, 4).map((el) => {
+    const s = getComputedStyle(el)
+    return {
+      property: s.transitionProperty,
+      duration: s.transitionDuration,
+      delay: s.transitionDelay,
+      easing: s.transitionTimingFunction,
+      origin: s.transformOrigin,
+    }
+  })
+})
+// If Tailwind had not emitted these the classes would be inert and the
+// "animation" would be a claim with nothing behind it.
+check(
+  "ticks carry a real transition, not `all`",
+  tickMotion.every((t) => t.property.includes("opacity") && t.property.includes("transform") && !t.property.includes("all")),
+  tickMotion[0]?.property ?? "none"
+)
+check(
+  "the transition has a duration under 600ms",
+  tickMotion.every((t) => {
+    const ms = parseFloat(t.duration) * (t.duration.includes("ms") ? 1 : 1000)
+    return ms > 0 && ms <= 600
+  }),
+  tickMotion[0]?.duration ?? "0s"
+)
+// Not just "they differ" — they must differ by an amount a person can see.
+// A 0.05ms stagger is arithmetically distinct and visually simultaneous.
+const delaysMs = tickMotion.map((t) => parseFloat(t.delay) * 1000)
+check(
+  "the stagger delay is perceptible and increases",
+  delaysMs.length > 1 &&
+    delaysMs[1] - delaysMs[0] >= 20 &&
+    delaysMs.every((d, i) => i === 0 || d >= delaysMs[i - 1]),
+  delaysMs.map((d) => `${Math.round(d)}ms`).join(" → ")
+)
+check(
+  "the whole cascade finishes inside a second",
+  Math.max(...delaysMs) <= 700,
+  `last delay ${Math.round(Math.max(...delaysMs))}ms`
+)
+check(
+  "the easing is the project's ease-out, not a browser default",
+  tickMotion.every((t) => t.easing.startsWith("cubic-bezier(0.23")),
+  tickMotion[0]?.easing ?? "none"
+)
+check(
+  "ticks grow from the axis, not from their centre",
+  tickMotion.every((t) => t.origin.endsWith("36px") || t.origin.includes("bottom")),
+  tickMotion[0]?.origin ?? "none"
+)
+
 // ── provenance is never hover-only ─────────────────────────────────────────
 section("Provenance is visible, never hover-only (azura-ui-ux §5.3)")
 
@@ -323,6 +380,32 @@ const hidden = await reduced.page.evaluate(
     }).length
 )
 check("reduced motion: nothing left at opacity 0", hidden === 0, `${hidden} offenders`)
+// Reduced motion means the finished frame, not a slower journey to it.
+const reducedTicks = await reduced.page.evaluate(() =>
+  Array.from(document.querySelectorAll('[data-slot="ladder-tick"]'))
+    .slice(0, 3)
+    .map((el) => {
+      const s = getComputedStyle(el)
+      return {
+        property: s.transitionProperty,
+        duration: s.transitionDuration,
+        transform: s.transform,
+      }
+    })
+)
+// `transition-property: none` is what actually disables it — Tailwind's
+// `transition-none` leaves a residual duration, so asserting `duration === 0`
+// tested the wrong thing and would have passed a still-animating element.
+check(
+  "reduced motion: the tick transition is switched off entirely",
+  reducedTicks.every((t) => t.property === "none"),
+  `transition-property: ${reducedTicks[0]?.property ?? "none"}`
+)
+check(
+  "reduced motion: ticks are at full scale, not mid-animation",
+  reducedTicks.every((t) => t.transform === "none" || /matrix\(1, 0, 0, 1/.test(t.transform)),
+  reducedTicks[0]?.transform ?? "none"
+)
 const reducedBody = await reduced.page.innerText("body")
 check("reduced motion: the evidence is all still there", /112[.\s]000/.test(reducedBody) && /239[.\s]171/.test(reducedBody))
 await reduced.context.close()
