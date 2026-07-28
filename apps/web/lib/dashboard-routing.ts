@@ -144,7 +144,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "reports:view",
     group: "intelligence",
     resource: "reports",
-    pending: true,
   },
 
   // inventory
@@ -289,7 +288,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "documents:view",
     group: "governance",
     resource: "documents",
-    pending: true,
   },
   {
     href: "/dashboard/compliance",
@@ -298,7 +296,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "compliance:view",
     group: "governance",
     resource: "compliance",
-    pending: true,
   },
   {
     href: "/dashboard/users",
@@ -307,7 +304,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "users:view",
     group: "governance",
     resource: "users",
-    pending: true,
   },
   {
     href: "/dashboard/settings",
@@ -316,7 +312,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "settings:view",
     group: "governance",
     resource: "settings",
-    pending: true,
   },
 ])
 

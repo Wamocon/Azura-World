@@ -800,13 +800,72 @@
       "count": "{count, plural, other {# belge}}",
       "empty": "Belge yok.",
       "upload": "Belge yükle",
-      "signedUrlNotice": "İndirme bağlantıları yalnızca sınırlı süre geçerlidir.",
+      "signedUrlNotice": "İndirme bağlantıları {seconds} saniye geçerlidir. Sonrasında yenisini isteyin.",
       "columns": {
         "name": "Ad",
         "category": "Kategori",
         "size": "Boyut",
         "uploadedAt": "Yükleme",
-        "uploadedBy": "Yükleyen"
+        "uploadedBy": "Yükleyen",
+        "review": "İnceleme durumu",
+        "expires": "Bitiş"
+      },
+      "seedNotice": "Örnek veri. Bu liste veritabanından değil, örnek bir kümeden geliyor.",
+      "register": "Arşiv",
+      "registerLead": "Görünümünüzde {count} belge var.",
+      "registerCaption": "Kategori, inceleme durumu ve bitiş tarihiyle belgeler.",
+      "emptyLead": "Görünümünüzde belge yok.",
+      "categories": {
+        "title_deed": "Tapu",
+        "contract": "Sözleşme",
+        "invoice": "Fatura",
+        "identity": "Kimlik belgesi",
+        "permit": "İzin",
+        "insurance": "Sigorta",
+        "handover": "Teslim",
+        "inspection": "Denetim",
+        "correspondence": "Yazışma",
+        "marketing": "Tanıtım",
+        "evidence": "Kanıt",
+        "general": "Genel"
+      },
+      "review": {
+        "pending_review": "İncelenmedi",
+        "approved": "İncelendi",
+        "rejected": "Reddedildi"
+      },
+      "sizeUnknown": "Belirtilmemiş",
+      "noExpiry": "Bitiş yok",
+      "uploadLead": "PDF, PNG, JPEG, WEBP, Word ve Excel kabul edilir.",
+      "uploading": "Yükleniyor",
+      "fileLabel": "Dosya",
+      "fileHint": "En fazla {megabytes} MB. Dosya uzantısı değil, içeriği denetlenir. {bucket} içinde saklanır ve yalnızca süreli bağlantılarla erişilir.",
+      "resultHeading": "Sonuç",
+      "storedAs": "Saklanan ad",
+      "stored": "Belge saklandı ve günlüğe yazıldı. Biri inceledikten sonra görünür olur.",
+      "storedUnaudited": "Dosya arşivde, günlük kaydı eksik. Lütfen yeniden deneyin.",
+      "storageUnavailable": "Bu kurulumda dosya deposu yok. Hiçbir şey kaydedilmedi.",
+      "storageNotConfigured": "Dosya deposu kurulmadı. Yükleme başarı taklidi yerine 503 ile reddedilir.",
+      "signedUrlUnavailable": "Bu belge için şu anda bağlantı üretilemiyor.",
+      "noFile": "Lütfen bir dosya seçin.",
+      "readOnlyNotice": "Belgeleri görebilir, yükleyemezsiniz.",
+      "forbidden": {
+        "title": "Arşive erişim yok",
+        "message": "Rolünüz bu belgeleri göremez. Adres geçerli kalır.",
+        "permissionLabel": "Gereken yetki:"
+      },
+      "rejection": {
+        "empty": "Dosya boş.",
+        "too_large": "Dosya çok büyük.",
+        "too_small": "Dosya tanınamayacak kadar küçük.",
+        "type_not_allowed": "Bu dosya biçimi kabul edilmiyor.",
+        "content_is_markup": "Dosya web sayfası kodu içeriyor. Uzantısı ne derse desin kabul edilmez.",
+        "content_mismatch": "İçerik, belirtilen dosya türüyle uyuşmuyor. Ad değil, içerik denetlendi.",
+        "content_unrecognised": "İçerik, kabul edilen hiçbir dosya türüyle eşleşmedi."
+      },
+      "failed": {
+        "object": "Dosya saklanamadı.",
+        "row": "Dosya arşivde, arşiv kaydı eksik."
       }
     },
     "compliance": {
@@ -815,7 +874,81 @@
       "empty": "Açık madde yok.",
       "dueSoon": "Yaklaşan",
       "overdue": "Gecikmiş",
-      "compliant": "Karşılandı"
+      "compliant": "Karşılandı",
+      "seedNotice": "Örnek veri. Bu denetimler örnek bir kümeden geliyor.",
+      "overclaimNotice": "{count} denetim, gösterilebilecek bir dayanak olmadan geçti olarak kaydedilmiş.",
+      "kpi": {
+        "provable": "Kanıtlanabilir",
+        "provableHint": "{total} denetimin {proven} tanesi geçerli kanıta dayanıyor.",
+        "noChecks": "Belirtilmemiş",
+        "overclaimed": "Kanıtsız geçti",
+        "overclaimedHint": "Geçti olarak kaydedilmiş ama gösterilemiyor. Önemli olan sayı bu.",
+        "unproven": "Gösterilemiyor",
+        "unprovenHint": "Kanıt yok, kanıt incelenmemiş veya kanıtın süresi dolmuş.",
+        "overdue": "Gecikmiş",
+        "overdueHint": "Süre doldu."
+      },
+      "checks": "Denetimler",
+      "checksLead": "Tarihe göre değil, aciliyete göre sıralı.",
+      "checksCaption": "Kanıt durumu, kayıt ve süreyle denetimler.",
+      "emptyLead": "Bu kurulum için henüz denetim kaydedilmedi.",
+      "columns": {
+        "check": "Denetim",
+        "subject": "Konu",
+        "state": "Kanıt durumu",
+        "recorded": "Kayıtlı hali",
+        "evidence": "Kanıt",
+        "due": "Süre"
+      },
+      "states": {
+        "proven": "Kanıtlı",
+        "not_evidenced": "Kanıt yok",
+        "evidence_unreviewed": "Kanıt incelenmemiş",
+        "evidence_expired": "Kanıtın süresi dolmuş",
+        "failed": "Geçmedi",
+        "open": "Açık"
+      },
+      "stateExplained": {
+        "proven": "Geçti olarak kaydedilmiş, incelenmiş ve hâlâ geçerli bir belgeye dayanıyor.",
+        "not_evidenced": "Geçti veya muaf olarak kaydedilmiş, ekli belge yok. İnanıyoruz ama gösteremiyoruz.",
+        "evidence_unreviewed": "Belge ekli ama kimse incelememiş.",
+        "evidence_expired": "Belge geçerliydi, artık değil.",
+        "failed": "Geçmedi olarak kaydedilmiş.",
+        "open": "Hâlâ üzerinde çalışılıyor. Bir iddia yok."
+      },
+      "recorded": {
+        "pending": "Açık",
+        "in_review": "İncelemede",
+        "passed": "Geçti",
+        "failed": "Geçmedi",
+        "waived": "Muaf"
+      },
+      "checkTypes": {
+        "kyc_identity": "Kimlik doğrulama",
+        "aml_screening": "Aklama incelemesi",
+        "sanctions_screening": "Yaptırım taraması",
+        "title_deed": "Tapu",
+        "occupancy_permit": "İskan izni",
+        "building_permit": "Yapı ruhsatı",
+        "fire_safety": "Yangın güvenliği",
+        "earthquake_certificate": "Deprem belgesi",
+        "energy_certificate": "Enerji belgesi",
+        "tax_registration": "Vergi kaydı",
+        "residence_permit": "Oturma izni",
+        "insurance": "Sigorta",
+        "gdpr_consent": "Veri koruma onayı",
+        "contract_review": "Sözleşme incelemesi",
+        "vendor_due_diligence": "Tedarikçi incelemesi"
+      },
+      "noEvidence": "Kanıt yok",
+      "noDueDate": "Süre yok",
+      "method": "Bu sayfa nasıl sayıyor",
+      "methodLead": "Bir şeye inanmakla onu gösterebilmek arasındaki fark.",
+      "forbidden": {
+        "title": "Uyuma erişim yok",
+        "message": "Rolünüz bu denetimleri göremez. Adres geçerli kalır.",
+        "permissionLabel": "Gereken yetki:"
+      }
     },
     "reports": {
       "title": "Raporlar",
@@ -824,7 +957,66 @@
       "generate": "Rapor oluştur",
       "generating": "Rapor oluşturuluyor …",
       "ready": "Rapor hazır",
-      "queuedNotice": "Rapor arka planda oluşturuluyor. Bu sayfadan ayrılabilirsiniz."
+      "queuedNotice": "Rapor arka planda oluşturuluyor. Bu sayfadan ayrılabilirsiniz.",
+      "catalogue": "Kullanılabilir raporlar",
+      "catalogueLead": "Her rapor, gerektirdiği yetkiyle birlikte.",
+      "carriesProvenance": "Kaynak taşır",
+      "requiresPermission": "Gerektirir",
+      "downloadCsv": "CSV olarak indir",
+      "notPermitted": "İzin yok",
+      "formats": "Biçimler",
+      "formatsLead": "Bugün neyin üretilebildiği ve neyin üretilemediği.",
+      "available": "Kullanılabilir",
+      "unavailable": "Kullanılamaz",
+      "formatReason": {
+        "csv_ready": "İstek üzerine, kaynak sütunlarıyla üretilir.",
+        "no_library": "Bunun için bir yazılım kitaplığı eksik. Kurmak W0-A'nın işi."
+      },
+      "unavailableReason": {
+        "not_built": "Henüz yapılmadı"
+      },
+      "scheduled": "Zamanlanmış raporlar",
+      "scheduledLead": "Arka planda çalışıp arşivlenen raporlar.",
+      "jobsUnavailable": "Arka plan raporları {status} yanıtı verir. {table} tablosu yok, sorumlusu {owner}. Hiçbir şey üretmeyen bir düğme yanıltıcı olurdu.",
+      "columns": {
+        "metric": "Ölçüt",
+        "value": "Değer",
+        "basis": "Dayanak",
+        "publisher": "Yayıncı",
+        "url": "Adres",
+        "tier": "Kademe",
+        "fetchedAt": "Alınma",
+        "snapshotHash": "Sağlama toplamı",
+        "lastStatus": "Son durum",
+        "lastOk": "Son doğrulama"
+      },
+      "csv": {
+        "generatedAt": "Üretim tarihi",
+        "source": "Veri kaynağı"
+      },
+      "reports": {
+        "evidence_coverage": {
+          "title": "Kanıt kapsamı",
+          "lead": "Kaç bilginin kanıtı var, kaçı yalnızca iddia ve boşluklar nerede."
+        },
+        "source_register": {
+          "title": "Kaynak listesi",
+          "lead": "Her kaynak, adresi, kademesi, alınma zamanı ve saklanan kopyanın sağlama toplamıyla."
+        },
+        "inventory_split": {
+          "title": "Envanter dağılımı",
+          "lead": "Gerçek ilanlara karşı modellenmiş kayıtlar, blok blok."
+        },
+        "compliance_gaps": {
+          "title": "Uyum boşlukları",
+          "lead": "Kanıtı olmayan denetimler, süreye göre."
+        }
+      },
+      "forbidden": {
+        "title": "Raporlara erişim yok",
+        "message": "Rolünüz bu değerlendirmeleri göremez. Adres geçerli kalır.",
+        "permissionLabel": "Gereken yetki:"
+      }
     },
     "users": {
       "title": "Kullanıcılar",
@@ -837,7 +1029,79 @@
         "email": "E-posta",
         "role": "Rol",
         "status": "Durum",
-        "lastSeen": "Son etkinlik"
+        "lastSeen": "Son etkinlik",
+        "created": "Oluşturma",
+        "active": "Etkin",
+        "total": "Toplam"
+      },
+      "countLabel": "Hesaplar",
+      "adminCount": "Etkin yöneticiler",
+      "adminCountLead": "Son etkin yöneticinin yetkisi düşürülemez ve hesabı kapatılamaz.",
+      "directory": "Rehber",
+      "directoryLead": "Görmenize izin verilen tüm hesaplar.",
+      "directoryCaption": "Rol, durum ve oluşturma tarihiyle hesaplar.",
+      "emptyLead": "Görünümünüzde hesap yok.",
+      "coverage": "Rol kapsamı",
+      "coverageLead": "Her rolü fiilen kaç kişinin taşıdığı.",
+      "coverageCaption": "Kimsenin taşımadıkları dahil on bir rolün tamamı.",
+      "noHolder": "Kimse yok",
+      "unnamed": "İsimsiz",
+      "noEmail": "Belirtilmemiş",
+      "unknownRole": "Bilinmeyen rol",
+      "active": "Etkin",
+      "inactive": "Engelli",
+      "seedNotice": "Örnek veri. Bu liste veritabanından değil, örnek bir kümeden geliyor.",
+      "restrictedNotice": "Listenin bir bölümünü görüyorsunuz. Rolünüz rehberin tamamını kapsamıyor.",
+      "profileDegraded": "Kendi profiliniz eksiksiz okunamadı, bu yüzden haklarınız en aza indirildi.",
+      "readOnlyNotice": "Rolleri görebilir, değiştiremezsiniz.",
+      "assign": "Rol ata",
+      "assignLead": "Yalnızca yöneticiler. Reddedilenler dahil her değişiklik kaydedilir.",
+      "person": "Kişi",
+      "submit": "Rolü kaydet",
+      "submitting": "Kaydediliyor",
+      "noCandidates": "Rolünü değiştirebileceğiniz kimse yok.",
+      "elevationWarning": "Kimse kendi rolünü değiştiremez. Aşağı doğru bile.",
+      "statusHeading": "Sonuç",
+      "roleSaved": "Rol kaydedildi ve günlüğe yazıldı.",
+      "activated": "Hesap yeniden etkin.",
+      "deactivated": "Hesap engellendi. Geçmişi korunuyor.",
+      "auditIncomplete": "Değişiklik kaydedildi, günlük kaydı yazılamadı. Lütfen yeniden deneyin.",
+      "unavailable": "Bu değişiklik için veritabanı gerekiyor. Hiçbir şey kaydedilmedi.",
+      "writeFailed": "Değişiklik kaydedilemedi.",
+      "forbidden": {
+        "title": "Kullanıcı yönetimine erişim yok",
+        "message": "Rolünüz bu listeyi göremez. Adres geçerli kalır ve yetkisi olan kişilerde çalışır.",
+        "permissionLabel": "Gereken yetki:"
+      },
+      "refusal": {
+        "not_authenticated": "Oturum açmadınız.",
+        "not_permitted": "Rolünüz rol atayamaz.",
+        "self_elevation": "Kimse kendi rolünü yükseltemez. Başka bir yöneticiden isteyin.",
+        "self_role_change": "Kimse kendi rolünü değiştiremez. Düşürmek de buna dahildir.",
+        "unknown_role": "Böyle bir rol yok.",
+        "unknown_subject_role": "Bu hesap, sistemin tanımadığı bir rol taşıyor.",
+        "no_change": "Bu rol zaten atanmış. Hiçbir şey değişmedi.",
+        "last_admin": "Bu son etkin yönetici. Yönetici kalmazsa sistemi kimse yönetemez. Önce ikinci bir yönetici oluşturun.",
+        "census_unavailable": "Kaç yönetici olduğu şu anda saptanamıyor. Bu açık kaldığı sürece hiçbir şey değiştirilmez.",
+        "deletion_not_supported": "Hesaplar engellenir, silinmez. Geçmişin korunması gerekir."
+      },
+      "roles": {
+        "admin": "Yönetici",
+        "manager": "Site müdürü",
+        "accountant": "Muhasebe",
+        "staff": "Teknik servis",
+        "owner": "Malik",
+        "tenant": "Kiracı",
+        "guest": "Misafir",
+        "service_provider": "Hizmet sağlayıcı",
+        "child_owner": "Malik (alt hesap)",
+        "child_tenant": "Kiracı (alt hesap)",
+        "child_guest": "Misafir (alt hesap)"
+      },
+      "invitations": {
+        "title": "Davetler",
+        "lead": "Yeni kişiler için tek kullanımlık, süreli erişim.",
+        "unavailable": "Davetler henüz yapılmadı. invitations tablosu yok, sorumlusu W1-A. Yazacak yeri olmayan bir form yanıltıcı olurdu."
       }
     },
     "admin": {
@@ -846,7 +1110,86 @@
       "auditLog": "Denetim kaydı",
       "jobs": "İşler",
       "health": "Sistem durumu",
-      "empty": "Kayıt yok."
+      "empty": "Kayıt yok.",
+      "profileDegraded": "Kendi profiliniz eksiksiz okunamadı, bu yüzden haklarınız en aza indirildi.",
+      "auditReason": {
+        "no_database": "Bu kurulumda veritabanı yok.",
+        "no_server_key": "Günlük kaydı için gereken sunucu anahtarı eksik.",
+        "insert_failed": "Veritabanı günlük kaydını reddetti."
+      },
+      "forbidden": {
+        "title": "Yönetime erişim yok",
+        "message": "Bu sayfa yöneticiler içindir. Adres geçerli kalır ve yetkisi olan kişilerde çalışır.",
+        "permissionLabel": "Gereken yetki:"
+      },
+      "integrations": {
+        "title": "Bağlı servisler",
+        "lead": "Neyin kurulu olduğu ve bunun ne kadarının gerçekten sınandığı.",
+        "noneConfigured": "Kurulu tek bir servis yok. Bu kurulum tamamen örnek veriyle çalışıyor.",
+        "wiredFalse": "Bağlı değil",
+        "readFrom": "Okunduğu yer",
+        "check": "Bağlantıyı sına",
+        "checking": "Sınanıyor",
+        "forbidden": "Bağlantıyı yalnızca yöneticiler sınayabilir.",
+        "invalid": "Bu istek geçerli değildi.",
+        "latency": "Yanıt süresi",
+        "name": {
+          "supabase": "Veritabanı (Supabase)",
+          "storage": "Dosya deposu",
+          "aiGateway": "Yapay zeka servisi",
+          "jira": "Jira"
+        },
+        "note": {
+          "supabase": "Tüm temel verileri tutar.",
+          "storage": "Belgeler için. Depolama alanı henüz oluşturulmadı, bu yüzden yükleme 503 yanıtı verir.",
+          "aiGateway": "Asistanın yanıtları için.",
+          "jira": "Yalnızca bir betikte kullanılıyor, uygulamada hiçbir yerde."
+        }
+      },
+      "integrationState": {
+        "not_configured": "Kurulu değil",
+        "configured_unverified": "Kurulu, sınanmamış",
+        "reachable": "Yanıt veriyor",
+        "unreachable": "Yanıt vermiyor"
+      },
+      "system": {
+        "title": "Sistem bilgileri",
+        "lead": "Bu kurulumun kendisi hakkında kanıtlayabildikleri.",
+        "contractVersion": "Arayüz sürümü",
+        "locales": "Diller",
+        "accessProfiles": "Test için rol değiştirici",
+        "accessProfilesOn": "Açık",
+        "accessProfilesOff": "Kapalı",
+        "migrations": "Uygulanan veritabanı sürümleri",
+        "migrationsUnknown": "Belirtilmemiş",
+        "notice": "Hangi veritabanı sürümlerinin uygulandığını uygulama kendisi saptayamıyor. Tahmin etmek yerine açık bırakılıyor."
+      },
+      "audit": {
+        "title": "Günlük",
+        "lead": "Her değişiklik ve her ret, geliş sırasına göre.",
+        "caption": "Günlük kayıtları, en yenisi önce.",
+        "emptyTitle": "Günlük kaydı yok",
+        "emptyBody": "Bu sayfada kayıt yok. Bu bir hata değil: bu kurulumda henüz hiçbir şey kaydedilmedi.",
+        "appendOnly": "Günlük yalnızca büyüyebilir. Burada bir kaydı değiştirme veya silme yolu yok, veritabanı da her ikisini reddediyor.",
+        "seedNotice": "Örnek veri. Bu kayıtlar örnek bir kümeden geliyor.",
+        "columns": {
+          "when": "Zaman",
+          "action": "İşlem",
+          "entity": "İlgili",
+          "actor": "Yapan",
+          "change": "Değişiklik"
+        },
+        "unknownActor": "Belirtilmemiş",
+        "noChange": "Alan değişikliği yok",
+        "previous": "Geri",
+        "next": "İleri",
+        "page": "Sayfa"
+      },
+      "access": {
+        "title": "Erişim kararları",
+        "lead": "Kimin nereye alındığı ve kimin alınmadığı.",
+        "caption": "Erişim kararları, en yenisi önce."
+      }
     },
     "settings": {
       "title": "Ayarlar",
@@ -861,7 +1204,52 @@
         "dark": "Koyu",
         "system": "Sistem"
       },
-      "saved": "Ayarlar kaydedildi"
+      "saved": "Ayarlar kaydedildi",
+      "profileDegraded": "Kendi profiliniz eksiksiz okunamadı, bu yüzden haklarınız en aza indirildi.",
+      "accountLead": "Bu sistemin hesabınız hakkında bildikleri.",
+      "email": "E-posta",
+      "noEmail": "Belirtilmemiş",
+      "role": "Rol",
+      "sessionSource": "Oturum türü",
+      "sessionSources": {
+        "supabase": "Oturum açık",
+        "access-profile": "Test rolü",
+        "anonymous": "Oturum kapalı"
+      },
+      "roleFixedNotice": "Kendi rolünüzü burada değiştiremezsiniz. Bunu yalnızca başka bir yönetici yapabilir.",
+      "preferences": "Tercihleriniz",
+      "preferencesLead": "Yalnızca sizin hesabınız için geçerlidir.",
+      "fullName": "Ad",
+      "phone": "Telefon",
+      "languageHint": "Yalnızca kendi dilinizi değiştirir, başkasınınkini değil.",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor",
+      "resultHeading": "Sonuç",
+      "savedAs": "Saklanan dil:",
+      "auditIncomplete": "Kaydedildi, günlük kaydı eksik.",
+      "noDatabase": "Bunun için veritabanı gerekiyor. Kaydedilmedi.",
+      "writeFailed": "Kaydedilemedi.",
+      "locales": {
+        "de": "Almanca",
+        "en": "İngilizce",
+        "tr": "Türkçe",
+        "ru": "Rusça"
+      },
+      "appearanceLead": "Tüm uygulama için geçerlidir.",
+      "themeFixedNotice": "Açık tasarım herkes için sabit. Buradaki bir seçim hiçbir şey yapmazdı, bu yüzden yok.",
+      "notificationsLead": "Bu sistemin sizinle ne zaman iletişim kuracağı.",
+      "notificationsUnavailable": "Bildirimler henüz yapılmadı. Tercihler tablosu yok, sorumlusu W1-A.",
+      "organisation": "Kuruluş",
+      "organisationLead": "Yalnızca yöneticiler.",
+      "companyId": "Tanımlayıcı",
+      "noCompany": "Belirtilmemiş",
+      "organisationReadOnly": "Bu bilgiler burada yalnızca okunabilir. Düzenleme henüz yok.",
+      "openAdmin": "Yönetime git",
+      "forbidden": {
+        "title": "Ayarlara erişim yok",
+        "message": "Rolünüz bu sayfayı göremez. Adres geçerli kalır.",
+        "permissionLabel": "Gereken yetki:"
+      }
     },
     "hotel": {
       "title": "Otel operasyonu",
