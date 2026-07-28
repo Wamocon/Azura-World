@@ -1,12 +1,13 @@
 # HANDOFF — W3-G Hotel & review intelligence
 
-STATUS: PARTIAL
+STATUS: COMPLETE
 Completed: 2026-07-28
 Window: E · Branch: `feature/INTERNAL-107-w3g-hotel` · Worktree: `D:\azura-w3g`
 
-**PARTIAL, and deliberately so.** The public page is complete and verified. The two
-dashboard surfaces are not started, because they need the module contract that
-`HANDOFF/W3-B.md` will publish and that file does not exist yet. Detail in §7.
+**COMPLETE as of 2026-07-28.** The public page shipped on 2026-07-27. The two dashboard
+surfaces — `/dashboard/hotel` and `/dashboard/reviews` — were blocked on W3-B's module contract;
+that landed, and they are now built and verified against a production build. **§11 is the
+addendum**; §7 below is the record of why they were not started at the time and is left standing.
 
 ---
 
@@ -309,3 +310,175 @@ intact.
   visual weight is carried by type and structure instead. If W0-D promotes specific
   assets to `attributed_display`, a captioned evidence strip would fit under the facts
   section.
+
+---
+
+# §11 — ADDENDUM (2026-07-28): the two dashboard surfaces
+
+Branch `feature/INTERNAL-107-w3g-dashboard`, from `origin/main` @ `8a7716a`.
+
+§7 said these were not started because W3-B had not published its module contract. It has, so they
+are built: **`/dashboard/hotel`** and **`/dashboard/reviews`**, verified against a production build.
+`scripts/hotel-dashboard-verify.mjs` — **51 pass · 0 fail**.
+
+## 11.1 The averaging rule, and the grep that proves it
+
+`tasks/W3-G`: *"A 4.0/5 and an 8.2/10 are not commensurable and combining them invents a number."*
+
+Grep over every file this window owns — `components/hotel/**`, `app/[locale]/hotel/**`,
+`app/[locale]/dashboard/{hotel,reviews}/**` — for `reduce` · `/ length` · `/ count` · `average` ·
+`mean` · `median` · `normalis` · `normaliz`:
+
+**Ten matches. Every one is a doc-comment stating the rule, a published bucket label, or a
+`data-slot` named after the rule. Zero arithmetic.**
+
+| match | what it is |
+|---|---|
+| `select.ts:11–14, 26, 75` · `platform-score-card.tsx:23` · `platform-score-table.tsx:14–29` · `reviews/page.tsx:16–23` | comments stating the prohibition |
+| `select.ts:251, 271, 279` · `hotel/page.tsx:126` | `"average"` as one of Tripadvisor's own five bucket names — a published label, not an operation |
+| `platform-score-table.tsx:188` | `data-slot="no-average-note"` |
+| `select.ts:303` | sums the five sentiment buckets **of one platform** to get that platform's own denominator |
+| `select.ts:381` | counts quote rows |
+
+Neither `reduce` touches a score, and neither spans two platforms. The two files added here —
+`platform-score-table.tsx` and `room-breakdown.tsx` — contain no `reduce`, no division and no
+normalisation at all.
+
+### The rule is enforced by shape, not by discipline
+
+`PlatformScoreTable` takes `ReviewSourceRecord[]` — rows carrying `score` and `scoreScale`
+*together*. There is no prop through which a caller could pass a combined figure. And the score and
+its scale share **one table cell**, not two columns: two columns can be sorted apart by a
+spreadsheet, and a bare `4,6` in a clipboard is exactly the artefact this rule exists to prevent.
+
+A row whose `scoreScale` is `null` renders **"Skala unbrauchbar"**, not a bare number. `scoreScale`
+is `NOT NULL CHECK (5, 10)` in W1-A's schema, so `null` means the row broke that constraint — and a
+score whose scale is unknown is not a score.
+
+## 11.2 **The repository offers a mean. These pages refuse it.**
+
+This is the finding of this addendum, and it is not in W3-G's code.
+
+`lib/hotel-repository.ts` — W2-A's file — exports `getReviewSummary()`, which returns:
+
+```ts
+meanNormalisedScore: round2(scored.reduce((sum, s) => sum + s, 0) / scored.length)
+```
+
+computed after rescaling 6.7/10 to 3.35/5. Its doc-comment is careful and correct about the thing
+it *is* careful about — it averages one entry per platform so OnTheBeach's re-served Tripadvisor
+score is not counted twice (F-016). But the operation itself is the one `tasks/W3-G` forbids, and
+it is **already exposed through the API** at `GET /api/site-management/reviews?normaliseTo=`.
+
+No UI renders it today. `/dashboard/reviews` calls `getReviewSources()` instead. So the forbidden
+number is one `fetch` away from a screen, defended only by nobody having reached for it yet.
+
+**The same trap exists in the message catalogue.** `dashboard.reviews.average` ("Durchschnitt") and
+`dashboard.hotel.adr` ("Durchschnittsrate") already exist as scaffold keys. A label that exists
+invites the render it labels.
+
+Both are requests, not defects here — §11.7.
+
+## 11.3 `/dashboard/hotel` — what is known, and what is not
+
+| | |
+|---|---|
+| Rooms | **188**, rendered |
+| Room-type breakdown | **explicit absence.** `hotel_rooms` is empty because no source publishes a split; `RoomBreakdown` renders the repository's own sentence saying so, inside a dashed panel, with the total beside it |
+| Occupancy | **explicit gap.** No source states a rate and there is no booking system behind this to compute one |
+| Relationship | 188 hotel rooms beside 656 residence units, with the two water distances kept apart — the residence to the sea, the hotel to the public beach (F-003) |
+
+A plausible room grid — 90 standard, 60 family, 30 suite — would have taken five minutes and would
+have been the exact failure this product exists to make visible. So would a "78 %" occupancy: it is
+the single most damaging number this build could invent, because it is what a competitor analysis
+gets read for. The verify script asserts **no percentage appears near the occupancy heading**.
+
+`RoomBreakdown` also shows the hotel's own total beside the sum of published rows and flags a
+mismatch rather than picking one. If the two ever disagree that is a finding, not a rounding error.
+
+## 11.4 The beach-distance unit — corrected
+
+§10 recorded that the public page renders **"1.000 m"** while its own prose says **"1 km"**: both
+correct, both sourced, and jarring beside each other. It was left as *"slightly inelegant, not
+wrong"* and **no fix was made at the time** — there was nothing to hold.
+
+The dashboard now presents a metre value as km once it passes 1000, with the exact metre figure in
+a `title`. Unlike a currency conversion this is exact and universal — 1000 m *is* 1 km, there is no
+rate and no rate date — so the unit changes and the evidence does not.
+
+**The public `/hotel` page still renders `format="metres"`** and is unchanged by this branch. Its
+own §9 request to W1-D (a `maximumFractionDigits` passthrough on `ProvenanceValue`) is the right
+place to solve it there; doing it locally in two places would be two behaviours to keep in step.
+
+## 11.5 Language and titles — recorded, not closed
+
+Both stay `[GAP]`, and both are now stated **on each quote card** rather than once at the bottom, so
+a card taken out of context cannot read as "this review had no title":
+
+- **Language** — the dataset carries no language field per quote. `lib/language-detection.ts` is a
+  heuristic built for chat routing; labelling a real person's review with a guessed language is the
+  same class of error as translating it.
+- **Titles** — the harvest recovered review *bodies* only. `tasks/W3-G` quotes a title as the
+  negative extreme; reconstructing one from the body would be writing words and attributing them to
+  a guest.
+
+Both need W0-B to re-harvest with the attributes captured.
+
+## 11.6 Verification
+
+| Gate | Result |
+|---|---|
+| `node scripts/hotel-dashboard-verify.mjs` | **51 pass · 0 fail** · exit 0 |
+| `node scripts/check-i18n.mjs` | **PASS** — 853 keys × 4 locales, identical key sets, 1 warning |
+| `pnpm --dir apps/web typecheck` | exit 0 |
+| `pnpm --dir apps/web lint` | exit 0 |
+| `pnpm --dir apps/web build` | exit 0 · both routes `ƒ (Dynamic)` |
+
+The permission matrix is asserted for **all eleven roles × both routes, in both directions**, with
+expectations read from `hasPermission()` rather than written in the test. Worth stating what that
+turned up: `hotel:view` is held by **ten of eleven** roles and `reviews:view` by **nine** — these
+are broadly readable surfaces by design, since the hotel is the public subject of the analysis.
+Only `service_provider` lacks both; `accountant` additionally lacks `reviews:view`.
+
+All four locales render both routes with **zero raw message keys**.
+
+### Four of my own assertions were wrong before any page was
+
+Recorded because three of them would have been reported as defects in working pages.
+
+1. **Seven permission failures** — the test hardcoded four roles as "should be refused". They hold
+   `hotel:view` legitimately. Now derived from the matrix, and the count went from 4 hardcoded
+   cases to 22 generated ones.
+2. **"every score renders beside its scale — 0/3"** — React inserts `<!-- -->` between adjacent
+   text expressions, so the markup is `/ <!-- -->10` and a naive `/\s*10` misses it.
+3. **"an overall score label is rendered"** — matched this page's own sentence, *"Es gibt hier
+   bewusst keinen **Gesamtwert**"*, which says the opposite of what the check was looking for. A
+   negation and an assertion are not distinguishable by grep; the check now requires a label
+   **followed by a number**.
+4. **"the beach distance is a four-digit metre value"** — matched the `title` attribute that exists
+   to preserve the exact stored figure. Assertions of absence now run against visible markup with
+   `<script>` blocks and attributes stripped, because next-intl serialises the whole message
+   namespace into the flight payload and a raw `includes()` sees every label the catalogue carries.
+
+Point 4 is the same class as the false positive W3-C hit on `F-002`, and it is worth generalising:
+**on this codebase, any assertion of absence must strip the flight payload first.**
+
+### One build failure worth recording
+
+`next build` failed with `AccessProfileSafetyError: ENABLE_ACCESS_PROFILES is true in a production
+environment`. That is W1-B's guard working: this worktree's `apps/web/.env.local` carried the three
+QA flags, and `next build` sets `NODE_ENV=production`. `HANDOFF/W2-D.md` warns about exactly this.
+Stripping the three flags from the local file fixed it. **The guard is doing its job and the trap is
+easy to walk into twice** — W0-A's standing request to make `apps/web` load the root `.env.local`
+should exclude those three keys.
+
+## 11.7 Requests for other windows
+
+| # | Owner | Request |
+|---|---|---|
+| 7 | **W2-A** | `getReviewSummary().meanNormalisedScore` is a cross-platform mean of rescaled scores, and it is already reachable at `GET /api/site-management/reviews`. Nothing renders it, which is the only thing currently preventing the forbidden number from appearing on a screen. Either remove it, or rename it to carry its own warning and document that no surface may render it. §11.2. |
+| 8 | **W1-C** | `dashboard.reviews.average` and `dashboard.hotel.adr` exist as scaffold labels for figures this module must never show. A label invites its render. Suggest removing both, or renaming them so their use is a visible decision. |
+| 9 | **W0-B** | Re-harvest capturing **review language** and **review titles**. Both are rendered as explicit gaps today; neither can be closed by guessing. §11.5. |
+| 10 | **W1-D** | The `format="metres"` / prose-in-km mismatch on the public `/hotel` page is unchanged. It belongs with §9's existing request for a fraction-digit passthrough on `ProvenanceValue`. |
+| 11 | **W4-D** | `node scripts/hotel-dashboard-verify.mjs` is a new gate: 51 assertions, exit non-zero on any failure, needs only a production build. |
+| 12 | **W0-A** | If `apps/web` is made to load the root `.env.local` (W2-D's standing request), **exclude `ENABLE_ACCESS_PROFILES`, `AZURA_ALLOW_REMOTE_ACCESS_PROFILES` and `AZURA_DEMO_DATA_ISOLATED`** — with them present, `next build` correctly refuses to start. §11.6. |
