@@ -11,6 +11,7 @@ import {
   type ProvenanceLabels,
 } from "@/components/evidence/provenance-value"
 import { SourceChip } from "@/components/evidence/source-chip"
+import { TableDemo } from "@/components/dashboard/table-demo"
 import { CoastMaquette } from "@/components/three/coast-maquette"
 import { CoastPoster } from "@/components/three/coast-poster"
 import { Badge } from "@/components/ui/badge"
@@ -613,6 +614,27 @@ export default async function KitchenSinkPage({
 
       {/* ---- W3-I, against the real dataset ---- */}
       <ImmersionDemo provenanceLabels={LABELS} />
+
+      {/*
+        The `<DataTable>` harness, moved here by W-UX.
+
+        It used to hang off the dashboard home behind `?w3b=table-demo`. Even
+        gated, a state-machine toggle labelled ready/loading/empty/error on the
+        product's home route is a developer instrument sitting on the first
+        screen a property manager opens. This page is the right home for it: it
+        already 404s in a production build, and proving a component in every
+        state is exactly what a design gallery is for.
+
+        W3-B's 656-row measurement and four-state screenshots still come from
+        here, so nothing that handoff proved is lost.
+      */}
+      <Section
+        id="table-states"
+        title="Tabelle, alle vier Zustände"
+        description="656 Beispielzeilen. Der Umschalter unten ist ein Entwicklerwerkzeug und erscheint auf keiner Produktseite."
+      >
+        <TableDemo locale="de" provenanceLabels={LABELS} />
+      </Section>
     </main>
   )
 }
