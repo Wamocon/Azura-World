@@ -876,7 +876,46 @@
         "inspected": "Inspected",
         "outOfOrder": "Out of order"
       },
-      "bookingSources": "Booking sources"
+      "bookingSources": "Booking sources",
+      "seedNotice": "This view shows local seed data, not live inventory.",
+      "facts": {
+        "name": "Current name",
+        "formerName": "Former name",
+        "brand": "Chain affiliation",
+        "brandNotStated": "Named by no 2026 source (F-018)",
+        "rooms": "Rooms",
+        "stars": "Category",
+        "floors": "Floors",
+        "opened": "Opened",
+        "board": "Board",
+        "aquapark": "Aquapark slides",
+        "checkIn": "Check-in from",
+        "checkOut": "Check-out by",
+        "beach": "To the public beach"
+      },
+      "roomTable": {
+        "heading": "Room structure",
+        "totalLabel": "Rooms in total",
+        "publishedSumLabel": "Sum of published rows",
+        "code": "Code",
+        "type": "Type",
+        "rooms": "Rooms",
+        "area": "Area",
+        "occupancy": "Max occupancy",
+        "seaView": "Sea view",
+        "yes": "Yes",
+        "no": "No",
+        "noBreakdownHeading": "No published breakdown",
+        "mismatch": "The sum of the published rows differs from the hotel's own total. Both figures are shown; neither was adjusted."
+      },
+      "occupancyPanel": {
+        "heading": "Occupancy",
+        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent — it is exactly what a competitor analysis gets read for."
+      },
+      "relationship": {
+        "heading": "Hotel and residence",
+        "body": "The hotel and the residence share a site but not their figures. 188 hotel rooms sit beside 656 residential units; the distances to water are kept apart because they measure two different walks from two different starting points — the residence to the sea, the hotel to the public beach (F-003). Combined, two evidenced figures would become one unevidenced one."
+      }
     },
     "reviews": {
       "title": "Reviews",
@@ -897,6 +936,32 @@
         "title": "Title",
         "language": "Language",
         "publishedAt": "Date"
+      },
+      "seedNotice": "This view shows local seed data, not live inventory.",
+      "noAverageNote": "There is deliberately no overall score here. A 4.6 out of 5 and a 6.7 out of 10 cannot be combined — any number that came out would have no source. The platforms therefore sit side by side, not on top of one another.",
+      "table": {
+        "caption": "Scores per platform, each on the scale it was published on",
+        "platform": "Platform",
+        "publisher": "Served by",
+        "score": "Score",
+        "scale": "Scale",
+        "reviews": "Reviews",
+        "ranking": "Ranking",
+        "fetchedAt": "Fetched",
+        "open": "Open on the platform",
+        "scaleUnknown": "Scale unusable",
+        "syndicated": "Re-served",
+        "none": "No review source was recorded for this property."
+      },
+      "verdict": {
+        "heading": "Both ends of the scale",
+        "lowest": "lowest recorded score",
+        "highest": "highest recorded score",
+        "notTranslated": "Original text, not translated.",
+        "languageGap": "Review language: not captured — the dataset carries no language field, and a guessed language would be the same error as a translation.",
+        "titleGap": "Review title: not captured — the harvest recovered bodies only.",
+        "open": "Open the review on the platform",
+        "none": "There are no rated reviews."
       }
     }
   },
