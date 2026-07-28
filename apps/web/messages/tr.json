@@ -872,21 +872,130 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Site içindeki beş yıldızlı otel.",
+    "lead": "Sitenin arazisindeki 5 yıldızlı otel — değerlendirmeleri, çelişkileri ve her ikisini de belgeleyen kaynaklarıyla.",
     "formerNameNotice": "Daha önce {formerName} adıyla işletiliyordu. Ad değişikliği bulgu olarak kayıtlıdır.",
     "rooms": "Oda",
     "stars": "Sınıf",
     "board": "Pansiyon",
     "aquapark": "Aquapark",
     "beachDistance": "Plaja uzaklık",
-    "checkIn": "Giriş saati",
-    "checkOut": "Çıkış saati",
+    "checkIn": "Giriş",
+    "checkOut": "Çıkış",
     "openedYear": "Açılış",
     "gallery": "Galeri",
     "galleryEmpty": "Bu tesis için yayın izni olan görsel yok.",
     "reviewsTitle": "Misafirler ne yazıyor",
     "reviewsLead": "Kamuya açık değerlendirme platformlarından alıntılar, her biri kaynağıyla.",
-    "bookExternal": "Portalda gör"
+    "bookExternal": "Portalda gör",
+    "eyebrow": "Otel işletmesi · değerlendirme durumu",
+    "meta": {
+      "title": "Azura World Hotel — değerlendirmeler ve kaynaklar",
+      "description": "Sitenin 5 yıldızlı oteli: işletme verileri, değerlendirme platformları ve çelişkiler, her biri kaynağıyla birlikte."
+    },
+    "rebrand": {
+      "heading": "Otelin adı değişti",
+      "body": "Ad değişikliğine kadar otel {formerName} adıyla işletiliyordu. Bazı rezervasyon platformları oteli hâlâ eski adı ve eski adresiyle listeliyor — bunu bilmeyen, tek bir tesis varken iki tesis bulur.",
+      "currentName": "Güncel ad",
+      "formerName": "Önceki ad",
+      "finding": "Bulgu F-007"
+    },
+    "facts": {
+      "heading": "İşletme verileri",
+      "intro": "Her veri, geldiği kaynağa geri götürür. Kaynaklar çeliştiğinde çelişki dipnotta değil, sayının yanında durur."
+    },
+    "floors": "Kat",
+    "distance": {
+      "heading": "İki mesafe, iki referans noktası",
+      "explanation": "Site denize yaklaşık 300 m, otel ise halk plajına yaklaşık 1 km uzaklıkta. Bu bir çelişki değil: iki farklı başlangıç noktasından iki farklı güzergâh ölçülüyor. Her iki değer ayrı alanlarda saklanır ve hiçbir zaman tek bir sayıya indirgenmez.",
+      "residence": "Site → deniz",
+      "hotel": "Otel → halk plajı",
+      "finding": "Bulgu F-003"
+    },
+    "reviews": {
+      "intro": "Her platform kendi ölçeğinde, kendi başına durur.",
+      "noAverageNote": "Burada genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez — çıkacak her sayının kaynağı olmaz. Bu nedenle platformlar üst üste değil, yan yana durur."
+    },
+    "platform": {
+      "tripadvisor": "Tripadvisor",
+      "booking": "Booking.com",
+      "agoda": "Agoda",
+      "onthebeach": "OnTheBeach",
+      "google": "Google",
+      "score": "Puan",
+      "reviewCount": "Değerlendirme",
+      "ranking": "Sıralama",
+      "fetchedAt": "alındığı tarih",
+      "open": "{platform} üzerinde görüntüle",
+      "syndicatedBy": "Aynı puan: {publisher}",
+      "syndicatedNote": "Aynı puan başka siteler tarafından da yayınlanıyor. Bu ikinci, bağımsız bir değerlendirme değil — önünde başka bir logo olan aynı sayı.",
+      "noReviews": "değerlendirme yok"
+    },
+    "sentiment": {
+      "heading": "Puan dağılımı",
+      "bucket": {
+        "excellent": "Mükemmel",
+        "good": "İyi",
+        "average": "Orta",
+        "poor": "Kötü",
+        "terrible": "Berbat"
+      },
+      "countOf": "{total} içinde {count}",
+      "distributionOf": "{total} değerlendirme üzerinden dağılım",
+      "foldOnly": "Bu platform yalnızca kaba bir üçlü ayrım yayınlıyor.",
+      "positive": "Olumlu",
+      "mixed": "Karışık",
+      "negative": "Olumsuz"
+    },
+    "verdict": {
+      "heading": "Ölçeğin iki ucu",
+      "intro": "Solda bu taramada bulunan en düşük, sağda en yüksek puanlı değerlendirme — eşit genişlik, eşit punto. İkisi de aynı listeden hesaplanarak seçilir; yalnızca olumluları gösteren bir görünüm burada yapısal olarak mümkün değildir.",
+      "best": "En yüksek puan",
+      "worst": "En düşük puan",
+      "degenerate": "Puanlanmış yalnızca bir değerlendirme var. Bundan iki uç oluşturulamaz.",
+      "noRatings": "Kaydedilen değerlendirmelerin hiçbiri okunabilir bir puan taşımıyor.",
+      "unrated": "Okunabilir puanı olmayan {count} değerlendirme daha"
+    },
+    "quotes": {
+      "heading": "Kaydedilen tüm değerlendirmeler",
+      "intro": "{count} değerlendirme, kelimesi kelimesine, kısaltılmadan ve çevrilmeden. En düşük ve en yüksek puan en üstte."
+    },
+    "quote": {
+      "ratingOf": "{max} üzerinden {rating}",
+      "ratingUnknown": "Puan okunamadı",
+      "notTranslated": "Özgün metin, çevrilmedi",
+      "expand": "Tamamını göster",
+      "collapse": "Daha az göster",
+      "openReview": "Değerlendirmeyi platformda aç",
+      "published": "Yayınlanma"
+    },
+    "unrecovered": {
+      "heading": "Alınamayan rezervasyon platformları",
+      "intro": "Bu platformlara istek gönderildi ve kullanılabilir içerik dönmedi. Eksik değiller — denendiler ve sonuç burada. Yine de Booking.com kaynaklı bir puan mevcut: booking.com üzerinde değil, üçüncü taraf bir sayfada rozet olarak bulundu. Yukarıdaki platform kartı bu nedenle puanı yayınlayan siteyi belirtiyor.",
+      "status": "Durum",
+      "attempted": "Deneme tarihi",
+      "statusValue": {
+        "expect_missing": "İçerik dönmedi",
+        "redirected": "Yönlendirildi",
+        "blocked_403": "Erişim reddedildi",
+        "dns_timeout": "Ulaşılamadı",
+        "soft_404": "200 durumuyla boş sayfa",
+        "robots_disallowed": "robots.txt ile engellendi"
+      }
+    },
+    "provenance": {
+      "tier": {
+        "official": "Resmî",
+        "developer": "Müteahhit",
+        "hotel": "Otel işletmesi",
+        "portal": "Emlak portalı",
+        "review": "Değerlendirme platformu",
+        "press": "Basın"
+      },
+      "conflictSummary": "{count} kaynak, çözülmedi",
+      "unresolvedNote": "Bilinçli olarak çözülmedi. Ortalama yok, medyan yok, “en olası” seçim yok — bunlardan çıkacak her sayı, yanına kaynak iliştirilmiş bir uydurma olurdu.",
+      "close": "Kapat",
+      "more": "+{count} daha"
+    }
   },
   "report": {
     "title": "Genel rapor",
