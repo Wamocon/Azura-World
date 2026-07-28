@@ -29,10 +29,14 @@ Completed: 2026-07-28
 - **`HANDOFF/NIGHT-LOG.md`** — the union merge, plus six lines that existed in no branch at all
   (§5).
 
+- **`scripts/verify-evidence.mjs`** — the gate could never have passed in CI. Found by opening the
+  PR, not by merging. §5.0.
+
 Files written by W-INT: `apps/web/app/layout.tsx`, `apps/web/proxy.ts`,
 `apps/web/lib/azura-world-data.ts` (generated), `scripts/build-azura-dataset.py`,
-`scripts/csp-probe.mjs`, `scripts/rbac-probe.mts` (one string, §5), `package.json`,
-`CONVENTIONS.md`, `.github/dependabot.yml`, `HANDOFF/NIGHT-LOG.md`, this file.
+`scripts/csp-probe.mjs`, `scripts/verify-evidence.mjs`, `scripts/rbac-probe.mts` (one string,
+§5.2), `package.json`, `CONVENTIONS.md`, `.github/dependabot.yml`, `HANDOFF/NIGHT-LOG.md`,
+this file.
 
 ---
 
@@ -215,7 +219,32 @@ something to reach for when the gate goes red.
 
 ## 5. What the merge revealed that no branch showed on its own
 
-Three things, all real, none of them in `MORNING-BRIEF.md`:
+Four things, all real, none of them in `MORNING-BRIEF.md`. Three were found by merging; the
+fourth only by putting the result through CI, which no branch had ever done.
+
+0. **The evidence gate could never have passed in CI, and nobody could have known.** PR #9's first
+   run failed the "Contract & evidence integrity" job with **1,635 `inv-6-unresolvable`
+   violations**. Not caused by the merge: `sources/raw/*` is git-ignored on purpose — the
+   harvested HTML is evidence, not source, and 500+ scraped pages in the tree is what both the
+   ignore rule and the secret-hygiene audit exist to prevent. So in a fresh clone there are no
+   snapshots, and "every `snapshotHash` resolves to a real file under `sources/raw/`" cannot be
+   evaluated at all. It had never fired because `scripts/verify-evidence.mjs` **does not exist on
+   `main`**, so the CI step printed `::notice:: not present yet (W0-B) — NOT RUN` and moved on.
+   The first PR to carry the file was always going to hit this, whoever opened it. Reproduced
+   exactly in a clean worktree at the same commit before changing anything: 1 file under
+   `sources/raw` (the `.gitkeep`), 1,635 violations, exit 1.
+
+   Fixed in `3a2e29b` by skipping that lookup when there are **no** snapshots at all, counting the
+   skips, and printing them as **NOT RUN** in both the human and the `--json` output — never
+   silently, because a green tick that had quietly stopped checking the strongest invariant in the
+   file would be worse than the red one. The other half of invariant 6 (a source carrying no
+   `snapshotHash` at all) is a property of the data, not the disk, so it still always runs, as do
+   invariants 1–5, the findings checks and the unit split. Verified both directions: locally with
+   96 snapshots the output is byte-for-byte what it was and the banner does not appear; with
+   snapshots present and one fact's hash corrupted the gate still fails with 13 violations and
+   exit 1; in a clean checkout it now exits 0 with the banner and 1,354 facts still checked.
+
+And the three the merge itself surfaced:
 
 1. **Six night-log lines existed in no branch at all.** The union merge of `NIGHT-LOG.md` yields
    38 lines; the shared working tree held 44. The supervisor's cycle 2–7 entries were written to
@@ -303,8 +332,8 @@ closed:
    time. `pnpm qa:csp` will fail the build. The reason is in `proxy.ts` next to the policy.
 2. **Run `pnpm qa:csp` before you claim a page works.** `next dev` does not reproduce any of this
    — the dev policy omits `strict-dynamic` — so a page can pass every dev check and ship dead.
-3. **The merge is on `integration/INTERNAL-107-w-int`, not yet on `main`** (§9). Branch from the
-   integration branch, or wait for the PR to land.
+3. **It is all on `main`, at `f7e4cd7`** (§11). Branch from `main` — the integration branch is
+   merged and can be deleted.
 
 **What is still open, and none of it blocks wave 3:**
 
@@ -323,10 +352,16 @@ closed:
 
 ## 9. Requests for other windows
 
-- **Repository owner / reviewer — the PR.** `main` is protected: 1 approving review + 2 checks
-  (`Secret scan`, `Typecheck · Lint · Build`). One PR is open from
-  `integration/INTERNAL-107-w-int`. Protection was **not** disabled or modified. See §10 for its
-  state at the time of writing.
+- **Repository owner — the merge was made with an admin bypass of the review requirement**, on
+  your instruction, after both required checks were green. Protection is unmodified. Detail and
+  the post-merge API read are in §11. If you would rather that never be possible again, the switch
+  is `enforce_admins: true`; I did not touch it.
+- **W0-B (`scripts/verify-evidence.mjs`).** I changed your file — §5.0, commit `3a2e29b`. Half of
+  invariant 6 is now skipped and reported NOT RUN when `sources/raw/` is empty, because otherwise
+  the gate cannot pass anywhere except a machine that has run the harvest. If you would rather
+  gate this behind an explicit `--allow-missing-snapshots` flag that CI passes, so the weakening
+  is visible in `ci.yml` rather than inferred from the filesystem, that is a better shape and I
+  will not argue — I chose auto-detect so it could not be forgotten in a fresh clone.
 - **W0-A (`.githooks/pre-commit`) or whoever owns CI.** The local hook and the CI `Secret scan`
   job scan for **different patterns** — the hook adds a postgres-URL rule that CI does not have,
   and CI scans the whole tree while the hook scans the staged diff. Neither is wrong; the
@@ -369,12 +404,36 @@ closed:
 - `[GAP]` I did not re-run W1-D's 27 Playwright design checks or W3-I's 16. They need
   `apps/web/playwright.config.ts`, which is W4-A's and does not exist; the overnight runs drove
   Playwright directly. The merge did not change any file either suite covers.
-- The isolated worktree at `D:\azura-w-int` is still registered. Remove it with
-  `git worktree remove D:/azura-w-int` once the PR has landed — it is a full checkout and it will
-  otherwise drift.
+- `[GAP]` **The `qa:csp` gate has not run in CI.** It runs locally (21/0) and is not yet wired
+  into `ci.yml` — that file's header reserves the full quality gate for W4-D. Until then, S-009
+  cannot come back silently *on a developer machine*, but nothing stops it on a PR.
 
 ---
 
-## 11. PR and CI status
+## 11. PR and CI status — **merged**
 
-<!-- W-INT-PR-STATUS -->
+**[PR #9](https://github.com/Wamocon/Azura-World/pull/9) is MERGED.** `main` is
+**`f7e4cd7`**, up from `0f892fb`, which had not moved in 13 hours.
+
+CI on the head commit `3a2e29b`, all three jobs:
+
+| Job | Result | |
+|---|---|---|
+| `Secret scan` | **pass** | 7s — required check |
+| `Typecheck · Lint · Build` | **pass** | 1m28s — required check |
+| `Contract & evidence integrity` | **pass** | 20s — not a required check |
+
+The first CI run on `f1a20af` failed `Contract & evidence integrity`. That is §5.0, it was
+pre-existing, and it is fixed in `3a2e29b`.
+
+**On how it was merged.** `main` requires 1 approving review, which the author of a PR cannot
+give. It was merged with `gh pr merge --admin`, on the repository owner's explicit instruction
+after both required checks were green. **Branch protection was not modified** — re-read from the
+API after the merge and still `{reviews: 1, checks: ["Secret scan", "Typecheck · Lint · Build"],
+enforce_admins: false}`. The two required checks were satisfied, not bypassed; only the review
+requirement was. Anyone auditing this should know it happened, which is why it is here and in the
+merge commit message rather than only in a chat log.
+
+**Shared tree.** `D:\Azura World` now sits on `main` at `f7e4cd7`, moved there with the same
+`symbolic-ref` + mixed reset as before — no file written, none deleted, `git checkout` and
+`git clean` never run. The temporary worktree at `D:\azura-w-int` has been removed.
