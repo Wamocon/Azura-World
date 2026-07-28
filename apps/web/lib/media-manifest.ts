@@ -4,7 +4,7 @@
  * Generator : scripts/media-manifest.mjs  (W0-D, INTERNAL-107)
  * Inputs    : sources/media/assets.json · sources/media/encoded.json
  *             apps/web/lib/lqip.json · sources/media/rights-policy.json
- * Generated : 2026-07-27T17:22:35.085Z
+ * Generated : 2026-07-28T14:23:23.027Z
  *
  * If a value in here is wrong, fix the harvester, the encoder or the rights
  * policy and re-run `node scripts/media-manifest.mjs`. Never edit this file.
@@ -25,10 +25,20 @@
 
 import type { Locale, SourceRef } from "./contracts"
 
-export const MEDIA_MANIFEST_GENERATED_AT = "2026-07-27T17:22:35.085Z" as const
+export const MEDIA_MANIFEST_GENERATED_AT = "2026-07-28T14:23:23.027Z" as const
 
 export type MediaCategory = "render" | "photo" | "floorplan" | "siteplan" | "logo" | "video" | "document"
-export type MediaSubject = "project" | "hotel" | "unit" | "amenity" | "location" | "developer"
+export type MediaSubject =
+  | "project"
+  | "hotel"
+  | "unit"
+  | "amenity"
+  | "location"
+  | "developer"
+  /** Harvested from one of our source pages, but NOT this development. A portal
+   *  that lists several projects embeds videos for all of them. Never render one
+   *  as if it depicted Azura World. */
+  | "unrelated"
 /** Rights posture — see MEDIA-LICENSE.md. Drives whether it may be displayed. */
 export type MediaUsage = "internal_only" | "attributed_display" | "unknown"
 
@@ -3280,7 +3290,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-971f6b51b62b",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:02:59.907Z", snapshotHash: "971f6b51b62bd4921eae1949035e25dd8bc774bb3ef1bb3407e7422dcee6b97b", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:02:59.907Z", snapshotHash: "971f6b51b62bd4921eae1949035e25dd8bc774bb3ef1bb3407e7422dcee6b97b", tier: 4 },
@@ -3311,7 +3321,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-f759d7873971",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:02.452Z", snapshotHash: "f759d7873971c37af4eeb7f08e356e3b853d0eff2573a21e20bbeb15c1da5dea", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:02.452Z", snapshotHash: "f759d7873971c37af4eeb7f08e356e3b853d0eff2573a21e20bbeb15c1da5dea", tier: 4 },
@@ -3373,7 +3383,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-a723735b008b",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:04.837Z", snapshotHash: "a723735b008bfcb7e922c0b80f0215b9e9922ff3c74fb3a81d1b8a6044c3fdee", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:04.837Z", snapshotHash: "a723735b008bfcb7e922c0b80f0215b9e9922ff3c74fb3a81d1b8a6044c3fdee", tier: 4 },
@@ -3462,7 +3472,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-57957e3c4f30",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:07.328Z", snapshotHash: "57957e3c4f3068cc22bdab8a50263569b2ef032c6aa3e2ed87a5bf41915d8749", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:07.328Z", snapshotHash: "57957e3c4f3068cc22bdab8a50263569b2ef032c6aa3e2ed87a5bf41915d8749", tier: 4 },
@@ -3552,7 +3562,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-17555c037b2b",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:09.871Z", snapshotHash: "17555c037b2b4309f1b2072256cf8a01591d5b00d406a9d0c547ab3a01f882e1", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:09.871Z", snapshotHash: "17555c037b2b4309f1b2072256cf8a01591d5b00d406a9d0c547ab3a01f882e1", tier: 4 },
@@ -3583,7 +3593,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-a20b4b03d122",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:12.329Z", snapshotHash: "a20b4b03d1226c425b38df962887e8e265726497724a4e23975c5c741e3fdfe4", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:12.329Z", snapshotHash: "a20b4b03d1226c425b38df962887e8e265726497724a4e23975c5c741e3fdfe4", tier: 4 },
@@ -3645,7 +3655,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-4edc308127d1",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:14.920Z", snapshotHash: "4edc308127d10c9babf87ea499dbf4e6bf9e4cb46f25650fcf92c214ecbd80ee", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:14.920Z", snapshotHash: "4edc308127d10c9babf87ea499dbf4e6bf9e4cb46f25650fcf92c214ecbd80ee", tier: 4 },
@@ -3704,7 +3714,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-ff6f6763bd73",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:17.351Z", snapshotHash: "ff6f6763bd73a68d45f90d9ebe4ac3986f83cbf0962df98c8adc731c105d98a8", tier: 4 },
       { url: "https://alanya-home.com/en/249/terms_and_conditions", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:17.351Z", snapshotHash: "ff6f6763bd73a68d45f90d9ebe4ac3986f83cbf0962df98c8adc731c105d98a8", tier: 4 },
@@ -3794,7 +3804,7 @@ export const mediaAssets: MediaAsset[] = [
   {
     id: "azw-alanya-home-com-626893dce3e5",
     category: "video",
-    subject: "project",
+    subject: "unrelated",
     sources: [
       { url: "https://alanya-home.com/property/466/de/azura-world-residence", publisher: "Alanya-Home", fetchedAt: "2026-07-27T16:03:19.924Z", snapshotHash: "626893dce3e58941574de2bf4ae3c3a5ae5889111d8544d12d2d1c06d0a5a6c0", tier: 4 },
     ],
@@ -25188,7 +25198,7 @@ export interface MediaManifestStats {
 export const mediaManifestStats: MediaManifestStats = {
   total: 833,
   byCategory: { render: 201, photo: 514, floorplan: 13, siteplan: 7, logo: 15, video: 13, document: 70 },
-  bySubject: { project: 368, hotel: 222, unit: 187, amenity: 35, location: 19, developer: 2 },
+  bySubject: { project: 359, hotel: 222, unit: 187, amenity: 35, location: 19, developer: 2, unrelated: 9 },
   byUsage: { internal_only: 789, attributed_display: 0, unknown: 44 },
   videoReferences: 53,
 }

@@ -67,11 +67,14 @@ export type AnnotationState =
  */
 export async function annotateFinding(
   _previous: AnnotationState,
-  formData: FormData,
+  formData: FormData
 ): Promise<AnnotationState> {
   const profile = await getUserProfile()
 
-  if (!profile.authenticated || !hasPermission(profile.role, "evidence:manage")) {
+  if (
+    !profile.authenticated ||
+    !hasPermission(profile.role, "evidence:manage")
+  ) {
     return { status: "forbidden" }
   }
 
@@ -83,7 +86,8 @@ export async function annotateFinding(
     const issue = parsed.error.issues[0]
     return {
       status: "invalid",
-      message: issue === undefined ? "That annotation is not valid." : issue.message,
+      message:
+        issue === undefined ? "That annotation is not valid." : issue.message,
     }
   }
 

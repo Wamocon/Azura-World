@@ -1112,11 +1112,102 @@ export function classify({
     else if (RX.location.test(hay)) subject = "location";
     else subject = "project";
   }
+
+  // Title-relevance gate for VIDEO. See `isRelevantVideo` for why video needs
+  // its own rule and why the default flips to "unrelated" here.
+  if (category === "video" && !isRelevantVideo({ url, alt, caption })) {
+    subject = "unrelated";
+  }
+
   return {
     category,
     subject,
     constructionProgress: isProgress && category === "photo",
   };
+}
+
+/**
+ * Does this video actually depict THIS development?
+ *
+ * ## The failure this exists to stop
+ *
+ * 9 of 13 harvested video posters were filed `subject: "project"` and were
+ * different buildings entirely — Kavi Dreams, Flora Garden, and a football
+ * sponsorship advert. All nine came from ONE page:
+ * `alanya-home.com/property/466/de/azura-world-residence…`. The page is
+ * genuinely about Azura World, so every URL-scope check passed; the agency
+ * simply also embeds a carousel of its *other* developments in the sidebar.
+ *
+ * That is why the existing `assetScope` guard did not catch them. It asks
+ * "is this page about our project", and the answer was yes. The right question
+ * for a video is "is this CLIP about our project", and the page cannot answer it.
+ *
+ * ## Why the default flips
+ *
+ * For an image, inheriting the page's subject is a reasonable prior: a photo on
+ * a project page is usually of that project. For an embedded video it is not —
+ * a video carries its own title and is routinely syndicated across a portfolio.
+ * So video requires POSITIVE evidence of relevance and is marked `"unrelated"`
+ * without it, which is the same posture `confidence: "gap"` takes for a fact:
+ * absence of evidence is recorded as absence, never as a quiet yes.
+ *
+ * `[V]` None of the 9 carried a title, an alt or a caption. The harvester was
+ * not capturing the `<iframe title>` / anchor text at all, so relevance was
+ * unknowable and every poster silently inherited "project". Discovery now
+ * records that text (see `videoTitleFrom`), and this gate reads it.
+ */
+export function isRelevantVideo({
+  url = "",
+  alt = "",
+  caption = "",
+  foundOn = "",
+  sourceHost = "",
+} = {}) {
+  const own = `${url} ${alt} ${caption}`.toLowerCase();
+
+  // Names the development, its developer, or its district in a way no sibling
+  // project on the same portal would match.
+  const RELEVANT =
+    /azura[\s_-]*world|azuraworld|cebeci|t[üu]rkler|azura[\s_-]*residence/;
+
+  // Named siblings and off-topic content seen in the harvest. Explicit, because
+  // an allowlist alone would silently pass a future sibling nobody listed.
+  const KNOWN_UNRELATED =
+    /kavi[\s_-]*dreams|flora[\s_-]*garden|sponsor|football|futbol|forma|kul[üu]b/;
+
+  if (KNOWN_UNRELATED.test(own)) return false;
+  if (RELEVANT.test(own)) return true;
+
+  // No title on the asset itself. Fall back to WHERE it was embedded — but only
+  // on a host that does not syndicate a portfolio carousel across its property
+  // pages, because on those the page subject says nothing about the clip.
+  //
+  // `[V]` alanya-home.com is such a host: all 9 of its video posters came from
+  // the single page /property/466/de/azura-world-residence…, whose URL names
+  // this project, and all 9 are other buildings. The 4 posters from
+  // azuraworld.com, ivm-turkey.com and cestate.net came from pages dedicated to
+  // this project alone and are genuine. That 9/4 split is the whole reason this
+  // function takes `foundOn` and not just the asset.
+  const PORTFOLIO_CAROUSEL_HOSTS = /(^|\.)alanya-home\.com$/i;
+  if (PORTFOLIO_CAROUSEL_HOSTS.test(sourceHost)) return false;
+
+  return RELEVANT.test(String(foundOn).toLowerCase());
+}
+
+/**
+ * Pull the human title off an embedded player: the `<iframe title>`, the
+ * `aria-label`, the anchor text, or the poster's own `alt`. Without one,
+ * `isRelevantVideo` has nothing to judge and correctly returns false.
+ */
+export function videoTitleFrom(node = {}) {
+  return (
+    node.title ??
+    node.ariaLabel ??
+    node.text ??
+    node.alt ??
+    node.caption ??
+    ""
+  ).trim();
 }
 
 // ── rights engine ────────────────────────────────────────────────────────────

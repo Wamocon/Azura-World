@@ -107,9 +107,12 @@ export default async function EvidencePage({
    * hand. Nothing is fetched for a caller who may not see it.
    */
   const profile = await getUserProfile()
-  const mayView = profile.authenticated && hasPermission(profile.role, "evidence:view")
-  const mayExport = profile.authenticated && hasPermission(profile.role, "evidence:export")
-  const mayAnnotate = profile.authenticated && hasPermission(profile.role, "evidence:manage")
+  const mayView =
+    profile.authenticated && hasPermission(profile.role, "evidence:view")
+  const mayExport =
+    profile.authenticated && hasPermission(profile.role, "evidence:export")
+  const mayAnnotate =
+    profile.authenticated && hasPermission(profile.role, "evidence:manage")
 
   if (!mayView) {
     // Rendered server-side rather than left to the client guard, so it holds
@@ -117,8 +120,14 @@ export default async function EvidencePage({
     // of the evidence.
     return (
       <section className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-10 sm:px-6">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("title")}</h1>
-        <p role="alert" data-testid="evidence-forbidden" className="max-w-prose text-sm text-muted-foreground">
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">
+          {t("title")}
+        </h1>
+        <p
+          role="alert"
+          data-testid="evidence-forbidden"
+          className="max-w-prose text-sm text-muted-foreground"
+        >
           {t("forbidden")}
         </p>
       </section>
@@ -286,13 +295,15 @@ export default async function EvidencePage({
                 "inline-flex min-h-6 items-center gap-1.5 rounded-sm text-sm font-medium",
                 "text-primary underline underline-offset-4",
                 "transition-transform duration-150 ease-out active:scale-[0.97]",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               )}
             >
               <Download className="size-4 shrink-0" aria-hidden="true" />
               {t("export.link")}
             </a>
-            <span className="ml-2 text-xs text-muted-foreground">{t("export.note")}</span>
+            <span className="ml-2 text-xs text-muted-foreground">
+              {t("export.note")}
+            </span>
           </p>
         ) : null}
       </header>

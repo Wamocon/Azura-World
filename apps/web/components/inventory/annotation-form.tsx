@@ -2,7 +2,10 @@
 
 import { useActionState } from "react"
 
-import { annotateFinding, type AnnotationState } from "@/app/[locale]/dashboard/evidence/actions"
+import {
+  annotateFinding,
+  type AnnotationState,
+} from "@/app/[locale]/dashboard/evidence/actions"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/cn"
 
@@ -68,18 +71,23 @@ export function AnnotationForm({
     <form
       action={action}
       data-slot="annotation-form"
-      className={cn("flex flex-col gap-3 border-t border-border pt-6", className)}
+      className={cn(
+        "flex flex-col gap-3 border-t border-border pt-6",
+        className
+      )}
     >
       <input type="hidden" name="findingId" value={findingId} />
 
       <div className="flex flex-col gap-1">
         <label
           htmlFor="annotation-note"
-          className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-muted-foreground"
+          className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase"
         >
           {labels.heading}
         </label>
-        <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">{labels.hint}</p>
+        <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">
+          {labels.hint}
+        </p>
       </div>
 
       <textarea
@@ -90,7 +98,7 @@ export function AnnotationForm({
         placeholder={labels.placeholder}
         className={cn(
           "w-full resize-y rounded-md border border-border bg-background p-3 text-sm",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         )}
       />
 

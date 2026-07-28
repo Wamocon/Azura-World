@@ -71,30 +71,52 @@ export async function GET(): Promise<NextResponse> {
 
   if (!profile.authenticated) {
     return NextResponse.json(
-      { ok: false, error: { code: "unauthorized", message: "Sign in to continue.", retryable: false } },
-      { status: 401 },
+      {
+        ok: false,
+        error: {
+          code: "unauthorized",
+          message: "Sign in to continue.",
+          retryable: false,
+        },
+      },
+      { status: 401 }
     )
   }
 
   if (!hasPermission(profile.role, "evidence:export")) {
     return NextResponse.json(
-      { ok: false, error: { code: "forbidden", message: "This export is not available for your role.", retryable: false } },
-      { status: 403 },
+      {
+        ok: false,
+        error: {
+          code: "forbidden",
+          message: "This export is not available for your role.",
+          retryable: false,
+        },
+      },
+      { status: 403 }
     )
   }
 
-  const [findingResult, listingsResult, allSaleResult, sourcesResult] = await Promise.all([
-    getFinding("F-002"),
-    getPortalListings({ layout: F002_LAYOUT, priceKind: "sale", limit: 200 }),
-    getPortalListings({ priceKind: "sale", limit: 400 }),
-    getSources(),
-  ])
+  const [findingResult, listingsResult, allSaleResult, sourcesResult] =
+    await Promise.all([
+      getFinding("F-002"),
+      getPortalListings({ layout: F002_LAYOUT, priceKind: "sale", limit: 200 }),
+      getPortalListings({ priceKind: "sale", limit: 400 }),
+      getSources(),
+    ])
 
   const finding = findingResult.data
   if (finding === null) {
     return NextResponse.json(
-      { ok: false, error: { code: "not_found", message: "F-002 is not in this dataset.", retryable: false } },
-      { status: 404 },
+      {
+        ok: false,
+        error: {
+          code: "not_found",
+          message: "F-002 is not in this dataset.",
+          retryable: false,
+        },
+      },
+      { status: 404 }
     )
   }
 
@@ -108,19 +130,22 @@ export async function GET(): Promise<NextResponse> {
     ...allSaleResult.data.filter((listing) => listing.layout === null),
   ]
     .map(toObservation)
-    .filter((observation): observation is PriceObservation => observation !== null)
+    .filter(
+      (observation): observation is PriceObservation => observation !== null
+    )
 
   const sourcesByUrl = new Map<string, SourceRef>(
-    sourcesResult.data.map((source) => [source.url, source]),
+    sourcesResult.data.map((source) => [source.url, source])
   )
 
   const csv = buildEvidenceCsv(finding, observations, sourcesByUrl)
   const seeded =
-    findingResult.source === "local-seed" || listingsResult.source === "local-seed"
+    findingResult.source === "local-seed" ||
+    listingsResult.source === "local-seed"
 
   const name = csvFilename(
     seeded ? `${finding.id}-LOCAL-SEED` : finding.id,
-    new Date().toISOString(),
+    new Date().toISOString()
   )
 
   // U+FEFF. Excel on Windows reads a BOM-less UTF-8 CSV as the system codepage

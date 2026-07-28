@@ -28,6 +28,7 @@ import {
   SOURCES,
   loadRightsPolicy,
   resolveUsage,
+  isRelevantVideo,
 } from "./harvest-media.mjs";
 
 const OUT = path.join(DIR.lib, "media-manifest.ts");
@@ -129,7 +130,25 @@ async function build() {
   const bySubject = {};
   const skippedNoEncode = [];
 
+  let videoReclassified = 0;
   for (const a of assets) {
+    // The title-relevance gate, applied here as well as in the harvester, so a
+    // corrected rule repairs the manifest from the existing assets.json rather
+    // than requiring a fresh crawl of someone else's servers.
+    if (a.category === "video") {
+      const relevant = isRelevantVideo({
+        url: a.url,
+        alt: a.alt ?? "",
+        caption: a.caption ?? "",
+        foundOn: a.carriedBy?.[0] ?? a.foundOn ?? "",
+        sourceHost: a.sourceHost ?? "",
+      });
+      const next = relevant ? a.subject : "unrelated";
+      if (next !== a.subject) {
+        a.subject = next;
+        videoReclassified++;
+      }
+    }
     const enc = encodedById.get(a.id);
     const u = enc
       ? { usage: enc.usage, reason: enc.usageReason }
@@ -150,6 +169,7 @@ async function build() {
   }
 
   const stats = {
+    videoReclassified,
     generatedAt: new Date().toISOString(),
     total: rows.length,
     usage,
@@ -171,7 +191,17 @@ async function build() {
     `export type MediaCategory = "render" | "photo" | "floorplan" | "siteplan" | "logo" | "video" | "document"`,
   );
   lines.push(
-    `export type MediaSubject = "project" | "hotel" | "unit" | "amenity" | "location" | "developer"`,
+    `export type MediaSubject =
+  | "project"
+  | "hotel"
+  | "unit"
+  | "amenity"
+  | "location"
+  | "developer"
+  /** Harvested from one of our source pages, but NOT this development. A portal
+   *  that lists several projects embeds videos for all of them. Never render one
+   *  as if it depicted Azura World. */
+  | "unrelated"`,
   );
   lines.push(
     `/** Rights posture — see MEDIA-LICENSE.md. Drives whether it may be displayed. */`,
@@ -403,7 +433,7 @@ async function build() {
     `  byCategory: { render: ${cat("render")}, photo: ${cat("photo")}, floorplan: ${cat("floorplan")}, siteplan: ${cat("siteplan")}, logo: ${cat("logo")}, video: ${cat("video")}, document: ${cat("document")} },`,
   );
   lines.push(
-    `  bySubject: { project: ${sub("project")}, hotel: ${sub("hotel")}, unit: ${sub("unit")}, amenity: ${sub("amenity")}, location: ${sub("location")}, developer: ${sub("developer")} },`,
+    `  bySubject: { project: ${sub("project")}, hotel: ${sub("hotel")}, unit: ${sub("unit")}, amenity: ${sub("amenity")}, location: ${sub("location")}, developer: ${sub("developer")}, unrelated: ${sub("unrelated")} },`,
   );
   lines.push(
     `  byUsage: { internal_only: ${usage.internal_only ?? 0}, attributed_display: ${usage.attributed_display ?? 0}, unknown: ${usage.unknown ?? 0} },`,

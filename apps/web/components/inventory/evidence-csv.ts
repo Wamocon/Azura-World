@@ -91,7 +91,7 @@ export class MissingProvenanceColumnError extends Error {
   constructor(missing: readonly string[]) {
     super(
       `The evidence export is missing provenance column(s): ${missing.join(", ")}. ` +
-        "An export that strips sources recreates the problem this system exists to solve.",
+        "An export that strips sources recreates the problem this system exists to solve."
     )
     this.name = "MissingProvenanceColumnError"
   }
@@ -118,7 +118,8 @@ export function assertProvenanceColumns(columns: readonly string[]): void {
  */
 function escapeCell(value: string): string {
   const neutralised = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
-  if (/[",\n\r]/.test(neutralised)) return `"${neutralised.replace(/"/g, '""')}"`
+  if (/[",\n\r]/.test(neutralised))
+    return `"${neutralised.replace(/"/g, '""')}"`
   return neutralised
 }
 
@@ -140,7 +141,7 @@ function cell(value: string | number | boolean | null | undefined): string {
 export function toCsvRows(
   findingId: string,
   observations: readonly PriceObservation[],
-  sourcesByUrl: ReadonlyMap<string, SourceRef>,
+  sourcesByUrl: ReadonlyMap<string, SourceRef>
 ): EvidenceCsvRow[] {
   return observations.map((observation) => {
     const source = sourcesByUrl.get(observation.url)
@@ -172,7 +173,9 @@ export function toCsvRows(
 export function toCsv(rows: readonly EvidenceCsvRow[]): string {
   assertProvenanceColumns(COLUMNS)
   const header = COLUMNS.join(",")
-  const body = rows.map((row) => COLUMNS.map((column) => escapeCell(row[column])).join(","))
+  const body = rows.map((row) =>
+    COLUMNS.map((column) => escapeCell(row[column])).join(",")
+  )
   return [header, ...body].join("\r\n") + "\r\n"
 }
 
@@ -186,7 +189,7 @@ export function toCsv(rows: readonly EvidenceCsvRow[]): string {
 export function buildEvidenceCsv(
   finding: Pick<Finding, "id">,
   observations: readonly PriceObservation[],
-  sourcesByUrl: ReadonlyMap<string, SourceRef>,
+  sourcesByUrl: ReadonlyMap<string, SourceRef>
 ): string {
   return toCsv(toCsvRows(finding.id, observations, sourcesByUrl))
 }
