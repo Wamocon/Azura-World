@@ -1,0 +1,53 @@
+# Supabase configuration — Azura World CATI (INTERNAL-107, task W1-A)
+#
+# `project_id` here is the LOCAL stack identifier only. It is deliberately NOT the
+# cloud project ref: this repository is public and HANDOFF/W0-ENV.md redacted the
+# ref for that reason. The linked cloud ref lives in `.env.local` (git-ignored)
+# and in `supabase/.temp/` after `supabase link`, both of which are ignored.
+#
+# Local ports are offset into the 554xx range. 1Çatı occupies 553xx and both
+# stacks may run at once — see CLAUDE.md §5.
+
+project_id = "azura-world-cati"
+
+[api]
+enabled = true
+port = 55421
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55422
+# Matches the linked cloud project: PostgreSQL 17.6 (verified in HANDOFF/W0-ENV.md).
+major_version = 17
+
+[db.pooler]
+enabled = false
+
+[studio]
+enabled = true
+port = 55423
+
+[inbucket]
+enabled = true
+port = 55424
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3200"
+additional_redirect_urls = ["http://localhost:3200"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[analytics]
+enabled = false
