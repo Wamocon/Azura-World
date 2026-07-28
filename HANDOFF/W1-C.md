@@ -529,3 +529,32 @@ already has the awaited `locale`.
   type"*. That file is **W2-D's**, mid-flight in another window, and is not touched by W1-C or
   W0-D. Reported rather than fixed: reaching into another window's file is what
   SYSTEM-PROMPT §4.1 forbids.
+
+---
+
+# ADDENDUM 3 — merge convention for `messages/{de,en,tr,ru}.json`
+
+Four windows now append to these four files concurrently. **Merge conflicts here are expected,
+and the resolution is always "keep both namespaces" — never pick a side.**
+
+Rules, so that resolution stays mechanical:
+
+1. **Keep every key you add inside your own namespace block.** Add nothing anywhere else in the
+   file, and do not reformat, re-sort or re-indent a line you did not write. A whitespace-only
+   reflow turns a 6-line conflict into a whole-file one.
+2. **`dashboard.*` is the one namespace with multiple claimants** (W3-B … W3-G). Contiguity
+   applies at the *sub*-namespace level there: `dashboard.units.*` is W3-C's single block,
+   `dashboard.finance.*` is W3-D's, and so on. Nobody edits a sibling sub-namespace.
+3. **`common.*`, `nav.*` and `evidence.*` are shared surface.** Request a key rather than adding
+   one — a rename in those three touches eight windows at once.
+4. **Append at the same position in all four locale files.** Namespace order is currently
+   identical across `de`, `en`, `tr` and `ru`; keeping it that way makes the four conflict hunks
+   line up so they resolve the same way.
+5. **`node scripts/check-i18n.mjs` is the backstop for a bad merge.** Rules 1 and 2 (missing key
+   / orphan key) fail non-zero the moment a resolution drops one side, so a lost namespace cannot
+   reach `main` quietly. Run it after every conflict resolution, not just in W4-D's gate.
+
+W1-C itself adds nothing further to these files: the ten namespaces landed in `f9bc385` as the
+structure freeze, and W0-D — the other half of this window's chain — needs no message keys
+(`media-manifest.ts` carries `caption: null` rather than inventing three translations for a
+caption observed in one language).
