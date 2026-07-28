@@ -1,0 +1,768 @@
+{
+  "common": {
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "search": "Search",
+      "filter": "Filter",
+      "reset": "Reset",
+      "apply": "Apply",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "retry": "Try again",
+      "refresh": "Refresh",
+      "export": "Export",
+      "download": "Download",
+      "upload": "Upload",
+      "copy": "Copy",
+      "copied": "Copied",
+      "share": "Share",
+      "print": "Print",
+      "viewAll": "View all",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "skipToContent": "Skip to content",
+      "submit": "Submit",
+      "continue": "Continue"
+    },
+    "states": {
+      "loading": "Loading …",
+      "empty": "No entries",
+      "error": "Error",
+      "partial": "Partially loaded",
+      "offline": "Offline",
+      "saving": "Saving …",
+      "saved": "Saved",
+      "noResults": "No matches",
+      "noData": "No data",
+      "degraded": "Degraded",
+      "live": "Live",
+      "polling": "Polling every 30 s"
+    },
+    "errors": {
+      "generic": "Something went wrong.",
+      "network": "No connection to the server.",
+      "notFound": "Not found.",
+      "forbidden": "No access to this page.",
+      "unauthorized": "Please sign in again.",
+      "validation": "Please check your input.",
+      "timeout": "Request timed out.",
+      "rateLimited": "Too many requests. Please wait a moment.",
+      "serverError": "Server error.",
+      "tryAgain": "Please try again."
+    },
+    "units": {
+      "sqm": "m²",
+      "km": "km",
+      "m": "m",
+      "minutes": "min",
+      "rooms": "rooms",
+      "floors": "floors",
+      "beds": "beds",
+      "baths": "baths",
+      "night": "night",
+      "month": "month",
+      "year": "year",
+      "percent": "%"
+    },
+    "pagination": {
+      "page": "Page",
+      "pageOf": "Page {page} of {total}",
+      "rowsPerPage": "Rows per page",
+      "showing": "{from}–{to} of {total}",
+      "first": "First page",
+      "last": "Last page"
+    },
+    "table": {
+      "sortAscending": "Sort ascending",
+      "sortDescending": "Sort descending",
+      "noRows": "No rows",
+      "selectRow": "Select row",
+      "selectAll": "Select all",
+      "columns": "Columns",
+      "density": "Row height",
+      "selected": "{count, plural, one {# selected} other {# selected}}"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear filters",
+      "active": "{count, plural, one {# filter active} other {# filters active}}",
+      "none": "No filter"
+    },
+    "time": {
+      "now": "Now",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "updatedAt": "Updated {date}",
+      "observedAt": "Observed {date}",
+      "asOf": "As of {date}",
+      "never": "Never"
+    },
+    "boolean": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "nav": {
+    "brand": "Azura World Residence & Hotel",
+    "brandShort": "Azura World",
+    "home": "Home",
+    "project": "Project",
+    "hotel": "Hotel",
+    "amenities": "Amenities",
+    "location": "Location",
+    "evidence": "Evidence",
+    "report": "Report",
+    "dashboard": "Dashboard",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "language": "Language",
+    "languageSelect": "Language selection",
+    "menu": "Menu",
+    "sections": {
+      "hero": "Overview",
+      "why": "The project",
+      "immersion": "Walkthrough",
+      "amenities": "Amenities",
+      "desire": "Hotel",
+      "evidence": "Sources",
+      "action": "Contact",
+      "share": "Share",
+      "love": "Closing"
+    },
+    "groups": {
+      "inventory": "Inventory",
+      "finance": "Finance",
+      "operations": "Operations",
+      "governance": "Governance",
+      "hospitality": "Hotel"
+    },
+    "modules": {
+      "overview": "Overview",
+      "evidence": "Evidence",
+      "units": "Units",
+      "listings": "Listings",
+      "leads": "Leads",
+      "pipeline": "Buyer pipeline",
+      "finance": "Finance",
+      "payments": "Payments",
+      "wallet": "Wallet",
+      "vendorInvoices": "Vendor invoices",
+      "tickets": "Tickets",
+      "activities": "Activities",
+      "calendar": "Calendar",
+      "communications": "Messages",
+      "documents": "Documents",
+      "compliance": "Compliance",
+      "reports": "Reports",
+      "users": "Users",
+      "admin": "Administration",
+      "settings": "Settings",
+      "hotel": "Hotel operations",
+      "reviews": "Reviews"
+    }
+  },
+  "evidence": {
+    "confidence": {
+      "confirmed": "Confirmed (multiple sources)",
+      "official": "Official statement",
+      "single_source": "Single source",
+      "conflicted": "Sources disagree",
+      "conflicted_long": "Sources disagree — both values are on record",
+      "inferred": "Inferred",
+      "gap": "Not established"
+    },
+    "confidenceShort": {
+      "confirmed": "Confirmed",
+      "official": "Official",
+      "single_source": "Single source",
+      "conflicted": "Disagreement",
+      "inferred": "Inferred",
+      "gap": "Open"
+    },
+    "stale": "Stale listing",
+    "modelled": "Modelled record — not a real listing",
+    "sourceUnreachable": "Source unreachable",
+    "label": {
+      "source": "Source",
+      "sources": "Sources",
+      "sourceCount": "{count, plural, one {# source} other {# sources}}",
+      "observedAt": "Observed on",
+      "fetchedAt": "Fetched on",
+      "snapshot": "Snapshot",
+      "openSource": "Open source",
+      "method": "Collection method",
+      "value": "Value",
+      "noValue": "—"
+    },
+    "conflict": {
+      "title": "The sources disagree",
+      "description": "This value is reported differently across sources. The official or developer figure is displayed; the differing values stay on record.",
+      "displayedValue": "Displayed value",
+      "alternativeValue": "Differing figure",
+      "finding": "Finding {id}"
+    },
+    "panel": {
+      "title": "Where this value comes from",
+      "description": "Every figure on this page links back to the page it came from.",
+      "empty": "No source on record for this value.",
+      "toggle": "Show evidence"
+    },
+    "method": {
+      "officialSite": "Official website",
+      "developerSite": "Developer website",
+      "portalListing": "Portal listing",
+      "review": "Review platform",
+      "press": "Press",
+      "registry": "Registry",
+      "modelled": "Modelled"
+    },
+    "disclaimer": "Competitive analysis for INTERNAL-107. All figures come from publicly accessible sources and link to their origin.",
+    "gapNotice": "No reliable source was found for this figure. It is deliberately left empty."
+  },
+  "landing": {
+    "topBar": {
+      "notice": "Evidence-backed competitive analysis — every figure sourced",
+      "cta": "See the evidence"
+    },
+    "hero": {
+      "eyebrow": "Türkler · Alanya · Antalya",
+      "title": "Azura World Residence & Hotel",
+      "subtitle": "A residence and five-star hotel on Türkiye's Mediterranean coast — documented, figure by figure.",
+      "ctaPrimary": "See the project",
+      "ctaSecondary": "Check the sources",
+      "figures": {
+        "area": "Site area",
+        "blocks": "Blocks",
+        "units": "Units"
+      },
+      "scrollHint": "Scroll",
+      "posterAlt": "View of the Azura World Residence & Hotel development"
+    },
+    "why": {
+      "title": "What Azura World is",
+      "lead": "A residential and hotel complex by {developer} in {district}. Everything below comes from publicly accessible sources only.",
+      "developerLabel": "Developer",
+      "locationLabel": "Location",
+      "timelineLabel": "Completion",
+      "statusLabel": "Status"
+    },
+    "immersion": {
+      "title": "A day on site",
+      "lead": "The same development across the day — light, occupancy and operations change; the data behind them does not.",
+      "timeLabel": "Time of day",
+      "reducedMotionNotice": "Motion is reduced. The view stays static.",
+      "noWebglNotice": "The 3D view is unavailable on this device. A still image is shown."
+    },
+    "amenities": {
+      "title": "Amenities",
+      "lead": "Each item is attributed to the page that lists it.",
+      "empty": "No sourced amenity data is available.",
+      "categoryLabel": "Category"
+    },
+    "desire": {
+      "title": "The hotel on site",
+      "lead": "A five-star all-inclusive hotel inside the development — the difference from comparable projects in the region.",
+      "roomsLabel": "Rooms",
+      "starsLabel": "Class",
+      "boardLabel": "Board",
+      "aquaparkLabel": "Slides"
+    },
+    "evidenceBand": {
+      "title": "Where these figures come from",
+      "lead": "Every figure on this page is linked to its source. Where sources disagree, the disagreement is shown here — it is not resolved.",
+      "sourcesLabel": "Sources reviewed",
+      "conflictsLabel": "Disagreements",
+      "gapsLabel": "Open items",
+      "cta": "Open the full evidence report"
+    },
+    "action": {
+      "title": "Request access",
+      "lead": "The full dataset sits behind sign-in. Access is reviewed and granted manually.",
+      "cta": "Request access",
+      "secondary": "View the public report"
+    },
+    "after": {
+      "title": "After the purchase",
+      "lead": "Management, running costs, letting and maintenance — the part sales pages leave out."
+    },
+    "share": {
+      "title": "Pass it on",
+      "lead": "The public report carries the same figures with the same sources.",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied"
+    },
+    "love": {
+      "title": "Why it is built this way",
+      "lead": "A figure without a source is a claim. This project shows both or neither."
+    },
+    "footer": {
+      "rights": "Analysis for competitive purposes. All trademarks and image rights remain with their owners.",
+      "sourcesLink": "Source register",
+      "legalLink": "Legal",
+      "updated": "Data as of {date}"
+    }
+  },
+  "dashboard": {
+    "shell": {
+      "title": "Dashboard",
+      "welcome": "Welcome, {name}",
+      "searchPlaceholder": "Search … (Ctrl + K)",
+      "searchHint": "Ctrl + K",
+      "notifications": "Notifications",
+      "profile": "Profile",
+      "collapseNav": "Collapse navigation",
+      "expandNav": "Expand navigation",
+      "roleLabel": "Role",
+      "emptyRole": "No area is currently enabled for this role.",
+      "dataSource": {
+        "label": "Data source",
+        "supabase": "Supabase",
+        "localSeed": "Local seed",
+        "notice": "Local seed data is being shown, not live data."
+      }
+    },
+    "kpi": {
+      "title": "Key figures",
+      "unitsTotal": "Units total",
+      "unitsAvailable": "Available",
+      "unitsReserved": "Reserved",
+      "unitsSold": "Sold",
+      "occupancy": "Occupancy",
+      "openTickets": "Open tickets",
+      "overdueAmount": "Outstanding",
+      "reviewScore": "Review average",
+      "trendUp": "more than last month",
+      "trendDown": "less than last month",
+      "trendFlat": "unchanged"
+    },
+    "search": {
+      "title": "Global search",
+      "placeholder": "Unit, ticket, document or person",
+      "noResults": "No matches",
+      "hint": "Enter to open, Esc to close",
+      "groupUnits": "Units",
+      "groupTickets": "Tickets",
+      "groupDocuments": "Documents",
+      "groupPeople": "People"
+    },
+    "evidence": {
+      "title": "Evidence cockpit",
+      "lead": "Coverage, disagreements and gaps across the dataset.",
+      "coverage": "Coverage",
+      "conflicts": "Disagreements",
+      "gaps": "Gaps",
+      "findings": "Findings",
+      "sourceRegister": "Source register",
+      "lastHarvest": "Last harvest",
+      "empty": "No evidence on record yet."
+    },
+    "units": {
+      "title": "Units",
+      "lead": "Unit inventory across all blocks.",
+      "count": "{count, plural, one {# unit} other {# units}}",
+      "empty": "No units match the current filter.",
+      "columns": {
+        "id": "Number",
+        "block": "Block",
+        "floor": "Floor",
+        "layout": "Layout",
+        "area": "Area",
+        "price": "Price",
+        "status": "Status",
+        "view": "Aspect"
+      },
+      "status": {
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold",
+        "blocked": "Blocked"
+      },
+      "filters": {
+        "block": "Block",
+        "layout": "Layout",
+        "priceRange": "Price range",
+        "areaRange": "Area",
+        "status": "Status"
+      },
+      "modelledNotice": "This inventory is modelled and does not represent a real listing."
+    },
+    "listings": {
+      "title": "Portal listings",
+      "lead": "The same unit across several portals — with price, date and variance.",
+      "count": "{count, plural, one {# listing} other {# listings}}",
+      "empty": "No listings on record.",
+      "columns": {
+        "portal": "Portal",
+        "title": "Title",
+        "price": "Price",
+        "currency": "Currency",
+        "observedAt": "Observed",
+        "status": "Status"
+      },
+      "staleNotice": "This listing has not been confirmed for {days} days."
+    },
+    "leads": {
+      "title": "Leads",
+      "lead": "Incoming enquiries and how far each has progressed.",
+      "count": "{count, plural, one {# lead} other {# leads}}",
+      "empty": "No leads.",
+      "columns": {
+        "name": "Name",
+        "channel": "Channel",
+        "interest": "Interest",
+        "stage": "Stage",
+        "owner": "Owner",
+        "createdAt": "Received"
+      }
+    },
+    "pipeline": {
+      "title": "Buyer pipeline",
+      "lead": "From first contact to completion.",
+      "empty": "Nothing in the pipeline.",
+      "stages": {
+        "new": "New",
+        "qualified": "Qualified",
+        "viewing": "Viewing",
+        "offer": "Offer",
+        "contract": "Contract",
+        "closed": "Closed",
+        "lost": "Lost"
+      }
+    },
+    "finance": {
+      "title": "Finance",
+      "lead": "Entries, balances and outstanding items.",
+      "empty": "No entries in this period.",
+      "balance": "Balance",
+      "income": "Income",
+      "expense": "Expenses",
+      "net": "Net",
+      "period": "Period",
+      "postedNotice": "Posted entries are immutable.",
+      "columns": {
+        "date": "Date",
+        "description": "Description",
+        "account": "Account",
+        "debit": "Debit",
+        "credit": "Credit",
+        "amount": "Amount",
+        "status": "Status"
+      }
+    },
+    "payments": {
+      "title": "Payments",
+      "lead": "Incoming, outgoing and their status.",
+      "empty": "No payments.",
+      "status": {
+        "pending": "Pending",
+        "settled": "Settled",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "lead": "Balance and movements per owner.",
+      "empty": "No movements.",
+      "available": "Available",
+      "reserved": "Reserved",
+      "topUp": "Top up",
+      "withdraw": "Withdraw"
+    },
+    "vendorInvoices": {
+      "title": "Vendor invoices",
+      "lead": "Incoming invoices and approval status.",
+      "empty": "No invoices found.",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "paid": "Paid",
+        "rejected": "Rejected"
+      }
+    },
+    "tickets": {
+      "title": "Tickets",
+      "lead": "Service and maintenance cases.",
+      "count": "{count, plural, one {# ticket} other {# tickets}}",
+      "empty": "No tickets.",
+      "newTicket": "New ticket",
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "status": {
+        "open": "Open",
+        "inProgress": "In progress",
+        "waiting": "Waiting",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "columns": {
+        "reference": "Number",
+        "subject": "Subject",
+        "unit": "Unit",
+        "priority": "Priority",
+        "status": "Status",
+        "assignee": "Assignee",
+        "createdAt": "Created",
+        "dueAt": "Due"
+      }
+    },
+    "activities": {
+      "title": "Activities",
+      "lead": "Chronological trail of everything that happened.",
+      "empty": "No activities.",
+      "loadMore": "Load older"
+    },
+    "calendar": {
+      "title": "Calendar",
+      "lead": "Appointments, maintenance windows and occupancy.",
+      "empty": "No appointments.",
+      "today": "Today",
+      "views": {
+        "month": "Month",
+        "week": "Week",
+        "day": "Day",
+        "agenda": "Agenda"
+      },
+      "newEvent": "New appointment"
+    },
+    "communications": {
+      "title": "Messages",
+      "lead": "Inbound and outbound communication per case.",
+      "empty": "No messages found.",
+      "compose": "New message",
+      "channels": {
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "portal": "Portal",
+        "phone": "Phone"
+      }
+    },
+    "documents": {
+      "title": "Documents",
+      "lead": "Contracts, plans and certificates.",
+      "count": "{count, plural, one {# document} other {# documents}}",
+      "empty": "No documents.",
+      "upload": "Upload document",
+      "signedUrlNotice": "Download links are valid for a limited time only.",
+      "columns": {
+        "name": "Name",
+        "category": "Category",
+        "size": "Size",
+        "uploadedAt": "Uploaded",
+        "uploadedBy": "By"
+      }
+    },
+    "compliance": {
+      "title": "Compliance",
+      "lead": "Deadlines, certificates and open obligations.",
+      "empty": "Nothing outstanding.",
+      "dueSoon": "Due soon",
+      "overdue": "Overdue",
+      "compliant": "Met"
+    },
+    "reports": {
+      "title": "Reports",
+      "lead": "Analyses as a file or on a schedule.",
+      "empty": "No reports.",
+      "generate": "Generate report",
+      "generating": "Generating report …",
+      "ready": "Report ready",
+      "queuedNotice": "The report is being generated in the background. You can leave this page."
+    },
+    "users": {
+      "title": "Users",
+      "lead": "Accounts, roles and access status.",
+      "count": "{count, plural, one {# user} other {# users}}",
+      "empty": "No users.",
+      "invite": "Invite user",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "lastSeen": "Last active"
+      }
+    },
+    "admin": {
+      "title": "Administration",
+      "lead": "System health, jobs and audit trail.",
+      "auditLog": "Audit log",
+      "jobs": "Jobs",
+      "health": "System health",
+      "empty": "No entries."
+    },
+    "settings": {
+      "title": "Settings",
+      "lead": "Account, appearance and notifications.",
+      "account": "Account",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "language": "Language",
+      "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "saved": "Settings saved"
+    },
+    "hotel": {
+      "title": "Hotel operations",
+      "lead": "Occupancy, room status and booking sources.",
+      "empty": "No hotel operations data.",
+      "occupancy": "Occupancy",
+      "adr": "Average room rate",
+      "revpar": "RevPAR",
+      "roomStatus": {
+        "clean": "Clean",
+        "dirty": "To clean",
+        "inspected": "Inspected",
+        "outOfOrder": "Out of order"
+      },
+      "bookingSources": "Booking sources"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "lead": "Guest reviews across all portals, with source and date.",
+      "count": "{count, plural, one {# review} other {# reviews}}",
+      "empty": "No reviews on record.",
+      "average": "Average",
+      "distribution": "Distribution",
+      "themes": "Themes",
+      "sentiment": {
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative"
+      },
+      "columns": {
+        "portal": "Portal",
+        "rating": "Rating",
+        "title": "Title",
+        "language": "Language",
+        "publishedAt": "Date"
+      }
+    }
+  },
+  "hotel": {
+    "title": "Azura World Hotel",
+    "lead": "The five-star hotel inside the development.",
+    "formerNameNotice": "Previously operated as {formerName}. The rebrand is recorded as a finding.",
+    "rooms": "Rooms",
+    "stars": "Class",
+    "board": "Board",
+    "aquapark": "Aquapark",
+    "beachDistance": "Distance to beach",
+    "checkIn": "Check-in from",
+    "checkOut": "Check-out by",
+    "openedYear": "Opened",
+    "gallery": "Gallery",
+    "galleryEmpty": "No cleared images are available for this property.",
+    "reviewsTitle": "What guests write",
+    "reviewsLead": "Extracts from public review platforms, each with its source.",
+    "bookExternal": "View on the portal"
+  },
+  "report": {
+    "title": "Public report",
+    "lead": "The Azura World dataset — same figures, same sources, no sign-in.",
+    "generatedAt": "Generated {date}",
+    "sectionProject": "Project",
+    "sectionHotel": "Hotel",
+    "sectionMarket": "Market",
+    "sectionSources": "Sources",
+    "sectionFindings": "Findings",
+    "downloadPdf": "Download as PDF",
+    "empty": "No sourced data for this section.",
+    "shareTitle": "Share the report",
+    "shareDescription": "The link opens the same state you are looking at now."
+  },
+  "concierge": {
+    "title": "Azura Concierge",
+    "subtitle": "Questions about the project — answered from the sourced dataset only.",
+    "placeholder": "Ask a question …",
+    "send": "Send",
+    "thinking": "Preparing an answer …",
+    "stop": "Stop",
+    "clear": "Clear history",
+    "empty": "No questions asked yet.",
+    "disclaimer": "Answers come from the collected dataset and name their source. Where there is no source, it says so.",
+    "noAnswer": "There is no sourced figure for that.",
+    "sourcesLabel": "Sources used",
+    "errors": {
+      "unavailable": "The assistant is currently unreachable.",
+      "rateLimited": "Too many questions in a short time. Please wait a moment.",
+      "tooLong": "The question is too long.",
+      "refused": "The assistant cannot carry out this request."
+    },
+    "suggestions": {
+      "one": "How many units does the development have?",
+      "two": "What is on record about the developer?",
+      "three": "Where do the sources disagree?"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "lead": "Access to the full dataset.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgot": "Forgotten your password?",
+      "noAccount": "No account?",
+      "requestAccess": "Request access",
+      "invalid": "Email or password is incorrect.",
+      "sessionExpired": "Your session expired. Your input has been kept."
+    },
+    "signup": {
+      "title": "Request access",
+      "lead": "Access requests are reviewed and granted manually.",
+      "name": "Name",
+      "company": "Company",
+      "reason": "Reason for the request",
+      "submit": "Send request",
+      "success": "Request received. You will hear back by email.",
+      "hasAccount": "Already have an account?"
+    },
+    "forbidden": {
+      "title": "No access",
+      "lead": "Your role does not permit this area.",
+      "back": "Back to overview"
+    }
+  },
+  "legal": {
+    "title": "Legal",
+    "privacy": {
+      "title": "Privacy",
+      "lead": "What data this application processes, and why."
+    },
+    "terms": {
+      "title": "Terms and conditions",
+      "lead": "Conditions for using this application."
+    },
+    "imprint": {
+      "title": "Imprint",
+      "lead": "Provider identification under § 5 TMG."
+    },
+    "mediaRights": {
+      "title": "Image rights",
+      "lead": "Images come from publicly accessible sources and are shown with attribution only. Rights remain with their owners.",
+      "attribution": "Source: {source}"
+    }
+  }
+}

@@ -1,0 +1,768 @@
+{
+  "common": {
+    "actions": {
+      "save": "Kaydet",
+      "cancel": "Vazgeç",
+      "close": "Kapat",
+      "confirm": "Onayla",
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "create": "Oluştur",
+      "search": "Ara",
+      "filter": "Filtrele",
+      "reset": "Sıfırla",
+      "apply": "Uygula",
+      "back": "Geri",
+      "next": "İleri",
+      "previous": "Önceki",
+      "retry": "Yeniden dene",
+      "refresh": "Yenile",
+      "export": "Dışa aktar",
+      "download": "İndir",
+      "upload": "Yükle",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı",
+      "share": "Paylaş",
+      "print": "Yazdır",
+      "viewAll": "Tümünü gör",
+      "showMore": "Daha fazla",
+      "showLess": "Daha az",
+      "openMenu": "Menüyü aç",
+      "closeMenu": "Menüyü kapat",
+      "skipToContent": "İçeriğe geç",
+      "submit": "Gönder",
+      "continue": "Devam et"
+    },
+    "states": {
+      "loading": "Yükleniyor …",
+      "empty": "Kayıt yok",
+      "error": "Hata",
+      "partial": "Kısmen yüklendi",
+      "offline": "Çevrimdışı",
+      "saving": "Kaydediliyor …",
+      "saved": "Kaydedildi",
+      "noResults": "Sonuç yok",
+      "noData": "Veri yok",
+      "degraded": "Sınırlı",
+      "live": "Canlı",
+      "polling": "Her 30 saniyede sorgulanıyor"
+    },
+    "errors": {
+      "generic": "Bir şeyler ters gitti.",
+      "network": "Sunucuya bağlanılamadı.",
+      "notFound": "Bulunamadı.",
+      "forbidden": "Bu sayfaya erişim yok.",
+      "unauthorized": "Lütfen yeniden giriş yapın.",
+      "validation": "Lütfen girdileri kontrol edin.",
+      "timeout": "Zaman aşımı.",
+      "rateLimited": "Çok fazla istek. Lütfen biraz bekleyin.",
+      "serverError": "Sunucu hatası.",
+      "tryAgain": "Lütfen yeniden deneyin."
+    },
+    "units": {
+      "sqm": "m²",
+      "km": "km",
+      "m": "m",
+      "minutes": "dk",
+      "rooms": "oda",
+      "floors": "kat",
+      "beds": "yatak",
+      "baths": "banyo",
+      "night": "gece",
+      "month": "ay",
+      "year": "yıl",
+      "percent": "%"
+    },
+    "pagination": {
+      "page": "Sayfa",
+      "pageOf": "Sayfa {page} / {total}",
+      "rowsPerPage": "Sayfa başına satır",
+      "showing": "{from}–{to} / {total}",
+      "first": "İlk sayfa",
+      "last": "Son sayfa"
+    },
+    "table": {
+      "sortAscending": "Artan sırala",
+      "sortDescending": "Azalan sırala",
+      "noRows": "Satır yok",
+      "selectRow": "Satır seç",
+      "selectAll": "Tümünü seç",
+      "columns": "Sütunlar",
+      "density": "Satır yüksekliği",
+      "selected": "{count, plural, other {# seçili}}"
+    },
+    "filters": {
+      "title": "Filtreler",
+      "clear": "Filtreleri temizle",
+      "active": "{count, plural, other {# filtre etkin}}",
+      "none": "Filtre yok"
+    },
+    "time": {
+      "now": "Şimdi",
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "updatedAt": "{date} güncellendi",
+      "observedAt": "{date} tespit edildi",
+      "asOf": "{date} itibarıyla",
+      "never": "Hiç"
+    },
+    "boolean": {
+      "yes": "Evet",
+      "no": "Hayır"
+    },
+    "required": "Zorunlu",
+    "optional": "İsteğe bağlı"
+  },
+  "nav": {
+    "brand": "Azura World Residence & Hotel",
+    "brandShort": "Azura World",
+    "home": "Ana sayfa",
+    "project": "Proje",
+    "hotel": "Otel",
+    "amenities": "Olanaklar",
+    "location": "Konum",
+    "evidence": "Kaynaklar",
+    "report": "Rapor",
+    "dashboard": "Panel",
+    "login": "Giriş yap",
+    "logout": "Çıkış yap",
+    "language": "Dil",
+    "languageSelect": "Dil seçimi",
+    "menu": "Menü",
+    "sections": {
+      "hero": "Genel bakış",
+      "why": "Proje",
+      "immersion": "Gezinti",
+      "amenities": "Olanaklar",
+      "desire": "Otel",
+      "evidence": "Kaynaklar",
+      "action": "İletişim",
+      "share": "Paylaş",
+      "love": "Kapanış"
+    },
+    "groups": {
+      "inventory": "Envanter",
+      "finance": "Finans",
+      "operations": "Operasyon",
+      "governance": "Yönetişim",
+      "hospitality": "Otel"
+    },
+    "modules": {
+      "overview": "Genel bakış",
+      "evidence": "Kaynaklar",
+      "units": "Daireler",
+      "listings": "İlanlar",
+      "leads": "Talepler",
+      "pipeline": "Alıcı süreci",
+      "finance": "Finans",
+      "payments": "Ödemeler",
+      "wallet": "Cüzdan",
+      "vendorInvoices": "Tedarikçi faturaları",
+      "tickets": "Talep kayıtları",
+      "activities": "Etkinlikler",
+      "calendar": "Takvim",
+      "communications": "Mesajlar",
+      "documents": "Belgeler",
+      "compliance": "Uyum",
+      "reports": "Raporlar",
+      "users": "Kullanıcılar",
+      "admin": "Yönetim",
+      "settings": "Ayarlar",
+      "hotel": "Otel operasyonu",
+      "reviews": "Değerlendirmeler"
+    }
+  },
+  "evidence": {
+    "confidence": {
+      "confirmed": "Doğrulandı (birden çok kaynak)",
+      "official": "Resmî beyan",
+      "single_source": "Tek kaynak",
+      "conflicted": "Kaynaklar çelişiyor",
+      "conflicted_long": "Kaynaklar çelişiyor — her iki değer de kayıtlı",
+      "inferred": "Çıkarım",
+      "gap": "Belgelenmedi"
+    },
+    "confidenceShort": {
+      "confirmed": "Doğrulandı",
+      "official": "Resmî",
+      "single_source": "Tek kaynak",
+      "conflicted": "Çelişki",
+      "inferred": "Çıkarım",
+      "gap": "Açık"
+    },
+    "stale": "Güncelliğini yitirmiş ilan",
+    "modelled": "Modellenmiş kayıt — gerçek bir ilan değildir",
+    "sourceUnreachable": "Kaynağa ulaşılamadı",
+    "label": {
+      "source": "Kaynak",
+      "sources": "Kaynaklar",
+      "sourceCount": "{count, plural, other {# kaynak}}",
+      "observedAt": "Tespit tarihi",
+      "fetchedAt": "Çekilme tarihi",
+      "snapshot": "Anlık kopya",
+      "openSource": "Kaynağı aç",
+      "method": "Derleme yöntemi",
+      "value": "Değer",
+      "noValue": "—"
+    },
+    "conflict": {
+      "title": "Kaynaklar çelişiyor",
+      "description": "Bu değer kaynaklarda farklı bildiriliyor. Resmî ya da müteahhit kaynağının verdiği değer gösterilir; farklı değerler kayıtta kalır.",
+      "displayedValue": "Gösterilen değer",
+      "alternativeValue": "Farklı bildirim",
+      "finding": "Bulgu {id}"
+    },
+    "panel": {
+      "title": "Bu değer nereden geliyor",
+      "description": "Bu sayfadaki her veri, alındığı sayfaya geri bağlanır.",
+      "empty": "Bu değer için kayıtlı kaynak yok.",
+      "toggle": "Kaynakları göster"
+    },
+    "method": {
+      "officialSite": "Resmî web sitesi",
+      "developerSite": "Müteahhit web sitesi",
+      "portalListing": "Portal ilanı",
+      "review": "Değerlendirme platformu",
+      "press": "Basın",
+      "registry": "Sicil",
+      "modelled": "Modellenmiş"
+    },
+    "disclaimer": "INTERNAL-107 kapsamında rekabet analizi. Tüm veriler kamuya açık kaynaklardan alınmış ve kaynağına bağlanmıştır.",
+    "gapNotice": "Bu veri için güvenilir bir kaynak bulunamadı. Bilinçli olarak boş bırakılmıştır."
+  },
+  "landing": {
+    "topBar": {
+      "notice": "Kanıta dayalı rekabet analizi — her veri kaynaklı",
+      "cta": "Kaynakları gör"
+    },
+    "hero": {
+      "eyebrow": "Türkler · Alanya · Antalya",
+      "title": "Azura World Residence & Hotel",
+      "subtitle": "Türkiye'nin Akdeniz kıyısında konut sitesi ve beş yıldızlı otel — veri veri belgelenmiş.",
+      "ctaPrimary": "Projeyi gör",
+      "ctaSecondary": "Kaynakları incele",
+      "figures": {
+        "area": "Arsa alanı",
+        "blocks": "Blok",
+        "units": "Daire"
+      },
+      "scrollHint": "Kaydır",
+      "posterAlt": "Azura World Residence & Hotel projesinin görünümü"
+    },
+    "why": {
+      "title": "Azura World nedir",
+      "lead": "{district} bölgesinde {developer} tarafından geliştirilen konut ve otel kompleksi. Aşağıdaki tüm bilgiler yalnızca kamuya açık kaynaklardan alınmıştır.",
+      "developerLabel": "Müteahhit",
+      "locationLabel": "Konum",
+      "timelineLabel": "Teslim",
+      "statusLabel": "Durum"
+    },
+    "immersion": {
+      "title": "Sitede bir gün",
+      "lead": "Aynı proje gün boyunca — ışık, doluluk ve işleyiş değişir; arkasındaki veri değişmez.",
+      "timeLabel": "Saat",
+      "reducedMotionNotice": "Hareket azaltıldı. Görünüm sabit kalır.",
+      "noWebglNotice": "3B görünüm bu cihazda kullanılamıyor. Sabit görsel gösteriliyor."
+    },
+    "amenities": {
+      "title": "Olanaklar",
+      "lead": "Her madde, onu listeleyen sayfaya bağlanmıştır.",
+      "empty": "Olanaklar için kaynaklı veri bulunmuyor.",
+      "categoryLabel": "Kategori"
+    },
+    "desire": {
+      "title": "Site içindeki otel",
+      "lead": "Site içinde her şey dahil beş yıldızlı otel — bölgedeki benzer projelerden farkı budur.",
+      "roomsLabel": "Oda",
+      "starsLabel": "Sınıf",
+      "boardLabel": "Pansiyon",
+      "aquaparkLabel": "Kaydırak"
+    },
+    "evidenceBand": {
+      "title": "Bu veriler nereden geliyor",
+      "lead": "Bu sayfadaki her veri kaynağına bağlıdır. Kaynaklar çeliştiğinde çelişki burada gösterilir — giderilmez.",
+      "sourcesLabel": "İncelenen kaynak",
+      "conflictsLabel": "Çelişki",
+      "gapsLabel": "Açık madde",
+      "cta": "Tam kaynak raporunu aç"
+    },
+    "action": {
+      "title": "Erişim talebi",
+      "lead": "Verinin tamamı giriş arkasındadır. Erişim incelenir ve elle verilir.",
+      "cta": "Erişim iste",
+      "secondary": "Genel raporu gör"
+    },
+    "after": {
+      "title": "Satın alma sonrası",
+      "lead": "Yönetim, aidat, kiralama ve bakım — satış sayfalarının atladığı kısım."
+    },
+    "share": {
+      "title": "Paylaş",
+      "lead": "Genel rapor aynı verileri aynı kaynaklarla taşır.",
+      "copyLink": "Bağlantıyı kopyala",
+      "linkCopied": "Bağlantı kopyalandı"
+    },
+    "love": {
+      "title": "Neden böyle kuruldu",
+      "lead": "Kaynağı olmayan bir veri, yalnızca bir iddiadır. Bu proje ikisini birden gösterir ya da hiçbirini."
+    },
+    "footer": {
+      "rights": "Rekabet amaçlı analiz. Tüm markalar ve görsel haklar sahiplerine aittir.",
+      "sourcesLink": "Kaynak listesi",
+      "legalLink": "Yasal",
+      "updated": "Veri tarihi {date}"
+    }
+  },
+  "dashboard": {
+    "shell": {
+      "title": "Panel",
+      "welcome": "Hoş geldiniz, {name}",
+      "searchPlaceholder": "Ara … (Ctrl + K)",
+      "searchHint": "Ctrl + K",
+      "notifications": "Bildirimler",
+      "profile": "Profil",
+      "collapseNav": "Menüyü daralt",
+      "expandNav": "Menüyü genişlet",
+      "roleLabel": "Rol",
+      "emptyRole": "Bu rol için şu anda açık bir alan yok.",
+      "dataSource": {
+        "label": "Veri kaynağı",
+        "supabase": "Supabase",
+        "localSeed": "Yerel örnek veri",
+        "notice": "Canlı veri değil, yerel örnek veri gösteriliyor."
+      }
+    },
+    "kpi": {
+      "title": "Göstergeler",
+      "unitsTotal": "Toplam daire",
+      "unitsAvailable": "Müsait",
+      "unitsReserved": "Rezerve",
+      "unitsSold": "Satıldı",
+      "occupancy": "Doluluk",
+      "openTickets": "Açık talepler",
+      "overdueAmount": "Bekleyen tutar",
+      "reviewScore": "Değerlendirme ortalaması",
+      "trendUp": "geçen aya göre arttı",
+      "trendDown": "geçen aya göre azaldı",
+      "trendFlat": "değişmedi"
+    },
+    "search": {
+      "title": "Genel arama",
+      "placeholder": "Daire, talep, belge veya kişi",
+      "noResults": "Sonuç yok",
+      "hint": "Açmak için Enter, kapatmak için Esc",
+      "groupUnits": "Daireler",
+      "groupTickets": "Talep kayıtları",
+      "groupDocuments": "Belgeler",
+      "groupPeople": "Kişiler"
+    },
+    "evidence": {
+      "title": "Kaynak paneli",
+      "lead": "Veri kümesinin kapsamı, çelişkileri ve boşlukları.",
+      "coverage": "Kapsam",
+      "conflicts": "Çelişkiler",
+      "gaps": "Boşluklar",
+      "findings": "Bulgular",
+      "sourceRegister": "Kaynak listesi",
+      "lastHarvest": "Son derleme",
+      "empty": "Henüz kayıtlı kaynak yok."
+    },
+    "units": {
+      "title": "Daireler",
+      "lead": "Tüm bloklardaki daire envanteri.",
+      "count": "{count, plural, other {# daire}}",
+      "empty": "Mevcut filtreye uyan daire yok.",
+      "columns": {
+        "id": "Numara",
+        "block": "Blok",
+        "floor": "Kat",
+        "layout": "Tip",
+        "area": "Alan",
+        "price": "Fiyat",
+        "status": "Durum",
+        "view": "Cephe"
+      },
+      "status": {
+        "available": "Müsait",
+        "reserved": "Rezerve",
+        "sold": "Satıldı",
+        "blocked": "Bloke"
+      },
+      "filters": {
+        "block": "Blok",
+        "layout": "Tip",
+        "priceRange": "Fiyat aralığı",
+        "areaRange": "Alan",
+        "status": "Durum"
+      },
+      "modelledNotice": "Bu envanter modellenmiştir ve gerçek bir ilanı temsil etmez."
+    },
+    "listings": {
+      "title": "Portal ilanları",
+      "lead": "Aynı daire birden çok portalda — fiyat, tarih ve farkla birlikte.",
+      "count": "{count, plural, other {# ilan}}",
+      "empty": "Kayıtlı ilan yok.",
+      "columns": {
+        "portal": "Portal",
+        "title": "Başlık",
+        "price": "Fiyat",
+        "currency": "Para birimi",
+        "observedAt": "Tespit",
+        "status": "Durum"
+      },
+      "staleNotice": "Bu ilan {days} gündür doğrulanmadı."
+    },
+    "leads": {
+      "title": "Talepler",
+      "lead": "Gelen ilgililer ve bulundukları aşama.",
+      "count": "{count, plural, other {# talep}}",
+      "empty": "Talep yok.",
+      "columns": {
+        "name": "Ad",
+        "channel": "Kanal",
+        "interest": "İlgi",
+        "stage": "Aşama",
+        "owner": "Sorumlu",
+        "createdAt": "Geliş"
+      }
+    },
+    "pipeline": {
+      "title": "Alıcı süreci",
+      "lead": "İlk temastan tapuya kadar.",
+      "empty": "Süreçte kayıt yok.",
+      "stages": {
+        "new": "Yeni",
+        "qualified": "Nitelikli",
+        "viewing": "Gezme",
+        "offer": "Teklif",
+        "contract": "Sözleşme",
+        "closed": "Tamamlandı",
+        "lost": "Kaybedildi"
+      }
+    },
+    "finance": {
+      "title": "Finans",
+      "lead": "Kayıtlar, bakiyeler ve açık kalemler.",
+      "empty": "Bu dönemde kayıt yok.",
+      "balance": "Bakiye",
+      "income": "Gelir",
+      "expense": "Gider",
+      "net": "Net",
+      "period": "Dönem",
+      "postedNotice": "İşlenmiş kalemler değiştirilemez.",
+      "columns": {
+        "date": "Tarih",
+        "description": "Açıklama",
+        "account": "Hesap",
+        "debit": "Borç",
+        "credit": "Alacak",
+        "amount": "Tutar",
+        "status": "Durum"
+      }
+    },
+    "payments": {
+      "title": "Ödemeler",
+      "lead": "Gelen, giden ve durumları.",
+      "empty": "Ödeme yok.",
+      "status": {
+        "pending": "Bekliyor",
+        "settled": "İşlendi",
+        "failed": "Başarısız",
+        "refunded": "İade edildi"
+      }
+    },
+    "wallet": {
+      "title": "Cüzdan",
+      "lead": "Malik başına bakiye ve hareketler.",
+      "empty": "Hareket yok.",
+      "available": "Kullanılabilir",
+      "reserved": "Bloke",
+      "topUp": "Yükle",
+      "withdraw": "Çek"
+    },
+    "vendorInvoices": {
+      "title": "Tedarikçi faturaları",
+      "lead": "Gelen faturalar ve onay durumu.",
+      "empty": "Fatura yok.",
+      "status": {
+        "draft": "Taslak",
+        "submitted": "Gönderildi",
+        "approved": "Onaylandı",
+        "paid": "Ödendi",
+        "rejected": "Reddedildi"
+      }
+    },
+    "tickets": {
+      "title": "Talep kayıtları",
+      "lead": "Servis ve bakım kayıtları.",
+      "count": "{count, plural, other {# kayıt}}",
+      "empty": "Kayıt yok.",
+      "newTicket": "Yeni kayıt",
+      "priority": {
+        "low": "Düşük",
+        "normal": "Normal",
+        "high": "Yüksek",
+        "urgent": "Acil"
+      },
+      "status": {
+        "open": "Açık",
+        "inProgress": "İşlemde",
+        "waiting": "Beklemede",
+        "resolved": "Çözüldü",
+        "closed": "Kapandı"
+      },
+      "columns": {
+        "reference": "Numara",
+        "subject": "Konu",
+        "unit": "Daire",
+        "priority": "Öncelik",
+        "status": "Durum",
+        "assignee": "Sorumlu",
+        "createdAt": "Oluşturma",
+        "dueAt": "Termin"
+      }
+    },
+    "activities": {
+      "title": "Etkinlikler",
+      "lead": "Olan biten her şeyin kronolojik izi.",
+      "empty": "Etkinlik yok.",
+      "loadMore": "Daha eskisini yükle"
+    },
+    "calendar": {
+      "title": "Takvim",
+      "lead": "Randevular, bakım pencereleri ve doluluk.",
+      "empty": "Randevu yok.",
+      "today": "Bugün",
+      "views": {
+        "month": "Ay",
+        "week": "Hafta",
+        "day": "Gün",
+        "agenda": "Liste"
+      },
+      "newEvent": "Yeni randevu"
+    },
+    "communications": {
+      "title": "Mesajlar",
+      "lead": "Kayıt başına gelen ve giden iletişim.",
+      "empty": "Mesaj yok.",
+      "compose": "Yeni mesaj",
+      "channels": {
+        "email": "E-posta",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "portal": "Portal",
+        "phone": "Telefon"
+      }
+    },
+    "documents": {
+      "title": "Belgeler",
+      "lead": "Sözleşmeler, projeler ve belgeler.",
+      "count": "{count, plural, other {# belge}}",
+      "empty": "Belge yok.",
+      "upload": "Belge yükle",
+      "signedUrlNotice": "İndirme bağlantıları yalnızca sınırlı süre geçerlidir.",
+      "columns": {
+        "name": "Ad",
+        "category": "Kategori",
+        "size": "Boyut",
+        "uploadedAt": "Yükleme",
+        "uploadedBy": "Yükleyen"
+      }
+    },
+    "compliance": {
+      "title": "Uyum",
+      "lead": "Süreler, belgeler ve açık yükümlülükler.",
+      "empty": "Açık madde yok.",
+      "dueSoon": "Yaklaşan",
+      "overdue": "Gecikmiş",
+      "compliant": "Karşılandı"
+    },
+    "reports": {
+      "title": "Raporlar",
+      "lead": "Dosya olarak veya zamanlanmış analizler.",
+      "empty": "Rapor yok.",
+      "generate": "Rapor oluştur",
+      "generating": "Rapor oluşturuluyor …",
+      "ready": "Rapor hazır",
+      "queuedNotice": "Rapor arka planda oluşturuluyor. Bu sayfadan ayrılabilirsiniz."
+    },
+    "users": {
+      "title": "Kullanıcılar",
+      "lead": "Hesaplar, roller ve erişim durumu.",
+      "count": "{count, plural, other {# kullanıcı}}",
+      "empty": "Kullanıcı yok.",
+      "invite": "Kullanıcı davet et",
+      "columns": {
+        "name": "Ad",
+        "email": "E-posta",
+        "role": "Rol",
+        "status": "Durum",
+        "lastSeen": "Son etkinlik"
+      }
+    },
+    "admin": {
+      "title": "Yönetim",
+      "lead": "Sistem durumu, işler ve denetim izi.",
+      "auditLog": "Denetim kaydı",
+      "jobs": "İşler",
+      "health": "Sistem durumu",
+      "empty": "Kayıt yok."
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "lead": "Hesap, görünüm ve bildirimler.",
+      "account": "Hesap",
+      "appearance": "Görünüm",
+      "notifications": "Bildirimler",
+      "language": "Dil",
+      "theme": {
+        "label": "Tema",
+        "light": "Açık",
+        "dark": "Koyu",
+        "system": "Sistem"
+      },
+      "saved": "Ayarlar kaydedildi"
+    },
+    "hotel": {
+      "title": "Otel operasyonu",
+      "lead": "Doluluk, oda durumu ve rezervasyon kaynakları.",
+      "empty": "Otel operasyon verisi yok.",
+      "occupancy": "Doluluk",
+      "adr": "Ortalama fiyat",
+      "revpar": "RevPAR",
+      "roomStatus": {
+        "clean": "Temiz",
+        "dirty": "Temizlenecek",
+        "inspected": "Kontrol edildi",
+        "outOfOrder": "Devre dışı"
+      },
+      "bookingSources": "Rezervasyon kaynakları"
+    },
+    "reviews": {
+      "title": "Değerlendirmeler",
+      "lead": "Tüm portallardaki misafir yorumları, kaynak ve tarihiyle.",
+      "count": "{count, plural, other {# değerlendirme}}",
+      "empty": "Kayıtlı değerlendirme yok.",
+      "average": "Ortalama",
+      "distribution": "Dağılım",
+      "themes": "Konular",
+      "sentiment": {
+        "positive": "Olumlu",
+        "neutral": "Nötr",
+        "negative": "Olumsuz"
+      },
+      "columns": {
+        "portal": "Portal",
+        "rating": "Puan",
+        "title": "Başlık",
+        "language": "Dil",
+        "publishedAt": "Tarih"
+      }
+    }
+  },
+  "hotel": {
+    "title": "Azura World Hotel",
+    "lead": "Site içindeki beş yıldızlı otel.",
+    "formerNameNotice": "Daha önce {formerName} adıyla işletiliyordu. Ad değişikliği bulgu olarak kayıtlıdır.",
+    "rooms": "Oda",
+    "stars": "Sınıf",
+    "board": "Pansiyon",
+    "aquapark": "Aquapark",
+    "beachDistance": "Plaja uzaklık",
+    "checkIn": "Giriş saati",
+    "checkOut": "Çıkış saati",
+    "openedYear": "Açılış",
+    "gallery": "Galeri",
+    "galleryEmpty": "Bu tesis için yayın izni olan görsel yok.",
+    "reviewsTitle": "Misafirler ne yazıyor",
+    "reviewsLead": "Kamuya açık değerlendirme platformlarından alıntılar, her biri kaynağıyla.",
+    "bookExternal": "Portalda gör"
+  },
+  "report": {
+    "title": "Genel rapor",
+    "lead": "Azura World veri kümesi — aynı veriler, aynı kaynaklar, girişsiz.",
+    "generatedAt": "{date} tarihinde oluşturuldu",
+    "sectionProject": "Proje",
+    "sectionHotel": "Otel",
+    "sectionMarket": "Pazar",
+    "sectionSources": "Kaynaklar",
+    "sectionFindings": "Bulgular",
+    "downloadPdf": "PDF olarak indir",
+    "empty": "Bu bölüm için kaynaklı veri yok.",
+    "shareTitle": "Raporu paylaş",
+    "shareDescription": "Bağlantı, şu anda gördüğünüz durumu açar."
+  },
+  "concierge": {
+    "title": "Azura Concierge",
+    "subtitle": "Proje hakkında sorular — yalnızca kaynaklı veri kümesinden yanıtlanır.",
+    "placeholder": "Soru sorun …",
+    "send": "Gönder",
+    "thinking": "Yanıt hazırlanıyor …",
+    "stop": "Durdur",
+    "clear": "Geçmişi temizle",
+    "empty": "Henüz soru sorulmadı.",
+    "disclaimer": "Yanıtlar derlenen veri kümesinden gelir ve kaynağını belirtir. Kaynak yoksa bu açıkça söylenir.",
+    "noAnswer": "Buna dair kaynaklı bir veri yok.",
+    "sourcesLabel": "Kullanılan kaynaklar",
+    "errors": {
+      "unavailable": "Asistana şu anda ulaşılamıyor.",
+      "rateLimited": "Kısa sürede çok fazla soru. Lütfen biraz bekleyin.",
+      "tooLong": "Soru çok uzun.",
+      "refused": "Asistan bu isteği yerine getiremez."
+    },
+    "suggestions": {
+      "one": "Projede kaç daire var?",
+      "two": "Müteahhit hakkında ne kayıtlı?",
+      "three": "Kaynaklar nerede çelişiyor?"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Giriş yap",
+      "lead": "Verinin tamamına erişim.",
+      "email": "E-posta",
+      "password": "Parola",
+      "submit": "Giriş yap",
+      "forgot": "Parolanızı mı unuttunuz?",
+      "noAccount": "Hesabınız yok mu?",
+      "requestAccess": "Erişim iste",
+      "invalid": "E-posta veya parola hatalı.",
+      "sessionExpired": "Oturum sona erdi. Girdileriniz korundu."
+    },
+    "signup": {
+      "title": "Erişim talebi",
+      "lead": "Erişim talepleri incelenir ve elle onaylanır.",
+      "name": "Ad",
+      "company": "Şirket",
+      "reason": "Talep gerekçesi",
+      "submit": "Talebi gönder",
+      "success": "Talep alındı. E-posta ile dönüş yapılacaktır.",
+      "hasAccount": "Zaten hesabınız var mı?"
+    },
+    "forbidden": {
+      "title": "Erişim yok",
+      "lead": "Rolünüz bu alana izin vermiyor.",
+      "back": "Genel bakışa dön"
+    }
+  },
+  "legal": {
+    "title": "Yasal",
+    "privacy": {
+      "title": "Gizlilik",
+      "lead": "Bu uygulamanın hangi verileri neden işlediği."
+    },
+    "terms": {
+      "title": "Kullanım koşulları",
+      "lead": "Bu uygulamanın kullanım koşulları."
+    },
+    "imprint": {
+      "title": "Künye",
+      "lead": "§ 5 TMG uyarınca sağlayıcı bilgileri."
+    },
+    "mediaRights": {
+      "title": "Görsel hakları",
+      "lead": "Görseller kamuya açık kaynaklardan alınmıştır ve yalnızca kaynak belirtilerek gösterilir. Haklar sahiplerine aittir.",
+      "attribution": "Kaynak: {source}"
+    }
+  }
+}
