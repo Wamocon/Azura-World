@@ -680,7 +680,7 @@
         "upTo": "en fazla",
         "empty": "Hiçbir portal {layout} için satış fiyatı vermiyor.",
         "unstatedHeading": "Plan belirtmeyen portallar",
-        "unstatedLead": "Bu portallar bir başlangıç fiyatı veriyor ama planı adlandırmıyor. Fiyatları bir plana atanmasın diye ayrı tutulurlar.",
+        "unstatedLead": "Bu satırlar, portalın hiçbir plana bağlamadığı bir fiyat taşır. Kimi zaman tüm proje için bir başlangıç fiyatıdır, kimi zaman gösteremediğimiz bir oda sayısı. Ayrı ve fark bilgisi olmadan durur.",
         "findingNote": "F-002 bulgusu dört portal arasında 2,1 kat fark bildirir. Bu sayı bir euro fiyatını bir dolar fiyatıyla karşılaştırır. Çevrim yapmadığımız için yukarıda her para birimi kendi farkını taşır."
       },
       "claims": {

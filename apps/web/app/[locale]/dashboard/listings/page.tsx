@@ -429,6 +429,11 @@ export default async function ListingsPage({
               columns={unstatedComparison}
               locale={locale}
               labels={comparisonLabels}
+              // No spread here. These rows have no layout for two different
+              // reasons - a "from" price for the whole project, and an
+              // apartment whose page says "5+ rooms" - so a ratio across them
+              // would compare an entry price with a 305 m2 penthouse.
+              showSpread={false}
             />
           </div>
         ) : null}

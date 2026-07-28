@@ -78,11 +78,25 @@ export function ListingPriceComparison({
   columns,
   locale,
   labels,
+  /**
+   * Show each column's `max / min`.
+   *
+   * **Off for the layout-unstated band, and that is not tidiness.** A spread is
+   * a claim that the figures either end of it describe comparable things. Those
+   * rows are not comparable to each other: Alanya-Home's €125 000 is a "from"
+   * price for the whole project, while Capital Estate's €1 450 000 is a specific
+   * 305 m² apartment whose page says "5+ rooms" — a label outside the frozen
+   * `UnitLayout` union, which is the only reason it has no layout. Rendering
+   * "11.6x" over that mixture would be exactly the false comparison the two
+   * currency columns exist to refuse.
+   */
+  showSpread = true,
   className,
 }: {
   columns: readonly ComparisonColumn[]
   locale: string
   labels: ComparisonLabels
+  showSpread?: boolean
   className?: string
 }): ReactNode {
   if (columns.length === 0) return null
@@ -108,6 +122,7 @@ export function ListingPriceComparison({
               column={column}
               locale={locale}
               labels={labels}
+              showSpread={showSpread}
               className="min-w-0 flex-1 lg:px-5 lg:first:pl-0 lg:last:pr-0"
             />
           </div>
@@ -123,22 +138,28 @@ export function ListingPriceComparison({
  * A plain border would read as a table gridline — decoration a reader skips. A
  * dashed rule carrying the sentence "not comparable, no conversion" is the one
  * piece of chrome on this page that has to be read, so it is text.
+ *
+ * **`lg:w-8`, not `lg:w-px`.** The first version sized the flex item to the
+ * hairline and let the rotated label overflow it: measured on the rendered page,
+ * the vertical caption sat ON TOP of the last EUR card's right edge. A rule is a
+ * hairline; a rule *with a label on it* needs the label's width. The dashed line
+ * is drawn by the children, so the track can be as wide as the text needs.
  */
 function Separator({ label }: { label: string }): ReactNode {
   return (
     <div
       className={cn(
         "flex items-center gap-3",
-        // Horizontal rule stacked; vertical rule side by side. The label rotates
-        // with it so it stays readable in both directions.
-        "lg:w-px lg:flex-col lg:gap-0 lg:self-stretch"
+        // Horizontal rule when the columns stack; vertical when they sit side by
+        // side. The label rotates with it so it reads in both directions.
+        "lg:w-8 lg:shrink-0 lg:flex-col lg:gap-2 lg:self-stretch"
       )}
     >
       <span
         aria-hidden="true"
         className="h-px flex-1 bg-[repeating-linear-gradient(to_right,var(--color-border)_0_4px,transparent_4px_8px)] lg:h-auto lg:w-px lg:bg-[repeating-linear-gradient(to_bottom,var(--color-border)_0_4px,transparent_4px_8px)]"
       />
-      <span className="shrink-0 text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase lg:py-3 lg:[writing-mode:vertical-rl]">
+      <span className="shrink-0 text-center text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase lg:[writing-mode:vertical-rl]">
         {label}
       </span>
       <span
@@ -153,11 +174,13 @@ function CurrencyColumn({
   column,
   locale,
   labels,
+  showSpread,
   className,
 }: {
   column: ComparisonColumn
   locale: string
   labels: ComparisonLabels
+  showSpread: boolean
   className?: string
 }): ReactNode {
   const { band } = column
@@ -168,7 +191,7 @@ function CurrencyColumn({
         <h4 className="font-display text-sm font-semibold tracking-[0.06em] text-foreground uppercase">
           {column.currency}
         </h4>
-        {band !== null ? (
+        {band !== null && showSpread ? (
           <span className="text-xs text-muted-foreground tabular-nums">
             {band.count > 1 && band.spreadRatio > 1.005
               ? fill(labels.spread, {

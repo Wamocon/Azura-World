@@ -1,0 +1,277 @@
+[
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "manager receives 200",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "not redirected to login",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "competing 1+1 price 112.000 present",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "competing 1+1 price 185.000 present",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "competing 1+1 price 220.000 present",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "competing 1+1 price 239.171 present",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "the USD figure is rendered as dollars",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "the USD figure is NEVER shown as euros",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "no figure is offered as an equivalent in another currency",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "every mention of conversion is a negation of it",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "the two currencies are stated as not comparable",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "exactly one <main> landmark (the layout's)",
+    "passed": true
+  },
+  {
+    "section": "1 - the page renders, and the four F-002 prices are on it",
+    "label": "the seed slice is labelled, not presented as live",
+    "passed": true
+  },
+  {
+    "section": "2 - every publisher is grouped, and the counts are the dataset's",
+    "label": "all 7 publishers render their own group",
+    "passed": true
+  },
+  {
+    "section": "2 - every publisher is grouped, and the counts are the dataset's",
+    "label": "all 47 harvested listings render",
+    "passed": true
+  },
+  {
+    "section": "2 - every publisher is grouped, and the counts are the dataset's",
+    "label": "18 stale rows, matching the dataset",
+    "passed": true
+  },
+  {
+    "section": "2 - every publisher is grouped, and the counts are the dataset's",
+    "label": "the 2 rent rows are marked as rent",
+    "passed": true
+  },
+  {
+    "section": "3 - the stale badge is IN the price cell, not in a footnote",
+    "label": "every stale row carries a badge",
+    "passed": true
+  },
+  {
+    "section": "3 - the stale badge is IN the price cell, not in a footnote",
+    "label": "the badge is inside the PRICE cell in every stale row",
+    "passed": true
+  },
+  {
+    "section": "3 - the stale badge is IN the price cell, not in a footnote",
+    "label": "the badge is distinguishable without colour (dashed border)",
+    "passed": true
+  },
+  {
+    "section": "3 - the stale badge is IN the price cell, not in a footnote",
+    "label": "the badge states its reason in the document, not on hover",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "the 1+1 comparison has exactly one EUR and one USD column",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "the currency columns and their separator do not overlap",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "Haspo's 112.000 EUR anchor is in the comparison",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "Housearch's 239.171 USD figure is in the comparison, in dollars",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "Haspo's cell carries the stale badge next to its price",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "every spread figure names the currency it was computed in",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "F-002's own 2,1 figure is attributed to the finding, not recomputed",
+    "passed": true
+  },
+  {
+    "section": "4 - the comparison: one column per currency, never joined",
+    "label": "the layout-unstated band is present and holds Alanya-Home's 220.000",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "the matrix renders one row per claiming publisher",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "Haspo's own row says 'Im Bau', not the resolved 'Fertiggestellt'",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "Haspo's dissent is marked in the document",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "Housearch's row says 'Fertiggestellt'",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "the empty claimed_* harvest gap is stated in words, not left blank",
+    "passed": true
+  },
+  {
+    "section": "5 - the claim matrix: who says what about the building",
+    "label": "a publisher that never stated a field reads 'Keine Angabe', never blank",
+    "passed": true
+  },
+  {
+    "section": "6 - filter to zero names the filter and offers to clear it",
+    "label": "the empty state explains WHICH filter excluded everything",
+    "passed": true
+  },
+  {
+    "section": "6 - filter to zero names the filter and offers to clear it",
+    "label": "it offers a link back to the unfiltered register",
+    "passed": true
+  },
+  {
+    "section": "6 - filter to zero names the filter and offers to clear it",
+    "label": "no listing rows are rendered when the filter matches nothing",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "admin receives 200",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "admin sees listing data",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "manager receives 200",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "manager sees listing data",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "staff receives 200",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "staff sees listing data",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "service_provider is refused and NO listing data reaches the payload",
+    "passed": true
+  },
+  {
+    "section": "7 - permission matrix, measured per role",
+    "label": "child_guest is refused and NO listing data reaches the payload",
+    "passed": true
+  },
+  {
+    "section": "8 - 320px German, tap targets, reduced motion",
+    "label": "no horizontal page scroll at 320px in German",
+    "passed": true
+  },
+  {
+    "section": "8 - 320px German, tap targets, reduced motion",
+    "label": "every visible tap target is at least 24px tall",
+    "passed": true
+  },
+  {
+    "section": "8 - 320px German, tap targets, reduced motion",
+    "label": "under reduced motion the page is complete, not faster",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "English page returns 200",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "English copy is actually English",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "the USD figure survives the locale switch unconverted",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "\"Haspo Realty\" is unchanged in English",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "\"Housearch\" is unchanged in English",
+    "passed": true
+  },
+  {
+    "section": "9 - English renders as English, not a German fallback",
+    "label": "\"Alanya-Home\" is unchanged in English",
+    "passed": true
+  }
+]
