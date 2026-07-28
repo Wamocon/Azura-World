@@ -662,7 +662,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "The five-star hotel inside the development.",
+    "lead": "The 5-star hotel on the complex's grounds — with its reviews, its contradictions, and the sources behind both.",
     "formerNameNotice": "Previously operated as {formerName}. The rebrand is recorded as a finding.",
     "rooms": "Rooms",
     "stars": "Class",
@@ -676,7 +676,116 @@
     "galleryEmpty": "No cleared images are available for this property.",
     "reviewsTitle": "What guests write",
     "reviewsLead": "Extracts from public review platforms, each with its source.",
-    "bookExternal": "View on the portal"
+    "bookExternal": "View on the portal",
+    "eyebrow": "Hotel operation · review position",
+    "meta": {
+      "title": "Azura World Hotel — reviews and sources",
+      "description": "The complex's 5-star hotel: operating figures, review platforms and contradictions, each with its source."
+    },
+    "rebrand": {
+      "heading": "The hotel was renamed",
+      "body": "Until the rebrand the hotel traded as {formerName}. Some booking platforms still index it under the old name and the old address — a reader who does not know this finds two properties where there is only one.",
+      "currentName": "Current name",
+      "formerName": "Former name",
+      "finding": "Finding F-007"
+    },
+    "facts": {
+      "heading": "Operating figures",
+      "intro": "Every figure leads back to the source it came from. Where sources disagree, the disagreement sits on the number itself — not in a footnote."
+    },
+    "floors": "Floors",
+    "distance": {
+      "heading": "Two distances, two reference points",
+      "explanation": "The residence is about 300 m from the sea; the hotel is about 1 km from the public beach. This is not a contradiction: they measure two different routes from two different starting points. Both values stay in separate fields and are never folded into one number.",
+      "residence": "Residence → sea",
+      "hotel": "Hotel → public beach",
+      "finding": "Finding F-003"
+    },
+    "reviews": {
+      "intro": "Each platform stands on its own, on its own scale.",
+      "noAverageNote": "There is no overall score here. 4.6 out of 5 and 6.7 out of 10 cannot be combined — any number that came out of it would have no source. The platforms sit beside each other, not on top of each other."
+    },
+    "platform": {
+      "tripadvisor": "Tripadvisor",
+      "booking": "Booking.com",
+      "agoda": "Agoda",
+      "onthebeach": "OnTheBeach",
+      "google": "Google",
+      "score": "Score",
+      "reviewCount": "Reviews",
+      "ranking": "Ranking",
+      "fetchedAt": "fetched",
+      "open": "View on {platform}",
+      "syndicatedBy": "Same score at {publisher}",
+      "syndicatedNote": "The same score is served by other sites as well. That is not a second, independent rating — it is the same number with a different logo in front of it.",
+      "noReviews": "no reviews"
+    },
+    "sentiment": {
+      "heading": "Rating distribution",
+      "bucket": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "average": "Average",
+        "poor": "Poor",
+        "terrible": "Terrible"
+      },
+      "countOf": "{count} of {total}",
+      "distributionOf": "Distribution across {total} reviews",
+      "foldOnly": "This platform publishes only a coarse three-way split.",
+      "positive": "Positive",
+      "mixed": "Mixed",
+      "negative": "Negative"
+    },
+    "verdict": {
+      "heading": "Both ends of the scale",
+      "intro": "On the left the lowest-rated review this harvest recovered, on the right the highest — equal width, equal type size. Both are derived from the same list; a view that shows only the good ones is not structurally possible here.",
+      "best": "Highest rating",
+      "worst": "Lowest rating",
+      "degenerate": "Only one rated review is available. Two ends cannot be formed from it.",
+      "noRatings": "None of the recovered reviews carries a readable rating.",
+      "unrated": "{count} further reviews without a readable rating"
+    },
+    "quotes": {
+      "heading": "Every recovered review",
+      "intro": "{count} reviews verbatim, unabridged and untranslated. The lowest and highest ratings come first."
+    },
+    "quote": {
+      "ratingOf": "{rating} of {max}",
+      "ratingUnknown": "Rating not readable",
+      "notTranslated": "Original text, not translated",
+      "expand": "Show in full",
+      "collapse": "Show less",
+      "openReview": "Open review on the platform",
+      "published": "Published"
+    },
+    "unrecovered": {
+      "heading": "Booking platforms not recovered",
+      "intro": "These platforms were requested and returned nothing usable. They are not missing — they were attempted, and the result is here. A Booking.com-produced score does exist nonetheless: it was found as a badge on a third-party page, not on booking.com itself. That is why the platform card above names the site that served it.",
+      "status": "Status",
+      "attempted": "Attempted",
+      "statusValue": {
+        "expect_missing": "No content returned",
+        "redirected": "Redirected",
+        "blocked_403": "Access refused",
+        "dns_timeout": "Unreachable",
+        "soft_404": "Empty page with status 200",
+        "robots_disallowed": "Disallowed by robots.txt"
+      }
+    },
+    "provenance": {
+      "tier": {
+        "official": "Official",
+        "developer": "Developer",
+        "hotel": "Hotel operation",
+        "portal": "Property portal",
+        "review": "Review platform",
+        "press": "Press"
+      },
+      "conflictSummary": "{count} sources, unresolved",
+      "unresolvedNote": "Deliberately unresolved. No mean, no median, no “most likely” pick — any single number that came out of that would be an invention with a citation attached to it.",
+      "close": "Close",
+      "more": "+{count} more"
+    }
   },
   "report": {
     "title": "Public report",

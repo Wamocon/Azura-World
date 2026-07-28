@@ -662,7 +662,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage.",
+    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage — mit seinen Bewertungen, seinen Widersprüchen und den Quellen, die beides belegen.",
     "formerNameNotice": "Zuvor unter dem Namen {formerName} geführt. Die Umbenennung ist als Befund erfasst.",
     "rooms": "Zimmer",
     "stars": "Kategorie",
@@ -676,7 +676,116 @@
     "galleryEmpty": "Für dieses Objekt liegen keine freigegebenen Bilder vor.",
     "reviewsTitle": "Was Gäste schreiben",
     "reviewsLead": "Auszüge aus öffentlichen Bewertungsportalen, jeweils mit Quelle.",
-    "bookExternal": "Beim Portal ansehen"
+    "bookExternal": "Beim Portal ansehen",
+    "eyebrow": "Hotelbetrieb · Bewertungslage",
+    "meta": {
+      "title": "Azura World Hotel — Bewertungen und Quellen",
+      "description": "Das 5-Sterne-Haus der Anlage: Kennzahlen, Bewertungsportale und Widersprüche, jeweils mit Quelle."
+    },
+    "rebrand": {
+      "heading": "Das Haus wurde umbenannt",
+      "body": "Bis zur Umbenennung lief das Haus unter {formerName}. Buchungsportale führen es teilweise weiter unter dem alten Namen und der alten Adresse — wer das nicht weiß, findet zwei Objekte, wo nur eines ist.",
+      "currentName": "Aktueller Name",
+      "formerName": "Früherer Name",
+      "finding": "Befund F-007"
+    },
+    "facts": {
+      "heading": "Kennzahlen des Betriebs",
+      "intro": "Jede Angabe führt auf die Quelle zurück, aus der sie stammt. Wo Quellen sich widersprechen, steht der Widerspruch an der Zahl — nicht in einer Fußnote."
+    },
+    "floors": "Etagen",
+    "distance": {
+      "heading": "Zwei Entfernungen, zwei Bezugspunkte",
+      "explanation": "Die Anlage liegt rund 300 m vom Meer, das Hotel rund 1 km vom öffentlichen Strand. Das ist kein Widerspruch: gemessen werden zwei verschiedene Strecken von zwei verschiedenen Ausgangspunkten. Beide Werte bleiben getrennt gespeichert und werden nie zu einer Zahl zusammengefasst.",
+      "residence": "Anlage → Meer",
+      "hotel": "Hotel → öffentlicher Strand",
+      "finding": "Befund F-003"
+    },
+    "reviews": {
+      "intro": "Jede Plattform steht für sich, auf ihrer eigenen Skala.",
+      "noAverageNote": "Es gibt hier keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen — jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander."
+    },
+    "platform": {
+      "tripadvisor": "Tripadvisor",
+      "booking": "Booking.com",
+      "agoda": "Agoda",
+      "onthebeach": "OnTheBeach",
+      "google": "Google",
+      "score": "Bewertung",
+      "reviewCount": "Bewertungen",
+      "ranking": "Platzierung",
+      "fetchedAt": "abgerufen am",
+      "open": "Bei {platform} ansehen",
+      "syndicatedBy": "Dieselbe Zahl bei {publisher}",
+      "syndicatedNote": "Dieselbe Wertung wird von weiteren Seiten ausgeliefert. Das ist keine zweite, unabhängige Bewertung — es ist dieselbe Zahl mit einem anderen Logo davor.",
+      "noReviews": "keine Bewertungen"
+    },
+    "sentiment": {
+      "heading": "Verteilung der Wertungen",
+      "bucket": {
+        "excellent": "Ausgezeichnet",
+        "good": "Gut",
+        "average": "Durchschnittlich",
+        "poor": "Mangelhaft",
+        "terrible": "Ungenügend"
+      },
+      "countOf": "{count} von {total}",
+      "distributionOf": "Verteilung über {total} Bewertungen",
+      "foldOnly": "Diese Plattform veröffentlicht nur eine grobe Dreiteilung.",
+      "positive": "Positiv",
+      "mixed": "Gemischt",
+      "negative": "Negativ"
+    },
+    "verdict": {
+      "heading": "Beide Enden der Skala",
+      "intro": "Links die niedrigste, rechts die höchste Bewertung, die dieser Abruf gefunden hat — gleiche Breite, gleiche Schriftgröße. Beide werden rechnerisch aus derselben Liste bestimmt; eine Ansicht, die nur die guten zeigt, ist hier baulich nicht möglich.",
+      "best": "Höchste Wertung",
+      "worst": "Niedrigste Wertung",
+      "degenerate": "Es liegt nur eine bewertete Rezension vor. Zwei Enden lassen sich daraus nicht bilden.",
+      "noRatings": "Keine der erfassten Rezensionen trägt eine lesbare Wertung.",
+      "unrated": "{count} weitere Rezensionen ohne lesbare Wertung"
+    },
+    "quotes": {
+      "heading": "Alle erfassten Rezensionen",
+      "intro": "{count} Rezensionen im Wortlaut, ungekürzt und unübersetzt. Die niedrigste und die höchste Wertung stehen oben."
+    },
+    "quote": {
+      "ratingOf": "{rating} von {max}",
+      "ratingUnknown": "Wertung nicht lesbar",
+      "notTranslated": "Originaltext, nicht übersetzt",
+      "expand": "Mehr anzeigen",
+      "collapse": "Weniger anzeigen",
+      "openReview": "Rezension beim Portal öffnen",
+      "published": "Veröffentlicht"
+    },
+    "unrecovered": {
+      "heading": "Nicht abgerufene Buchungsportale",
+      "intro": "Diese Portale wurden angefragt und lieferten keinen verwertbaren Inhalt. Sie fehlen nicht — sie wurden versucht, und das Ergebnis steht hier. Eine von Booking.com erzeugte Wertung liegt trotzdem vor: sie wurde als Badge auf einer fremden Seite gefunden, nicht auf booking.com selbst. Die Plattformkarte oben nennt deshalb die Seite, die sie ausgeliefert hat.",
+      "status": "Status",
+      "attempted": "Versuch am",
+      "statusValue": {
+        "expect_missing": "Kein Inhalt geliefert",
+        "redirected": "Weitergeleitet",
+        "blocked_403": "Zugriff verweigert",
+        "dns_timeout": "Nicht erreichbar",
+        "soft_404": "Leere Seite mit Status 200",
+        "robots_disallowed": "Durch robots.txt untersagt"
+      }
+    },
+    "provenance": {
+      "tier": {
+        "official": "Offiziell",
+        "developer": "Bauträger",
+        "hotel": "Hotelbetrieb",
+        "portal": "Immobilienportal",
+        "review": "Bewertungsportal",
+        "press": "Presse"
+      },
+      "conflictSummary": "{count} Quellen, keine Auflösung",
+      "unresolvedNote": "Bewusst nicht aufgelöst. Kein Mittelwert, kein Median, keine „wahrscheinlichste“ Auswahl — jede einzelne Zahl, die dabei herauskäme, wäre eine Erfindung mit einer Quellenangabe daran.",
+      "close": "Schließen",
+      "more": "+{count} weitere"
+    }
   },
   "report": {
     "title": "Offener Report",
