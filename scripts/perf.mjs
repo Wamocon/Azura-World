@@ -208,6 +208,21 @@ const COLLECT = () => {
     jsBytes: sum(isJs),
     totalBytes: sum(() => true),
     requests: resources.length,
+    // Every script this route actually fetched, by basename and transferred
+    // size. The §7 landing budget is about THIS route's JavaScript, so the
+    // check classifies these against the built 3D chunks rather than summing
+    // every chunk on disk — a page that never loads half the app should not be
+    // charged for it.
+    jsResources: resources.filter(isJs).map((r) => ({
+      file: r.name.split("/").pop(),
+      // `encodedBodySize` is the compressed BODY — which is what a "≤ 250KB
+      // gzipped" budget is about. `transferSize` adds response headers and the
+      // protocol overhead, roughly 300 B per file, which is real cost but not
+      // the thing §7 bounds. Both are carried so the report can show the gap
+      // rather than pick one silently.
+      bytes: r.encodedBodySize || 0,
+      transferBytes: r.transferSize || 0,
+    })),
   }
 }
 
@@ -267,6 +282,17 @@ function aggregate(samples) {
       ? Number((median(values.map((v) => v * 10_000)) / 10_000).toFixed(4))
       : median(values)
   }
+  // Not a number, so it is not medianed — carried from the richest sample. The
+  // first version of this function had a fixed numeric key list and silently
+  // dropped `jsResources`, which made the landing-JS budget report 0 KB and
+  // PASS. A budget that passes because its input went missing is worse than one
+  // that fails wrongly: the failure gets investigated, the pass does not.
+  const withResources = samples.filter((s) => Array.isArray(s.jsResources) && s.jsResources.length > 0)
+  out.jsResources =
+    withResources.length === 0
+      ? []
+      : withResources.reduce((best, s) => (s.jsResources.length > best.jsResources.length ? s : best))
+          .jsResources
   return out
 }
 
@@ -387,23 +413,75 @@ async function main() {
     for (const route of routes) {
       const cold = results[`${route.name}:mobile:cold`]
       reporter.check(`${route.name} LCP ≤ ${BUDGETS.lcpMs}ms (mobile, cold)`, cold.lcpMs <= BUDGETS.lcpMs, `${cold.lcpMs}ms`)
-      reporter.check(`${route.name} CLS ≤ ${BUDGETS.cls}`, cold.cls <= BUDGETS.cls, `${cold.cls} over ${cold.layoutShifts} shift(s)`)
+
+      // CLS across EVERY configuration, not just throttled mobile. §7 states the
+      // budget without qualifying the device, and the first version of this
+      // check only read `mobile:cold` — which reported 0.0008 and passed while
+      // desktop was sitting at 0.16. Mobile is not the worst case for layout
+      // shift: the viewport is narrower, so a wide element that reflows on
+      // desktop has less room to move.
+      const clsSamples = ["mobile:cold", "mobile:warm", "desktop:cold", "desktop:warm"]
+        .map((key) => ({ key, value: results[`${route.name}:${key}`] }))
+        .filter((s) => s.value !== undefined)
+      const worstCls = clsSamples.reduce((worst, s) => (s.value.cls > worst.value.cls ? s : worst))
+      reporter.check(
+        `${route.name} CLS ≤ ${BUDGETS.cls} (worst of ${clsSamples.length} configurations)`,
+        worstCls.value.cls <= BUDGETS.cls,
+        `${worstCls.value.cls} on ${worstCls.key}, over ${worstCls.value.layoutShifts} shift(s)`,
+      )
+
       const inp = Math.max(cold.inpMs, results[`${route.name}:desktop:cold`].inpMs)
       reporter.check(`${route.name} INP ≤ ${BUDGETS.inpMs}ms`, inp <= BUDGETS.inpMs, `${inp}ms (max observed)`)
     }
 
     if (bundle !== null) {
-      // The landing budget is measured WITHOUT the lazy 3D chunk, per §7.
-      const landingJsKb = Number(
-        ((results["landing:desktop:cold"].jsBytes - bundle.threeGzipKb * 1024) / 1024).toFixed(1),
-      )
-      console.log(`  landing JS transferred: ${(results["landing:desktop:cold"].jsBytes / 1024).toFixed(1)} KB total`)
+      // §7: "JS on landing route, EXCLUDING the lazy 3D chunk". So the figure is
+      // what the landing route actually fetched, split by whether the file is one
+      // of the 3D-bearing chunks Phase 0 identified.
+      //
+      // An earlier version of this check asserted against `bundle.appGzipKb` —
+      // the sum of every app chunk on disk — and reported 516.7 KB against a
+      // 250 KB budget. That was the harness being wrong, not the app: the
+      // landing route loads a fraction of the emitted chunks. Recorded here
+      // because a harness that fails a build for its own bug costs more trust
+      // than the budget buys.
+      const threeNames = new Set(bundle.threeFiles.map((f) => f.file.split("/").pop()))
+      const cold = results["landing:desktop:cold"]
+      const fetched = cold.jsResources ?? []
+      let appBytes = 0
+      let threeBytes = 0
+      let appTransfer = 0
+      for (const resource of fetched) {
+        if (threeNames.has(resource.file)) threeBytes += resource.bytes
+        else {
+          appBytes += resource.bytes
+          appTransfer += resource.transferBytes ?? resource.bytes
+        }
+      }
+      const landingJsKb = Number((appBytes / 1024).toFixed(1))
+      const landing3dKb = Number((threeBytes / 1024).toFixed(1))
+      const landingTransferKb = Number((appTransfer / 1024).toFixed(1))
+
+      // An empty resource list means the measurement failed, not that the page
+      // shipped no JavaScript. Fail loudly rather than report 0 KB and pass.
       reporter.check(
-        `landing JS ≤ ${BUDGETS.landingJsKb} KB (static app chunks, gz)`,
-        bundle.appGzipKb <= BUDGETS.landingJsKb,
-        `${bundle.appGzipKb} KB across ${bundle.chunkCount - bundle.threeFiles.length} app chunk(s) — NOTE: this is EVERY app chunk, not the landing route's subset`,
+        "landing JS resources were captured",
+        fetched.length > 0,
+        `${fetched.length} script resource(s) seen by the Resource Timing API`,
+      )
+
+      console.log(
+        `  landing JS, compressed body: ${landingJsKb} KB app + ${landing3dKb} KB 3D ` +
+          `across ${fetched.length} file(s)  (with headers: ${landingTransferKb} KB app)`,
+      )
+      reporter.check(
+        `landing JS ≤ ${BUDGETS.landingJsKb} KB gz (compressed body, excluding 3D)`,
+        landingJsKb <= BUDGETS.landingJsKb,
+        `${landingJsKb} KB`,
       )
       results.landingJsExcluding3dKb = landingJsKb
+      results.landingJsExcluding3dTransferKb = landingTransferKb
+      results.landing3dTransferKb = landing3dKb
     }
 
     if (!SKIP_SOAK) {

@@ -1,0 +1,260 @@
+{
+  "harness": "perf",
+  "generatedAt": "2026-07-28T11:14:49.814Z",
+  "chromium": "C:\\Users\\Maanik Garg\\AppData\\Local\\ms-playwright\\chromium-1228\\chrome-win64\\chrome.exe",
+  "budgets": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "inpMs": 200,
+    "landingJsKb": 250,
+    "chunk3dKb": 260
+  },
+  "budgetSource": "CONVENTIONS §7 (3D chunk reset to 260KB by W-INT, S-010)",
+  "runsPerThrottledConfig": 3,
+  "blindSpots": [
+    "These are LAB numbers from one machine, not field data. Real users on real networks will differ; this catches regressions, it does not predict CrUX.",
+    "Throttling is CDP emulation (Slow 4G, 4x CPU), not a real network. It models bandwidth and latency, not packet loss, TLS negotiation cost or a congested radio.",
+    "INP is measured from SYNTHETIC clicks on the first few interactive elements, and reported as the MAXIMUM interaction latency rather than the p98 the real metric uses. A slow interaction this harness never clicks is invisible to it.",
+    "Cold cache means a fresh browser context, not a cleared OS or disk cache.",
+    "No Lighthouse score. `lighthouse` is not an installed dependency and `pnpm install` is W0-A's to run, so the CONVENTIONS §7 'Lighthouse a11y >= 95' budget is NOT checked here. scripts/a11y-audit.mjs checks the underlying rules directly instead.",
+    "Authenticated routes are not measured — the QA access-profile cookie is disabled under NODE_ENV=production, so /dashboard redirects to login.",
+    "The 3D chunk figure is STATIC analysis of the built chunks (gzip level 9 of every emitted chunk containing three.js/R3F markers). Actual network transfer differs slightly with the server's compression settings; both figures are reported.",
+    "The soak samples `performance.memory`, which is Chromium-only and coarse (it reports quantised heap sizes). It detects a large leak, not a slow one."
+  ],
+  "bundle": {
+    "chunkCount": 53,
+    "appGzipKb": 516.7,
+    "threeGzipKb": 227.4,
+    "threeFiles": [
+      {
+        "file": "b755399b.7b110217b1fc27d1.js",
+        "gzip": 99919,
+        "gzipKb": 97.6
+      },
+      {
+        "file": "666ce27d.bd374d30f2395b95.js",
+        "gzip": 87160,
+        "gzipKb": 85.1
+      },
+      {
+        "file": "b8182de4.1d022d0aefe0a3cb.js",
+        "gzip": 45761,
+        "gzipKb": 44.7
+      }
+    ],
+    "largestApp": [
+      {
+        "file": "1ecdc36f-341b97f008b9087d.js",
+        "gzip": 62740,
+        "gzipKb": 61.3
+      },
+      {
+        "file": "7534-6ee3c46f11ccf090.js",
+        "gzip": 61229,
+        "gzipKb": 59.8
+      },
+      {
+        "file": "framework-b7a73659ae4f90b6.js",
+        "gzip": 59396,
+        "gzipKb": 58
+      },
+      {
+        "file": "6362-34c254f096fe9e8d.js",
+        "gzip": 53941,
+        "gzipKb": 52.7
+      },
+      {
+        "file": "polyfills-42372ed130431b0a.js",
+        "gzip": 39520,
+        "gzipKb": 38.6
+      },
+      {
+        "file": "main-3acd8e7798053318.js",
+        "gzip": 38288,
+        "gzipKb": 37.4
+      }
+    ]
+  },
+  "results": {
+    "landing:desktop:cold": {
+      "runs": 1,
+      "lcpMs": 1208,
+      "cls": 0.0622,
+      "inpMs": 64,
+      "ttfbMs": 268,
+      "jsBytes": 511910,
+      "totalBytes": 688931,
+      "requests": 32,
+      "layoutShifts": 2
+    },
+    "landing:desktop:warm": {
+      "runs": 1,
+      "lcpMs": 168,
+      "cls": 0.1244,
+      "inpMs": 64,
+      "ttfbMs": 45,
+      "jsBytes": 0,
+      "totalBytes": 1235,
+      "requests": 31,
+      "layoutShifts": 4
+    },
+    "hotel:desktop:cold": {
+      "runs": 1,
+      "lcpMs": 204,
+      "cls": 0.0007,
+      "inpMs": 40,
+      "ttfbMs": 50,
+      "jsBytes": 210402,
+      "totalBytes": 290033,
+      "requests": 18,
+      "layoutShifts": 1
+    },
+    "hotel:desktop:warm": {
+      "runs": 1,
+      "lcpMs": 112,
+      "cls": 0,
+      "inpMs": 40,
+      "ttfbMs": 26,
+      "jsBytes": 0,
+      "totalBytes": 0,
+      "requests": 18,
+      "layoutShifts": 0
+    },
+    "landing:mobile:cold": {
+      "runs": 3,
+      "lcpMs": 1192,
+      "cls": 0.0008,
+      "inpMs": 88,
+      "ttfbMs": 62,
+      "jsBytes": 511910,
+      "totalBytes": 651087,
+      "requests": 31,
+      "layoutShifts": 3
+    },
+    "landing:mobile:warm": {
+      "runs": 3,
+      "lcpMs": 836,
+      "cls": 0,
+      "inpMs": 112,
+      "ttfbMs": 41,
+      "jsBytes": 243328,
+      "totalBytes": 266014,
+      "requests": 31,
+      "layoutShifts": 0
+    },
+    "hotel:mobile:cold": {
+      "runs": 3,
+      "lcpMs": 1292,
+      "cls": 0.0003,
+      "inpMs": 56,
+      "ttfbMs": 35,
+      "jsBytes": 210402,
+      "totalBytes": 290033,
+      "requests": 18,
+      "layoutShifts": 1
+    },
+    "hotel:mobile:warm": {
+      "runs": 3,
+      "lcpMs": 364,
+      "cls": 0,
+      "inpMs": 48,
+      "ttfbMs": 27,
+      "jsBytes": 0,
+      "totalBytes": 0,
+      "requests": 18,
+      "layoutShifts": 0
+    },
+    "landingJsExcluding3dKb": 272.5,
+    "soak": {
+      "samples": [
+        {
+          "heap": 13441317,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237229702
+        },
+        {
+          "heap": 12763744,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237234708
+        },
+        {
+          "heap": 14652200,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237239713
+        },
+        {
+          "heap": 13004292,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237244723
+        },
+        {
+          "heap": 13030700,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237249725
+        },
+        {
+          "heap": 13151184,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237254728
+        },
+        {
+          "heap": 12834924,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237259742
+        },
+        {
+          "heap": 12826164,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237264747
+        },
+        {
+          "heap": 12811476,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237269752
+        },
+        {
+          "heap": 12802756,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237274762
+        },
+        {
+          "heap": 12852436,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237279778
+        },
+        {
+          "heap": 12807928,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237284787
+        },
+        {
+          "heap": 12688708,
+          "canvases": 1,
+          "nodes": 1012,
+          "t": 1785237289803
+        }
+      ],
+      "growthMb": -0.72,
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "canvases": [
+        1,
+        1
+      ]
+    }
+  },
+  "runtimeMs": 196151
+}
