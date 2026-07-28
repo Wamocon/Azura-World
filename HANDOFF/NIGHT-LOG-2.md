@@ -12,3 +12,4 @@ Append only. Never rewrite another window's lines.
 18:52  N2  finance      money core + ledger + per-currency totals; typecheck 0 lint 0; money.test.ts 43/0  gates: green
 20:10  N2  wallet       wallet + vendor-invoices + nav registration; build 0, all six routes Dynamic          gates: green
 20:45  N2  all three    qa:dashboard 647/0 · qa:csp 30/0 · scope probe 27/0 · browser acceptance 52/0 (11 roles)  gates: green
+18:37  N3  operations  four modules built: tickets/activities/calendar/communications; state machine 704-triple exhaustive, ICS probe 59/0, csp 30/0, qa:dashboard 647/0  gates: green
