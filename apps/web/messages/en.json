@@ -1492,13 +1492,72 @@
       "count": "{count, plural, one {# document} other {# documents}}",
       "empty": "No documents.",
       "upload": "Upload document",
-      "signedUrlNotice": "Download links are valid for a limited time only.",
+      "signedUrlNotice": "Download links are valid for {seconds} seconds. After that, ask for a new one.",
       "columns": {
         "name": "Name",
         "category": "Category",
         "size": "Size",
         "uploadedAt": "Uploaded",
-        "uploadedBy": "By"
+        "uploadedBy": "By",
+        "review": "Review state",
+        "expires": "Expires"
+      },
+      "seedNotice": "Demo data. This list comes from a sample set, not from the database.",
+      "register": "Register",
+      "registerLead": "{count} documents in your view.",
+      "registerCaption": "Documents with category, review state and expiry.",
+      "emptyLead": "There are no documents in your view.",
+      "categories": {
+        "title_deed": "Title deed",
+        "contract": "Contract",
+        "invoice": "Invoice",
+        "identity": "Identity paper",
+        "permit": "Permit",
+        "insurance": "Insurance",
+        "handover": "Handover",
+        "inspection": "Inspection",
+        "correspondence": "Correspondence",
+        "marketing": "Marketing",
+        "evidence": "Evidence",
+        "general": "General"
+      },
+      "review": {
+        "pending_review": "Not reviewed",
+        "approved": "Reviewed",
+        "rejected": "Rejected"
+      },
+      "sizeUnknown": "Not stated",
+      "noExpiry": "No expiry",
+      "uploadLead": "PDF, PNG, JPEG, WEBP, Word and Excel are accepted.",
+      "uploading": "Uploading",
+      "fileLabel": "File",
+      "fileHint": "At most {megabytes} MB. The content is checked, not the file extension. It is stored in {bucket} and reached only through time-limited links.",
+      "resultHeading": "Result",
+      "storedAs": "Stored as",
+      "stored": "Document stored and logged. It becomes visible once someone has reviewed it.",
+      "storedUnaudited": "The file is in storage, the log entry is missing. Please try again.",
+      "storageUnavailable": "No file storage is set up for this installation. Nothing was saved.",
+      "storageNotConfigured": "File storage is not set up. An upload is refused with 503 rather than faking success.",
+      "signedUrlUnavailable": "No link can be produced for this document right now.",
+      "noFile": "Please choose a file.",
+      "readOnlyNotice": "You can view documents but not upload them.",
+      "forbidden": {
+        "title": "No access to the register",
+        "message": "Your role may not see these documents. The address stays valid.",
+        "permissionLabel": "Permission needed:"
+      },
+      "rejection": {
+        "empty": "The file is empty.",
+        "too_large": "The file is too large.",
+        "too_small": "The file is too small to be identified.",
+        "type_not_allowed": "That file format is not accepted.",
+        "content_is_markup": "The file contains web page code. That is refused whatever the extension says.",
+        "content_mismatch": "The content does not match the stated file type. The content was checked, not the name.",
+        "content_unrecognised": "The content could not be matched to any accepted file type."
+      },
+      "failed": {
+        "object": "The file could not be stored.",
+        "row": "The file is in storage, its register entry is missing."
       }
     },
     "compliance": {
@@ -1507,7 +1566,81 @@
       "empty": "Nothing outstanding.",
       "dueSoon": "Due soon",
       "overdue": "Overdue",
-      "compliant": "Met"
+      "compliant": "Met",
+      "seedNotice": "Demo data. These checks come from a sample set.",
+      "overclaimNotice": "{count} checks are recorded as passed without anything to demonstrate it.",
+      "kpi": {
+        "provable": "Provable",
+        "provableHint": "{proven} of {total} checks are backed by valid evidence.",
+        "noChecks": "Not stated",
+        "overclaimed": "Passed without evidence",
+        "overclaimedHint": "Recorded as passed but not demonstrable. This is the number that matters.",
+        "unproven": "Not demonstrable",
+        "unprovenHint": "No evidence, unreviewed evidence, or expired evidence.",
+        "overdue": "Overdue",
+        "overdueHint": "The deadline has passed."
+      },
+      "checks": "Checks",
+      "checksLead": "Sorted by urgency, not by date.",
+      "checksCaption": "Checks with evidence state, record and deadline.",
+      "emptyLead": "No checks have been recorded for this installation yet.",
+      "columns": {
+        "check": "Check",
+        "subject": "Subject",
+        "state": "Evidence state",
+        "recorded": "Recorded as",
+        "evidence": "Evidence",
+        "due": "Deadline"
+      },
+      "states": {
+        "proven": "Proven",
+        "not_evidenced": "No evidence",
+        "evidence_unreviewed": "Evidence unreviewed",
+        "evidence_expired": "Evidence expired",
+        "failed": "Not passed",
+        "open": "Open"
+      },
+      "stateExplained": {
+        "proven": "Recorded as passed, backed by a reviewed document that is still valid.",
+        "not_evidenced": "Recorded as passed or waived with no document attached. We believe it, we cannot show it.",
+        "evidence_unreviewed": "A document is attached, but nobody has reviewed it.",
+        "evidence_expired": "The document was valid and no longer is.",
+        "failed": "Recorded as not passed.",
+        "open": "Still being worked on. Nothing is being claimed."
+      },
+      "recorded": {
+        "pending": "Open",
+        "in_review": "In review",
+        "passed": "Passed",
+        "failed": "Not passed",
+        "waived": "Waived"
+      },
+      "checkTypes": {
+        "kyc_identity": "Identity check",
+        "aml_screening": "Money laundering check",
+        "sanctions_screening": "Sanctions check",
+        "title_deed": "Title deed",
+        "occupancy_permit": "Occupancy permit",
+        "building_permit": "Building permit",
+        "fire_safety": "Fire safety",
+        "earthquake_certificate": "Earthquake certificate",
+        "energy_certificate": "Energy certificate",
+        "tax_registration": "Tax registration",
+        "residence_permit": "Residence permit",
+        "insurance": "Insurance",
+        "gdpr_consent": "Data protection consent",
+        "contract_review": "Contract review",
+        "vendor_due_diligence": "Supplier review"
+      },
+      "noEvidence": "No evidence",
+      "noDueDate": "No deadline",
+      "method": "How this page counts",
+      "methodLead": "The difference between believing something and being able to show it.",
+      "forbidden": {
+        "title": "No access to compliance",
+        "message": "Your role may not see these checks. The address stays valid.",
+        "permissionLabel": "Permission needed:"
+      }
     },
     "reports": {
       "title": "Reports",
@@ -1516,7 +1649,66 @@
       "generate": "Generate report",
       "generating": "Generating report …",
       "ready": "Report ready",
-      "queuedNotice": "The report is being generated in the background. You can leave this page."
+      "queuedNotice": "The report is being generated in the background. You can leave this page.",
+      "catalogue": "Available reports",
+      "catalogueLead": "Each report with the permission it requires.",
+      "carriesProvenance": "Carries sources",
+      "requiresPermission": "Requires",
+      "downloadCsv": "Download as CSV",
+      "notPermitted": "Not permitted",
+      "formats": "Formats",
+      "formatsLead": "What can be produced today and what cannot.",
+      "available": "Available",
+      "unavailable": "Not available",
+      "formatReason": {
+        "csv_ready": "Produced on request, with source columns.",
+        "no_library": "A software library is missing for this. Installing one is W0-A's job."
+      },
+      "unavailableReason": {
+        "not_built": "Not built yet"
+      },
+      "scheduled": "Scheduled reports",
+      "scheduledLead": "Reports that run in the background and are filed.",
+      "jobsUnavailable": "Background reports answer {status}. The {table} table is missing and {owner} owns it. A button that produces nothing would be misleading.",
+      "columns": {
+        "metric": "Measure",
+        "value": "Value",
+        "basis": "Basis",
+        "publisher": "Publisher",
+        "url": "Address",
+        "tier": "Tier",
+        "fetchedAt": "Retrieved",
+        "snapshotHash": "Checksum",
+        "lastStatus": "Last status",
+        "lastOk": "Last confirmed"
+      },
+      "csv": {
+        "generatedAt": "Produced on",
+        "source": "Data origin"
+      },
+      "reports": {
+        "evidence_coverage": {
+          "title": "Evidence coverage",
+          "lead": "How many statements are backed by evidence, how many are only asserted, and where the gaps are."
+        },
+        "source_register": {
+          "title": "Source register",
+          "lead": "Every source with address, tier, retrieval time and the checksum of the stored copy."
+        },
+        "inventory_split": {
+          "title": "Inventory split",
+          "lead": "Real listings against modelled records, by block."
+        },
+        "compliance_gaps": {
+          "title": "Compliance gaps",
+          "lead": "Checks without evidence, by deadline."
+        }
+      },
+      "forbidden": {
+        "title": "No access to reports",
+        "message": "Your role may not see these analyses. The address stays valid.",
+        "permissionLabel": "Permission needed:"
+      }
     },
     "users": {
       "title": "Users",
@@ -1529,7 +1721,79 @@
         "email": "Email",
         "role": "Role",
         "status": "Status",
-        "lastSeen": "Last active"
+        "lastSeen": "Last active",
+        "created": "Created",
+        "active": "Active",
+        "total": "Total"
+      },
+      "countLabel": "Accounts",
+      "adminCount": "Active administrators",
+      "adminCountLead": "The last active administrator cannot be demoted or deactivated.",
+      "directory": "Directory",
+      "directoryLead": "Every account you are allowed to see.",
+      "directoryCaption": "Accounts with role, status and creation date.",
+      "emptyLead": "There are no accounts in your view.",
+      "coverage": "Role coverage",
+      "coverageLead": "How many people actually hold each role.",
+      "coverageCaption": "All eleven roles, including the ones nobody holds.",
+      "noHolder": "Nobody",
+      "unnamed": "No name",
+      "noEmail": "Not stated",
+      "unknownRole": "Unknown role",
+      "active": "Active",
+      "inactive": "Blocked",
+      "seedNotice": "Demo data. This list comes from a sample set, not from the database.",
+      "restrictedNotice": "You are seeing part of the list. Your role does not cover the whole directory.",
+      "profileDegraded": "Your own profile could not be read in full, so your rights have been reduced to the minimum.",
+      "readOnlyNotice": "You can view roles but not change them.",
+      "assign": "Assign a role",
+      "assignLead": "Administrators only. Every change is logged, including a refused one.",
+      "person": "Person",
+      "submit": "Save role",
+      "submitting": "Saving",
+      "noCandidates": "There is nobody whose role you could change.",
+      "elevationWarning": "Nobody may change their own role. Not even downwards.",
+      "statusHeading": "Result",
+      "roleSaved": "The role was saved and logged.",
+      "activated": "The account is active again.",
+      "deactivated": "The account is blocked. Its history is kept.",
+      "auditIncomplete": "The change was saved, the log entry was not. Please try again.",
+      "unavailable": "This change needs a database. Nothing was saved.",
+      "writeFailed": "The change could not be saved.",
+      "forbidden": {
+        "title": "No access to user administration",
+        "message": "Your role may not see this list. The address stays valid and works for anyone who holds the right.",
+        "permissionLabel": "Permission needed:"
+      },
+      "refusal": {
+        "not_authenticated": "You are not signed in.",
+        "not_permitted": "Your role may not assign roles.",
+        "self_elevation": "Nobody may raise their own role. Ask another administrator to do it.",
+        "self_role_change": "Nobody may change their own role. That includes lowering it.",
+        "unknown_role": "That role does not exist.",
+        "unknown_subject_role": "This account holds a role the system does not recognise.",
+        "no_change": "That role is already set. Nothing was changed.",
+        "last_admin": "This is the last active administrator. With none, nobody can administer the system. Create a second one first.",
+        "census_unavailable": "How many administrators exist cannot be established right now. Nothing is changed while that is open.",
+        "deletion_not_supported": "Accounts are blocked, never deleted. The history has to survive."
+      },
+      "roles": {
+        "admin": "Administrator",
+        "manager": "Site manager",
+        "accountant": "Accounting",
+        "staff": "Technical service",
+        "owner": "Owner",
+        "tenant": "Tenant",
+        "guest": "Guest",
+        "service_provider": "Service provider",
+        "child_owner": "Owner (sub-account)",
+        "child_tenant": "Tenant (sub-account)",
+        "child_guest": "Guest (sub-account)"
+      },
+      "invitations": {
+        "title": "Invitations",
+        "lead": "Single-use, expiring access for new people.",
+        "unavailable": "Invitations are not built yet. The invitations table is missing and W1-A owns it. A form with nowhere to write would be misleading."
       }
     },
     "admin": {
@@ -1538,7 +1802,86 @@
       "auditLog": "Audit log",
       "jobs": "Jobs",
       "health": "System health",
-      "empty": "No entries."
+      "empty": "No entries.",
+      "profileDegraded": "Your own profile could not be read in full, so your rights have been reduced to the minimum.",
+      "auditReason": {
+        "no_database": "This installation has no database.",
+        "no_server_key": "The server key needed for the log entry is missing.",
+        "insert_failed": "The database refused the log entry."
+      },
+      "forbidden": {
+        "title": "No access to administration",
+        "message": "This page is for administrators. The address stays valid and works for anyone who holds the right.",
+        "permissionLabel": "Permission needed:"
+      },
+      "integrations": {
+        "title": "Connected services",
+        "lead": "What is set up, and how much of that has actually been checked.",
+        "noneConfigured": "Not one service is set up. This installation runs entirely on sample data.",
+        "wiredFalse": "Not connected",
+        "readFrom": "Read from",
+        "check": "Check the connection",
+        "checking": "Checking",
+        "forbidden": "Only administrators may check a connection.",
+        "invalid": "That request was not valid.",
+        "latency": "Response time",
+        "name": {
+          "supabase": "Database (Supabase)",
+          "storage": "File storage",
+          "aiGateway": "AI service",
+          "jira": "Jira"
+        },
+        "note": {
+          "supabase": "Holds all core data.",
+          "storage": "For documents. The storage area has not been created yet, so an upload answers 503.",
+          "aiGateway": "For the assistant's answers.",
+          "jira": "Used by a script only, nowhere in the application."
+        }
+      },
+      "integrationState": {
+        "not_configured": "Not set up",
+        "configured_unverified": "Set up, unchecked",
+        "reachable": "Answering",
+        "unreachable": "Not answering"
+      },
+      "system": {
+        "title": "System details",
+        "lead": "What this installation can demonstrate about itself.",
+        "contractVersion": "Interface version",
+        "locales": "Languages",
+        "accessProfiles": "Role switcher for testing",
+        "accessProfilesOn": "On",
+        "accessProfilesOff": "Off",
+        "migrations": "Database versions applied",
+        "migrationsUnknown": "Not stated",
+        "notice": "The application cannot establish which database versions are applied. This is left open rather than guessed."
+      },
+      "audit": {
+        "title": "Log",
+        "lead": "Every change and every refusal, in the order they arrived.",
+        "caption": "Log entries, newest first.",
+        "emptyTitle": "No log entries",
+        "emptyBody": "There are no entries on this page. That is not a fault: nothing has been logged in this installation yet.",
+        "appendOnly": "The log can only grow. There is no way here to change or delete an entry, and the database refuses both as well.",
+        "seedNotice": "Demo data. These entries come from a sample set.",
+        "columns": {
+          "when": "Time",
+          "action": "Event",
+          "entity": "Concerns",
+          "actor": "Triggered by",
+          "change": "Change"
+        },
+        "unknownActor": "Not stated",
+        "noChange": "No field change",
+        "previous": "Back",
+        "next": "Forward",
+        "page": "Page"
+      },
+      "access": {
+        "title": "Access decisions",
+        "lead": "Who was let in where, and who was not.",
+        "caption": "Access decisions, newest first."
+      }
     },
     "settings": {
       "title": "Settings",
@@ -1553,7 +1896,52 @@
         "dark": "Dark",
         "system": "System"
       },
-      "saved": "Settings saved"
+      "saved": "Settings saved",
+      "profileDegraded": "Your own profile could not be read in full, so your rights have been reduced to the minimum.",
+      "accountLead": "What this system knows about your account.",
+      "email": "Email",
+      "noEmail": "Not stated",
+      "role": "Role",
+      "sessionSource": "Sign-in type",
+      "sessionSources": {
+        "supabase": "Signed in",
+        "access-profile": "Test role",
+        "anonymous": "Not signed in"
+      },
+      "roleFixedNotice": "You cannot change your own role here. Only another administrator can.",
+      "preferences": "Your preferences",
+      "preferencesLead": "These apply to your account only.",
+      "fullName": "Name",
+      "phone": "Phone",
+      "languageHint": "Changes your own language only, not anyone else's.",
+      "save": "Save",
+      "saving": "Saving",
+      "resultHeading": "Result",
+      "savedAs": "Language now stored:",
+      "auditIncomplete": "Saved, the log entry is missing.",
+      "noDatabase": "This needs a database. Nothing saved.",
+      "writeFailed": "This could not be saved.",
+      "locales": {
+        "de": "German",
+        "en": "English",
+        "tr": "Turkish",
+        "ru": "Russian"
+      },
+      "appearanceLead": "Applies to the whole application.",
+      "themeFixedNotice": "The light design is fixed for everyone. A choice here would do nothing, so there is none.",
+      "notificationsLead": "When this system should get in touch with you.",
+      "notificationsUnavailable": "Notifications are not built yet. A preferences table is missing and W1-A owns it.",
+      "organisation": "Organisation",
+      "organisationLead": "Administrators only.",
+      "companyId": "Identifier",
+      "noCompany": "Not stated",
+      "organisationReadOnly": "These details can only be read here. There is no editing yet.",
+      "openAdmin": "Go to administration",
+      "forbidden": {
+        "title": "No access to settings",
+        "message": "Your role may not see this page. The address stays valid.",
+        "permissionLabel": "Permission needed:"
+      }
     },
     "hotel": {
       "title": "Hotel operations",

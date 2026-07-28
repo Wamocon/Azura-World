@@ -1492,13 +1492,72 @@
       "count": "{count, plural, one {# Dokument} other {# Dokumente}}",
       "empty": "Keine Dokumente.",
       "upload": "Dokument hochladen",
-      "signedUrlNotice": "Download-Links sind zeitlich begrenzt gültig.",
+      "signedUrlNotice": "Download-Links gelten {seconds} Sekunden. Danach fordern Sie einen neuen an.",
       "columns": {
         "name": "Name",
         "category": "Kategorie",
         "size": "Größe",
         "uploadedAt": "Hochgeladen",
-        "uploadedBy": "Von"
+        "uploadedBy": "Von",
+        "review": "Prüfstand",
+        "expires": "Läuft ab"
+      },
+      "seedNotice": "Demodaten. Diese Liste stammt aus einem Beispielbestand, nicht aus der Datenbank.",
+      "register": "Ablage",
+      "registerLead": "{count} Dokumente in Ihrer Sicht.",
+      "registerCaption": "Dokumente mit Kategorie, Prüfstand und Ablauf.",
+      "emptyLead": "In Ihrer Sicht liegen keine Dokumente.",
+      "categories": {
+        "title_deed": "Grundbuchauszug",
+        "contract": "Vertrag",
+        "invoice": "Rechnung",
+        "identity": "Ausweis",
+        "permit": "Genehmigung",
+        "insurance": "Versicherung",
+        "handover": "Übergabe",
+        "inspection": "Prüfung",
+        "correspondence": "Schriftwechsel",
+        "marketing": "Werbung",
+        "evidence": "Nachweis",
+        "general": "Allgemein"
+      },
+      "review": {
+        "pending_review": "Ungeprüft",
+        "approved": "Geprüft",
+        "rejected": "Abgelehnt"
+      },
+      "sizeUnknown": "Keine Angabe",
+      "noExpiry": "Kein Ablauf",
+      "uploadLead": "Erlaubt sind PDF, PNG, JPEG, WEBP, Word und Excel.",
+      "uploading": "Wird übertragen",
+      "fileLabel": "Datei",
+      "fileHint": "Höchstens {megabytes} MB. Der Inhalt wird geprüft, nicht die Dateiendung. Abgelegt wird in {bucket}, der Zugriff läuft nur über zeitlich begrenzte Links.",
+      "resultHeading": "Ergebnis",
+      "storedAs": "Abgelegt als",
+      "stored": "Dokument abgelegt und protokolliert. Es ist erst nach einer Prüfung sichtbar.",
+      "storedUnaudited": "Die Datei liegt in der Ablage, der Protokolleintrag fehlt. Bitte erneut versuchen.",
+      "storageUnavailable": "Für diese Installation ist keine Dateiablage eingerichtet. Es wurde nichts gespeichert.",
+      "storageNotConfigured": "Die Dateiablage ist nicht eingerichtet. Ein Upload wird mit 503 abgelehnt, statt Erfolg vorzutäuschen.",
+      "signedUrlUnavailable": "Für dieses Dokument kann gerade kein Link erzeugt werden.",
+      "noFile": "Bitte wählen Sie eine Datei.",
+      "readOnlyNotice": "Sie können Dokumente ansehen, aber keine hochladen.",
+      "forbidden": {
+        "title": "Kein Zugriff auf die Ablage",
+        "message": "Ihre Rolle darf diese Dokumente nicht sehen. Die Adresse bleibt gültig.",
+        "permissionLabel": "Benötigtes Recht:"
+      },
+      "rejection": {
+        "empty": "Die Datei ist leer.",
+        "too_large": "Die Datei ist zu groß.",
+        "too_small": "Die Datei ist zu klein, um erkannt zu werden.",
+        "type_not_allowed": "Dieses Dateiformat ist nicht erlaubt.",
+        "content_is_markup": "Die Datei enthält Webseiten-Code. Das wird nicht angenommen, unabhängig von der Endung.",
+        "content_mismatch": "Der Inhalt passt nicht zur angegebenen Dateiart. Geprüft wurde der Inhalt, nicht der Name.",
+        "content_unrecognised": "Der Inhalt ließ sich keiner erlaubten Dateiart zuordnen."
+      },
+      "failed": {
+        "object": "Die Datei konnte nicht abgelegt werden.",
+        "row": "Die Datei liegt in der Ablage, der Eintrag dazu fehlt."
       }
     },
     "compliance": {
@@ -1507,7 +1566,81 @@
       "empty": "Keine offenen Punkte.",
       "dueSoon": "Bald fällig",
       "overdue": "Überfällig",
-      "compliant": "Erfüllt"
+      "compliant": "Erfüllt",
+      "seedNotice": "Demodaten. Diese Prüfungen stammen aus einem Beispielbestand.",
+      "overclaimNotice": "{count} Prüfungen sind als bestanden erfasst, ohne dass sich das belegen lässt.",
+      "kpi": {
+        "provable": "Belegt",
+        "provableHint": "{proven} von {total} Prüfungen sind mit einem gültigen Nachweis hinterlegt.",
+        "noChecks": "Keine Angabe",
+        "overclaimed": "Ohne Beleg bestanden",
+        "overclaimedHint": "Als bestanden erfasst, aber nicht belegbar. Das ist die Zahl, auf die es ankommt.",
+        "unproven": "Nicht belegbar",
+        "unprovenHint": "Kein Nachweis, ungeprüfter Nachweis oder abgelaufener Nachweis.",
+        "overdue": "Überfällig",
+        "overdueHint": "Frist verstrichen."
+      },
+      "checks": "Prüfungen",
+      "checksLead": "Nach Dringlichkeit, nicht nach Datum.",
+      "checksCaption": "Prüfungen mit Nachweislage, Erfassung und Frist.",
+      "emptyLead": "Für diese Installation sind noch keine Prüfungen erfasst.",
+      "columns": {
+        "check": "Prüfung",
+        "subject": "Gegenstand",
+        "state": "Nachweislage",
+        "recorded": "Erfasst als",
+        "evidence": "Nachweis",
+        "due": "Frist"
+      },
+      "states": {
+        "proven": "Belegt",
+        "not_evidenced": "Kein Nachweis",
+        "evidence_unreviewed": "Nachweis ungeprüft",
+        "evidence_expired": "Nachweis abgelaufen",
+        "failed": "Nicht bestanden",
+        "open": "Offen"
+      },
+      "stateExplained": {
+        "proven": "Als bestanden erfasst, mit einem geprüften und gültigen Dokument hinterlegt.",
+        "not_evidenced": "Als bestanden oder erlassen erfasst, aber ohne angehängtes Dokument. Wir glauben es, wir können es nicht zeigen.",
+        "evidence_unreviewed": "Ein Dokument hängt daran, aber niemand hat es geprüft.",
+        "evidence_expired": "Das Dokument war gültig und ist es nicht mehr.",
+        "failed": "Als nicht bestanden erfasst.",
+        "open": "Noch in Bearbeitung. Es wird nichts behauptet."
+      },
+      "recorded": {
+        "pending": "Offen",
+        "in_review": "In Prüfung",
+        "passed": "Bestanden",
+        "failed": "Nicht bestanden",
+        "waived": "Erlassen"
+      },
+      "checkTypes": {
+        "kyc_identity": "Identitätsprüfung",
+        "aml_screening": "Geldwäscheprüfung",
+        "sanctions_screening": "Sanktionsprüfung",
+        "title_deed": "Grundbuchauszug",
+        "occupancy_permit": "Nutzungsgenehmigung",
+        "building_permit": "Baugenehmigung",
+        "fire_safety": "Brandschutz",
+        "earthquake_certificate": "Erdbebennachweis",
+        "energy_certificate": "Energieausweis",
+        "tax_registration": "Steuerregistrierung",
+        "residence_permit": "Aufenthaltstitel",
+        "insurance": "Versicherung",
+        "gdpr_consent": "Einwilligung Datenschutz",
+        "contract_review": "Vertragsprüfung",
+        "vendor_due_diligence": "Lieferantenprüfung"
+      },
+      "noEvidence": "Kein Nachweis",
+      "noDueDate": "Keine Frist",
+      "method": "Wie diese Seite rechnet",
+      "methodLead": "Der Unterschied zwischen halten für und belegen können.",
+      "forbidden": {
+        "title": "Kein Zugriff auf die Compliance",
+        "message": "Ihre Rolle darf diese Prüfungen nicht sehen. Die Adresse bleibt gültig.",
+        "permissionLabel": "Benötigtes Recht:"
+      }
     },
     "reports": {
       "title": "Berichte",
@@ -1516,7 +1649,66 @@
       "generate": "Bericht erzeugen",
       "generating": "Bericht wird erzeugt …",
       "ready": "Bericht bereit",
-      "queuedNotice": "Der Bericht wird im Hintergrund erzeugt. Diese Seite kann verlassen werden."
+      "queuedNotice": "Der Bericht wird im Hintergrund erzeugt. Diese Seite kann verlassen werden.",
+      "catalogue": "Verfügbare Berichte",
+      "catalogueLead": "Jeder Bericht mit dem Recht, das er verlangt.",
+      "carriesProvenance": "Mit Quellenangabe",
+      "requiresPermission": "Verlangt",
+      "downloadCsv": "Als CSV laden",
+      "notPermitted": "Nicht freigegeben",
+      "formats": "Formate",
+      "formatsLead": "Was heute erzeugt werden kann und was nicht.",
+      "available": "Verfügbar",
+      "unavailable": "Nicht verfügbar",
+      "formatReason": {
+        "csv_ready": "Wird auf Anfrage erzeugt, mit Quellenspalten.",
+        "no_library": "Dafür fehlt eine Programmbibliothek. Sie nachzuinstallieren ist Aufgabe von W0-A."
+      },
+      "unavailableReason": {
+        "not_built": "Noch nicht gebaut"
+      },
+      "scheduled": "Geplante Berichte",
+      "scheduledLead": "Berichte, die im Hintergrund laufen und abgelegt werden.",
+      "jobsUnavailable": "Hintergrundberichte antworten mit {status}. Dafür fehlt die Tabelle {table}, zuständig ist {owner}. Ein Knopf, der nichts erzeugt, wäre irreführend.",
+      "columns": {
+        "metric": "Kennzahl",
+        "value": "Wert",
+        "basis": "Grundlage",
+        "publisher": "Herausgeber",
+        "url": "Adresse",
+        "tier": "Rang",
+        "fetchedAt": "Abgerufen",
+        "snapshotHash": "Prüfsumme",
+        "lastStatus": "Letzter Status",
+        "lastOk": "Zuletzt bestätigt"
+      },
+      "csv": {
+        "generatedAt": "Erzeugt am",
+        "source": "Datenherkunft"
+      },
+      "reports": {
+        "evidence_coverage": {
+          "title": "Belegdeckung",
+          "lead": "Wie viele Angaben belegt sind, wie viele nur behauptet, und wo es Lücken gibt."
+        },
+        "source_register": {
+          "title": "Quellenverzeichnis",
+          "lead": "Jede Quelle mit Adresse, Rang, Abrufzeitpunkt und Prüfsumme der gespeicherten Fassung."
+        },
+        "inventory_split": {
+          "title": "Bestandsaufteilung",
+          "lead": "Reale Inserate gegen modellierte Datensätze, je Block."
+        },
+        "compliance_gaps": {
+          "title": "Compliance-Lücken",
+          "lead": "Prüfungen ohne Nachweis, nach Frist."
+        }
+      },
+      "forbidden": {
+        "title": "Kein Zugriff auf Berichte",
+        "message": "Ihre Rolle darf diese Auswertungen nicht sehen. Die Adresse bleibt gültig.",
+        "permissionLabel": "Benötigtes Recht:"
+      }
     },
     "users": {
       "title": "Benutzer",
@@ -1529,7 +1721,79 @@
         "email": "E-Mail",
         "role": "Rolle",
         "status": "Status",
-        "lastSeen": "Zuletzt aktiv"
+        "lastSeen": "Zuletzt aktiv",
+        "created": "Angelegt",
+        "active": "Aktiv",
+        "total": "Gesamt"
+      },
+      "countLabel": "Konten",
+      "adminCount": "Aktive Administratoren",
+      "adminCountLead": "Der letzte aktive Administrator kann nicht herabgestuft oder deaktiviert werden.",
+      "directory": "Verzeichnis",
+      "directoryLead": "Alle Konten, die Sie sehen dürfen.",
+      "directoryCaption": "Konten mit Rolle, Status und Anlagedatum.",
+      "emptyLead": "In Ihrer Sicht liegen keine Konten vor.",
+      "coverage": "Rollenabdeckung",
+      "coverageLead": "Wie viele Personen jede Rolle tatsächlich innehaben.",
+      "coverageCaption": "Alle elf Rollen, auch die ohne Inhaber.",
+      "noHolder": "Niemand",
+      "unnamed": "Ohne Namen",
+      "noEmail": "Keine Angabe",
+      "unknownRole": "Unbekannte Rolle",
+      "active": "Aktiv",
+      "inactive": "Gesperrt",
+      "seedNotice": "Demodaten. Diese Liste stammt aus einem Beispielbestand, nicht aus der Datenbank.",
+      "restrictedNotice": "Sie sehen einen Ausschnitt. Ihre Rolle erlaubt nicht das ganze Verzeichnis.",
+      "profileDegraded": "Ihr eigenes Profil konnte nicht vollständig gelesen werden. Ihre Rechte sind deshalb auf das Minimum gesetzt.",
+      "readOnlyNotice": "Sie können Rollen ansehen, aber nicht ändern.",
+      "assign": "Rolle zuweisen",
+      "assignLead": "Nur Administratoren. Jede Änderung wird protokolliert, auch eine abgelehnte.",
+      "person": "Person",
+      "submit": "Rolle speichern",
+      "submitting": "Wird gespeichert",
+      "noCandidates": "Es gibt niemanden, dessen Rolle Sie ändern könnten.",
+      "elevationWarning": "Die eigene Rolle kann niemand ändern. Auch nicht nach unten.",
+      "statusHeading": "Ergebnis",
+      "roleSaved": "Rolle gespeichert und protokolliert.",
+      "activated": "Das Konto ist wieder aktiv.",
+      "deactivated": "Das Konto ist gesperrt. Der Verlauf bleibt erhalten.",
+      "auditIncomplete": "Die Änderung wurde gespeichert, der Protokolleintrag nicht. Bitte erneut versuchen.",
+      "unavailable": "Dafür fehlt die Datenbank. Nichts gespeichert.",
+      "writeFailed": "Änderung nicht gespeichert.",
+      "forbidden": {
+        "title": "Kein Zugriff auf die Benutzerverwaltung",
+        "message": "Ihre Rolle darf diese Liste nicht sehen. Die Adresse bleibt gültig und funktioniert für Personen mit dem nötigen Recht.",
+        "permissionLabel": "Benötigtes Recht:"
+      },
+      "refusal": {
+        "not_authenticated": "Sie sind nicht angemeldet.",
+        "not_permitted": "Ihre Rolle darf keine Rollen vergeben.",
+        "self_elevation": "Die eigene Rolle kann niemand anheben. Bitten Sie eine andere administrierende Person darum.",
+        "self_role_change": "Die eigene Rolle kann niemand ändern. Das gilt auch für eine Herabstufung.",
+        "unknown_role": "Diese Rolle gibt es nicht.",
+        "unknown_subject_role": "Das Konto trägt eine Rolle, die dieses System nicht kennt.",
+        "no_change": "Diese Rolle ist bereits gesetzt. Es wurde nichts geändert.",
+        "last_admin": "Das ist der letzte aktive Administrator. Ohne Administrator lässt sich das System nicht mehr verwalten. Legen Sie zuerst einen zweiten an.",
+        "census_unavailable": "Wie viele Administratoren es gibt, ist gerade nicht feststellbar. Solange das offen ist, wird nichts geändert.",
+        "deletion_not_supported": "Konten werden gesperrt, nicht gelöscht. Der Verlauf muss erhalten bleiben."
+      },
+      "roles": {
+        "admin": "Administrator",
+        "manager": "Objektleitung",
+        "accountant": "Buchhaltung",
+        "staff": "Technischer Dienst",
+        "owner": "Eigentümer",
+        "tenant": "Mieter",
+        "guest": "Gast",
+        "service_provider": "Dienstleister",
+        "child_owner": "Eigentümer (Unterkonto)",
+        "child_tenant": "Mieter (Unterkonto)",
+        "child_guest": "Gast (Unterkonto)"
+      },
+      "invitations": {
+        "title": "Einladungen",
+        "lead": "Einmalige, befristete Zugänge für neue Personen.",
+        "unavailable": "Einladungen sind noch nicht gebaut. Dafür fehlt die Tabelle invitations, zuständig ist W1-A. Ein Formular ohne Speicherort wäre irreführend."
       }
     },
     "admin": {
@@ -1538,7 +1802,86 @@
       "auditLog": "Protokoll",
       "jobs": "Aufträge",
       "health": "Systemzustand",
-      "empty": "Keine Einträge."
+      "empty": "Keine Einträge.",
+      "profileDegraded": "Ihr eigenes Profil konnte nicht vollständig gelesen werden. Ihre Rechte sind deshalb auf das Minimum gesetzt.",
+      "auditReason": {
+        "no_database": "In dieser Installation gibt es keine Datenbank.",
+        "no_server_key": "Für den Protokolleintrag fehlt der Serverschlüssel.",
+        "insert_failed": "Die Datenbank hat den Protokolleintrag abgelehnt."
+      },
+      "forbidden": {
+        "title": "Kein Zugriff auf die Administration",
+        "message": "Diese Seite ist Administratoren vorbehalten. Die Adresse bleibt gültig und funktioniert für Personen mit dem nötigen Recht.",
+        "permissionLabel": "Benötigtes Recht:"
+      },
+      "integrations": {
+        "title": "Angebundene Dienste",
+        "lead": "Was eingerichtet ist, und was davon tatsächlich geprüft wurde.",
+        "noneConfigured": "Es ist kein einziger Dienst eingerichtet. Diese Installation läuft vollständig auf Beispieldaten.",
+        "wiredFalse": "Nicht angebunden",
+        "readFrom": "Gelesen aus",
+        "check": "Verbindung prüfen",
+        "checking": "Wird geprüft",
+        "forbidden": "Nur Administratoren dürfen eine Verbindung prüfen.",
+        "invalid": "Diese Anfrage war nicht gültig.",
+        "latency": "Antwortzeit",
+        "name": {
+          "supabase": "Datenbank (Supabase)",
+          "storage": "Dateiablage",
+          "aiGateway": "KI-Dienst",
+          "jira": "Jira"
+        },
+        "note": {
+          "supabase": "Trägt alle Stammdaten.",
+          "storage": "Für Dokumente. Der Speicherbereich wurde noch nicht angelegt, deshalb antwortet ein Upload mit 503.",
+          "aiGateway": "Für die Antworten des Assistenten.",
+          "jira": "Nur in einem Skript verwendet, in der Anwendung nirgends."
+        }
+      },
+      "integrationState": {
+        "not_configured": "Nicht eingerichtet",
+        "configured_unverified": "Eingerichtet, ungeprüft",
+        "reachable": "Erreichbar",
+        "unreachable": "Nicht erreichbar"
+      },
+      "system": {
+        "title": "Systemangaben",
+        "lead": "Was diese Installation über sich selbst belegen kann.",
+        "contractVersion": "Schnittstellenstand",
+        "locales": "Sprachen",
+        "accessProfiles": "Rollenumschalter für Tests",
+        "accessProfilesOn": "Eingeschaltet",
+        "accessProfilesOff": "Ausgeschaltet",
+        "migrations": "Eingespielte Datenbankstände",
+        "migrationsUnknown": "Keine Angabe",
+        "notice": "Welche Datenbankstände eingespielt sind, kann die Anwendung nicht selbst feststellen. Diese Angabe bleibt offen, statt geschätzt zu werden."
+      },
+      "audit": {
+        "title": "Protokoll",
+        "lead": "Jede Änderung und jede Ablehnung, in der Reihenfolge des Eintreffens.",
+        "caption": "Protokolleinträge, neueste zuerst.",
+        "emptyTitle": "Keine Einträge",
+        "emptyBody": "Für diese Seite liegen keine Einträge vor. Das ist kein Fehler: in dieser Installation wurde noch nichts protokolliert.",
+        "appendOnly": "Das Protokoll kann nur wachsen. Es gibt hier keinen Weg, einen Eintrag zu ändern oder zu löschen, und die Datenbank lehnt beides ebenfalls ab.",
+        "seedNotice": "Demodaten. Diese Einträge stammen aus einem Beispielbestand.",
+        "columns": {
+          "when": "Zeitpunkt",
+          "action": "Vorgang",
+          "entity": "Betrifft",
+          "actor": "Ausgelöst von",
+          "change": "Änderung"
+        },
+        "unknownActor": "Keine Angabe",
+        "noChange": "Keine Feldänderung",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "page": "Seite"
+      },
+      "access": {
+        "title": "Zugriffsentscheidungen",
+        "lead": "Wer wurde wohin gelassen, und wer nicht.",
+        "caption": "Zugriffsentscheidungen, neueste zuerst."
+      }
     },
     "settings": {
       "title": "Einstellungen",
@@ -1553,7 +1896,52 @@
         "dark": "Dunkel",
         "system": "System"
       },
-      "saved": "Gespeichert"
+      "saved": "Gespeichert",
+      "profileDegraded": "Ihr eigenes Profil konnte nicht vollständig gelesen werden. Ihre Rechte sind deshalb auf das Minimum gesetzt.",
+      "accountLead": "Was dieses System über Ihr Konto weiß.",
+      "email": "E-Mail",
+      "noEmail": "Keine Angabe",
+      "role": "Rolle",
+      "sessionSource": "Anmeldeart",
+      "sessionSources": {
+        "supabase": "Angemeldet",
+        "access-profile": "Testrolle",
+        "anonymous": "Nicht angemeldet"
+      },
+      "roleFixedNotice": "Ihre Rolle ändert hier niemand. Das kann nur eine andere administrierende Person.",
+      "preferences": "Ihre Einstellungen",
+      "preferencesLead": "Gelten nur für Ihr Konto.",
+      "fullName": "Name",
+      "phone": "Telefon",
+      "languageHint": "Ändert nur Ihre eigene Sprache, nicht die anderer Personen.",
+      "save": "Speichern",
+      "saving": "Wird gespeichert",
+      "resultHeading": "Ergebnis",
+      "savedAs": "Gespeicherte Sprache:",
+      "auditIncomplete": "Gespeichert, der Protokolleintrag fehlt.",
+      "noDatabase": "Dafür fehlt die Datenbank. Nichts gespeichert.",
+      "writeFailed": "Konnte nicht gespeichert werden.",
+      "locales": {
+        "de": "Deutsch",
+        "en": "Englisch",
+        "tr": "Türkisch",
+        "ru": "Russisch"
+      },
+      "appearanceLead": "Gilt für die ganze Anwendung.",
+      "themeFixedNotice": "Das helle Design ist für alle fest eingestellt. Eine Auswahl hier würde nichts bewirken, deshalb gibt es keine.",
+      "notificationsLead": "Wann dieses System Sie ansprechen soll.",
+      "notificationsUnavailable": "Benachrichtigungen sind noch nicht gebaut. Dafür fehlt eine Tabelle für Einstellungen, zuständig ist W1-A.",
+      "organisation": "Organisation",
+      "organisationLead": "Nur für Administratoren.",
+      "companyId": "Kennung",
+      "noCompany": "Keine Angabe",
+      "organisationReadOnly": "Diese Angaben lassen sich hier nur lesen. Eine Bearbeitung gibt es noch nicht.",
+      "openAdmin": "Zur Administration",
+      "forbidden": {
+        "title": "Einstellungen gesperrt",
+        "message": "Ihre Rolle darf diese Seite nicht sehen. Die Adresse bleibt gültig.",
+        "permissionLabel": "Benötigtes Recht:"
+      }
     },
     "hotel": {
       "title": "Hotelbetrieb",
