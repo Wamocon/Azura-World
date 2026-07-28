@@ -1049,6 +1049,27 @@
       "one": "Projede kaç daire var?",
       "two": "Müteahhit hakkında ne kayıtlı?",
       "three": "Kaynaklar nerede çelişiyor?"
+    },
+    "you": "Sorunuz",
+    "assistant": "Yanıt",
+    "refusalNote": "Asistan yalnızca kaynağı olan bilgilerle yanıt verir. Kaynak yoksa tahmin etmek yerine bunu söyler.",
+    "notConfigured": "Asistan bu ortamda kurulu değil. Sayfadaki diğer her şey çalışmaya devam eder.",
+    "openSource": "Kaynağı aç",
+    "snapshot": "Yerel kopya",
+    "unreachable": "Kaynağa ulaşılamıyor",
+    "feedback": {
+      "question": "Bu yanıt yardımcı oldu mu?",
+      "helpful": "Yardımcı oldu",
+      "notHelpful": "Yardımcı olmadı",
+      "thanks": "Geri bildiriminiz için teşekkürler."
+    },
+    "sourceTier": {
+      "official": "Resmî",
+      "developer": "Müteahhit",
+      "hotel": "Otel",
+      "portal": "Emlak portalı",
+      "review": "Değerlendirme platformu",
+      "press": "Basın"
     }
   },
   "auth": {

@@ -1049,6 +1049,27 @@
       "one": "Wie viele Wohnungen hat die Anlage?",
       "two": "Was ist über den Bauträger belegt?",
       "three": "Wo widersprechen sich die Quellen?"
+    },
+    "you": "Ihre Frage",
+    "assistant": "Antwort",
+    "refusalNote": "Der Assistent antwortet nur mit Angaben, für die eine Quelle vorliegt. Fehlt sie, sagt er das, statt zu schätzen.",
+    "notConfigured": "Der Assistent ist in dieser Umgebung nicht eingerichtet. Alle übrigen Inhalte der Seite stehen zur Verfügung.",
+    "openSource": "Quelle öffnen",
+    "snapshot": "Lokale Kopie",
+    "unreachable": "Quelle nicht erreichbar",
+    "feedback": {
+      "question": "War die Antwort hilfreich?",
+      "helpful": "Hilfreich",
+      "notHelpful": "Nicht hilfreich",
+      "thanks": "Danke für die Rückmeldung."
+    },
+    "sourceTier": {
+      "official": "Amtlich",
+      "developer": "Bauträger",
+      "hotel": "Hotel",
+      "portal": "Immobilienportal",
+      "review": "Bewertungsportal",
+      "press": "Presse"
     }
   },
   "auth": {
