@@ -164,7 +164,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "listings:view",
     group: "inventory",
     resource: "listings",
-    pending: true,
   },
   {
     href: "/dashboard/hotel",
@@ -193,7 +192,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "leads:view",
     group: "commercial",
     resource: "leads",
-    pending: true,
   },
   {
     href: "/dashboard/buyer-pipeline",
@@ -202,7 +200,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "buyer_pipeline:view",
     group: "commercial",
     resource: "buyer_pipeline",
-    pending: true,
   },
   {
     href: "/dashboard/deals",

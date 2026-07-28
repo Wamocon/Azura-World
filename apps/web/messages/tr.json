@@ -642,21 +642,118 @@
       "lead": "Aynı daire birden çok portalda. Fiyat, tarih ve farkla birlikte.",
       "count": "{count, plural, other {# ilan}}",
       "empty": "Kayıtlı ilan yok.",
+      "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
+      "openListing": "İlanı aç",
+      "openSource": "Kaynağı aç",
       "columns": {
         "portal": "Portal",
         "title": "Başlık",
         "price": "Fiyat",
         "currency": "Para birimi",
         "observedAt": "Tespit",
-        "status": "Durum"
+        "status": "Durum",
+        "layout": "Plan",
+        "area": "Alan",
+        "kind": "Tür",
+        "source": "Kaynak"
       },
-      "staleNotice": "Bu ilan {days} gündür doğrulanmadı."
+      "staleNotice": "Bu ilan {days} gündür doğrulanmadı.",
+      "overview": {
+        "heading": "Neler toplandı",
+        "listings": "İlan",
+        "publishers": "Portal",
+        "currencies": "Para birimi",
+        "stale": "Eskimiş",
+        "caveat": "Sayılanlar bu derlemenin bulduklarıdır. Piyasada gerçekte kaç daire satıldığı hakkında bir şey söylemez.",
+        "withoutPrice": "{count} ilan fiyat belirtmiyor. Sayılırlar, asla 0 kabul edilmezler."
+      },
+      "compare": {
+        "heading": "Dört portal, dört fiyat",
+        "lead": "Aynı plan, onu sunan her portalda. Fiyatlar yayımlandığı gibi. Hiçbir çevrim yapılmaz.",
+        "layoutFilterLabel": "Plan seçin",
+        "caption": "Portal başına fiyatlar, para birimine göre ayrılmış",
+        "countHeader": "İlan",
+        "notComparable": "karşılaştırılamaz, çevrim yok",
+        "spread": "Fark {ratio} kat (yalnızca {currency})",
+        "singlePrice": "tek fiyat",
+        "listingCount": "{count} ilan",
+        "upTo": "en fazla",
+        "empty": "Hiçbir portal {layout} için satış fiyatı vermiyor.",
+        "unstatedHeading": "Plan belirtmeyen portallar",
+        "unstatedLead": "Bu satırlar, portalın hiçbir plana bağlamadığı bir fiyat taşır. Kimi zaman tüm proje için bir başlangıç fiyatıdır, kimi zaman gösteremediğimiz bir oda sayısı. Ayrı ve fark bilgisi olmadan durur.",
+        "findingNote": "F-002 bulgusu dört portal arasında 2,1 kat fark bildirir. Bu sayı bir euro fiyatını bir dolar fiyatıyla karşılaştırır. Çevrim yapmadığımız için yukarıda her para birimi kendi farkını taşır."
+      },
+      "claims": {
+        "heading": "Hangi portal proje hakkında ne diyor?",
+        "lead": "Fiyatlar bir yana. Burada her portalın binanın kendisi hakkında ileri sürdüğü var.",
+        "blocks": "Blok",
+        "units": "Daire",
+        "buildStatus": "Yapım durumu",
+        "notStated": "Belirtilmemiş",
+        "dissenting": "Farklı",
+        "caption": "Portalların proje hakkındaki beyanları, portal başına bir satır",
+        "empty": "Bu beyanlar için henüz kayıtlı kaynak yok.",
+        "harvestGap": "Derleme, ilan başına proje bilgilerini kaydetmedi. Orada 47 satırın tamamı boş. Bu nedenle yukarıdaki tablo ilanlardan değil, kaynak kütüğünden gelir."
+      },
+      "buildStatus": {
+        "completed": "Tamamlandı",
+        "underConstruction": "Yapım aşamasında",
+        "planned": "Planlanan"
+      },
+      "tier": {
+        "official": "Resmî site",
+        "developer": "Müteahhit",
+        "hotel": "Otel işletmecisi",
+        "portal": "Emlak portalı",
+        "review": "Değerlendirme sitesi",
+        "press": "Basın"
+      },
+      "kind": {
+        "sale": "Satılık",
+        "rent": "Kiralık",
+        "unknown": "Belirtilmemiş"
+      },
+      "unstated": {
+        "layout": "Plan yok",
+        "area": "Alan yok",
+        "price": "Belirtilmemiş"
+      },
+      "stale": {
+        "badge": "Eskimiş",
+        "reason": "Portal, 2024'te tamamlanmış olmasına rağmen projeyi hâlâ yapım aşamasında gösteriyor."
+      },
+      "group": {
+        "caption": "{publisher} portalındaki tüm ilanlar",
+        "note": "Not",
+        "listingCount": "{count} ilan",
+        "pageCount": "{count} sayfa",
+        "staleCount": "{count} eskimiş",
+        "rentCount": "{count} kiralık",
+        "lastFetched": "Son tespit"
+      },
+      "register": {
+        "heading": "Portala göre tüm ilanlar",
+        "lead": "Toplanan her satır, yayımlayan portala göre gruplanmış.",
+        "filterLabel": "İlanları filtrele",
+        "filterAll": "Tümü",
+        "filterStale": "Yalnızca eskimiş",
+        "showing": "{total} ilandan {shown} tanesi",
+        "clearFilters": "Filtreleri temizle",
+        "emptyCombination": "Bu filtre birleşimi hiçbir ilanla eşleşmiyor.",
+        "emptyBy": {
+          "publisher": "Seçilen portal filtresi tüm ilanları dışarıda bırakıyor.",
+          "priceKind": "Satılık veya kiralık filtresi tüm ilanları dışarıda bırakıyor.",
+          "staleOnly": "Geçerli filtredeki hiçbir ilan eskimiş olarak işaretli değil."
+        }
+      }
     },
     "leads": {
       "title": "Talepler",
-      "lead": "Gelen ilgililer ve bulundukları aşama.",
+      "lead": "Gelen ilgililer ve her birinin durumu.",
       "count": "{count, plural, other {# talep}}",
       "empty": "Talep yok.",
+      "seedNotice": "Demo veri: Toplanan taleplerin bir bölümü gösterilir, canlı veri değil.",
+      "readOnlyNotice": "Bu sayfa talepleri yalnızca gösterir. Yeni talep henüz kaydedilemiyor, çünkü veritabanına yazma yolu yok.",
       "columns": {
         "name": "Ad",
         "channel": "Kanal",
@@ -664,20 +761,117 @@
         "stage": "Aşama",
         "owner": "Sorumlu",
         "createdAt": "Geliş"
+      },
+      "summary": {
+        "heading": "Genel bakış",
+        "count": "Talep",
+        "ofTotal": "/ {total}",
+        "budget": "Belirtilen bütçe",
+        "withoutBudget": "{count} belirtilmemiş",
+        "noBudgets": "Belirtilmemiş",
+        "currencyNote": "Bütçeler ilgilinin belirttiği para biriminde gösterilir. Para birimine göre ayrı tutulur ve tek bir toplama katılmaz."
+      },
+      "list": {
+        "heading": "Tüm talepler",
+        "filterLabel": "Talepleri filtrele",
+        "filterAll": "Tümü",
+        "clearFilters": "Filtreleri temizle",
+        "emptyByStatus": "Seçilen aşama hiçbir talebe uymuyor.",
+        "emptyBySource": "Seçilen kanal hiçbir talebe uymuyor.",
+        "emptyCombination": "Bu filtre birleşimi hiçbir talebe uymuyor."
+      },
+      "card": {
+        "budget": "Bütçe",
+        "noBudget": "Belirtilmemiş",
+        "layout": "İstenen plan",
+        "noLayout": "Belirtilmemiş",
+        "assigned": "Sorumlu",
+        "unassigned": "Kimse atanmadı",
+        "assignedUnnamed": "Atandı, adı size görünmüyor",
+        "assignedUnknown": "Atandı, adı kayıtlı değil",
+        "score": "Puan",
+        "noScore": "Puanlanmadı",
+        "nextAction": "Sonraki adım",
+        "noNextAction": "Tarih yok",
+        "lastContact": "Son görüşme",
+        "neverContacted": "Henüz görüşülmedi",
+        "consentYes": "Pazarlama izni var",
+        "consentNo": "Pazarlama izni yok",
+        "lostReason": "Kayıp nedeni",
+        "note": "Not",
+        "channel": "Kanal"
+      },
+      "status": {
+        "new": "Yeni",
+        "contacted": "Görüşüldü",
+        "qualified": "Nitelikli",
+        "viewing_booked": "Gezi planlandı",
+        "offer_made": "Teklif verildi",
+        "negotiating": "Pazarlıkta",
+        "won": "Kazanıldı",
+        "lost": "Kaybedildi",
+        "dormant": "Beklemede"
+      },
+      "source": {
+        "website": "Web sitesi",
+        "portal": "Portal",
+        "referral": "Tavsiye",
+        "walk_in": "Yerinde",
+        "phone": "Telefon",
+        "email": "E-posta",
+        "social": "Sosyal medya",
+        "exhibition": "Fuar",
+        "partner_agent": "İş ortağı danışman",
+        "unknown": "Bilinmiyor"
       }
     },
     "pipeline": {
-      "title": "Alıcı süreci",
-      "lead": "İlk temastan tapuya kadar.",
-      "empty": "Süreçte kayıt yok.",
-      "stages": {
-        "new": "Yeni",
-        "qualified": "Nitelikli",
-        "viewing": "Gezme",
-        "offer": "Teklif",
+      "title": "Alıcı hattı",
+      "lead": "İlk temastan anahtar teslimine kadar.",
+      "empty": "Hatta kayıt yok.",
+      "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
+      "readOnlyNotice": "Bu sayfa hattı yalnızca gösterir. Bir kayıt henüz sonraki aşamaya taşınamıyor, çünkü veritabanına yazma yolu yok.",
+      "truncatedNotice": "Aşağıdaki sayılar {total} kaydın {summarised} tanesinden hesaplandı. Ötesi dahil değil.",
+      "summary": {
+        "heading": "Genel bakış",
+        "entries": "Kayıt",
+        "dealTotals": "Anlaşılan tutarlar",
+        "withoutDeal": "{count} tutarsız",
+        "noDeals": "Belirtilmemiş",
+        "currencyNote": "Tutarlar anlaşıldıkları para biriminde gösterilir. Para birimine göre ayrı tutulur ve tek bir toplama katılmaz."
+      },
+      "board": {
+        "heading": "Tüm aşamalar",
+        "lead": "Boş olanlar dahil her aşama gösterilir. Boş bir aşama, hat hakkında bir bilgidir.",
+        "stageEmpty": "Şu anda bu aşamada kayıt yok.",
+        "averageProbability": "Ort. kapanış şansı %{value}",
+        "noProbability": "Kapanış şansı tahmin edilmedi"
+      },
+      "card": {
+        "deal": "Anlaşılan tutar",
+        "noDeal": "Henüz tutar yok",
+        "probability": "%{value} kapanış şansı",
+        "probabilityUnset": "Kapanış şansı tahmin edilmedi",
+        "expectedClose": "Planlanan kapanış",
+        "noExpectedClose": "Tarih yok",
+        "unit": "Daire",
+        "noUnit": "Daire atanmadı",
+        "inStage": "Bu aşamadaki gün",
+        "cameFrom": "{stage} aşamasından",
+        "firstStage": "ilk aşama",
+        "blocker": "Engel",
+        "missingLead": "Talep bulunamadı"
+      },
+      "stage": {
+        "enquiry": "Talep",
+        "qualification": "Nitelendirme",
+        "viewing": "Gezi",
+        "reservation": "Rezervasyon",
         "contract": "Sözleşme",
-        "closed": "Tamamlandı",
-        "lost": "Kaybedildi"
+        "payment": "Ödeme",
+        "title_deed": "Tapu",
+        "handover": "Teslim",
+        "closed": "Kapandı"
       }
     },
     "finance": {

@@ -642,21 +642,118 @@
       "lead": "The same unit across several portals, with price, date and variance.",
       "count": "{count, plural, one {# listing} other {# listings}}",
       "empty": "No listings on record.",
+      "seedNotice": "Demo data: a section of the collected records is shown, not live data.",
+      "openListing": "Open listing",
+      "openSource": "Open source",
       "columns": {
         "portal": "Portal",
         "title": "Title",
         "price": "Price",
         "currency": "Currency",
         "observedAt": "Observed",
-        "status": "Status"
+        "status": "Status",
+        "layout": "Layout",
+        "area": "Size",
+        "kind": "Type",
+        "source": "Source"
       },
-      "staleNotice": "This listing has not been confirmed for {days} days."
+      "staleNotice": "This listing has not been confirmed for {days} days.",
+      "overview": {
+        "heading": "What was collected",
+        "listings": "Listings",
+        "publishers": "Portals",
+        "currencies": "Currencies",
+        "stale": "Outdated",
+        "caveat": "These are counts of what this collection found. They say nothing about how many apartments are actually on the market.",
+        "withoutPrice": "{count} listings state no price. They are counted, never treated as 0."
+      },
+      "compare": {
+        "heading": "Four portals, four prices",
+        "lead": "The same layout at every portal that offers it. Prices exactly as published. Nothing is converted.",
+        "layoutFilterLabel": "Choose layout",
+        "caption": "Prices per portal, separated by currency",
+        "countHeader": "Listings",
+        "notComparable": "not comparable, no conversion",
+        "spread": "Spread {ratio}x ({currency} only)",
+        "singlePrice": "one price only",
+        "listingCount": "{count} listings",
+        "upTo": "up to",
+        "empty": "No portal states a sale price for {layout}.",
+        "unstatedHeading": "Portals stating no layout",
+        "unstatedLead": "These rows carry a price the portal attached to no layout. Sometimes that is an entry price for the whole project, sometimes a room count we cannot represent. They stay separate, and without a spread.",
+        "findingNote": "Finding F-002 quotes a 2.1x spread across four portals. That number compares a euro price with a dollar price. We do not convert, so each currency above carries its own spread."
+      },
+      "claims": {
+        "heading": "What does each portal say about the project?",
+        "lead": "Prices are one thing. This is what each portal claims about the building itself.",
+        "blocks": "Blocks",
+        "units": "Apartments",
+        "buildStatus": "Build status",
+        "notStated": "Not stated",
+        "dissenting": "Differs",
+        "caption": "Portal statements about the project, one row per portal",
+        "empty": "No source is on record for these statements yet.",
+        "harvestGap": "The collection did not record the project figures per listing. All 47 rows are empty there. The table above therefore comes from the source register, not from the listings."
+      },
+      "buildStatus": {
+        "completed": "Completed",
+        "underConstruction": "Under construction",
+        "planned": "Planned"
+      },
+      "tier": {
+        "official": "Official site",
+        "developer": "Developer",
+        "hotel": "Hotel operator",
+        "portal": "Property portal",
+        "review": "Review platform",
+        "press": "Press"
+      },
+      "kind": {
+        "sale": "Sale",
+        "rent": "Rent",
+        "unknown": "Not stated"
+      },
+      "unstated": {
+        "layout": "No layout",
+        "area": "No size",
+        "price": "Not stated"
+      },
+      "stale": {
+        "badge": "Outdated",
+        "reason": "The portal still calls the project under construction, though it finished in 2024."
+      },
+      "group": {
+        "caption": "All listings from {publisher}",
+        "note": "Note",
+        "listingCount": "{count} listings",
+        "pageCount": "{count} pages",
+        "staleCount": "{count} outdated",
+        "rentCount": "{count} to rent",
+        "lastFetched": "Last collected"
+      },
+      "register": {
+        "heading": "All listings by portal",
+        "lead": "Every collected row, grouped by the portal that published it.",
+        "filterLabel": "Filter listings",
+        "filterAll": "All",
+        "filterStale": "Outdated only",
+        "showing": "{shown} of {total} listings",
+        "clearFilters": "Clear filters",
+        "emptyCombination": "This combination of filters matches no listing.",
+        "emptyBy": {
+          "publisher": "The selected portal filter excludes every listing.",
+          "priceKind": "The sale or rent filter excludes every listing.",
+          "staleOnly": "No listing in the current filter is marked outdated."
+        }
+      }
     },
     "leads": {
-      "title": "Leads",
-      "lead": "Incoming enquiries and how far each has progressed.",
-      "count": "{count, plural, one {# lead} other {# leads}}",
-      "empty": "No leads.",
+      "title": "Enquiries",
+      "lead": "Incoming prospects and where each one stands.",
+      "count": "{count, plural, one {# enquiry} other {# enquiries}}",
+      "empty": "No enquiries.",
+      "seedNotice": "Demo data: a section of the collected enquiries is shown, not live data.",
+      "readOnlyNotice": "This page only shows enquiries. New ones cannot be saved yet, because the write path to the database is missing.",
       "columns": {
         "name": "Name",
         "channel": "Channel",
@@ -664,20 +761,117 @@
         "stage": "Stage",
         "owner": "Owner",
         "createdAt": "Received"
+      },
+      "summary": {
+        "heading": "Overview",
+        "count": "Enquiries",
+        "ofTotal": "of {total}",
+        "budget": "Stated budget",
+        "withoutBudget": "{count} not stated",
+        "noBudgets": "Not stated",
+        "currencyNote": "Budgets are shown in the currency the prospect named. They are kept apart per currency and never added into one total."
+      },
+      "list": {
+        "heading": "All enquiries",
+        "filterLabel": "Filter enquiries",
+        "filterAll": "All",
+        "clearFilters": "Clear filters",
+        "emptyByStatus": "No enquiry has the selected stage.",
+        "emptyBySource": "No enquiry came from that channel.",
+        "emptyCombination": "This combination of filters matches no enquiry."
+      },
+      "card": {
+        "budget": "Budget",
+        "noBudget": "Not stated",
+        "layout": "Layout wanted",
+        "noLayout": "Not stated",
+        "assigned": "Owned by",
+        "unassigned": "Nobody assigned",
+        "assignedUnnamed": "Assigned, name not visible to you",
+        "assignedUnknown": "Assigned, name not on record",
+        "score": "Score",
+        "noScore": "Not scored",
+        "nextAction": "Next step",
+        "noNextAction": "No date set",
+        "lastContact": "Last contact",
+        "neverContacted": "Not contacted yet",
+        "consentYes": "Marketing consent given",
+        "consentNo": "No marketing consent",
+        "lostReason": "Reason lost",
+        "note": "Note",
+        "channel": "Channel"
+      },
+      "status": {
+        "new": "New",
+        "contacted": "Contacted",
+        "qualified": "Qualified",
+        "viewing_booked": "Viewing arranged",
+        "offer_made": "Offer made",
+        "negotiating": "Negotiating",
+        "won": "Won",
+        "lost": "Lost",
+        "dormant": "Dormant"
+      },
+      "source": {
+        "website": "Website",
+        "portal": "Portal",
+        "referral": "Referral",
+        "walk_in": "Walk-in",
+        "phone": "Phone",
+        "email": "Email",
+        "social": "Social media",
+        "exhibition": "Trade fair",
+        "partner_agent": "Partner agent",
+        "unknown": "Unknown"
       }
     },
     "pipeline": {
       "title": "Buyer pipeline",
-      "lead": "From first contact to completion.",
+      "lead": "From first contact to handover of the keys.",
       "empty": "Nothing in the pipeline.",
-      "stages": {
-        "new": "New",
-        "qualified": "Qualified",
+      "seedNotice": "Demo data: a section of the collected entries is shown, not live data.",
+      "readOnlyNotice": "This page only shows the pipeline. An entry cannot be moved to the next stage yet, because the write path to the database is missing.",
+      "truncatedNotice": "The figures below are computed from {summarised} of {total} entries. Anything beyond that is not included.",
+      "summary": {
+        "heading": "Overview",
+        "entries": "Entries",
+        "dealTotals": "Agreed amounts",
+        "withoutDeal": "{count} with no amount",
+        "noDeals": "Not stated",
+        "currencyNote": "Amounts are shown in the currency they were agreed in. They are kept apart per currency and never added into one total."
+      },
+      "board": {
+        "heading": "Every stage",
+        "lead": "Every stage is shown, including the empty ones. An empty stage is a statement about the pipeline.",
+        "stageEmpty": "Nothing is at this stage right now.",
+        "averageProbability": "Avg. chance {value}%",
+        "noProbability": "No closing chance estimated"
+      },
+      "card": {
+        "deal": "Agreed amount",
+        "noDeal": "No amount yet",
+        "probability": "{value}% closing chance",
+        "probabilityUnset": "Closing chance not estimated",
+        "expectedClose": "Expected close",
+        "noExpectedClose": "No date",
+        "unit": "Apartment",
+        "noUnit": "No apartment assigned",
+        "inStage": "Days at this stage",
+        "cameFrom": "from {stage}",
+        "firstStage": "first stage",
+        "blocker": "Blocked by",
+        "missingLead": "Enquiry not found"
+      },
+      "stage": {
+        "enquiry": "Enquiry",
+        "qualification": "Qualification",
         "viewing": "Viewing",
-        "offer": "Offer",
+        "reservation": "Reservation",
         "contract": "Contract",
-        "closed": "Closed",
-        "lost": "Lost"
+        "payment": "Payment",
+        "title_deed": "Title deed",
+        "handover": "Handover",
+        "closed": "Closed"
       }
     },
     "finance": {
