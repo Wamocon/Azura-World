@@ -605,7 +605,23 @@
         "areaRange": "Fläche",
         "status": "Status"
       },
-      "modelledNotice": "Dieser Bestand ist modelliert und bildet kein reales Inserat ab."
+      "modelledNotice": "Dieser Bestand ist modelliert und bildet kein reales Inserat ab.",
+      "provenance": {
+        "label": "Herkunft",
+        "portal_listing": "Reales Inserat",
+        "official": "Offizielle Angabe",
+        "modelled": "Modelliert",
+        "source_missing": "Ohne Quelle",
+        "portalMeaning": "Aus einem realen Portal-Inserat übernommen",
+        "modelledMeaning": "Modellierter Datensatz — kein reales Inserat",
+        "filterLabel": "Nach Herkunft filtern",
+        "filterAll": "Alle Herkünfte"
+      },
+      "split": {
+        "heading": "Herkunft des Bestands",
+        "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert — sie füllen den Bestand auf und bilden kein reales Angebot ab.",
+        "rowNote": "Modelliert — kein reales Inserat"
+      }
     },
     "listings": {
       "title": "Portal-Inserate",

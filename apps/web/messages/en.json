@@ -605,7 +605,23 @@
         "areaRange": "Area",
         "status": "Status"
       },
-      "modelledNotice": "This inventory is modelled and does not represent a real listing."
+      "modelledNotice": "This inventory is modelled and does not represent a real listing.",
+      "provenance": {
+        "label": "Provenance",
+        "portal_listing": "Real listing",
+        "official": "Official statement",
+        "modelled": "Modelled",
+        "source_missing": "No source",
+        "portalMeaning": "Taken from a real portal listing",
+        "modelledMeaning": "Modelled record — not a real listing",
+        "filterLabel": "Filter by provenance",
+        "filterAll": "All provenances"
+      },
+      "split": {
+        "heading": "Where this inventory comes from",
+        "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled — they fill out the inventory and represent no real offer.",
+        "rowNote": "Modelled — not a real listing"
+      }
     },
     "listings": {
       "title": "Portal listings",

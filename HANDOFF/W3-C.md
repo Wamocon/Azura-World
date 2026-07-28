@@ -349,11 +349,12 @@ English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work
   `qa:csp` (21/21, on a build containing this route) plus the build table showing it as `ƒ`.
   **W4-A should treat "the evidence cockpit renders under `next start` with a real session" as an
   open verification.**
-- **`[GAP]` The `modelled` vs `portal_listing` split is NOT rendered anywhere yet.** The brief's
-  honesty control — 25 real listings and 631 modelled units, distinguishable at a glance in the
-  list, with the split in the header — belongs to the units table, which is blocked on §8.1.
-  W0-B's numbers for the record: **25 `portal_listing` + 631 `modelled` = 656**. Nothing in this
-  module currently displays a modelled unit, so nothing currently misrepresents one.
+- ~~**`[GAP]` The `modelled` vs `portal_listing` split is NOT rendered anywhere yet.**~~
+  **CLOSED 2026-07-28 — see §11.** `/[locale]/dashboard/units` now renders it three ways:
+  the header carries the counts and a proportion bar, every row carries a `Herkunft` badge, and
+  modelled rows are visually recessed. Verified served: *"25 von 656 Einheiten stammen aus einem
+  realen Inserat. Die übrigen 631 sind modelliert"*, legend `Reales Inserat 25 (3.8%)` ·
+  `Modelliert 631 (96.2%)`.
 - **`[GAP]` No CSV export.** Blocked with the tables. When it lands it must carry provenance
   columns; an export that strips sources recreates the problem this system exists to solve.
 - **`[GAP]` The permission matrix is unproven for this route.** The brief requires `manager` reads
@@ -370,3 +371,85 @@ English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work
   saying so (CONTRACTS §4). The portal seed happens to be complete — all 47 listings — while the
   evidence seed is a deliberate 10-finding slice; the notice does not distinguish the two, and it
   errs toward warning.
+
+---
+
+# §11 — ADDENDUM (W3C-2, 2026-07-28): the honesty control now renders
+
+Resumed after this handoff was merged into `main` while still `PARTIAL`, so `main` carried the
+gaps. Rebased onto `main` (`bb9bf87`) first — fast-forward, 0 commits ahead, nothing to replay.
+
+## What shipped
+
+`/[locale]/dashboard/units` — the route W3-B's nav has pointed at since it was written
+(`dashboard-routing.ts:152`, `permission: "units:view"`) and which **404'd until now**.
+
+The split is rendered **three ways**, because one way is a thing a reader skims past:
+
+1. **Header** — `components/inventory/inventory-split-summary.tsx`. Counts, percentages to one
+   decimal, and a proportion bar. The bar is the point: *3.8%* lands before any digit is read.
+   One decimal deliberately — rounding 3.8% to 4% inflates the honest number.
+2. **A `Herkunft` column** — `components/inventory/unit-provenance-badge.tsx`, one badge per
+   `UnitDataQuality`, placed next to the price it qualifies rather than last on the row.
+3. **Row treatment** — modelled rows carry `data-modelled`, a muted left accent and a recessed
+   price, so the 25 real listings stand out while **scanning**.
+
+Following W1-D's ConfidenceBadge rule, **colour is never the only signal**: each quality pairs its
+colour with a distinct icon silhouette (`ExternalLink` / `ShieldCheck` / `Sigma` / `CircleSlash`),
+so the distinction survives greyscale, print and colour vision deficiency.
+
+`Record<UnitDataQuality, …>` throughout — a fifth quality added to the contract breaks the build
+here rather than rendering an unmarked row, which is the failure mode that would put a modelled
+unit on screen wearing no marker at all.
+
+## The bug this found, which is the reason to render a control rather than assert it
+
+The first served render said **"22 von 22 Einheiten stammen aus einem realen Inserat"** — total
+22, modelled **0**.
+
+`getAvailabilityRollup()` and `getUnits()` take `ScopeOptions`. Called without a role they resolve
+to the **public** scope (`is_publicly_listed = true`), which is 22 units, all portal listings. So
+the page would have reported the inventory as 100% real and the 631 modelled rows this page exists
+to mark would simply have been **absent** — the honesty control inverted, on the one screen whose
+job is to prevent exactly that.
+
+Fixed by resolving the viewer with `getUserProfile()` and threading `{ role, profileId }` into both
+calls, matching W3-B's pattern in `dashboard/page.tsx:130`. `hasPermission(role, "units:view")` is
+also re-checked in the page body — the nav hides it and the guard runs, but CONVENTIONS §2 says
+assume the user typed the URL.
+
+## Verification actually run
+
+| Command | Result | Evidence |
+|---|---|---|
+| `pnpm --dir apps/web typecheck` | **PASS** exit 0 | `tsc --noEmit`, no output |
+| `pnpm --dir apps/web lint` | **PASS** exit 0 | `eslint`, 0 errors 0 warnings |
+| `pnpm --dir apps/web build` | **PASS** exit 0 | `/[locale]/dashboard/units` emitted as `ƒ` (dynamic) |
+| `node scripts/check-i18n.mjs` | **PASS** exit 0 | **831 keys × 4 locales**, identical key sets, 0 warnings |
+| Served render, `/de/dashboard/units` | **PASS** | caption `25 von 656 … Die übrigen 631 sind modelliert`; legend `25 (3.8%)` / `631 (96.2%)`; 26 `data-data-quality="portal_listing"` + 26 `"modelled"`; `data-modelled` present on rows |
+
+**Message-file discipline:** the four catalogues took **one contiguous hunk each** (`git diff`
+reports exactly 1 hunk per file, +17/−1), entirely inside `dashboard.units.*`. Nothing outside that
+namespace was touched, reformatted or re-sorted. Pagination strings reuse the existing
+`common.pagination.*` rather than duplicating them.
+
+## Decisions
+
+- **Server-side pagination (50/page), not `useVirtualWindow`.** CONVENTIONS §5 requires one or the
+  other for 656 rows. Paging needs **no client component at all**, so this page ships zero
+  JavaScript of its own: it cannot be broken by the S-009 CSP class and it works with JS off. The
+  virtual window stays available in `components/ui/table.tsx` if a later pass wants one long scroll.
+- **The header always reports the whole inventory**, never the filtered slice, so filtering to
+  "Reales Inserat" cannot make the page look like the inventory is all real.
+
+## Still open from §9
+
+- `[GAP]` **No CSV export.** When it lands it must carry the `Herkunft` column; an export that
+  strips provenance recreates the problem this module exists to solve.
+- `[GAP]` **Per-role render test.** `units:view` is enforced and the matrix is proven statically by
+  `qa:dashboard` (647), but no browser has rendered this page as `manager` vs `tenant`.
+- `[GAP]` **Never served under `next start`.** Same cause as before — the route is behind the
+  `/dashboard` guard and there is no production auth fixture. Verified under `next dev` with the
+  access-profile flags. W4-A still owns closing this.
+- `[GAP]` **Turkish and Russian unreviewed visually.** The new keys are real translations, not
+  stubs, but only `de` was rendered.
