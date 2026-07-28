@@ -215,6 +215,9 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
   },
 
   // finance
+  // The three finance routes shipped in W3-D. Per W3-B's module contract the
+  // whole registration is deleting `pending` from the entry that already
+  // existed; nothing else in this file is this task's to touch.
   {
     href: "/dashboard/finance",
     labelKey: "dashboard.finance.title",
@@ -222,7 +225,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "finance:view",
     group: "finance",
     resource: "finance",
-    pending: true,
   },
   {
     href: "/dashboard/wallet",
@@ -231,7 +233,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "wallet:view",
     group: "finance",
     resource: "wallet",
-    pending: true,
   },
   {
     href: "/dashboard/vendor-invoices",
@@ -240,7 +241,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "vendor_invoices:view",
     group: "finance",
     resource: "vendor_invoices",
-    pending: true,
   },
 
   // operations

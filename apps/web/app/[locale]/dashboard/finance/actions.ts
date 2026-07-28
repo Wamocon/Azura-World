@@ -7,6 +7,10 @@ import {
   toMinor,
   type Minor,
 } from "@/components/finance/money"
+import {
+  approvalThresholdFor,
+  needsApproval,
+} from "@/components/finance/approval-threshold"
 import { invoiceRemainingAfter } from "@/components/finance/ledger-analysis"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import type { Locale } from "@/lib/contracts"
@@ -59,46 +63,13 @@ import { getVendorInvoice, type CurrencyCode } from "@/lib/finance-repository"
  */
 
 // ---------------------------------------------------------------------------
-// Approval thresholds
-// ---------------------------------------------------------------------------
-
-/**
- * Above these, `accountant` may record but a `manager` or `admin` must approve.
- *
- * **One threshold per currency, and no fallback that converts.** A single
- * "10,000" threshold compared against a TRY amount and a EUR amount would be
- * two completely different policies wearing one number, which is the
- * cross-currency mistake in its most expensive form. A currency with no
- * threshold declared requires approval for every amount: failing towards "ask a
- * human" is the safe direction.
- *
- * `[I]` The values are a working default, not a figure from a source. No
- * harvested document states Azura World's own approval policy, so inventing a
- * precise-looking one would be the fabrication SYSTEM-PROMPT §2.3 forbids.
- * They are declared here, in one place, so a real policy replaces one constant.
- */
-const APPROVAL_THRESHOLD_MINOR: Readonly<Record<CurrencyCode, number>> = {
-  EUR: 500_000, // 5.000,00 EUR
-  USD: 500_000, // 5.000,00 USD
-  GBP: 500_000, // 5.000,00 GBP
-  TRY: 20_000_000, // 200.000,00 TRY
-}
-
-export interface ApprovalRule {
-  thresholdMinor: number
-  currency: CurrencyCode
-}
-
-/** The threshold that applies to one currency. Never a converted figure. */
-export function approvalThresholdFor(currency: CurrencyCode): ApprovalRule {
-  return {
-    thresholdMinor: APPROVAL_THRESHOLD_MINOR[currency],
-    currency,
-  }
-}
-
-// ---------------------------------------------------------------------------
 // State
+//
+// The approval threshold lives in `components/finance/approval-threshold.ts`,
+// not here: a `"use server"` file may export only ASYNC functions, because Next
+// turns every export in one into a callable server endpoint. A synchronous
+// helper alongside these actions compiles under `tsc` and fails
+// `next build` — which is why the build is a gate and not a formality.
 // ---------------------------------------------------------------------------
 
 /**
@@ -203,13 +174,11 @@ export async function recordPayment(
   if (amount.minor < 0) return { status: "invalid_amount", reason: "negative" }
 
   // 4. Approval threshold, per currency.
-  const rule = approvalThresholdFor(currency)
-  const mayApprove = scope.can("finance:approve")
-  if (amount.minor > rule.thresholdMinor && !mayApprove) {
+  if (needsApproval(amount.minor, currency) && !scope.can("finance:approve")) {
     return {
       status: "needs_approval",
       amountMinor: amount.minor,
-      thresholdMinor: rule.thresholdMinor,
+      thresholdMinor: approvalThresholdFor(currency).thresholdMinor,
       currency,
     }
   }

@@ -11,10 +11,8 @@ import {
   MoneyCell,
   type CurrencyTotalLabels,
 } from "@/components/finance/currency-total-list"
-import {
-  newIdempotencyKey,
-  approvalThresholdFor,
-} from "@/app/[locale]/dashboard/finance/actions"
+import { newIdempotencyKey } from "@/app/[locale]/dashboard/finance/actions"
+import { approvalThresholdFor } from "@/components/finance/approval-threshold"
 import {
   ageingByBucket,
   AGEING_BUCKETS,
@@ -695,6 +693,11 @@ export default async function FinancePage({
               submit: tPay("console.submit"),
               submitting: tPay("console.submitting"),
               doubleClickSafe: tPay("console.doubleClickSafe"),
+              // `.raw()` for every template carrying a placeholder. Passing a
+              // closure that calls `tPay(...)` looks natural and is a runtime
+              // 500: React cannot serialise a function into a Client
+              // Component's props. `tsc` and `next build` both accept it; only
+              // loading the page does not.
               result: {
                 posted: tPay("result.posted"),
                 duplicate: tPay("result.duplicate"),
@@ -702,10 +705,9 @@ export default async function FinancePage({
                 notImplemented: tPay("result.notImplemented"),
                 forbidden: tPay("result.forbidden"),
                 conflict: tPay("result.conflict"),
-                exceedsInvoice: (remaining) =>
-                  tPay("result.exceedsInvoice", { remaining }),
+                exceedsInvoice: tPay.raw("result.exceedsInvoice") as string,
                 unknownAllocation: tPay("result.unknownAllocation"),
-                parsed: (value) => tPay("result.parsed", { value }),
+                parsed: tPay.raw("result.parsed") as string,
               },
               errors: {
                 empty: tPay("errors.empty"),
@@ -721,7 +723,7 @@ export default async function FinancePage({
                 negative: tPay("errors.negative"),
               },
               approval: {
-                threshold: (amount) => tPay("approval.threshold", { amount }),
+                threshold: tPay.raw("approval.threshold") as string,
                 required: tPay("approval.required"),
               },
             }}

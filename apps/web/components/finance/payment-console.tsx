@@ -43,11 +43,27 @@ import { amountFormatExample, formatMinor, type Minor } from "./money"
  * and the second tab, which `pending` cannot see.
  */
 
+/**
+ * Every label is a plain STRING, and the ones that vary carry a `{placeholder}`
+ * this component substitutes itself.
+ *
+ * Not a `(value: string) => string`, which is the shape a server page reaches
+ * for first and which **cannot cross the boundary**: React refuses to serialise
+ * a function into a Client Component's props, and it refuses at request time,
+ * not at compile time. `tsc` and `next build` both passed a version of this file
+ * whose labels were functions; the first page load returned 500 with
+ * *"Functions cannot be passed directly to Client Components"*. Caught by
+ * loading the page, which is the argument for loading the page.
+ *
+ * The templates come from `messages/*` via `t.raw(...)`, so the placeholder text
+ * is still translator-owned and this component only does the substitution.
+ */
 export interface PaymentConsoleLabels {
   heading: string
   description: string
-  amount: string
+  /** Carries `{example}`. */
   amountHint: string
+  amount: string
   currency: string
   method: string
   reference: string
@@ -65,18 +81,26 @@ export interface PaymentConsoleLabels {
     notImplemented: string
     forbidden: string
     conflict: string
-    /** `{remaining}` is interpolated by the caller into a function. */
-    exceedsInvoice: (remaining: string) => string
+    /** Carries `{remaining}`. */
+    exceedsInvoice: string
     unknownAllocation: string
-    parsed: (value: string) => string
+    /** Carries `{value}`. */
+    parsed: string
   }
-  /** Amount-parse failures, keyed by `AmountParseFailure`. */
+  /** Amount-parse failures, keyed by `AmountParseFailure`. Carry `{example}`. */
   errors: Record<string, string>
   approval: {
-    /** `{amount}` is the threshold, already formatted in its own currency. */
-    threshold: (amount: string) => string
+    /** Carries `{amount}` — the threshold, formatted in its own currency. */
+    threshold: string
     required: string
   }
+}
+
+/** One-placeholder substitution. Nothing here needs ICU plural or select. */
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in values ? (values[key] as string) : match
+  )
 }
 
 export interface AllocationOption {
@@ -109,7 +133,7 @@ export function PaymentConsole({
   const [state, action, pending] = useActionState(recordPayment, INITIAL)
 
   const example = amountFormatExample(locale)
-  const message = messageFor(state, locale, labels)
+  const message = messageFor(state, locale, labels, example)
   const echo = echoFor(state, locale, labels)
 
   return (
@@ -137,7 +161,7 @@ export function PaymentConsole({
         <Field
           id="payment-amount"
           label={labels.amount}
-          hint={labels.amountHint.replace("{example}", example)}
+          hint={fill(labels.amountHint, { example })}
         >
           <input
             id="payment-amount"
@@ -296,30 +320,40 @@ function Field({
 function messageFor(
   state: PaymentPostState,
   locale: Locale,
-  labels: PaymentConsoleLabels
+  labels: PaymentConsoleLabels,
+  example: string
 ): string | null {
   switch (state.status) {
     case "idle":
       return null
     case "forbidden":
       return labels.result.forbidden
-    case "invalid_amount":
-      return (
-        labels.errors[state.reason]?.replace(
-          "{example}",
-          amountFormatExample(locale)
-        ) ?? labels.errors["unexpected_character"] ?? null
-      )
+    case "invalid_amount": {
+      // An unrecognised reason falls back to the generic parse message rather
+      // than to null: the field was refused either way, and a refusal with no
+      // message on screen is the worst of the three outcomes.
+      const template =
+        labels.errors[state.reason] ?? labels.errors["unexpected_character"]
+      return template === undefined ? null : fill(template, { example })
+    }
     case "invalid_field":
       return labels.result.unknownAllocation
     case "needs_approval":
-      return `${labels.approval.required} ${labels.approval.threshold(
-        formatMinor(state.thresholdMinor as Minor, state.currency, locale)
-      )}`
+      return `${labels.approval.required} ${fill(labels.approval.threshold, {
+        amount: formatMinor(
+          state.thresholdMinor as Minor,
+          state.currency,
+          locale
+        ),
+      })}`
     case "exceeds_invoice":
-      return labels.result.exceedsInvoice(
-        formatMinor(state.remainingMinor as Minor, state.currency, locale)
-      )
+      return fill(labels.result.exceedsInvoice, {
+        remaining: formatMinor(
+          state.remainingMinor as Minor,
+          state.currency,
+          locale
+        ),
+      })
     case "duplicate":
       return labels.result.duplicate
     case "conflict":
@@ -349,16 +383,12 @@ function echoFor(
   if (
     state.status === "posted" ||
     state.status === "duplicate" ||
-    state.status === "unavailable"
+    state.status === "unavailable" ||
+    state.status === "needs_approval"
   ) {
-    return labels.result.parsed(
-      formatMinor(state.amountMinor as Minor, state.currency, locale)
-    )
-  }
-  if (state.status === "needs_approval") {
-    return labels.result.parsed(
-      formatMinor(state.amountMinor as Minor, state.currency, locale)
-    )
+    return fill(labels.result.parsed, {
+      value: formatMinor(state.amountMinor as Minor, state.currency, locale),
+    })
   }
   return null
 }
