@@ -330,3 +330,30 @@ own project root).
   sending it through the same return-to-destination path would widen what the backdoor can reach.
 - **`[GAP]` No `prefers-reduced-motion` special-casing in the concierge**, because there is no
   motion in it to reduce. If a later window adds a typing animation, that becomes a real gap.
+
+---
+
+## 9. Branch state at handoff time
+
+Branched from `origin/main` @ `1de48e4`. **`origin/main` advanced 13 commits while this ran** —
+W-FIX, W3-C's gap closure, W5's manual walkthrough, W-INT3 — so this branch is 3 ahead and 13
+behind.
+
+Five files are touched by both sides:
+
+```
+apps/web/app/[locale]/login/actions.ts
+apps/web/messages/{de,en,tr,ru}.json
+```
+
+`git merge-tree --write-tree origin/main HEAD` reports **no conflict**. The upstream edits to
+`actions.ts` are W-FIX's formatting pass and the message changes are in other namespaces, so the
+two sets of changes are disjoint within each file. Rebasing before merge would still be the tidier
+route, and the message catalogues are the place to look first if that assessment turns out to be
+optimistic.
+
+**`HANDOFF/W5.md` did not exist when this task started** and does exist on `origin/main` now
+(`365bac4`, "merge w5-manual into main"). The task brief asked for it to be read first; it was
+genuinely absent at the time, so it was not read, and nothing here is informed by it. Whoever picks
+up the remaining report and signup work should read it before starting — W5 is the manual test plan
+and §6 of `HANDOFF/W4-A.md` says its own gaps feed straight into it.
