@@ -393,7 +393,7 @@ check(
     ENABLE_ACCESS_PROFILES: "true",
     AZURA_ALLOW_REMOTE_ACCESS_PROFILES: "true",
     AZURA_DEMO_DATA_ISOLATED: "true",
-    SUPABASE_DB_URL: "postgresql://user:pw@host:5432/postgres",
+    SUPABASE_DB_URL: "postgresql://user:PASSWORD@host:5432/postgres",
   }),
   "any single data-plane variable is enough"
 )
