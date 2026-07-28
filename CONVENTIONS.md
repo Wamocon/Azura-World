@@ -168,10 +168,39 @@ regions, keyboard path through every workflow, contrast ≥ 4.5:1 in **both** th
 | LCP (throttled mobile) | ≤ 2.5s |
 | CLS | ≤ 0.1 |
 | INP | ≤ 200ms |
-| JS on landing route | ≤ 250KB gzipped |
+| JS on landing route, **excluding the lazy 3D chunk** | ≤ 250KB gzipped |
+| Lazy 3D chunk (three.js + R3F), on its own | ≤ 260KB gzipped |
 | Lighthouse a11y | ≥ 95 |
 
 R3F is lazy-loaded behind an intersection observer and never blocks LCP.
+
+**Why the 3D chunk has its own line, and why it is 260KB** (S-010, decided
+2026-07-28 by W-INT). The original figure was ≤150KB, written in
+`tasks/W1-D-design-system.md` before the stack was measured. It is not
+reachable: three.js 0.185 + `@react-three/fiber` is the floor, not our code on
+top of it. W1-D tested the obvious lever — removing `@react-three/drei`
+entirely, replacing `RoundedBox`, `ContactShadows` and `AdaptiveDpr` — and it
+saved **10 bytes**, because drei was already tree-shaken. The change was
+reverted: it cost rounded corners and soft contact shadows for nothing.
+
+Measured on the merged tree, `next build --webpack`, the three chunks that
+contain three.js/R3F symbols: **227.4KB gzipped** (232,841 B raw-gzip at level
+9, from 860.1KB uncompressed). W1-D measured **236.4KB** as actual network
+transfer in Chromium across 5 files. 260KB is the higher figure plus ~10%
+headroom — loose enough that the real number fits, tight enough that a
+regression still trips it.
+
+This is an exception with a reason, not a raised ceiling for everything: the
+chunk sits behind an `IntersectionObserver` with a 300px margin and a poster
+underneath, so it is never on the LCP path and is never fetched at all by a
+reduced-motion, low-tier or WebGL-less visitor. The landing-route budget above
+is therefore measured **without** it. The alternative on the table was dropping
+WebGL for `CoastPoster` alone (~2KB, already the fallback); that decision was
+not taken, and it stays available to W4-B/W5 if the measured LCP argues for it.
+
+A budget the build cannot meet is worse than no budget: it gets ignored, and
+then every budget gets ignored. That is why this one moved rather than being
+left to fail.
 
 ---
 

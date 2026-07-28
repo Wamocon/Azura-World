@@ -11,6 +11,28 @@ updates:
       pinned-core:
         patterns: ["next", "react", "react-dom", "three", "gsap", "tailwindcss"]
         update-types: ["minor", "patch"]
+    # S-007. The group above bounds what lands INSIDE the group; it does not
+    # bound the ungrouped dev-dependencies, which is how PRs #8 (typescript
+    # 5 → 7), #7 (eslint 9 → 10) and #6 (@types/node 20 → 26) were opened
+    # against a stack CONVENTIONS §1 pins. All three were closed unmerged by
+    # W-INT on 2026-07-28; these entries stop them being reopened weekly.
+    #
+    # These three are the toolchain: a major here changes what `typecheck` and
+    # `lint` MEAN, so it has to be a decision with a migration behind it, never
+    # an automated bump. Minor and patch updates still come through.
+    #
+    # Not covered, and deliberately so: a major for a `pinned-core` package
+    # still arrives as its own ungrouped PR (that is how dependabot handles an
+    # update-type the group excludes). Those are worth SEEING — a Next or React
+    # major is a real decision — and they must be closed by hand until someone
+    # takes the migration.
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
