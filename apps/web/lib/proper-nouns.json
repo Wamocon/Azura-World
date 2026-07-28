@@ -1,6 +1,5 @@
 {
   "__note": "Single source of truth for terms that must NOT be translated. Read by apps/web/lib/proper-nouns.ts (the app-facing module) and by scripts/check-i18n.mjs (the gate). Kept as JSON precisely so both a TypeScript bundle and a plain-node script can read the same list without one re-declaring the other.",
-
   "properNouns": [
     "Azura World Residence & Hotel",
     "Azura World Hotel",
@@ -11,6 +10,23 @@
     "Cebeci Group",
     "Wyndham Alanya",
     "Wyndham",
+    "1Çatı",
+    "Alanya-Home",
+    "Haspo Realty",
+    "Seaside Alanya",
+    "Capital Estate",
+    "TERRA Real Estate",
+    "Alto Real Estate",
+    "Realty Group",
+    "IVM Turkey",
+    "Kalinka Realty",
+    "ENS Pride",
+    "Turizm Güncel",
+    "OnTheBeach",
+    "Agoda",
+    "Instagram",
+    "Facebook",
+    "Azura World Residence",
     "Türkler",
     "Alanya",
     "Antalya",
@@ -25,7 +41,6 @@
     "PDF",
     "INTERNAL-107"
   ],
-
   "sharedTerms": [
     "Aquapark",
     "Portal",
@@ -59,7 +74,6 @@
     "Telefon",
     "Optional"
   ],
-
   "literalValues": [
     "km",
     "m",
@@ -78,12 +92,10 @@
     "yıl",
     "dk"
   ],
-
   "layoutNotes": {
     "1+1": "Turkish unit notation. A proper noun of the market — never translated, never expanded to \"1 bedroom + living room\" in any locale.",
     "district": "District and place names (Türkler, Alanya, Antalya, Mahmutlar) stay verbatim in all four locales, including Russian. Transliterating them breaks the match against portal listings."
   },
-
   "variants": {
     "Azura World Residenz & Hotel": "Azura World Residence & Hotel",
     "Azura Dünya": "Azura World",

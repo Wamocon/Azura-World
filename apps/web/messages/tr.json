@@ -397,12 +397,12 @@
       "ladder": {
         "railSummary": "{count} gözlem · {publishers}",
         "notComparable": "karşılaştırılamaz · dönüştürme yok",
-        "spread": "aralık {ratio}× (yalnızca {currency})",
+        "spread": "Aralık {ratio}× (yalnızca {currency})",
         "stale": "Eskimiş ilan",
         "lowest": "en düşük fiyat",
         "highest": "en yüksek fiyat",
         "singleObservation": "yalnızca bir gözlem",
-        "negligible": "neredeyse aynı · {percent} fark"
+        "negligible": "Neredeyse aynı · {percent} fark"
       },
       "table": {
         "caption": "Kaynağı, derleme tarihi ve kanıt bağlantısıyla birlikte gözlenen tüm fiyatlar",

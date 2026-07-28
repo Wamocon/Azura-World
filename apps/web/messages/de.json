@@ -402,7 +402,7 @@
         "lowest": "günstigste Angabe",
         "highest": "teuerste Angabe",
         "singleObservation": "nur eine Beobachtung",
-        "negligible": "praktisch identisch · {percent} Unterschied"
+        "negligible": "Praktisch identisch · {percent} Unterschied"
       },
       "table": {
         "caption": "Alle beobachteten Preisangaben mit Quelle, Erhebungsdatum und Beleg",

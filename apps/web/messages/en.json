@@ -392,17 +392,17 @@
         "unresolvedNote": "No value was chosen for this field. An average, or picking the “most likely” figure, would be an invented number with a citation stapled to it.",
         "observationSummary": "{count} observations from {publishers} portals",
         "headline": "Four portals, four prices for the same 1+1 apartment",
-        "recordLabel": "Finding text, original wording"
+        "recordLabel": "Finding text as recorded"
       },
       "ladder": {
         "railSummary": "{count} observations · {publishers}",
         "notComparable": "not comparable · no conversion",
-        "spread": "spread {ratio}× ({currency} only)",
+        "spread": "Spread {ratio}× ({currency} only)",
         "stale": "Stale listing",
-        "lowest": "lowest quoted",
-        "highest": "highest quoted",
+        "lowest": "lowest quoted price",
+        "highest": "highest quoted price",
         "singleObservation": "one observation only",
-        "negligible": "practically identical · {percent} apart"
+        "negligible": "Practically identical · {percent} apart"
       },
       "table": {
         "caption": "Every observed price with its source, collection date and evidence link",

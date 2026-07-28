@@ -78,7 +78,7 @@ counts and distributions, not rows — and it is the obvious next piece of work.
 | `pnpm --dir apps/web build` | **PASS** | exit 0; `├ ƒ /[locale]/dashboard/evidence` — **dynamic**, as W-INT §8 requires |
 | `node scripts/check-i18n.mjs` | **PASS** | 625 keys × 4 locales, identical key sets, 0 errors 0 warnings |
 | `node scripts/csp-probe.mjs` (`qa:csp`) | **PASS** | **21 pass · 0 fail**, exit 0, on a production build with this route present |
-| `node scripts/evidence-review.mjs` | **PASS** | **48 pass · 0 fail**, exit 0, real Chromium |
+| `node scripts/evidence-review.mjs` | **PASS** | **100 pass · 0 fail**, exit 0, real Chromium |
 
 Screenshots in `quality/w3c/`: `evidence-f002-de-light.png`, `-de-dark.png`, `-de-320.png`,
 `-en-light.png`.
@@ -156,6 +156,82 @@ Both of these were caught by asserting, not by looking:
 2. **The reduced-motion assertion tested the wrong property.** Tailwind's `transition-none` leaves
    a residual `transition-duration` (`1e-05s`), so `duration === 0` would have passed a still-
    animating element. It now asserts `transition-property: none`.
+
+---
+
+## 3b. One theme — light only
+
+**Product decision from the repository owner, 2026-07-28.** The app ships one theme.
+
+Implemented as `forcedTheme="light"` in `components/providers/theme-provider.tsx` (W1-D's file —
+declared in §7). One prop, reversible by deleting it, and it beats both `defaultTheme` and any
+stored preference, so a machine that already chose dark still renders light.
+
+**What was deliberately not done:** `globals.css`'s `.dark` block, the `dark:` utilities already
+written across the component library, and `DESIGN.md`'s dark contrast table were left in place.
+`forcedTheme` already makes them unreachable at runtime, which is the outcome that was asked for;
+deleting them would touch every surface three other windows are building right now for no product
+gain. Removing the dead tokens is a tidy-up for whoever owns `globals.css` next.
+
+Within W3-C's own files there is **no `dark:` variant at all** — a dark override here would be dead
+code that reads as a supported state.
+
+Verified by driving a browser that *asks* for dark:
+
+```
+PASS  the document never carries the dark class — <html class="light">
+PASS  the page still renders its evidence under a dark OS preference — rgb(244, 249, 251)
+```
+
+`prefers-color-scheme: dark` is the case that would have quietly re-enabled it, which is why the
+assertion tests that rather than the default.
+
+**Consequence for W1-D, recorded rather than left to be discovered:** their Playwright design suite
+asserts `<html class="dark">` after toggling, and the kitchen-sink route ships a `ThemeToggle`.
+Both now describe a state the app cannot enter. That suite is not wired into any gate, so nothing
+goes red — but it is stale. See §8.
+
+---
+
+## 3c. Translation quality and pinned proper nouns
+
+`check-i18n` was already green (0 errors, 0 warnings) before this pass — it verifies structure,
+placeholders, key parity and length ratios, but it cannot judge whether a translation is *good*.
+A read-through of all 55 keys side by side across the four locales found five real defects:
+
+| Key | Was | Now | Why |
+|---|---|---|---|
+| `finding.severity.*` (ru) | Критично · Высокая · Средняя · Низкая | Критический · Высокий · Средний · Низкий | The set did not agree with itself — an adverb, then three feminine adjectives. A severity chip must read as one consistent set; masculine agreeing with «уровень» is the standard Russian technical register. |
+| `ladder.negligible` (ru) | практически одинаково | Практически идентичны | Adverbial where the subject is two prices — needs a plural adjective. |
+| `ladder.spread` / `ladder.negligible` (en, tr, ru) | mixed case | both capitalised | They occupy the **same slot** in the rail header, one replacing the other. Different registers in one position reads as a bug. |
+| `ladder.lowest` / `highest` (en) | "lowest quoted" | "lowest quoted price" | Not idiomatic standing alone under a figure. |
+| `source.tier.hotel` (ru) | Отель | Гостиничный оператор | Tier 3 is the hotel's own *operational* site. "Отель" named the building, losing what the tier means. |
+| `finding.recordLabel` (en, ru) | "Finding text, original wording" | "Finding text as recorded" | Two fragments joined by a comma. |
+
+### Proper nouns
+
+`apps/web/lib/proper-nouns.json` is W1-C's single source of truth, read by both
+`lib/proper-nouns.ts` and `scripts/check-i18n.mjs`. **It was missing `1Çatı` and every publisher
+name in the dataset** — so nothing prevented a translator from rendering "Haspo Realty" or
+"Alanya-Home" differently per locale, and the gate's own duplicate-detection was stripping the
+wrong set of terms. 17 entries added (§7), taking the list from 22 to 39.
+
+Inserted *before* the bare `Alanya` / `Azura` entries so the longest name wins — otherwise the
+stripper matches `Alanya` first and leaves `-Home` behind as a fragment.
+
+Verified at the rendered surface, in all four locales, which is where it actually matters:
+
+```
+PASS  de: "Azura World" is unchanged        PASS  tr: "Azura World" is unchanged
+PASS  de: "Haspo Realty" is unchanged       PASS  tr: "Haspo Realty" is unchanged
+PASS  de: "Alanya-Home" is unchanged        PASS  tr: "Alanya-Home" is unchanged
+…9 pinned terms × 4 locales, all byte-identical…
+PASS  de and en are genuinely different translations
+PASS  de and tr are genuinely different translations   (…all 6 pairs)
+```
+
+The pairwise difference check is the one that catches a silent fallback: a locale serving German
+passes every other assertion on this page.
 
 ---
 
@@ -238,6 +314,8 @@ cannot occur because no string parsing of a formatted number happens anywhere in
 | File | Owner | What I did, and why |
 |---|---|---|
 | `apps/web/messages/{de,en,tr,ru}.json` | **W1-C** | Added 49 keys, all under `dashboard.evidence.*`, which the W3-C brief assigns to this window ("Messages: `dashboard.evidence.*` … only"). Nothing outside that namespace was touched, no existing key was edited, and `check-i18n` passes at 625 keys × 4 with identical key sets. `evidence.label.openSource`, `evidence.label.snapshot` and `evidence.sourceUnreachable` are **reused** from W1-C's own namespace rather than duplicated — two copies of "Quelle öffnen" in four locales would drift. |
+| `apps/web/components/providers/theme-provider.tsx` | **W1-D** | Added `forcedTheme="light"` on the repository owner's explicit instruction (§3b). One prop. Their `.dark` tokens and `dark:` utilities are untouched — only unreachable. **Their design suite and the kitchen-sink `ThemeToggle` now describe a state the app cannot enter.** |
+| `apps/web/lib/proper-nouns.json` | **W1-C** | Added 17 terms — `1Çatı` and every publisher name in the dataset (§3c). Purely additive to `properNouns`; no existing entry changed. The file is shared gate config read by both the app module and `check-i18n.mjs`, and the omission meant publisher names were not pinned across locales at all. |
 | `scripts/ts-resolve-hooks.mjs` | W1-B (me) | Added `@/*` → `apps/web/*` alias resolution. Purely additive: an aliased specifier previously threw `ERR_MODULE_NOT_FOUND`, so nothing that resolved before can change. Needed because W2-A's repositories import through the alias, and a probe that cannot load a repository can only test a re-implementation of it. |
 
 One German string was rejected by `check-i18n` rule 6 (`"Anmerkung der Erhebung"` was 1.83× its
@@ -255,6 +333,8 @@ English source) and shortened to `"Erhebungsnotiz"`. The gate is doing real work
 | 4 | **W0-B** | **`PortalListing` carries no `snapshotHash`.** A listing row can link its live URL but not the stored snapshot unless its URL also happens to be in the source register. Ten of the 21 rows currently fall back to a live-URL-only chip. Invariant 6 exists because a citation you cannot re-open is not a citation, and a portal listing is the most likely thing in this dataset to be edited or deleted. |
 | 5 | **W1-C** | `evidence.label.sourceCount` uses ICU plural syntax (`{count, plural, …}`) while W1-D's provenance components take plain `{count}` templates and interpolate themselves. They are not interchangeable — passing an ICU string to `interpolate()` renders the ICU source. Not a bug today (I did not use that key), but worth a note in the catalogue so the next window does not discover it at render time. |
 | 6 | **W4-A** | The evidence route is behind the W1-B route guard, so an e2e pass needs an authenticated session or a QA access profile. See §9. |
+| 7 | **W1-D** | **The app is light-only now** (§3b). Your Playwright design suite asserts `<html class="dark">` and the kitchen-sink ships a `ThemeToggle`; both now test a state that cannot occur. Nothing is gated on that suite so nothing is red, but it should be trimmed rather than left to fail confusingly later. The `.dark` block in `globals.css` is dead code — your call whether to remove it or keep it against a future reversal. |
+| 8 | **W1-C** | I added 17 terms to `proper-nouns.json`, including `1Çatı` (§3c). Two things worth your eye: the ordering matters (longer names must precede `Alanya` / `Azura` or the stripper leaves fragments), and the list is still missing anything W3-D…W3-H introduce. Worth a pass once their copy lands. |
 
 ---
 

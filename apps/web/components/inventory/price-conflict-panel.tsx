@@ -137,8 +137,11 @@ export function PriceConflictPanel({
         // ambient one — two shadows, because a single blurred drop reads as a
         // sticker. Kept far below the strength that would make a data surface
         // feel like a marketing card.
+        //
+        // No `dark:` variant: the product ships one theme (light), forced in
+        // `components/providers/theme-provider.tsx`. A dark override here would
+        // be dead code that reads as a supported state.
         "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-32px_rgb(0_0_0/0.22)]",
-        "dark:shadow-[0_1px_2px_rgb(0_0_0/0.5),0_24px_48px_-28px_rgb(0_0_0/0.65)]",
         className
       )}
     >

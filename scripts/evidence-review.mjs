@@ -350,11 +350,27 @@ check("no CSP violations on the page", cspViolations.length === 0, cspViolations
 
 await de.context.close()
 
-// dark
-const dark = await open("/de/dashboard/evidence", { colorScheme: "dark" })
-await dark.page.screenshot({ path: new URL("evidence-f002-de-dark.png", OUT).pathname.slice(1), fullPage: true })
-check("dark theme renders", (await dark.page.innerText("body")).includes("112"))
-await dark.context.close()
+// One theme. Asserted by driving a browser that ASKS for dark and checking the
+// app refuses — a product decision is only real if it survives the user's OS
+// preference, and `prefers-color-scheme: dark` is the case that would have
+// quietly re-enabled it.
+section("One theme — light, even when the OS asks for dark")
+const forced = await open("/de/dashboard/evidence", { colorScheme: "dark" })
+const themeState = await forced.page.evaluate(() => ({
+  htmlClass: document.documentElement.className,
+  bodyBg: getComputedStyle(document.body).backgroundColor,
+}))
+check(
+  "the document never carries the dark class",
+  !themeState.htmlClass.split(/\s+/).includes("dark"),
+  `<html class="${themeState.htmlClass}">`
+)
+check(
+  "the page still renders its evidence under a dark OS preference",
+  (await forced.page.innerText("body")).includes("112"),
+  themeState.bodyBg
+)
+await forced.context.close()
 
 // 320px German — where layouts actually break
 const narrow = await open("/de/dashboard/evidence", { width: 320, height: 1200 })
@@ -410,14 +426,74 @@ const reducedBody = await reduced.page.innerText("body")
 check("reduced motion: the evidence is all still there", /112[.\s]000/.test(reducedBody) && /239[.\s]171/.test(reducedBody))
 await reduced.context.close()
 
-// English
-const en = await open("/en/dashboard/evidence")
-const enBody = await en.page.innerText("body")
-check("English renders", en.response?.status() === 200)
-check("English keeps the same figures", /112,?[.\s]?000/.test(enBody) && /239,?[.\s]?171/.test(enBody))
-check("English is actually English", /not comparable|no conversion/i.test(enBody), "not a German fallback")
-await en.page.screenshot({ path: new URL("evidence-f002-en-light.png", OUT).pathname.slice(1), fullPage: true })
-await en.context.close()
+// ── all four locales ───────────────────────────────────────────────────────
+section("Four locales — translated, and proper nouns pinned")
+
+/**
+ * Names that must be byte-identical in every language. A publisher's name is
+ * its identity: a reader following a citation has to find the same string on
+ * the source register, in `SOURCES.md`, and on the portal itself. Translating
+ * or transliterating one breaks that chain silently.
+ */
+const PINNED = [
+  "Azura World",
+  "Haspo Realty",
+  "Seaside Alanya",
+  "Capital Estate",
+  "Housearch",
+  "Alanya-Home",
+  "TERRA Real Estate",
+  "F-002",
+  "1+1",
+]
+
+/** A locale is translated, not a fallback, if it carries its own marker. */
+const LOCALE_MARKERS = {
+  de: /nicht vergleichbar/,
+  en: /not comparable/,
+  tr: /karşılaştırılamaz/,
+  ru: /несопоставимо/,
+}
+
+const localeBodies = {}
+for (const locale of ["de", "en", "tr", "ru"]) {
+  const page = await open(`/${locale}/dashboard/evidence`)
+  check(`${locale}: renders`, page.response?.status() === 200, String(page.response?.status()))
+  const text = await page.page.innerText("body")
+  localeBodies[locale] = text
+
+  check(
+    `${locale}: is actually ${locale}, not a fallback`,
+    LOCALE_MARKERS[locale].test(text),
+    "own translation marker present"
+  )
+  for (const noun of PINNED) {
+    check(`${locale}: "${noun}" is unchanged`, text.includes(noun))
+  }
+  // The figures must survive translation untouched — only their separators
+  // change with the locale's number format.
+  check(
+    `${locale}: the four F-002 figures are all present`,
+    /112[.,\s]?000/.test(text) &&
+      /185[.,\s]?000/.test(text) &&
+      /220[.,\s]?000/.test(text) &&
+      /239[.,\s]?171/.test(text)
+  )
+  await page.page.screenshot({
+    path: new URL(`evidence-f002-${locale}.png`, OUT).pathname.slice(1),
+    fullPage: true,
+  })
+  await page.context.close()
+}
+
+// No two locales may be byte-identical in their prose — that is what a silent
+// fallback looks like, and it passes every other check here.
+for (const [a, b] of [["de", "en"], ["de", "tr"], ["de", "ru"], ["en", "tr"], ["en", "ru"], ["tr", "ru"]]) {
+  check(
+    `${a} and ${b} are genuinely different translations`,
+    localeBodies[a] !== localeBodies[b]
+  )
+}
 
 await browser.close()
 
