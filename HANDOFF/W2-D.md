@@ -484,3 +484,140 @@ half-filled form.
 - **The badge's relative time uses locale-agnostic units** (`s`, `min`, `h`) so it needs no message
   catalogue and cannot drift from W1-C's translations. If W1-C later wants
   `Intl.RelativeTimeFormat`, the seam is `relativeAge` in `lib/realtime.ts`.
+
+---
+
+# ADDENDUM — 2026-07-28, against the LIVE project
+
+Branch `feature/INTERNAL-107-w2d-browser`, continued. Everything below ran against
+`mwpswwnfbmelvgjwlojx.supabase.co` — the real hosted project — not a stub.
+
+**The headline: realtime connects, three of the four claims hold, and the fourth does not.**
+`40 rapid updates → one re-render` is true against a stubbed socket and **false against the real
+transport**, which delivers 5–7 renders. Detail in §A.4.
+
+## A.1 The database is live, and this is the first time anything has verified that
+
+| table | rows (service role) | rows (anon) |
+|---|---|---|
+| `units` | **656** — 631 `modelled` + 25 `portal_listing` | **22** |
+| `portal_listings` | 47 | 47 |
+| `profiles` | 11 | 0 — 401 |
+| `notifications` | 0 | — |
+
+The 656/631/25 split matches the seed dataset exactly, so the live database and
+`azura-world-data.ts` agree.
+
+**The anon column is a live RLS verification — the first in this project.** `units` returns 22 of
+656 to an anonymous caller, which is `units_select_public … using (is_publicly_listed)` working,
+and `profiles` returns 401. W4-C could only read the migrations (`SECURITY-REVIEW.md` §9.1: *"No
+SQL was executed. Not one statement."*). This does not close W4-C's SQL findings — it exercises two
+policies out of dozens — but it is no longer true that nothing has been checked against Postgres.
+
+## A.2 The previous fix was incomplete, and realtime still could not connect
+
+The earlier addendum diagnosed the root cause correctly: the repository's `.env.local` sits at the
+repo root and Next loads env from `apps/web`, so `NEXT_PUBLIC_SUPABASE_*` never reached the
+browser. It placed a copy at `apps/web/.env.local`.
+
+**That copy carried 7 of the 40 variables.** With it in place every route in this worktree
+answered **HTTP 500**:
+
+```
+⨯ Error: Invalid server environment configuration (1 problem):
+  - AI_CHAT_COMPLETIONS_PATH: must be a path beginning with /
+```
+
+`lib/env.ts` validates the whole server schema at module load, and `proxy.ts` imports it, so one
+missing variable takes down every request — including the live-harness the proofs run through.
+Realtime therefore still had not connected. Copying the complete file fixed it and every proof
+below then ran.
+
+The request to W0-A stands and is now worth more: **a partial copy is worse than none**, because it
+looks like the workaround is in place.
+
+## A.3 What now passes against the real project
+
+`npx playwright test --project=chromium --workers=1 e2e/realtime/ e2e/pwa/` → **16 passed · 1 failed**.
+
+- **The channel reaches `SUBSCRIBED`** against the live project on `notifications`. Realtime has
+  connected. The publication exists and carries the table.
+- **The four modes render** — `realtime`, `polling`, `static`, `offline`.
+- **The service worker registers, activates and controls the page**, the offline fallback is
+  precached, and cache names are versioned.
+- **Zero `/dashboard/*` URLs in Cache Storage.** This is the privacy control, not a feature, and it
+  holds when executed rather than reasoned about.
+- **Reconnect backoff** passes its spec.
+- **The stubbed burst still collapses 40 events into exactly 1 refetch** — the hook's coalescer is
+  correct.
+
+**`--workers=1` matters.** At the default 4 workers, four specs failed with
+`page.goto: Timeout 30000ms exceeded` — `next dev` compiling routes under parallel load, not a
+defect. Anyone re-running these should use one worker, and W4-A should pin it for this directory.
+
+## A.4 The one claim that does not survive contact with the real socket
+
+```
+40 real INSERTs → committed renders
+  run 1: 6      run 2: 5      run 3: 7      run 4: 5
+stubbed socket → 1
+```
+
+`COALESCE_WINDOW_MS` is 400 ms and the coalescer works: ~7 events collapse per render. But
+Supabase does not deliver a 40-row transaction as one push — it arrives as several WAL frames
+spread across more than 400 ms, so several windows open in succession.
+
+**So the claim is a property of the stub, not of the deployment.** The feature is not broken: 40
+events into 5–7 renders is still an ~85% reduction, and no render is wasted. What is wrong is the
+sentence. `tasks/W2-D` asks for *"40 rapid updates → one re-render (assert the count)"*, and
+against the real transport that number is not 1.
+
+Three options, none of which this window took unilaterally because the first is a product decision:
+
+1. **Restate the claim** as "a burst is coalesced to roughly one render per 400 ms window" and
+   assert `commits < 10` rather than `=== 1`.
+2. **Widen the window** until a 40-row transaction fits in one. That trades latency for a number in
+   a document and is the wrong trade.
+3. Leave it. The stub test keeps proving the coalescer; this spec keeps proving the transport.
+
+**Recommended: option 1.** The behaviour is right and the sentence is wrong.
+
+## A.5 The burst wrote to the live project, and left nothing behind
+
+Forty real rows went into `public.notifications`, chosen because it is in `REALTIME_TABLES`, was
+empty, and holds no evidence. **`units` was deliberately not used**: inserting into the table whose
+count — 656, of which 631 modelled and 25 real — every surface asserts, and on which the honesty
+argument rests, is not a trade worth making for a test.
+
+Cleanup is asserted, not hoped for, and was verified after every run:
+
+```
+notifications      0 row(s)
+units            656 row(s)
+portal_listings   47 row(s)
+```
+
+The project is exactly as it was found.
+
+## A.6 No offline mutation queue was built
+
+Confirmed absent and confirmed asserted, in three places: `lib/pwa.ts`'s header, two assertions in
+`scripts/realtime-probe.mts`, and `e2e/pwa/service-worker.spec.ts` — which fails if `sw.js` ever
+gains a `sync` handler or touches `indexedDB`, because *"a half-working sync queue loses writes
+silently, which is worse"*. Nothing in this addendum adds one. The only file added is
+`e2e/realtime/live-burst.spec.ts`.
+
+## A.7 Status
+
+**STATUS: COMPLETE stands, with one claim corrected rather than quietly dropped** (§A.4).
+
+Still open, unchanged: no React unit-test environment; optimistic rollback is unit-proved only; and
+the reconnect ladder is still measured against a stub, because dropping a real Supabase socket
+mid-session on demand is not something this harness can do — `supabase-js` retries before the
+hook's ladder is consulted, which the earlier addendum already recorded.
+
+| # | Owner | Request |
+|---|---|---|
+| A | **W0-A** | Make `apps/web` load the root `.env.local`, or move it. The partial copy left behind was worse than none — every route 500'd. |
+| B | **W4-A** | Pin `--workers=1` for `e2e/realtime/` and `e2e/pwa/`; four specs fail at the default concurrency purely on dev-server compile time. |
+| C | **product owner** | §A.4 option 1 — restate the burst claim to match the real transport. |
