@@ -1062,7 +1062,8 @@
       "noAccount": "Hesabınız yok mu?",
       "requestAccess": "Erişim iste",
       "invalid": "E-posta veya parola hatalı.",
-      "sessionExpired": "Oturum sona erdi. Girdileriniz korundu."
+      "sessionExpired": "Oturum sona erdi. Girdileriniz korundu.",
+      "submitting": "Giriş yapılıyor …"
     },
     "signup": {
       "title": "Erişim talebi",
@@ -1078,6 +1079,13 @@
       "title": "Erişim yok",
       "lead": "Rolünüz bu alana izin vermiyor.",
       "back": "Genel bakışa dön"
+    },
+    "qaMode": {
+      "heading": "Girişsiz test modu",
+      "warning": "Bu ortamda bir rol parola olmadan üstlenilebilir. Bu gerçek bir giriş değildir ve yalnızca test amaçlıdır.",
+      "apply": "Rolü üstlen",
+      "applying": "Uygulanıyor …",
+      "failed": "Rol üstlenilemedi."
     }
   },
   "legal": {

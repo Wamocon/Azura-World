@@ -1062,7 +1062,8 @@
       "noAccount": "No account?",
       "requestAccess": "Request access",
       "invalid": "Email or password is incorrect.",
-      "sessionExpired": "Your session expired. Your input has been kept."
+      "sessionExpired": "Your session expired. Your input has been kept.",
+      "submitting": "Signing in …"
     },
     "signup": {
       "title": "Request access",
@@ -1078,6 +1079,13 @@
       "title": "No access",
       "lead": "Your role does not permit this area.",
       "back": "Back to overview"
+    },
+    "qaMode": {
+      "heading": "Test mode without sign-in",
+      "warning": "In this environment a role can be taken on without a password. This is not a real sign-in and exists only for testing.",
+      "apply": "Take on role",
+      "applying": "Switching …",
+      "failed": "The role could not be applied."
     }
   },
   "legal": {

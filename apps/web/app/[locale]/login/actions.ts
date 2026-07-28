@@ -38,21 +38,26 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/env"
 import { defaultLocale, locales, type Locale } from "@/lib/contracts"
+import type { LoginFormState } from "./form-state"
+import { localisedDestination, safeNextPath } from "./next-path"
 
-/** What the form component renders. Never carries a password. */
-export interface LoginFormState {
-  status: "idle" | "error"
-  /** Display-safe. Never contains a provider message or any internals. */
-  message: string | null
-  /** Echoed so a failed attempt does not clear the field. */
-  email: string
-}
-
-export const initialLoginFormState: LoginFormState = {
-  status: "idle",
-  message: null,
-  email: "",
-}
+/**
+ * ## W3-H changed three things in this file, and why
+ *
+ * `LoginFormState` and `initialLoginFormState` moved to `./form-state`, and
+ * `safeNextPath` / `withoutLocalePrefix` / `localisedDestination` moved to
+ * `./next-path`. Nothing about their behaviour changed.
+ *
+ * 1. **The build required it.** A `"use server"` file may only export async
+ *    functions. `initialLoginFormState` is an object, so the first page to
+ *    import this module failed `next build` outright. The defect was invisible
+ *    while no login page existed.
+ * 2. **`safeNextPath` should not be a POST endpoint.** Every export here is one.
+ *    A redirect validator reachable over the network is needless surface.
+ * 3. **A pure function can be tested.** `scripts/next-path-probe.mts` now calls
+ *    it directly with 40 hostile inputs; as an action it was only reachable
+ *    through Next's runtime.
+ */
 
 const credentialsSchema = z.object({
   // Ceilings on both fields: an unbounded string reaches the auth provider and
@@ -68,47 +73,6 @@ function asLocale(value: unknown): Locale {
 }
 
 /**
- * Reduces an untrusted `next` value to a same-origin path, or to the dashboard.
- *
- * Rejected: absolute URLs, protocol-relative `//host` (which browsers resolve as
- * a *different origin* despite looking like a path), backslash variants that
- * some parsers normalise to slashes, and anything not starting with `/`.
- */
-export async function safeNextPath(value: unknown): Promise<string> {
-  const fallback = "/dashboard"
-  if (typeof value !== "string" || value.length === 0) return fallback
-  if (value.length > 512) return fallback
-  if (!value.startsWith("/")) return fallback
-  if (value.startsWith("//") || value.startsWith("/\\")) return fallback
-  if (value.includes("\\")) return fallback
-  // A control character can smuggle a header or a line break through a logger
-  // or a redirect. Written as escapes, never as literal bytes.
-  if (/[\u0000-\u001F\u007F]/.test(value)) return fallback
-  return value
-}
-
-/**
- * Strips a leading locale segment. A `next` captured by `proxy.ts` is already
- * locale-free, but a hand-written link may not be, and `/de/de/dashboard` is a
- * 404 that looks like a routing bug.
- */
-function withoutLocalePrefix(path: string): string {
-  const segments = path.split("/").filter(Boolean)
-  const first = segments[0]
-  if (first !== undefined && (locales as readonly string[]).includes(first)) {
-    return `/${segments.slice(1).join("/")}`
-  }
-  return path
-}
-
-function localisedDestination(locale: Locale, path: string): string {
-  const withoutLocale = withoutLocalePrefix(path)
-  const normalised =
-    withoutLocale === "/" || withoutLocale === "" ? "/dashboard" : withoutLocale
-  return `/${locale}${normalised}`
-}
-
-/**
  * Signs in with email and password.
  *
  * Returns a generic failure message for every credential error. Distinguishing
@@ -120,7 +84,7 @@ export async function signIn(
   formData: FormData
 ): Promise<LoginFormState> {
   const locale = asLocale(formData.get("locale"))
-  const nextPath = await safeNextPath(formData.get("next"))
+  const nextPath = safeNextPath(formData.get("next"))
   const emailInput = formData.get("email")
   const email = typeof emailInput === "string" ? emailInput.trim() : ""
 

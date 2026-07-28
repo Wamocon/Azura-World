@@ -1062,7 +1062,8 @@
       "noAccount": "Kein Konto?",
       "requestAccess": "Zugang anfragen",
       "invalid": "E-Mail oder Passwort ist falsch.",
-      "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten."
+      "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten.",
+      "submitting": "Wird angemeldet …"
     },
     "signup": {
       "title": "Zugang anfragen",
@@ -1078,6 +1079,13 @@
       "title": "Kein Zugriff",
       "lead": "Ihre Rolle erlaubt diesen Bereich nicht.",
       "back": "Zur Übersicht"
+    },
+    "qaMode": {
+      "heading": "Testmodus ohne Anmeldung",
+      "warning": "In dieser Umgebung lässt sich eine Rolle ohne Passwort übernehmen. Das ist keine echte Anmeldung und dient ausschließlich dem Testen.",
+      "apply": "Rolle übernehmen",
+      "applying": "Wird übernommen …",
+      "failed": "Die Rolle konnte nicht übernommen werden."
     }
   },
   "legal": {
