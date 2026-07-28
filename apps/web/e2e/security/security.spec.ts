@@ -43,7 +43,11 @@ test.describe("open redirect", () => {
 
 test.describe("role elevation", () => {
   test("an unknown access-profile cookie resolves down, never up", async ({ page, context }) => {
-    for (const hostile of ["ADMIN", "admin ", "superuser", "__proto__", '{"role":"admin"}']) {
+    // `admin ` and a JSON blob are rejected by CDP as invalid cookie fields
+    // before they ever reach the app, so they are sent percent-encoded — which
+    // is how a browser would transmit them anyway.
+    const HOSTILE = ["ADMIN", "admin%20", "superuser", "__proto__", "%7B%22role%22%3A%22admin%22%7D"]
+    for (const hostile of HOSTILE) {
       await context.clearCookies()
       await context.addCookies([
         {

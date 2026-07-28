@@ -83,7 +83,7 @@ test.describe("production build", () => {
     for (const path of ["/", "/hotel"]) {
       const { status } = await visit(page, localised(path))
       expect(status, `${path} did not render in a production build`).toBe(200)
-      await expect(page.locator("main, body")).toBeVisible()
+      await expect(page.locator("main").first()).toBeVisible()
     }
   })
 })

@@ -69,7 +69,11 @@ test.describe("evidence — the non-negotiables", () => {
     await freezeMotion(page)
     await visit(page, localised("/hotel"))
 
-    const gaps = page.locator("[data-confidence='gap']")
+    // Scoped to the VALUE, not to everything carrying the confidence attribute:
+    // an earlier version matched a status chip reading "Offen" and reported a
+    // correct page as broken. The rendered value is what §6 of azura-ui-ux
+    // constrains — "—" and "Nicht belegt", never 0, never blank.
+    const gaps = page.locator("[data-confidence='gap'][data-slot='provenance-value']")
     const count = await gaps.count()
     expect(count, "no gap facts on a page that should have some").toBeGreaterThan(0)
 
@@ -113,21 +117,33 @@ test.describe("evidence — the non-negotiables", () => {
     await freezeMotion(page)
     await visit(page, localised("/dashboard/evidence"))
 
-    const stale = page.locator("[data-stale='true'], [data-slot='stale-badge']")
-    const count = await stale.count()
-    expect(count, "no stale markers on a page whose data includes stale listings").toBeGreaterThan(0)
+    // The observation ROW is the unit that carries the mark — W3-C's component
+    // contract. Two earlier versions of this test were wrong in different ways:
+    // `[data-stale]` alone also matches the ladder's ticks, which are
+    // `aria-hidden` decoration with no text, and `ancestor::tr` assumes a table
+    // element the panel does not use.
+    const rows = page.locator('[data-slot="observation-row"][data-stale="true"]')
+    const count = await rows.count()
+    expect(count, "no stale observation rows").toBeGreaterThan(0)
 
-    // "Adjacent to the price" means the badge and a figure share a row. Compare
-    // vertical centres rather than DOM proximity: a badge can be a sibling in
-    // the markup and 400px away on screen.
-    const firstBadge = stale.first()
-    const badgeBox = await firstBadge.boundingBox()
-    expect(badgeBox, "stale badge has no layout box").not.toBeNull()
+    // "Beside the price, not in a footnote" means the marker sits in the SAME
+    // cell as the figure. W3-C renders it as a plain span immediately after
+    // `[data-numeric]` rather than as a `data-slot="badge"`, so the assertion is
+    // on the cell's composition: the price cell holds the number and something
+    // else that is visible. Locale-independent, so it holds in all four.
+    for (let i = 0; i < count; i += 1) {
+      const priceCell = rows.nth(i).locator("td:has([data-numeric])").first()
+      await expect(priceCell, `stale row ${i} has no price cell`).toBeVisible()
 
-    const row = firstBadge.locator(
-      "xpath=ancestor::*[self::tr or self::li or self::div][1]",
-    )
-    await expect(row, "the stale badge's row carries no figure").toContainText(/\d/)
+      const figure = (await priceCell.locator("[data-numeric]").first().innerText()).trim()
+      const cell = (await priceCell.innerText()).trim()
+
+      expect(figure.length, `stale row ${i} price cell holds no figure`).toBeGreaterThan(0)
+      expect(
+        cell.replace(figure, "").trim().length,
+        `stale row ${i}: the price cell holds the figure and nothing else — the stale marker is elsewhere`,
+      ).toBeGreaterThan(0)
+    }
   })
 
   test("6 · the cockpit's counts match the dataset's own counts", async ({ page, context }) => {

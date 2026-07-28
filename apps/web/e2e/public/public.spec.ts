@@ -42,8 +42,16 @@ test.describe("public surfaces", () => {
 
       const text = (await page.locator("body").innerText()).replace(/\s+/g, " ")
       expect(text, "the Tripadvisor score is missing").toMatch(/4[.,]6/)
-      // Its scale travels with it.
-      expect(text, "a score appeared without its scale").toMatch(/4[.,]6\s*\/\s*5/)
+
+      // The scale travels with the score, but not adjacently in `innerText`:
+      // a confidence label sits between them in the DOM ("4,6 Einzelquelle / 5").
+      // So the assertion is scoped to the score card rather than matched against
+      // the flattened page text, which an earlier version of this test did and
+      // which failed on correct markup.
+      const card = page.locator("[data-slot='platform-score']").first()
+      await expect(card, "no platform score card rendered").toBeVisible()
+      const cardText = (await card.innerText()).replace(/\s+/g, " ")
+      expect(cardText, "the score card carries no scale").toMatch(/\/\s*(5|10)/)
     })
   }
 
@@ -84,7 +92,10 @@ test.describe("public surfaces", () => {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
 
     // Something visual must stand in — azura-ui-ux §5.2.
-    const poster = page.locator("[data-slot='poster'], [data-webgl-fallback], img[alt]")
+    // W1-D's fallback is `CoastPoster`, which renders `data-slot="coast-poster"`.
+    // An earlier version of this test looked for a generic `[data-slot='poster']`
+    // and reported a working fallback as missing.
+    const poster = page.locator("[data-slot='coast-poster']")
     expect(await poster.count(), "WebGL is unavailable and nothing stood in").toBeGreaterThan(0)
     await context.close()
   })
@@ -104,4 +115,27 @@ test.describe("public surfaces", () => {
       `horizontal overflow: ${overflow.scrollWidth} > ${overflow.clientWidth}`,
     ).toBeLessThanOrEqual(overflow.clientWidth)
   })
+
+  for (const locale of LOCALES) {
+    test(`${locale}: no message key renders as its own name`, async ({ page }) => {
+      await visit(page, localised("/hotel", locale))
+      const text = await page.locator("body").innerText()
+
+      // next-intl returns the KEY when a message it parsed needs an argument the
+      // caller did not supply. Every one of these strings carries an ICU
+      // placeholder and every call site does `t("key")` with no values and then
+      // hand-interpolates with `.replace()` — so the reader sees
+      // "hotel.platform.open" where a sentence should be.
+      //
+      // Matched as a dotted namespace token, so ordinary prose cannot trip it.
+      const leaked = [...text.matchAll(/(hotel|evidence|landing|dashboard)\.[a-z][a-zA-Z]*(?:\.[a-z][a-zA-Z]*)+/g)]
+        .map((m) => m[0])
+        .filter((k) => !k.startsWith("hotel.com"))
+
+      expect(
+        [...new Set(leaked)],
+        `untranslated message keys rendered as text: ${[...new Set(leaked)].join(", ")}`,
+      ).toEqual([])
+    })
+  }
 })
