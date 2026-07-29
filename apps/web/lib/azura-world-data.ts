@@ -278,7 +278,7 @@ export interface AzuraWorldDataset {
 }
 
 export const azuraWorldDataset = {
-  "generatedAt": "2026-07-28T06:22:59Z",
+  "generatedAt": "2026-07-29T07:29:17Z",
   "contractVersion": 1,
   "harvest": [
     {
@@ -32172,7 +32172,7 @@ export const azuraWorldDataset = {
       "severity": "critical",
       "area": "pricing",
       "field": "units[].askingPrice",
-      "message": "The 1+1 entry price spans a 2.1x range across four publishers — Haspo EUR 112,000 (80-89 m²), Seaside EUR 185,000 (85-92 m²), Alanya-Home from EUR 220,000 (85 m²), Housearch USD 239,171 (75 m²). The causes compound: two currencies, no observation dates, different unit subsets, and at least one listing stale by ~2 years (F-006).",
+      "message": "The 1+1 entry price is unresolved across 19 observations from 6 publishers (Alanya-Home, Capital Estate, Haspo Realty, Housearch, Seaside Alanya, TERRA Real Estate). In EUR, the 13 observations whose publisher states a 1+1 layout run 112,000 to 310,000 EUR (Capital Estate, Haspo Realty, Seaside Alanya). That is a factor of 2.8 within EUR alone. In USD, the 2 observations whose publisher states a 1+1 layout run 238,967 to 239,171 USD (Housearch). Those differ by 0.1% within USD. The currencies are NOT converted and NOT compared to each other: no source in this dataset publishes an exchange rate or a rate date, so any ratio spanning them would be arithmetic on an invented rate. A further 4 rows are portal 'price from' entries whose publisher did not attach a layout, so they are carried but excluded from the ratio above: 125,000 EUR (Alanya-Home), 200,000 EUR (TERRA Real Estate), 220,000 EUR (Alanya-Home), 400,000 EUR (TERRA Real Estate). The causes compound: two currencies, no observation dates, different unit subsets, and 8 of 19 observations come from listings flagged stale (F-006).",
       "competingValues": [
         {
           "value": {

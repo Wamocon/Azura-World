@@ -147,21 +147,44 @@ const PROBES = [
     role: "manager",
     locale: "de",
     expect: "answer",
-    // "112,000" with a comma is how finding F-002 writes Haspo's entry price;
-    // asserting it proves the conflict register reaches the user, not just the
-    // portal list. "widersprechen" proves the answer LEADS with the
-    // disagreement rather than burying it under the cheapest number.
+    // THE TWO ANCHOR AMOUNTS ARE ASSERTED IN GERMAN FORMAT, AND THAT IS THE
+    // POINT OF THE CHANGE. This probe previously required "112,000" and
+    // "239,171" with anglo separators. Those strings reached the reply only
+    // because finding F-002's message stated them in English prose inside a
+    // German answer, which MANUAL-TEST-REPORT M-003 lists as a rule violation in
+    // its own right. The amounts now arrive from `describePriceSpread`, which
+    // formats per locale, so the correct assertion is the German form.
+    //
+    // The numbers are the same numbers; the test no longer depends on a
+    // defective string to find them.
+    //
+    // "widersprechen" proves the answer LEADS with the disagreement rather than
+    // burying it under the cheapest number.
     contains: [
       "widersprechen",
       "Haspo Realty",
       "Housearch",
       "Seaside Alanya",
       "F-002",
-      "112,000",
-      "239,171",
+      "112.000",
+      "239.171",
+    ],
+    // The three overclaims this suite went green through. Each is a literal
+    // string that was in the shipped reply on 2026-07-28.
+    absent: [
+      // M-003 — the cross-currency multiplier, in every form it was written.
+      "2.1x",
+      "2,1-fach",
+      // M-004 — Alto Real Estate's monthly rent, and the Haspo rent that made
+      // "1.000-190.000 EUR" the published Haspo range.
+      "2.100 EUR",
+      "1.000–190.000",
+      "Alto Real Estate",
+      // M-010 — the publisher count that disagreed with the record.
+      "four publishers",
     ],
     minPublishers: 3,
-    note: "answers WITH the conflict, four publishers, two currencies",
+    note: "answers WITH the conflict, no cross-currency ratio, no rents",
   },
   {
     id: 2,
@@ -479,6 +502,15 @@ for (const probe of PROBES) {
   for (const needle of probe.contains ?? []) {
     if (!reply.toLowerCase().includes(needle.toLowerCase())) {
       problems.push(`reply missing ${JSON.stringify(needle)}`);
+    }
+  }
+  // `absent` is the mirror of `contains`, added by F2. An overclaim is a string
+  // that must NOT be in a reply, and until now this suite could only require
+  // strings to be present — which is why it went green while the concierge
+  // printed a cross-currency multiplier (M-003) and two rents (M-004).
+  for (const needle of probe.absent ?? []) {
+    if (reply.toLowerCase().includes(needle.toLowerCase())) {
+      problems.push(`reply must not contain ${JSON.stringify(needle)}`);
     }
   }
 

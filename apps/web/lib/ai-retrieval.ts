@@ -18,9 +18,14 @@
  * ## Provenance is carried, never summarised away
  *
  * Every `RetrievedFact` keeps its `SourceRef[]` and its `conflictsWith[]`. The
- * conflicts in particular are the product: a 2.1× spread in the 1+1 entry price
- * across four publishers is the most valuable thing in this dataset, and an
- * assistant that picked one number and moved on would have destroyed it. The
+ * conflicts in particular are the product: the 1+1 entry price runs 112,000 to
+ * 310,000 EUR across three publishers, a factor of 2.8 **within EUR**, with a
+ * separate USD pair from a fourth. That is the most valuable thing in this
+ * dataset, and an assistant that picked one number and moved on would have
+ * destroyed it. (This paragraph used to quote "a 2.1x spread across four
+ * publishers", which was the cross-currency division M-003 records and a
+ * publisher count M-010 records as wrong. The figures above are the ones
+ * `compose_f002_message()` computes.) The
  * grounded text renders every competing value with its publisher, so the model
  * physically cannot see a single tidy price to repeat.
  *
@@ -77,7 +82,32 @@ export interface RetrievedFact {
   unit: string | null
 }
 
-/** One observed price for a layout, kept verbatim with its publisher. */
+/**
+ * A brand that only `saleObservation()` in this module can apply.
+ *
+ * M-004: a monthly rent of EUR 2,100 for 70 m² was listed by the concierge among
+ * 1+1 **asking prices**, and a EUR 1,000 lower bound appeared for an 80 m²
+ * apartment — EUR 12.50/m². W0-B flagged the source `priceKind: "rent"` at
+ * harvest and wrote the rule down in `azura-world-data.ts`:
+ *
+ *   > A monthly rent must never enter the sale-price series — see F-002.
+ *
+ * The rule existed, the flag existed, and the projection below dropped the
+ * column. So a filter alone is not the fix: the next projection would drop it
+ * again. The brand makes a rent **structurally** unable to reach a price series
+ * — `PriceObservation` cannot be constructed by an object literal anywhere,
+ * including in this file, because `unique symbol` keys are not writable from
+ * outside the module that declares them. Every observation in a price series has
+ * therefore passed `saleObservation()`, which is the only place the check lives.
+ */
+declare const SALE_KIND: unique symbol
+
+/**
+ * One observed **sale** price for a layout, kept verbatim with its publisher.
+ *
+ * Constructible only by `saleObservation()`. A rent cannot be widened into this
+ * type and cannot be written as a literal.
+ */
 export interface PriceObservation {
   layout: string | null
   interiorM2: number | null
@@ -85,6 +115,41 @@ export interface PriceObservation {
   publisher: string
   url: string
   isStale: boolean
+  /** Proof of the sale check. Never read; it exists so it cannot be forged. */
+  readonly [SALE_KIND]: true
+}
+
+/**
+ * What a listing claims its price means.
+ *
+ * `"unknown"` is a real third state and it is **not** treated as a sale. A
+ * dataset regenerated without the column would produce an empty price series —
+ * loud, and reported by `excludedNonSale` below — rather than silently
+ * readmitting the rents. Fail closed: the cost of a missing price is a visible
+ * gap, and the cost of a wrong one is this finding.
+ */
+export type ListingPriceKind = "sale" | "rent" | "unknown"
+
+/**
+ * The only constructor for a `PriceObservation`.
+ *
+ * Returns `null` for anything that is not a proven sale. The cast is the single
+ * point where the brand is applied, and it is unreachable for a non-sale row
+ * because of the guard directly above it.
+ */
+function saleObservation(
+  row: ListingRow,
+  money: Money
+): PriceObservation | null {
+  if (row.priceKind !== "sale") return null
+  return {
+    layout: row.layout,
+    interiorM2: row.interiorM2,
+    money,
+    publisher: row.publisher,
+    url: row.url,
+    isStale: row.isStale,
+  } as PriceObservation
 }
 
 export interface RetrievalResult {
@@ -92,6 +157,12 @@ export interface RetrievalResult {
   facts: RetrievedFact[]
   findings: Finding[]
   prices: PriceObservation[]
+  /**
+   * Sale-price rows withheld from `prices`, by reason. M-004: two rental
+   * listings were being answered as asking prices. The counts are surfaced in
+   * the answer rather than dropped quietly.
+   */
+  excludedNonSale: { rent: number; unknown: number }
   /** Populated only when the message named a unit. */
   unit: {
     id: string
@@ -560,6 +631,15 @@ interface ListingRow {
   interiorM2: number | null
   price: Money | null
   isStale: boolean
+  /**
+   * M-004: this field was missing, and that omission is where the sale/rent
+   * distinction was lost. The dataset carries `priceKind` on every portal
+   * listing (`scripts/sources.config.json` sets it per source and
+   * `build-azura-dataset.py` emits it); `narrowListing` simply did not read it,
+   * so `selectPrices` had nothing to filter on and two rental listings entered
+   * the asking-price answer.
+   */
+  priceKind: ListingPriceKind
 }
 
 function narrowMoney(value: unknown): Money | null {
@@ -593,6 +673,15 @@ function narrowListing(value: unknown): ListingRow | null {
       typeof row["interiorM2"] === "number" ? row["interiorM2"] : null,
     price: narrowMoney(row["price"]),
     isStale: row["isStale"] === true,
+    // Anything that is not literally "sale" or "rent" is "unknown", and
+    // "unknown" is not a sale. A renamed or dropped column therefore empties the
+    // price series instead of quietly refilling it with rents.
+    priceKind:
+      row["priceKind"] === "sale"
+        ? "sale"
+        : row["priceKind"] === "rent"
+          ? "rent"
+          : "unknown",
   }
 }
 
@@ -601,8 +690,20 @@ const listingRows: readonly ListingRow[] = azuraWorldDataset.portalListings
   .map(narrowListing)
   .filter((row): row is ListingRow => row !== null)
 
+/** A price series, and what was kept out of it. */
+export interface PriceSelection {
+  observations: PriceObservation[]
+  /**
+   * Rows excluded for not being a sale, by kind. **Reported, never silent** —
+   * the project's rule is that a value is dropped only with a reason a reader
+   * can see, and "we removed two rentals" is a fact about the market's data
+   * quality, not housekeeping.
+   */
+  excludedNonSale: { rent: number; unknown: number }
+}
+
 /**
- * Every observed price for a layout — **nothing is pruned here**.
+ * Every observed **sale** price for a layout.
  *
  * Retrieval's job is completeness; readability is the answer builder's problem
  * (`describePriceSpread` groups these by publisher). Pruning at this layer was
@@ -615,8 +716,13 @@ const listingRows: readonly ListingRow[] = azuraWorldDataset.portalListings
  * Both failures share a cause: deciding which observation matters is a judgement,
  * and this project's whole premise is that we do not make that judgement
  * silently. So the model sees all of them, and the reader sees them grouped.
+ *
+ * **The one exclusion is not a judgement.** A monthly rent is not a cheap asking
+ * price, it is a different quantity, and mixing the two is the error M-004
+ * records. It happens in `saleObservation()`, is counted, and is stated in the
+ * answer.
  */
-function selectPrices(layout: string | null): PriceObservation[] {
+function selectPrices(layout: string | null): PriceSelection {
   const priced = listingRows.filter((item) => item.price !== null)
   const matching =
     layout === null ? priced : priced.filter((item) => item.layout === layout)
@@ -625,20 +731,26 @@ function selectPrices(layout: string | null): PriceObservation[] {
   const source = matching.length > 0 ? matching : priced
 
   const observations: PriceObservation[] = []
+  const excludedNonSale = { rent: 0, unknown: 0 }
+
   for (const item of source) {
-    if (item.price === null) continue
-    observations.push({
-      layout: item.layout,
-      interiorM2: item.interiorM2,
-      money: item.price,
-      publisher: item.publisher,
-      url: item.url,
-      isStale: item.isStale,
-    })
+    const money = item.price
+    if (money === null) continue
+    const observation = saleObservation(item, money)
+    if (observation === null) {
+      // The rent/unknown split is kept apart: a rental listing is a real
+      // publication about this project, and an unlabelled row is a gap in our
+      // own pipeline. They are different problems for different people.
+      if (item.priceKind === "rent") excludedNonSale.rent += 1
+      else excludedNonSale.unknown += 1
+      continue
+    }
+    observations.push(observation)
   }
+
   // Cheapest first, so the spread reads as a range rather than a list.
   observations.sort((a, b) => a.money.amount - b.money.amount)
-  return observations.slice(0, MAX_PRICES)
+  return { observations: observations.slice(0, MAX_PRICES), excludedNonSale }
 }
 
 function selectFindings(
@@ -891,7 +1003,10 @@ export function retrieve(input: {
     input.intent === "pricing" ||
     (input.intent === "inventory" &&
       /preis|price|fiyat|цена|kostet|cost/.test(text))
-  const prices = wantsPrices ? selectPrices(detectLayout(input.message)) : []
+  const priceSelection: PriceSelection = wantsPrices
+    ? selectPrices(detectLayout(input.message))
+    : { observations: [], excludedNonSale: { rent: 0, unknown: 0 } }
+  const prices = priceSelection.observations
 
   const unitId = normaliseUnitId(input.message)
   let unit: RetrievalResult["unit"] = null
@@ -947,6 +1062,7 @@ export function retrieve(input: {
     facts,
     findings,
     prices,
+    excludedNonSale: priceSelection.excludedNonSale,
     unit,
     citations,
     grounded: substantive && groundedContext.length > 0,

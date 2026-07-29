@@ -335,6 +335,131 @@ def collect_claims(
 # ----------------------------------------------------------------- findings --
 
 
+# Overwritten by compose_f002_message() before emit. If this string ever reaches
+# an artefact, the composition step did not run and the build must fail rather
+# than ship a finding with no numbers in it.
+F002_MESSAGE_PLACEHOLDER = "F-002 message not composed"
+
+
+def _fmt_amount(amount: float) -> str:
+    """`112000.0` -> `112,000`. Thousands separators, no decimals."""
+    return f"{int(round(amount)):,}"
+
+
+def compose_f002_message(sale_prices: list[dict]) -> str:
+    """Write F-002's message FROM its own competing values.
+
+    ## Why this is computed and not typed
+
+    M-010: the hand-written message said "across four publishers" while the
+    record carried nineteen observations across six. `SECURITY-REVIEW.md`
+    SEC-006 recorded the same drift and got it wrong in the other direction
+    ("carries three"). Three documents disagreed about one array, which is what
+    happens when a count is maintained by hand beside data that is rebuilt on
+    every harvest. Composing the sentence from the array makes the two incapable
+    of disagreeing, and `verify-evidence.mjs` fails the build if they ever do.
+
+    ## Why there is no cross-currency ratio
+
+    M-003 / SEC-007: the previous headline `2.1x` was 239,171 USD divided by
+    112,000 EUR, which is a conversion at an implied rate of exactly 1.0. It was
+    printed two lines below the concierge sentence saying amounts in different
+    currencies are never converted. CONVENTIONS §5 forbids the operation,
+    `lib/ai-retrieval.ts` instructs the model never to perform it, and
+    `conflictRange()` returns null rather than do it.
+
+    So the ratio here is computed **within EUR only**, over the observations
+    whose publisher actually states a 1+1 layout, and the sentence says both of
+    those things. The USD observations are stated as their own range and are
+    never divided by anything. No rate is applied, because no source in this
+    dataset publishes a rate or a rate date.
+
+    ## Why the unlabelled rows are stated separately
+
+    Four rows are portal "price from" entries whose publisher did not attach a
+    layout. They belong in the finding (dropping them would quietly narrow the
+    spread this finding exists to show) but they are not 1+1 observations, so
+    they do not enter the 1+1 ratio. They get their own sentence with their
+    publishers named.
+    """
+    if not sale_prices:
+        raise SystemExit("F-002 has no competing values; refusing to compose a message.")
+
+    by_currency: dict[str, list[dict]] = {}
+    for entry in sale_prices:
+        by_currency.setdefault(entry["value"]["currency"], []).append(entry)
+
+    publishers = sorted({entry["source"]["publisher"] for entry in sale_prices})
+
+    # Rows the publisher labelled 1+1, per currency. These, and only these, are
+    # comparable enough to carry a ratio.
+    labelled = [e for e in sale_prices if e["value"]["layout"] == "1+1"]
+    unlabelled = [e for e in sale_prices if e["value"]["layout"] is None]
+
+    parts: list[str] = [
+        f"The 1+1 entry price is unresolved across {len(sale_prices)} observations "
+        f"from {len(publishers)} publishers ({', '.join(publishers)})."
+    ]
+
+    for currency in sorted({e["value"]["currency"] for e in labelled}):
+        rows = sorted(
+            (e for e in labelled if e["value"]["currency"] == currency),
+            key=lambda e: e["value"]["amount"],
+        )
+        low, high = rows[0]["value"]["amount"], rows[-1]["value"]["amount"]
+        hosts = sorted({r["source"]["publisher"] for r in rows})
+        span = (
+            f"{_fmt_amount(low)} to {_fmt_amount(high)} {currency}"
+            if low != high
+            else f"{_fmt_amount(low)} {currency}"
+        )
+        # The ratio is stated ONLY when it is within one currency, and the
+        # sentence names that currency. verify-evidence.mjs recomputes it.
+        #
+        # A near-identical pair gets a percentage instead: "a factor of 1.0"
+        # reads as noise, and the fact worth stating about Housearch's two rows
+        # is that one publisher agrees with itself while the EUR publishers do
+        # not. Below 5% the ratio is not the interesting number.
+        if low <= 0 or high == low:
+            ratio = ""
+        elif high / low < 1.05:
+            ratio = f" Those differ by {(high / low - 1) * 100:.1f}% within {currency}."
+        else:
+            ratio = f" That is a factor of {high / low:.1f} within {currency} alone."
+        parts.append(
+            f"In {currency}, the {len(rows)} observations whose publisher states a "
+            f"1+1 layout run {span} ({', '.join(hosts)}).{ratio}"
+        )
+
+    if len({e["value"]["currency"] for e in labelled}) > 1:
+        parts.append(
+            "The currencies are NOT converted and NOT compared to each other: no "
+            "source in this dataset publishes an exchange rate or a rate date, so "
+            "any ratio spanning them would be arithmetic on an invented rate."
+        )
+
+    if unlabelled:
+        described = ", ".join(
+            f"{_fmt_amount(e['value']['amount'])} {e['value']['currency']} "
+            f"({e['source']['publisher']})"
+            for e in sorted(unlabelled, key=lambda e: e["value"]["amount"])
+        )
+        parts.append(
+            f"A further {len(unlabelled)} rows are portal 'price from' entries whose "
+            f"publisher did not attach a layout, so they are carried but excluded "
+            f"from the ratio above: {described}."
+        )
+
+    stale = sum(1 for e in sale_prices if e["value"]["isStale"])
+    parts.append(
+        "The causes compound: two currencies, no observation dates, different unit "
+        f"subsets, and {stale} of {len(sale_prices)} observations come from listings "
+        "flagged stale (F-006)."
+    )
+
+    return " ".join(parts)
+
+
 def seeded_findings(by_field: dict[str, list[dict]]) -> list[dict]:
     """F-001…F-010 are carried over from SOURCES.md §3 verbatim in substance.
 
@@ -386,13 +511,11 @@ def seeded_findings(by_field: dict[str, list[dict]]) -> list[dict]:
             "severity": "critical",
             "area": "pricing",
             "field": "units[].askingPrice",
-            "message": (
-                "The 1+1 entry price spans a 2.1x range across four publishers — Haspo "
-                "EUR 112,000 (80-89 m²), Seaside EUR 185,000 (85-92 m²), Alanya-Home from "
-                "EUR 220,000 (85 m²), Housearch USD 239,171 (75 m²). The causes compound: two "
-                "currencies, no observation dates, different unit subsets, and at least one "
-                "listing stale by ~2 years (F-006)."
-            ),
+            # COMPOSED FROM THE DATA, not written by hand. See
+            # compose_f002_message() and the note on `competingValues` below.
+            # The placeholder here is never emitted: the builder overwrites it
+            # once the real observations exist, and raises if it does not.
+            "message": F002_MESSAGE_PLACEHOLDER,
             "competingValues": [],  # populated from real observations at build time
             "resolution": (
                 "DELIBERATELY UNRESOLVED. Rendered as a range with all sources visible and a "
@@ -1818,7 +1941,13 @@ def main() -> int:
             "source": ref,
         })
     sale_prices.sort(key=lambda p: (p["value"]["currency"] or "", p["value"]["amount"]))
-    next(f for f in findings if f["id"] == "F-002")["competingValues"] = sale_prices
+    f002 = next(f for f in findings if f["id"] == "F-002")
+    f002["competingValues"] = sale_prices
+    # The message is written from the array immediately after it is attached, so
+    # the two cannot drift (M-010) and no ratio can span two currencies (M-003).
+    f002["message"] = compose_f002_message(sale_prices)
+    if f002["message"] == F002_MESSAGE_PLACEHOLDER:
+        raise SystemExit("F-002 message composition produced the placeholder.")
 
     blocks = [
         {

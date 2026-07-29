@@ -223,8 +223,17 @@ const LISTING_COUNT: Phrase = {
  * different things and two other portals exist", which is a true sentence that
  * leaves the wrong impression. Grouping puts each publisher on equal footing,
  * which is the comparison a reader actually wants, and it keeps every
- * observation — including the EUR 1,000 row that is obviously a placeholder —
- * visible inside its publisher's range rather than quietly dropped.
+ * observation visible inside its publisher's range rather than quietly dropped.
+ *
+ * ONE THING IS NOT KEPT, AND IT USED TO BE. This comment previously defended
+ * showing "the EUR 1,000 row that is obviously a placeholder". It was not a
+ * placeholder: it is a Haspo Realty **rental** listing at EUR 1,000 a month for
+ * 85 m², and Alto Real Estate's EUR 2,100 for 70 m² is another. Both carry
+ * `priceKind: "rent"` in the dataset and both were rendered here as 1+1 asking
+ * prices (M-004). They are now excluded upstream by `saleObservation()` in
+ * `lib/ai-retrieval.ts`, which is the only constructor of a `PriceObservation`,
+ * and the count of what was excluded is stated in the answer by
+ * `describeExcludedRents()` below. Excluded, and said out loud.
  */
 export function describePriceSpread(
   prices: readonly PriceObservation[],
@@ -426,6 +435,11 @@ export function buildDeterministicAnswer(
     parts.push(describePriceSpread(retrieval.prices, locale))
   }
 
+  // Stated whenever something was withheld, including when the remaining series
+  // is empty: "we found nothing but rentals" is an answer, and a blank is not.
+  const excluded = describeExcludedRents(retrieval.excludedNonSale, locale)
+  if (excluded.length > 0) parts.push(excluded)
+
   const findings = describeFindings(retrieval.findings, locale)
   if (findings.length > 0) parts.push(findings)
 
@@ -436,6 +450,48 @@ export function buildDeterministicAnswer(
   parts.push(
     `[${citationCount} ${citationCount === 1 ? SOURCE_WORD[locale] : SOURCES_WORD[locale]}]`
   )
+  return parts.join(" ")
+}
+
+/**
+ * States what was kept out of the price series, and why.
+ *
+ * M-004's fix removes two rental listings from the asking-price answer. Removing
+ * them silently would trade one honesty defect for another: the reader would see
+ * a tidier range with no way to know it had been filtered. So the answer says
+ * how many rows were withheld and that they are rents.
+ *
+ * `unknown` is reported separately and more sharply. A row whose `priceKind` we
+ * could not read is a gap in OUR pipeline, not a fact about the market, and it
+ * should read as something to fix rather than as a normal exclusion. In this
+ * dataset that count is zero.
+ */
+export function describeExcludedRents(
+  excluded: { rent: number; unknown: number },
+  locale: Locale
+): string {
+  const parts: string[] = []
+
+  if (excluded.rent > 0) {
+    const rentPhrase: Phrase = {
+      de: `${excluded.rent} weitere Inserate zu dieser Wohnungsgröße sind Mietangebote und stehen nicht in dieser Preisspanne. Eine Monatsmiete ist kein günstiger Kaufpreis.`,
+      en: `${excluded.rent} further listings for this size are rentals and are not in this price range. A monthly rent is not a cheap asking price.`,
+      tr: `Bu büyüklükteki ${excluded.rent} ilan daha kiralıktır ve bu fiyat aralığında yer almaz. Aylık kira, ucuz bir satış fiyatı değildir.`,
+      ru: `Ещё ${excluded.rent} объявлений такого размера сдаются в аренду и в этот диапазон не входят. Месячная аренда не является низкой ценой продажи.`,
+    }
+    parts.push(rentPhrase[locale])
+  }
+
+  if (excluded.unknown > 0) {
+    const unknownPhrase: Phrase = {
+      de: `Bei ${excluded.unknown} Inseraten ist nicht erfasst, ob es sich um Kauf oder Miete handelt; sie bleiben deshalb außen vor.`,
+      en: `For ${excluded.unknown} listings it is not recorded whether the price is a sale or a rent, so they are left out.`,
+      tr: `${excluded.unknown} ilanda fiyatın satış mı kira mı olduğu kayıtlı değil, bu yüzden dahil edilmedi.`,
+      ru: `Для ${excluded.unknown} объявлений не записано, продажа это или аренда, поэтому они не учтены.`,
+    }
+    parts.push(unknownPhrase[locale])
+  }
+
   return parts.join(" ")
 }
 
