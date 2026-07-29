@@ -223,11 +223,35 @@ to measure that they actually overlapped in the server, and asserts one success 
 `activity_full` rejections, plus gap reuse, waitlist promotion, uncapped behaviour and the
 one-live-booking-per-person index.
 
-The blocker is infrastructure, not the code: **the Docker daemon never became reachable in this
-session.** `docker --version` answers (CLI 29.6.1) but `docker info`, `docker ps` and
-`docker version` all return nothing and hang; Docker Desktop was launched and did not come up.
-`supabase start` has the same dependency. The linked cloud project was deliberately not used: it
-is shared, and unattended DDL against it is not a trade this window will make.
+The blocker is infrastructure, not the code. Diagnosed rather than assumed, because the first
+attempt reported a false success:
+
+```
+docker --version                      -> Docker version 29.6.1, build 8900f1d   (CLI only)
+docker info / ps / version            -> hang, then:
+  failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine;
+  open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+wsl -l -v                             -> docker-desktop  Stopped   (started by this window; now Running)
+Get-Service com.docker.service        -> Stopped, StartType Manual
+Start-Process "Docker Desktop.exe"    -> process count 0 immediately; exits on launch
+\\.\pipe\dockerDesktopLinuxEngine     -> still absent after 200 s of polling
+```
+
+Docker Desktop's Linux engine never starts, so no container can run and `supabase start` has the
+same dependency. **Whoever fixes this needs an interactive session** — the app exits without a
+window, which usually means sign-in, an update, or a repair install.
+
+**A trap worth recording.** The first attempt looked like it worked: `docker run -d … | tail -3`
+reported `EXIT=0`, because `$?` after a pipeline is `tail`'s status, not `docker`'s. That is the
+exact failure `SYSTEM-PROMPT` §3 names, hit in this window rather than merely quoted. The
+container was never created.
+
+No local PostgreSQL exists either: ports 5432, 5433, 54321, 54322, 55433 and 6543 are all closed.
+
+**The linked Supabase project was deliberately not used.** It is shared, `supabase/migrations` is
+W1-A's, and applying migration 15 there out of band would both violate the ownership line and
+leave the schema ahead of the migration history W1-A maintains. A clean NOT RUN is worth more
+than a proof bought that way.
 
 The probe applies its own stub of the four objects migration 15 depends on, so it needs only a
 bare PostgreSQL:
@@ -372,7 +396,7 @@ Exit codes captured directly, never through a pipe.
 | `pnpm qa:dashboard` | **PASS** exit 0 | **647 pass · 0 fail**, 231 cells (11 roles × 21 routes) |
 | `pnpm qa:csp --port 3261` | **PASS** exit 0 | **30 pass · 0 fail**, production build + `next start` + Chromium |
 | `HANDOFF/W3-E-workflow-ics-probe.mts` | **PASS** exit 0 | **59 pass · 0 fail** |
-| `HANDOFF/W3-E-activity-capacity-probe.mjs` | **NOT RUN** | Docker daemon unreachable — §4 |
+| `HANDOFF/W3-E-activity-capacity-probe.mjs` | **NOT RUN** | Docker Desktop's Linux engine will not start and no local PostgreSQL is listening — §4 has the full diagnosis |
 
 ### Under `next start` (production build, port 3260)
 
@@ -492,7 +516,8 @@ zero (checked programmatically across all four locales). The ones rendering on
 
 | File | Owner | What is needed |
 | ---- | ----- | -------------- |
-| `supabase/migrations/` | **W1-A** | Land `HANDOFF/W3-E-activity-capacity.sql` as migration 15. It carries its own RLS. Run `HANDOFF/W3-E-activity-capacity-probe.mjs` against it first; this window could not, for want of a Docker daemon. Without it, activities can display capacity and can never be booked |
+| `supabase/migrations/` | **W1-A** | Land `HANDOFF/W3-E-activity-capacity.sql` as migration 15. It carries its own RLS. Run `HANDOFF/W3-E-activity-capacity-probe.mjs` against it first; this window could not, because Docker Desktop's Linux engine does not start on this machine (§4). Without the migration, activities can display capacity and can never be booked |
+| the host machine | **orchestrator / a human** | Docker Desktop needs an interactive repair before any window can run a throwaway PostgreSQL. It affects `supabase start` and `pnpm db:test` too, not only this probe |
 | `supabase/migrations/` | **W1-A** | Optional, to restore the brief's `verified` state: `alter type public.ticket_status add value 'verified' after 'resolved'`. I will add the two edges once it exists |
 | `app/api/site-management/tickets/route.ts` | **W2-B** | **PATCH must consult `canTransition(from, to, role)` before calling the repository, and answer 409 listing `decision.allowedTo` when it refuses.** The decision object is built for this. Today any enum value is accepted and the state machine is advisory at the boundary the brief calls "the boundary" |
 | `app/api/calendar/ics/[token]/route.ts` | **W2-B** | Use `lib/ics-calendar.ts`. The route's inline escaper is correct but it **does not fold at 75 octets**, so a long Turkish or German activity title produces an over-length line that Outlook truncates silently. Also please `export` the token derivation so the calendar page can stop duplicating it |
