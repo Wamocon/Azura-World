@@ -7,12 +7,16 @@
  * `<button>` carrying its own designation and unit count, and selecting one
  * writes `?block=B03` into the URL so a finding can be cited at a block.
  *
- * **The plan is schematic and says so.** No source publishes the site geometry,
- * so the arrangement here is a diagram of the *composition* — seven blocks, an
- * even split of 656 units, the hotel on the seaward side — and not a survey of
- * where the buildings stand. `DataQualityMark` renders on every block because
- * every block record is `modelled`; that mark is the honesty control and it is
- * visible in the plan, not only in the detail panel (azura-ui-ux §6).
+ * **The plan is schematic and says so.** The arrangement here is a diagram of
+ * the *composition* — seven blocks, an even split of 656 units, the hotel on the
+ * seaward side — and not a survey of where the buildings stand. The note under
+ * the plan states that, which is the claim that has to stay true.
+ *
+ * A `DataQualityMark` used to render on every block, reading "Modelliert",
+ * because every block record is modelled. PIVOT §4 removed it: the audience is
+ * now Azura World's own management, and a badge telling them their block B06 is
+ * modelled describes our dataset rather than their building. The flag is still
+ * on the data and pass two decides its fate.
  *
  * Not WebGL. A canvas cannot be read by a screen reader, indexed, or counted by
  * the evidence gate, and this content is a list of seven labelled records —
@@ -22,7 +26,6 @@
 import { useCallback, useState } from "react"
 import type { ReactNode } from "react"
 
-import { DataQualityMark } from "@/components/evidence/provenance-value"
 import { cn } from "@/lib/cn"
 import { intlLocaleTag } from "@/lib/format"
 
@@ -42,10 +45,6 @@ export interface MasterplanLabels {
   /** Shown under the plan when a block is selected. */
   selectedLabel: string
   schematicNote: string
-  quality: Record<
-    "portal_listing" | "official" | "modelled" | "source_missing",
-    string
-  >
 }
 
 export function Masterplan({
@@ -139,16 +138,21 @@ export function Masterplan({
                       <span className="font-display text-base leading-none tracking-[-0.01em]">
                         {block.code}
                       </span>
-                      <DataQualityMark
-                        dataQuality={block.dataQuality}
-                        labels={labels.quality}
-                      />
+                      {/* A `DataQualityMark` stood here, stamping every block
+                          with "Modelliert" or "Reales Inserat". PIVOT §4 removes
+                          that distinction from the UI: for this pitch all 656
+                          apartments are simply the client's inventory, and a
+                          badge telling Azura World that their own block B06 is
+                          "modelled" is a note about our dataset, not about their
+                          building. The flag is still on the data. */}
                     </span>
                     <span
                       data-numeric
                       className="text-[0.75rem] tracking-[0.01em] text-muted-foreground"
                     >
-                      {new Intl.NumberFormat(intlLocaleTag(locale)).format(block.unitCount)}{" "}
+                      {new Intl.NumberFormat(intlLocaleTag(locale)).format(
+                        block.unitCount
+                      )}{" "}
                       {labels.unitsLabel}
                     </span>
                   </button>
@@ -188,7 +192,9 @@ export function Masterplan({
             <p className="text-[0.8125rem] font-medium">
               {labels.selectedLabel} {active.code} ·{" "}
               <span data-numeric>
-                {new Intl.NumberFormat(intlLocaleTag(locale)).format(active.unitCount)}
+                {new Intl.NumberFormat(intlLocaleTag(locale)).format(
+                  active.unitCount
+                )}
               </span>{" "}
               {labels.unitsLabel}
             </p>

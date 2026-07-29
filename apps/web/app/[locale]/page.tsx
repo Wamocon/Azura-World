@@ -55,7 +55,6 @@ import { headers } from "next/headers"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
 
-import { getProvenanceLabels } from "@/components/azura/labels"
 import { generatedAt, project } from "@/components/azura/landing-data"
 import { HeroSection } from "@/app/sections/hero"
 import { Footer, Navbar, TopBar } from "@/app/sections/chrome"
@@ -65,13 +64,8 @@ import {
   SiteSection,
   WhySection,
 } from "@/app/sections/body"
-import { EvidenceBandSection } from "@/app/sections/evidence-band"
-import {
-  ActionSection,
-  AfterSection,
-  LoveSection,
-  ShareSection,
-} from "@/app/sections/close"
+import { SystemSection } from "@/app/sections/system"
+import { ActionSection } from "@/app/sections/close"
 import { defaultLocale, locales } from "@/lib/contracts"
 import { publicEnv } from "@/lib/env"
 
@@ -140,7 +134,6 @@ export default async function LandingPage({
   const initialBlock = typeof blockParam === "string" ? blockParam : null
 
   const t = await getTranslations({ locale, namespace: "landing" })
-  const provenance = await getProvenanceLabels(locale)
 
   // The nonce the proxy minted for THIS request. Next stamps its own scripts
   // from the request header; anything we add inline has to carry it explicitly
@@ -192,25 +185,23 @@ export default async function LandingPage({
       <Navbar locale={locale} />
 
       <main id="main">
-        <HeroSection locale={locale} provenance={provenance} />
+        <HeroSection locale={locale} />
         <div className="mx-auto w-full max-w-[72rem] px-5 sm:px-8">
-          <WhySection locale={locale} provenance={provenance} />
-          <SiteSection
-            locale={locale}
-            provenance={provenance}
-            initialBlock={initialBlock}
-          />
+          <WhySection locale={locale} />
+          <SiteSection locale={locale} initialBlock={initialBlock} />
           <AmenitiesSection locale={locale} />
-          <DesireSection locale={locale} provenance={provenance} />
-          <EvidenceBandSection locale={locale} provenance={provenance} />
+          <DesireSection locale={locale} />
+          {/* The complex, then the system that runs it, then the way in.
+              PIVOT.md added this section and removed four: the evidence band,
+              and the three closers that framed the page as a research report
+              ("Der öffentliche Report enthält dieselben Zahlen mit denselben
+              Quellen", "Eine Zahl ohne Quelle ist eine Behauptung"). */}
+          <SystemSection locale={locale} />
           <ActionSection locale={locale} />
-          <AfterSection locale={locale} />
-          <ShareSection locale={locale} />
-          <LoveSection locale={locale} />
         </div>
       </main>
 
-      <Footer locale={locale} provenance={provenance} />
+      <Footer locale={locale} />
 
       <script
         type="application/ld+json"

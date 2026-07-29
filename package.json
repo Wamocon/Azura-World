@@ -13,6 +13,8 @@
     "qa:csp": "node scripts/csp-probe.mjs",
     "qa:dashboard": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/dashboard-probe.mts",
     "qa:evidence": "node scripts/verify-evidence.mjs",
+    "gate:journey-media": "node scripts/journey-media-guard.mjs",
+    "media:journey": "node scripts/publish-journey-media.mjs",
     "gate:finance": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/finance-gate-parity.mts",
     "qa:finance-roles": "node scripts/finance-role-matrix.mjs",
     "qa:layout": "node scripts/layout-audit.mjs",

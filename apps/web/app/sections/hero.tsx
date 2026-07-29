@@ -1,16 +1,26 @@
 /**
- * Hero — Attention.                                                  Owner: W3-A
+ * Hero — Attention.                                       Owner: W3-A / W-CINEMA
  *
- * The thesis viewport. Four figures on one plate: three the sources agree on
- * and one they do not, printed in the same type, at the same size, in the same
- * place. A visitor who leaves after this viewport should be able to say a day
- * later that "it showed me a number it trusted and a number it didn't, next to
- * each other" — that is the memory test, and it is the whole product in one
- * frame.
+ * **Rewritten under PIVOT.md, 29 July 2026.** This viewport used to be the
+ * thesis of a research document: four figures, three the sources agreed on and
+ * one they did not, printed identically so the disagreement was the memory. The
+ * audience for that was an analyst studying a competitor.
  *
- * The 3D coast maquette is decoration in the strict sense: every fact in this
+ * The audience is now Azura World's own management, and they are not being
+ * shown research about their building. They are being shown their building
+ * already running in a system built for them. So the four figures are their
+ * inventory — 76.000 m², 7 blocks, 656 apartments, 188 hotel rooms — rendered
+ * as figures a system holds, not as findings a survey reached. The price
+ * conflict, the `n Quellen` captions and the record line are gone; §4 of PIVOT
+ * lists them by name.
+ *
+ * What did NOT change is the photograph and its credit. MEDIA-LICENSE.md is
+ * about rights, not framing, and a visible per-asset credit is required whoever
+ * is reading.
+ *
+ * The 3D coast maquette is decoration in the strict sense: every figure in this
  * section is DOM, and the canvas can fail entirely without the viewport losing
- * a single number. It carries W1-D's guards — lazy behind an IntersectionObserver,
+ * a number. It carries W1-D's guards — lazy behind an IntersectionObserver,
  * poster on no-WebGL, reduced motion or a low device tier, DPR capped, disposed
  * on unmount — so "no WebGL yields a poster" is inherited rather than reimplemented.
  */
@@ -19,47 +29,36 @@ import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { ScrambleText } from "@/components/anim/scramble-text"
-import { Plate, RecordLine, Sounding } from "@/components/azura/chart"
+import { Sounding } from "@/components/azura/chart"
 import { Container } from "@/components/azura/section"
-import { SNAPSHOT_BASE_PATH } from "@/components/azura/labels"
-import { ProvenanceValue } from "@/components/evidence/provenance-value"
-import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
-import { CoastMaquette } from "@/components/three/coast-maquette"
+import { InventoryValue } from "@/components/azura/inventory-value"
+import { ActMedia, ActCredit } from "@/components/journey/act-media"
+import { imagesForAct } from "@/lib/journey-media"
 import { Link } from "@/app/navigation"
-import {
-  entryPriceFact,
-  generatedAt,
-  project,
-} from "@/components/azura/landing-data"
-import { intlLocaleTag } from "@/lib/format"
+import { hotel, project } from "@/components/azura/landing-data"
 
 export async function HeroSection({
   locale,
-  provenance,
 }: {
   locale: string
-  provenance: ProvenanceLabels
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const dataDate = new Intl.DateTimeFormat(intlLocaleTag(locale), {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(generatedAt))
-
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
+  const gapLabel = t("provenance.gap")
+  // The establishing frame. `approach[0]` is the dusk pool reflection, cast by
+  // hand in `scripts/publish-journey-media.mjs` after looking at the contact
+  // sheet rather than by a width sort.
+  const approach = imagesForAct("approach")
+  const heroImage = approach[0]
 
   return (
     <section id="top" className="pt-6 pb-14 sm:pt-10 sm:pb-20">
       <Container className="flex flex-col gap-8">
-        <RecordLine
-          items={[
-            { label: t("record.idLabel"), value: project.code },
-            { label: t("record.placeLabel"), value: t("hero.eyebrow") },
-            { label: t("record.dataLabel"), value: dataDate },
-            { label: t("record.sheetLabel"), value: t("record.sheetValue") },
-          ]}
-        />
+        {/* The record line that stood here - Objekt AZW-TRK, Blatt 1 von 1,
+            Datenstand - has been removed. It framed a public marketing surface
+            as an internal survey document, and it was the first thing a visitor
+            read. The data date now belongs to the evidence section, which is
+            where a reader who wants provenance goes looking; the dashboard
+            cockpit carries the rest. Nothing was lost, it moved. */}
 
         <div className="flex flex-col gap-5">
           {/* The one scramble on the page. Under reduced motion the component
@@ -72,90 +71,123 @@ export async function HeroSection({
           </p>
         </div>
 
-        <Plate
-          title={t("hero.plateTitle")}
-          meta={`${t("record.dataLabel")} ${dataDate}`}
-        >
-          {/* Height is capped, not left to the component's own 400/260. The
-              four soundings under it ARE the first viewport's argument; a
-              maquette that pushes them below the fold turns the thesis into
-              decoration and the page into the brochure it refuses to be. */}
-          <CoastMaquette
-            posterLabel={t("hero.posterAlt")}
-            className="aspect-auto h-[190px] border-0 sm:h-[240px] lg:h-[290px]"
-          />
+        {/* The plate title and its "Datenstand ." meta are gone with the record
+            line: a titled plate with a data date is document furniture, and the
+            brief is explicit that the evidence belongs in ONE section rather
+            than stamped above the fold.
 
-          {/* The soundings. Four figures over the water, the way a chart prints
-              depths — and the fourth is enclosed because its survey is not to
-              be relied upon. */}
-          <div className="relative grid grid-cols-2 border-t border-[color-mix(in_srgb,var(--sea-mid)_24%,transparent)] lg:grid-cols-4">
-            <Sounding
-              label={t("hero.figures.area")}
-              note={sourceCount(project.plotAreaSqm.sources.length)}
-              className="border-r border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
-            >
-              <ProvenanceValue
-                fact={project.plotAreaSqm}
-                format="area"
-                locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
+            What replaces it is the thing the page was missing entirely - a
+            photograph. This frame is the complex mirrored in its own pool at
+            dusk, and it is the strongest asset in a 889-image harvest. It is
+            the ONLY eagerly-loaded image on the route; every other act waits
+            for its viewport, which is what keeps it off the LCP path.
+ */}
+        {/* The frame is its OWN band, not a backdrop for content designed
+            against a light page. The first composition layered the four
+            soundings and the maquette over the photograph and both became
+            unreadable: dark type on a dusk photograph, and procedural teal
+            geometry sitting on top of a real building like a glitch. Measured
+            by looking at it.
+
+            So the photograph gets the full width and nothing sits on it except
+            its own credit, over a gradient sized to guarantee contrast. The
+            soundings return to the page background below, where they were
+            legible, and the maquette moves out of the frame entirely - it
+            belongs to the site section, where the camera has room to move. */}
+        <figure className="relative isolate m-0 overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--sea-mid)_22%,transparent)] bg-[#0a1216]">
+          <div className="relative aspect-[21/9] w-full">
+            {heroImage !== undefined ? (
+              <ActMedia
+                image={heroImage}
+                priority
+                alt={t("hero.posterAlt")}
+                className="[&_img]:scale-[1.03] [&_img]:contrast-[1.04] [&_img]:saturate-[1.06]"
               />
-            </Sounding>
-
-            <Sounding
-              label={t("hero.figures.blocks")}
-              note={sourceCount(project.residenceBlockCount.sources.length)}
-              className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-r lg:border-b-0"
-            >
-              <ProvenanceValue
-                fact={project.residenceBlockCount}
-                format="number"
-                locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
-              />
-            </Sounding>
-
-            <Sounding
-              label={t("hero.figures.units")}
-              note={sourceCount(project.totalUnits.sources.length)}
-              className="border-r border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)]"
-            >
-              <ProvenanceValue
-                fact={project.totalUnits}
-                format="number"
-                locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
-              />
-            </Sounding>
-
-            {entryPriceFact !== null ? (
-              <Sounding
-                label={t("hero.figures.entryPrice")}
-                emphasis="conflict"
-                note={t("hero.entryPriceNote")}
-              >
-                <ProvenanceValue
-                  fact={entryPriceFact}
-                  format="money"
-                  locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
-                />
-              </Sounding>
             ) : null}
+            {/* Vignette and base gradient. Clear centre to dark edges, so the
+                type over it holds contrast wherever the photograph is bright.
+                `pointer-events-none` so it never eats a click. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_18%,transparent_38%,rgba(6,14,18,0.55)_78%,rgba(6,14,18,0.92)_100%)]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#060e12] via-[#060e12]/70 to-transparent"
+            />
           </div>
-        </Plate>
 
-        <p className="max-w-[60ch] text-[0.9375rem] leading-[1.6] text-muted-foreground">
-          {t("hero.conflictCallout")}
-        </p>
+          {/* Visible, never hover-only. MEDIA-LICENSE.md: every displayed asset
+              carries its source, and a credit behind a mouse hover is invisible
+              to touch and to a screen reader. */}
+          {heroImage !== undefined ? (
+            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#060e12]/85 to-transparent px-4 pt-10 pb-3">
+              <ActCredit
+                images={[heroImage]}
+                label={t("hero.creditLabel")}
+                staleLabel={t("hero.creditStale")}
+              />
+            </figcaption>
+          ) : null}
+        </figure>
+
+        {/* The four figures, on the page background. The client's own
+            inventory: the site, how it is divided, how many homes, how many
+            hotel rooms. The fourth used to be the entry price with
+            `emphasis="conflict"` and a note about portals disagreeing, which
+            was the single most document-like element on the page. It is
+            replaced by the hotel, which is a thing they own rather than a
+            thing we found out. */}
+        <div className="relative grid grid-cols-2 rounded-xl border border-[color-mix(in_srgb,var(--sea-mid)_24%,transparent)] lg:grid-cols-4">
+          <Sounding
+            label={t("hero.figures.area")}
+            className="border-r border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
+          >
+            <InventoryValue
+              fact={project.plotAreaSqm}
+              format="area"
+              locale={locale}
+              gapLabel={gapLabel}
+            />
+          </Sounding>
+
+          <Sounding
+            label={t("hero.figures.blocks")}
+            className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-r lg:border-b-0"
+          >
+            <InventoryValue
+              fact={project.residenceBlockCount}
+              format="number"
+              locale={locale}
+              gapLabel={gapLabel}
+            />
+          </Sounding>
+
+          <Sounding
+            label={t("hero.figures.units")}
+            className="border-r border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)]"
+          >
+            <InventoryValue
+              fact={project.totalUnits}
+              format="number"
+              locale={locale}
+              gapLabel={gapLabel}
+            />
+          </Sounding>
+
+          <Sounding label={t("hero.figures.hotelRooms")}>
+            <InventoryValue
+              fact={hotel.roomCount}
+              format="number"
+              locale={locale}
+              gapLabel={gapLabel}
+            />
+          </Sounding>
+        </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
-            href="/#evidence"
+            href="/#system"
             className="azura-tap inline-flex items-center rounded-full bg-accent px-6 text-[0.9375rem] font-semibold text-accent-foreground transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.97]"
           >
             {t("hero.ctaPrimary")}

@@ -110,11 +110,22 @@ export function ScrambleText({
   }, [text, durationMsProp, frameMs])
 
   return (
-    <span className={className}>
-      {/* The accessible name is always the real text; the scrambled glyphs are
-          presentation and are hidden from assistive tech entirely. */}
+    // ONE text node, not two.
+    //
+    // This previously rendered the string twice — `<span aria-hidden>{display}</span>`
+    // beside `<span class="sr-only">{text}</span>` — so that a screen reader got
+    // the real word while the glyphs decoded. The accessible name was right and
+    // the DOM was wrong: `textContent` concatenated both copies, and the page's
+    // only `<h1>` read "Azura World Residence & HotelAzura World Residence & Hotel"
+    // to every crawler, every text extractor and every automated check. Measured
+    // on the production build before this fix.
+    //
+    // `aria-label` gives the same guarantee with one node: the accessible name is
+    // always the settled text, whatever the glyphs are doing, and there is
+    // nothing to double. `role="text"` is deliberately NOT used — it is
+    // non-standard and Safari-only.
+    <span className={className} aria-label={text}>
       <span aria-hidden="true">{display}</span>
-      <span className="sr-only">{text}</span>
     </span>
   )
 }

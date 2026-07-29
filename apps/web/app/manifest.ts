@@ -36,13 +36,20 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["business", "productivity"],
     icons: [
       {
-        // W0-D owns `public/media`. Until a real icon set lands there, the
-        // manifest ships the favicon only — an entry pointing at a missing file
-        // is worse than a sparse icon list, because it fails installability
-        // silently.
-        src: "/favicon.ico",
+        // This pointed at `/favicon.ico`, which **did not exist anywhere in the
+        // tree** — not in `app/`, not in `public/`. It was the page's one
+        // console 404, and the comment that used to sit here warned against
+        // exactly the mistake it was making: "an entry pointing at a missing
+        // file is worse than a sparse icon list, because it fails
+        // installability silently."
+        //
+        // `app/icon.svg` is a real file. Next emits the `<link rel="icon">` for
+        // it automatically; naming it here as well is what makes the app
+        // installable rather than merely tabbed.
+        src: "/icon.svg",
         sizes: "any",
-        type: "image/x-icon",
+        type: "image/svg+xml",
+        purpose: "any",
       },
     ],
   }

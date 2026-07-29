@@ -5,9 +5,19 @@
  * sections in one file: they share the same row grammar and the same imports,
  * and four files of six lines each would be filing rather than structure.
  *
- * Every figure below is a `ProvenanceValue`. There is no formatted number in
- * this file — a digit outside a provenance component would be a fact without a
- * source, which is the one defect this project treats as disqualifying.
+ * Every figure below is an `InventoryValue`: the client's own inventory,
+ * formatted and nothing else.
+ *
+ * It used to be a `ProvenanceValue` with an `n Quellen` caption under each one,
+ * and the rule in this comment was that a digit outside a provenance component
+ * would be a fact without a source. That rule was right for a competitor
+ * dossier and PIVOT.md, 29 July, retired it: the reader is now Azura World's
+ * own management, and a source chip under "656 Wohnungen" answers a question
+ * they are not asking about a building they own.
+ *
+ * The facts are still `SourcedFact`s and the sources are still in the data.
+ * PIVOT §5 is deliberate about that — pass one removes what the client sees and
+ * leaves the types compiling; pass two unwraps them after the pitch.
  */
 
 import { getTranslations } from "next-intl/server"
@@ -16,40 +26,32 @@ import type { ReactNode } from "react"
 import { Masterplan } from "@/components/azura/masterplan"
 import type { MasterplanLabels } from "@/components/azura/masterplan"
 import { Container, FactRow, Section } from "@/components/azura/section"
-import { SNAPSHOT_BASE_PATH } from "@/components/azura/labels"
-import { ProvenanceValue } from "@/components/evidence/provenance-value"
-import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
+import { InventoryValue } from "@/components/azura/inventory-value"
 import { Reveal } from "@/components/anim/reveal"
-import {
-  amenitiesAvailable,
-  blocks,
-  hotel,
-  project,
-} from "@/components/azura/landing-data"
+import { ActCredit, ActMedia } from "@/components/journey/act-media"
+import { imagesForAct } from "@/lib/journey-media"
+import { cn } from "@/lib/cn"
+import { blocks, hotel, project } from "@/components/azura/landing-data"
 
-type SectionProps = { locale: string; provenance: ProvenanceLabels }
+type SectionProps = { locale: string }
 
 // ---------------------------------------------------------------------------
 // Interest — what Azura World is
 // ---------------------------------------------------------------------------
 
-export async function WhySection({
-  locale,
-  provenance,
-}: SectionProps): Promise<ReactNode> {
+export async function WhySection({ locale }: SectionProps): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
+  const gapLabel = t("provenance.gap")
 
   const value = (
-    fact: Parameters<typeof ProvenanceValue>[0]["fact"],
+    fact: Parameters<typeof InventoryValue>[0]["fact"],
     format: "number" | "area" | "text" | "date" | "percent"
   ): ReactNode => (
-    <ProvenanceValue
+    <InventoryValue
       fact={fact}
       format={format}
       locale={locale}
-      labels={provenance}
-      snapshotBasePath={SNAPSHOT_BASE_PATH}
+      gapLabel={gapLabel}
     />
   )
 
@@ -66,64 +68,52 @@ export async function WhySection({
             <FactRow
               label={t("why.developerLabel")}
               value={value(project.developer, "text")}
-              note={sourceCount(project.developer.sources.length)}
             />
             <FactRow
               label={t("why.plotLabel")}
               value={value(project.plotAreaSqm, "area")}
-              note={sourceCount(project.plotAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.greenLabel")}
               value={value(project.greenAreaSqm, "area")}
-              note={sourceCount(project.greenAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.footprintLabel")}
               value={value(project.buildingFootprintSqm, "area")}
-              note={sourceCount(project.buildingFootprintSqm.sources.length)}
             />
             <FactRow
               label={t("why.outdoorLabel")}
               value={value(project.outdoorFacilityAreaSqm, "area")}
-              note={sourceCount(project.outdoorFacilityAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.blocksLabel")}
               value={value(project.residenceBlockCount, "number")}
-              note={sourceCount(project.residenceBlockCount.sources.length)}
             />
           </div>
           <div>
             <FactRow
               label={t("why.buildingsLabel")}
               value={value(project.buildingCount, "number")}
-              note={sourceCount(project.buildingCount.sources.length)}
             />
             <FactRow
               label={t("why.floorsLabel")}
               value={value(project.floorsPerBuilding, "number")}
-              note={sourceCount(project.floorsPerBuilding.sources.length)}
             />
             <FactRow
               label={t("why.startLabel")}
               value={value(project.constructionStart, "date")}
-              note={sourceCount(project.constructionStart.sources.length)}
             />
             <FactRow
               label={t("why.timelineLabel")}
               value={value(project.completionDate, "date")}
-              note={sourceCount(project.completionDate.sources.length)}
             />
             <FactRow
               label={t("why.statusLabel")}
               value={value(project.buildStatus, "text")}
-              note={sourceCount(project.buildStatus.sources.length)}
             />
             <FactRow
               label={t("why.downPaymentLabel")}
               value={value(project.downPaymentPercent, "percent")}
-              note={sourceCount(project.downPaymentPercent.sources.length)}
             />
           </div>
         </div>
@@ -138,11 +128,10 @@ export async function WhySection({
 
 export async function SiteSection({
   locale,
-  provenance,
   initialBlock,
 }: SectionProps & { initialBlock: string | null }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
+  const gapLabel = t("provenance.gap")
 
   const masterplanLabels: MasterplanLabels = {
     blockLabel: t("masterplan.blockLabel"),
@@ -151,7 +140,6 @@ export async function SiteSection({
     seaLabel: t("masterplan.seaLabel"),
     selectedLabel: t("masterplan.selectedLabel"),
     schematicNote: t("masterplan.schematicNote"),
-    quality: t.raw("masterplan.quality") as MasterplanLabels["quality"],
   }
 
   return (
@@ -169,91 +157,79 @@ export async function SiteSection({
             labels={masterplanLabels}
             initialBlock={initialBlock}
             hotelRooms={
-              <ProvenanceValue
+              <InventoryValue
                 fact={hotel.roomCount}
                 format="number"
                 locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
+                gapLabel={gapLabel}
               />
             }
           />
 
-          {/* The distances are the most-disputed facts in the whole dataset —
-              four of the five carry a conflict badge. They sit next to the plan
-              on purpose: "300 m from the sea" is the single claim this category
-              of marketing stretches most, and here it argues with itself. */}
+          {/* The distances sit next to the plan because that is where a reader
+              looks for them: how far to the sea, the beach, Alanya, the
+              airport.
+
+              This comment used to say four of the five carried a conflict badge
+              and that "300 m from the sea" argued with itself on the page. The
+              badges are gone with the rest of the evidence layer, so the claim
+              is no longer true of what renders and would have become one of
+              those comments that describes an older version of the file. */}
           <div>
             <FactRow
               label={t("why.seaLabel")}
               value={
-                <ProvenanceValue
+                <InventoryValue
                   fact={project.distanceToSeaM}
                   format="metres"
                   locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
+                  gapLabel={gapLabel}
                 />
               }
-              note={sourceCount(project.distanceToSeaM.sources.length)}
             />
             <FactRow
               label={t("desire.beachLabel")}
               value={
-                <ProvenanceValue
+                <InventoryValue
                   fact={hotel.distanceToBeachM}
                   format="metres"
                   locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
+                  gapLabel={gapLabel}
                 />
               }
-              note={sourceCount(hotel.distanceToBeachM.sources.length)}
             />
             <FactRow
               label={t("why.centreLabel")}
               value={
-                <ProvenanceValue
+                <InventoryValue
                   fact={project.distanceToAlanyaCentreKm}
                   format="kilometres"
                   locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
+                  gapLabel={gapLabel}
                 />
               }
-              note={sourceCount(
-                project.distanceToAlanyaCentreKm.sources.length
-              )}
             />
             <FactRow
               label={t("why.airportLabel")}
               value={
-                <ProvenanceValue
+                <InventoryValue
                   fact={project.distanceToGazipasaAirportKm}
                   format="kilometres"
                   locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
+                  gapLabel={gapLabel}
                 />
               }
-              note={sourceCount(
-                project.distanceToGazipasaAirportKm.sources.length
-              )}
             />
             <FactRow
               label={t("why.locationLabel")}
               value={
-                <ProvenanceValue
+                <InventoryValue
                   fact={project.distanceToAntalyaAirportKm}
                   format="kilometres"
                   locale={locale}
-                  labels={provenance}
-                  snapshotBasePath={SNAPSHOT_BASE_PATH}
+                  gapLabel={gapLabel}
                 />
               }
-              note={sourceCount(
-                project.distanceToAntalyaAirportKm.sources.length
-              )}
             />
           </div>
         </div>
@@ -282,7 +258,8 @@ export async function AmenitiesSection({
   locale: string
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  if (amenitiesAvailable) return null
+  const grounds = imagesForAct("grounds")
+  if (grounds.length === 0) return null
 
   return (
     <Section
@@ -293,23 +270,47 @@ export async function AmenitiesSection({
     >
       <Container className="px-0 sm:px-0">
         <Reveal>
-          <div
-            className="flex max-w-[62ch] flex-col gap-3 rounded-[var(--radius-sm)] border border-dashed border-[color-mix(in_srgb,var(--confidence-gap)_50%,transparent)] px-5 py-6"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--muted) 55%, transparent)",
-            }}
-          >
-            <p className="font-display text-[1.125rem] leading-[1.3] tracking-[-0.01em]">
-              {t("amenities.gapTitle")}
-            </p>
-            <p className="text-[0.9375rem] leading-[1.6] text-muted-foreground">
-              {t("amenities.gapBody")}
-            </p>
-            <p className="text-[0.8125rem] leading-[1.5] text-[var(--confidence-gap)]">
-              {t("amenities.empty")}
-            </p>
+          {/* Six photographs of the grounds. What stood here was a dashed
+              panel reading "Keine belegte Ausstattungsliste. Aus 60 abgerufenen
+              Quellen liess sich keine Ausstattungsliste gewinnen" - a research
+              gap notice, rendered on a page that is meant to sell the client
+              their own grounds back to them.
+
+              W-CINEMA §8 filed it as "amenities section renders empty though 35
+              amenity images exist", and PIVOT §4 removes the framing that made
+              an absent *list* worth a panel at all. The pools and the aquapark
+              are not a claim needing a citation. They are photographs of the
+              place, and the place is the client's.
+
+              The first image is wide, the rest are a grid. Nothing here is
+              eager: the hero owns the LCP and every act below it waits for its
+              own viewport. */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+            {grounds.map((image, index) => (
+              <figure
+                key={image.id}
+                data-slot="amenity"
+                className={cn(
+                  "relative m-0 overflow-hidden rounded-xl border border-border/60 bg-[#0a1216]",
+                  index === 0 && "col-span-2 lg:col-span-2 lg:row-span-2"
+                )}
+                style={{ aspectRatio: index === 0 ? "16 / 10" : "4 / 3" }}
+              >
+                <ActMedia
+                  image={image}
+                  layout="tile"
+                  alt={t("amenities.imageAlt")}
+                  className="[&_img]:contrast-[1.04] [&_img]:saturate-[1.06]"
+                />
+              </figure>
+            ))}
           </div>
+          <ActCredit
+            images={grounds}
+            label={t("hero.creditLabel")}
+            staleLabel={t("hero.creditStale")}
+            className="mt-3 text-muted-foreground"
+          />
         </Reveal>
       </Container>
     </Section>
@@ -322,21 +323,19 @@ export async function AmenitiesSection({
 
 export async function DesireSection({
   locale,
-  provenance,
 }: SectionProps): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
+  const gapLabel = t("provenance.gap")
 
   const value = (
-    fact: Parameters<typeof ProvenanceValue>[0]["fact"],
+    fact: Parameters<typeof InventoryValue>[0]["fact"],
     format: "number" | "text" | "date" | "stars"
   ): ReactNode => (
-    <ProvenanceValue
+    <InventoryValue
       fact={fact}
       format={format}
       locale={locale}
-      labels={provenance}
-      snapshotBasePath={SNAPSHOT_BASE_PATH}
+      gapLabel={gapLabel}
     />
   )
 
@@ -353,39 +352,32 @@ export async function DesireSection({
             <FactRow
               label={t("desire.starsLabel")}
               value={value(hotel.stars, "stars")}
-              note={sourceCount(hotel.stars.sources.length)}
             />
             <FactRow
               label={t("desire.roomsLabel")}
               value={value(hotel.roomCount, "number")}
-              note={sourceCount(hotel.roomCount.sources.length)}
             />
             <FactRow
               label={t("desire.boardLabel")}
               value={value(hotel.board, "text")}
-              note={sourceCount(hotel.board.sources.length)}
             />
             <FactRow
               label={t("desire.aquaparkLabel")}
               value={value(hotel.aquaparkSlides, "number")}
-              note={sourceCount(hotel.aquaparkSlides.sources.length)}
             />
           </div>
           <div>
             <FactRow
               label={t("desire.floorsLabel")}
               value={value(hotel.floors, "number")}
-              note={sourceCount(hotel.floors.sources.length)}
             />
             <FactRow
               label={t("desire.openedLabel")}
               value={value(hotel.openedYear, "number")}
-              note={sourceCount(hotel.openedYear.sources.length)}
             />
             <FactRow
               label={t("desire.formerLabel")}
               value={value(hotel.formerName, "text")}
-              note={sourceCount(hotel.formerName.sources.length)}
             />
             {/* `brandAffiliation` is a `gap`: the value is null and it renders
                 as an em dash with "not established". A 5★ hotel that used to be
@@ -394,7 +386,6 @@ export async function DesireSection({
             <FactRow
               label={t("desire.brandLabel")}
               value={value(hotel.brandAffiliation, "text")}
-              note={sourceCount(hotel.brandAffiliation.sources.length)}
             />
           </div>
         </div>
