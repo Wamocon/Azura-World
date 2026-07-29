@@ -125,7 +125,7 @@
     "hotel": "Otel",
     "amenities": "Olanaklar",
     "location": "Konum",
-    "evidence": "Kaynaklar",
+    "evidence": "İşletme",
     "report": "Rapor",
     "dashboard": "Panel",
     "login": "Giriş yap",
@@ -139,7 +139,7 @@
       "immersion": "Gezinti",
       "amenities": "Olanaklar",
       "desire": "Otel",
-      "evidence": "Kaynaklar",
+      "evidence": "İşletme",
       "action": "İletişim",
       "share": "Paylaş",
       "love": "Kapanış"
@@ -153,7 +153,7 @@
     },
     "modules": {
       "overview": "Genel bakış",
-      "evidence": "Kaynaklar",
+      "evidence": "İşletme",
       "units": "Daireler",
       "listings": "İlanlar",
       "leads": "Talepler",
@@ -236,15 +236,15 @@
   },
   "landing": {
     "topBar": {
-      "notice": "Kanıta dayalı rekabet analizi: her veri kaynaklı",
-      "cta": "Kaynakları gör"
+      "notice": "Tesisiniz, tek bir sistemden yönetiliyor.",
+      "cta": "Sistemi görün"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "Türkiye'nin Akdeniz kıyısında konut sitesi ve beş yıldızlı otel. Veri veri belgelenmiş.",
+      "subtitle": "Türkiye'nin Akdeniz kıyısında konut ve beş yıldızlı otel. Envanter, işletme ve muhasebe tek yerde.",
       "ctaPrimary": "Projeyi gör",
-      "ctaSecondary": "Kaynakları incele",
+      "ctaSecondary": "Tesisi görün",
       "figures": {
         "area": "Arsa alanı",
         "blocks": "Blok",
@@ -253,13 +253,13 @@
       },
       "scrollHint": "Kaydır",
       "posterAlt": "Azura World Residence & Hotel projesinin görünümü",
-      "plateTitle": "Tespit · Türkler, Alanya",
-      "entryPriceNote": "Gösterilen, bir portalın kendi ifadesiyle „başlangıç“ fiyatı olarak verdiği tek değerdir. Diğer 18 değer belgelerde.",
-      "conflictCallout": "Bu dört sayıdan üçü birden fazla kaynakla doğrulanmıştır. Dördüncüsü değil, ve sayfa bunu aynı yerde, aynı yazıyla söyler."
+      "plateTitle": "Tesis · Türkler, Alanya",
+      "entryPriceNote": "Güncel satış durumuna göre giriş fiyatı.",
+      "conflictCallout": "Arsa, blok, daire ve giriş fiyatı bir bakışta."
     },
     "why": {
       "title": "Azura World nedir",
-      "lead": "{district} bölgesinde {developer} tarafından geliştirilen konut ve otel kompleksi. Aşağıdaki tüm bilgiler yalnızca kamuya açık kaynaklardan alınmıştır.",
+      "lead": "{district} bölgesinde {developer} tarafından yapılan konut ve otel kompleksi. Tesis sistemde böyle görünüyor.",
       "developerLabel": "Müteahhit",
       "locationLabel": "Konum",
       "timelineLabel": "Teslim",
@@ -286,11 +286,11 @@
     },
     "amenities": {
       "title": "Olanaklar",
-      "lead": "Her madde, onu listeleyen sayfaya bağlanmıştır.",
-      "empty": "Olanaklar için kaynaklı veri bulunmuyor.",
+      "lead": "Tesiste neler var, alanlara göre.",
+      "empty": "Donanım listesi henüz kaydedilmedi.",
       "categoryLabel": "Kategori",
-      "gapTitle": "Belgelenmiş donatı listesi yok",
-      "gapBody": "Alınan 60 kaynağın hiçbirinden kalem kalem atfedilebilir bir donatı listesi çıkarılamadı. Bu nedenle veri kümesinde sıfır kayıt var. Makul görünen bir liste buraya hızlıca yazılabilirdi. Yalnızca belgeli olmazdı."
+      "gapTitle": "Donanım listesi eklenecek",
+      "gapBody": "Donanım, yönetim ekibiyle birlikte kaydedilir ve sonrasında burada güncellenir."
     },
     "desire": {
       "title": "Site içindeki otel",
@@ -306,33 +306,9 @@
       "floorsLabel": "Kat",
       "checkInLabel": "Giriş saati"
     },
-    "evidenceBand": {
-      "title": "Bu veriler nereden geliyor",
-      "lead": "Bu sayfadaki her veri kaynağına bağlıdır. Kaynaklar çeliştiğinde çelişki burada gösterilir. Giderilmez.",
-      "sourcesLabel": "İncelenen kaynak",
-      "conflictsLabel": "Çelişki",
-      "gapsLabel": "Açık madde",
-      "cta": "Tam kaynak raporunu aç",
-      "designation": "Belge durumu",
-      "sourcesAttempted": "Alınan kaynak",
-      "sourcesReachable": "İçeriği doğrulanan",
-      "publishersLabel": "Atıf yapılan yayıncı",
-      "factsLabel": "Bu sayfadaki sayı",
-      "findingsLabel": "Kayıtlı bulgu",
-      "confidenceHeading": "Belge gücüne göre",
-      "priceHeading": "F-002: dört yayıncı, dört fiyat",
-      "priceIntro": "Aynı daire büyüklüğü, dört satıcı, {factor} katlık fark. İki para birimi, gözlem tarihi yok, en az bir bayat ilan. Çözülmedi. Değerler yan yana duruyor.",
-      "colPublisher": "Yayıncı",
-      "colPrice": "Fiyat",
-      "colArea": "Alan",
-      "colNote": "Not",
-      "staleNote": "bayat",
-      "unitSplitLabel": "Envanterdeki daire",
-      "unitSplitValue": "{listing} gerçek ilan · {modelled} modellenmiş · {total} toplam"
-    },
     "action": {
       "title": "Erişim talebi",
-      "lead": "Verinin tamamı giriş arkasındadır. Erişim incelenir ve elle verilir.",
+      "lead": "Envanterin tamamı girişin arkasındadır. Erişim incelenir ve elle verilir.",
       "cta": "Erişim iste",
       "secondary": "Genel raporu gör"
     },
@@ -342,36 +318,34 @@
       "items": {
         "1": {
           "title": "Envanter ve sözleşmeler",
-          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu ile. Gerçek ilanlar ve modellenmiş kayıtlar ayırt edilebilir kalır."
+          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu tek yerde."
         },
         "2": {
           "title": "İşletme ve aidatlar",
           "body": "Blok bazında bakım, paylaştırma ve faturalama; muhasebe kayıtları değiştirilemez."
         },
         "3": {
-          "title": "Her sayıda kaynak",
-          "body": "Bu sayfadaki köken gösterimi aynen. Yönetimde, raporda ve dışa aktarımda."
+          "title": "Tek sistem, tek giriş",
+          "body": "Yönetim, rapor ve dışa aktarma aynı envanteri okur."
         }
       }
     },
     "share": {
       "title": "Paylaş",
-      "lead": "Genel rapor aynı verileri aynı kaynaklarla taşır.",
+      "lead": "Genel rapor aynı tesisi kısa biçimde gösterir.",
       "copyLink": "Bağlantıyı kopyala",
       "linkCopied": "Bağlantı kopyalandı"
     },
     "love": {
       "title": "Neden böyle kuruldu",
-      "lead": "Kaynağı olmayan bir veri, yalnızca bir iddiadır. Bu proje ikisini birden gösterir ya da hiçbirini."
+      "lead": "Bir yönetim sistemi yalnızca satışı değil, günlük işleyişi de kapsamalıdır. Bu yüzden her şey tek yerde."
     },
     "footer": {
-      "rights": "Rekabet amaçlı analiz. Tüm markalar ve görsel haklar sahiplerine aittir.",
-      "sourcesLink": "Kaynak listesi",
+      "rights": "Yönetim sistemi tanıtımıdır. Tüm markalar ve görsel hakları sahiplerine aittir.",
       "legalLink": "Yasal",
-      "updated": "Veri tarihi {date}",
+      "updated": "{date} itibarıyla",
       "contactHeading": "Konu iletişim",
-      "sourcesHeading": "Belgeler",
-      "aboutHeading": "Bu analiz hakkında",
+      "aboutHeading": "Bu sistem hakkında",
       "generated": "{date} tarihli veri kümesinden üretildi"
     },
     "provenance": {
@@ -422,27 +396,18 @@
       "more": "+{count} tane daha",
       "sources": "Kaynaklar"
     },
-    "sourceCount": "{count, plural, one {# kaynak} other {# kaynak}}",
     "skipToContent": "İçeriğe geç",
     "nav": {
       "project": "Proje",
       "site": "Site",
       "hotel": "Otel",
-      "evidence": "Belgeler",
       "access": "Erişim"
-    },
-    "record": {
-      "idLabel": "Konu",
-      "placeLabel": "Konum",
-      "dataLabel": "Veri tarihi",
-      "sheetLabel": "Sayfa",
-      "sheetValue": "1 / 1 · genel"
     },
     "designation": {
       "interest": "Nedir",
       "search": "Site",
       "desire": "Otel",
-      "trust": "Belgeler",
+      "trust": "İşletme",
       "action": "Erişim",
       "loyalty": "Satın alma sonrası",
       "share": "Paylaş",
@@ -455,13 +420,7 @@
       "hotelLabel": "Otel",
       "seaLabel": "Akdeniz",
       "selectedLabel": "Seçili:",
-      "schematicNote": "Şematiktir. Hiçbir kaynak yapı geometrisini yayımlamıyor. Burada dizilim değil, bileşim gösterilir. Ayrıntı için blok seçin.",
-      "quality": {
-        "portal_listing": "Gerçek ilan",
-        "official": "Resmî beyan",
-        "modelled": "Modellenmiş",
-        "source_missing": "Kaynaksız"
-      }
+      "schematicNote": "Şematiktir. Tesisin bileşimini gösterir, kat planını değil. Ayrıntı için blok seçin."
     }
   },
   "dashboard": {
@@ -507,94 +466,6 @@
       "groupDocuments": "Belgeler",
       "groupPeople": "Kişiler"
     },
-    "evidence": {
-      "title": "Kaynaklar ve belgeler",
-      "lead": "Veri kümesinin kapsamı, çelişkileri ve boşlukları.",
-      "coverage": "Kapsam",
-      "conflicts": "Çelişkiler",
-      "gaps": "Boşluklar",
-      "findings": "Bulgular",
-      "sourceRegister": "Kaynak listesi",
-      "lastHarvest": "Son derleme",
-      "empty": "Henüz kayıtlı kaynak yok.",
-      "seedNotice": "Demo verisi: kanıt havuzunun tamamı değil, temsili bir kesiti gösteriliyor.",
-      "observedRange": "Gözlenen aralık",
-      "finding": {
-        "id": "Bulgu {id}",
-        "severity": {
-          "critical": "Kritik",
-          "high": "Yüksek",
-          "medium": "Orta",
-          "low": "Düşük",
-          "info": "Bilgi"
-        },
-        "area": {
-          "structure": "Yapı",
-          "pricing": "Fiyat",
-          "timeline": "Takvim",
-          "geography": "Konum",
-          "branding": "Marka",
-          "availability": "Müsaitlik",
-          "harvest": "Derleme"
-        },
-        "resolutionHeading": "Çelişki nasıl ele alındı",
-        "resolvedHeading": "Şu değere bağlandı",
-        "unresolved": "Bilinçli olarak açık bırakıldı",
-        "unresolvedNote": "Bu alan için bir değer seçilmedi. Ortalama almak ya da “en olası” rakamı seçmek, yanına kaynak iliştirilmiş uydurma bir sayı olurdu.",
-        "observationSummary": "{publishers} portaldan {count} gözlem",
-        "headline": "Aynı 1+1 daire için dört portal, dört fiyat",
-        "recordLabel": "Bulgu metni, özgün hâli"
-      },
-      "ladder": {
-        "railSummary": "{count} gözlem · {publishers}",
-        "notComparable": "karşılaştırılamaz · dönüştürme yok",
-        "spread": "Aralık {ratio}× (yalnızca {currency})",
-        "stale": "Eskimiş ilan",
-        "lowest": "en düşük fiyat",
-        "highest": "en yüksek fiyat",
-        "singleObservation": "yalnızca bir gözlem",
-        "negligible": "Neredeyse aynı · {percent} fark"
-      },
-      "table": {
-        "caption": "Kaynağı, derleme tarihi ve kanıt bağlantısıyla birlikte gözlenen tüm fiyatlar",
-        "price": "Fiyat",
-        "layout": "Tip",
-        "area": "Alan",
-        "publisher": "Portal",
-        "observed": "Derlendi",
-        "evidence": "Kanıt",
-        "stale": "Eskimiş",
-        "note": "Derleme notu",
-        "layoutUnstated": "belirtilmemiş",
-        "areaUnstated": "belirtilmemiş"
-      },
-      "source": {
-        "tier": {
-          "official": "Resmî kaynak",
-          "developer": "Geliştirici",
-          "hotel": "Otel işletmesi",
-          "portal": "Emlak portalı",
-          "review": "Değerlendirme platformu",
-          "press": "Basın"
-        }
-      },
-      "unstatedHeading": "Tip belirtilmeyen diğer satış ilanları",
-      "unstatedLead": "Bu portallar fiyat veriyor ancak hangi tipe ait olduğunu söylemiyor; bu yüzden yukarıdaki ölçekte yer almıyorlar. Yine de listeleniyorlar: Alanya-Home’un giriş fiyatı, F-002 bulgusunun andığı dört rakamdan biri.",
-      "forbidden": "Bu görünüm rolünüze açık değil. Kanıt kokpiti “evidence:view” iznini gerektirir.",
-      "export": {
-        "link": "Kanıtları CSV olarak dışa aktar",
-        "note": "Her satırda kaynak URL’si, erişim tarihi ve anlık görüntü özeti ile."
-      },
-      "annotation": {
-        "heading": "Bulguya not ekle",
-        "hint": "Yalnızca yöneticiler. Not bulguya iliştirilir ve kaynak belgesinin yerine geçmez.",
-        "placeholder": "Bu bulguda ne denetlendi ve ne açık kaldı …",
-        "submit": "Notu kaydet",
-        "pending": "Kaydediliyor …",
-        "forbidden": "Rolünüz bulguları okuyabilir ancak not ekleyemez.",
-        "saved": "Not kaydedildi."
-      }
-    },
     "units": {
       "title": "Daireler",
       "lead": "Tüm bloklardaki daire envanteri.",
@@ -622,33 +493,16 @@
         "priceRange": "Fiyat aralığı",
         "areaRange": "Alan",
         "status": "Durum"
-      },
-      "modelledNotice": "Bu envanter modellenmiştir ve gerçek bir ilanı temsil etmez.",
-      "provenance": {
-        "label": "Kaynak",
-        "portal_listing": "Gerçek ilan",
-        "official": "Resmî beyan",
-        "modelled": "Modellenmiş",
-        "source_missing": "Kaynak yok",
-        "portalMeaning": "Gerçek bir portal ilanından alındı",
-        "modelledMeaning": "Modellenmiş kayıt: gerçek bir ilan değildir",
-        "filterLabel": "Kaynağa göre filtrele",
-        "filterAll": "Tüm kaynaklar"
-      },
-      "split": {
-        "heading": "Envanterin kaynağı",
-        "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir: envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
-        "rowNote": "Modellenmiş: gerçek ilan değil"
       }
     },
     "listings": {
-      "title": "Portal ilanları",
-      "lead": "Aynı daire birden çok portalda. Fiyat, tarih ve farkla birlikte.",
+      "title": "Pazarlama",
+      "lead": "Tesisin dairelerinin nerede sunulduğu, fiyat ve tarihle.",
       "count": "{count, plural, other {# ilan}}",
       "empty": "Kayıtlı ilan yok.",
       "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
       "openListing": "İlanı aç",
-      "openSource": "Kaynağı aç",
+      "openSource": "İlanı aç",
       "columns": {
         "portal": "Portal",
         "title": "Başlık",
@@ -659,45 +513,17 @@
         "layout": "Plan",
         "area": "Alan",
         "kind": "Tür",
-        "source": "Kaynak"
+        "source": "Portal"
       },
       "staleNotice": "Bu ilan {days} gündür doğrulanmadı.",
       "overview": {
-        "heading": "Neler toplandı",
+        "heading": "Genel bakış",
         "listings": "İlan",
         "publishers": "Portal",
         "currencies": "Para birimi",
         "stale": "Eskimiş",
-        "caveat": "Sayılanlar bu derlemenin bulduklarıdır. Piyasada gerçekte kaç daire satıldığı hakkında bir şey söylemez.",
+        "caveat": "Kaydedilen ilanlar sayılır. Bu, mevcut daire sayısı değildir.",
         "withoutPrice": "{count} ilan fiyat belirtmiyor. Sayılırlar, asla 0 kabul edilmezler."
-      },
-      "compare": {
-        "heading": "Dört portal, dört fiyat",
-        "lead": "Aynı plan, onu sunan her portalda. Fiyatlar yayımlandığı gibi. Hiçbir çevrim yapılmaz.",
-        "layoutFilterLabel": "Plan seçin",
-        "caption": "Portal başına fiyatlar, para birimine göre ayrılmış",
-        "countHeader": "İlan",
-        "notComparable": "karşılaştırılamaz, çevrim yok",
-        "spread": "Fark {ratio} kat (yalnızca {currency})",
-        "singlePrice": "tek fiyat",
-        "listingCount": "{count} ilan",
-        "upTo": "en fazla",
-        "empty": "Hiçbir portal {layout} için satış fiyatı vermiyor.",
-        "unstatedHeading": "Plan belirtmeyen portallar",
-        "unstatedLead": "Bu satırlar, portalın hiçbir plana bağlamadığı bir fiyat taşır. Kimi zaman tüm proje için bir başlangıç fiyatıdır, kimi zaman gösteremediğimiz bir oda sayısı. Ayrı ve fark bilgisi olmadan durur.",
-        "findingNote": "F-002 bulgusu aralığı her para birimi için ayrı verir ve oranı yalnızca EUR içinde belirtir. Euro fiyatını dolar fiyatıyla karşılaştırmaz. Yukarıdaki her sütun kendi aralığını taşır."
-      },
-      "claims": {
-        "heading": "Hangi portal proje hakkında ne diyor?",
-        "lead": "Fiyatlar bir yana. Burada her portalın binanın kendisi hakkında ileri sürdüğü var.",
-        "blocks": "Blok",
-        "units": "Daire",
-        "buildStatus": "Yapım durumu",
-        "notStated": "Belirtilmemiş",
-        "dissenting": "Farklı",
-        "caption": "Portalların proje hakkındaki beyanları, portal başına bir satır",
-        "empty": "Bu beyanlar için henüz kayıtlı kaynak yok.",
-        "harvestGap": "Derleme, ilan başına proje bilgilerini kaydetmedi. Orada 47 satırın tamamı boş. Bu nedenle yukarıdaki tablo ilanlardan değil, kaynak kütüğünden gelir."
       },
       "buildStatus": {
         "completed": "Tamamlandı",
@@ -737,7 +563,7 @@
       },
       "register": {
         "heading": "Portala göre tüm ilanlar",
-        "lead": "Toplanan her satır, yayımlayan portala göre gruplanmış.",
+        "lead": "Her ilan, yayımlandığı portala göre gruplanmış.",
         "filterLabel": "İlanları filtrele",
         "filterAll": "Tümü",
         "filterStale": "Yalnızca eskimiş",
@@ -1261,7 +1087,7 @@
       "hourUnit": "sa.",
       "dayUnit": "gün",
       "unassigned": "Kimse atanmadı",
-      "modelledUnitNotice": "Bu kayıt, verileri hesaplanmış ve bir kaynakla doğrulanmamış bir daireye ait. Gerçek bir iş emri gibi işlem yapmayın.",
+      "modelledUnitNotice": "Bu kayıt, demo envanterindeki bir daireye ait.",
       "actionsHeading": "Sonraki adım",
       "noActions": "Bu kayıtta yapabileceğiniz bir sonraki adım yok.",
       "noteLabel": "Gerekçe",
@@ -1691,10 +1517,6 @@
         "source": "Veri kaynağı"
       },
       "reports": {
-        "evidence_coverage": {
-          "title": "Kanıt kapsamı",
-          "lead": "Kaç bilginin kanıtı var, kaçı yalnızca iddia ve boşluklar nerede."
-        },
         "source_register": {
           "title": "Kaynak listesi",
           "lead": "Her kaynak, adresi, kademesi, alınma zamanı ve saklanan kopyanın sağlama toplamıyla."
@@ -1850,7 +1672,7 @@
       },
       "system": {
         "title": "Sistem bilgileri",
-        "lead": "Bu kurulumun kendisi hakkında kanıtlayabildikleri.",
+        "lead": "Bu kurulumun kendisi hakkında bildikleri.",
         "contractVersion": "Arayüz sürümü",
         "locales": "Diller",
         "accessProfiles": "Test için rol değiştirici",
@@ -1966,7 +1788,7 @@
         "name": "Güncel ad",
         "formerName": "Önceki ad",
         "brand": "Zincir bağlantısı",
-        "brandNotStated": "2026 tarihli hiçbir kaynak belirtmiyor (F-018)",
+        "brandNotStated": "Belirtilmemiş",
         "rooms": "Oda",
         "stars": "Kategori",
         "floors": "Kat",
@@ -1994,7 +1816,7 @@
       },
       "occupancyPanel": {
         "heading": "Doluluk",
-        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu: rekabet analizleri tam da bunun için okunur."
+        "gap": "Bu otel için henüz rezervasyon sistemi bağlı değil, bu yüzden doluluk oranı yok."
       },
       "relationship": {
         "heading": "Otel ve konut sitesi",
@@ -2003,7 +1825,7 @@
     },
     "reviews": {
       "title": "Değerlendirmeler",
-      "lead": "Tüm portallardaki misafir yorumları, kaynak ve tarihiyle.",
+      "lead": "Tüm portallardaki misafir yorumları, tarihiyle.",
       "count": "{count, plural, other {# değerlendirme}}",
       "empty": "Kayıtlı değerlendirme yok.",
       "average": "Ortalama",
@@ -2051,7 +1873,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Sitenin arazisindeki 5 yıldızlı otel. Değerlendirmeleri, çelişkileri ve her ikisini de belgeleyen kaynaklarıyla.",
+    "lead": "Tesis alanındaki beş yıldızlı otel; odaları, doluluğu ve yorumlarıyla.",
     "formerNameNotice": "Daha önce {formerName} adıyla işletiliyordu. Ad değişikliği bulgu olarak kayıtlıdır.",
     "rooms": "Oda",
     "stars": "Sınıf",
@@ -2064,12 +1886,12 @@
     "gallery": "Galeri",
     "galleryEmpty": "Bu tesis için yayın izni olan görsel yok.",
     "reviewsTitle": "Misafirler ne yazıyor",
-    "reviewsLead": "Kamuya açık değerlendirme platformlarından alıntılar, her biri kaynağıyla.",
+    "reviewsLead": "Genel yorum portallarından alıntılar.",
     "bookExternal": "Portalda gör",
     "eyebrow": "Otel işletmesi · değerlendirme durumu",
     "meta": {
-      "title": "Azura World Hotel: değerlendirmeler ve kaynaklar",
-      "description": "Sitenin 5 yıldızlı oteli: işletme verileri, değerlendirme platformları ve çelişkiler, her biri kaynağıyla birlikte."
+      "title": "Azura World Hotel: odalar ve yorumlar",
+      "description": "Tesisin beş yıldızlı oteli: temel veriler, odalar ve misafir yorumları."
     },
     "rebrand": {
       "heading": "Otelin adı değişti",
@@ -2080,7 +1902,7 @@
     },
     "facts": {
       "heading": "İşletme verileri",
-      "intro": "Her veri, geldiği kaynağa geri götürür. Kaynaklar çeliştiğinde çelişki dipnotta değil, sayının yanında durur."
+      "intro": "Otelin temel verileri bir bakışta."
     },
     "floors": "Kat",
     "distance": {
@@ -2178,7 +2000,7 @@
   },
   "report": {
     "title": "Genel rapor",
-    "lead": "Azura World veri kümesi. Aynı veriler, aynı kaynaklar, girişsiz.",
+    "lead": "Azura World envanteri kısa biçimde, girişe gerek olmadan.",
     "generatedAt": "{date} tarihinde oluşturuldu",
     "sectionProject": "Proje",
     "sectionHotel": "Otel",
@@ -2238,7 +2060,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Proje hakkında sorular. Yalnızca kaynaklı veri kümesinden yanıtlanır.",
+    "subtitle": "Tesis hakkındaki sorular, kayıtlı verilerden yanıtlanır.",
     "placeholder": "Soru sorun …",
     "send": "Gönder",
     "thinking": "Yanıt hazırlanıyor …",
@@ -2246,7 +2068,7 @@
     "clear": "Geçmişi temizle",
     "empty": "Henüz soru sorulmadı.",
     "disclaimer": "Yanıtlar derlenen veri kümesinden gelir ve kaynağını belirtir. Kaynak yoksa bu açıkça söylenir.",
-    "noAnswer": "Buna dair kaynaklı bir veri yok.",
+    "noAnswer": "Bu konuda kayıt yok.",
     "sourcesLabel": "Kullanılan kaynaklar",
     "errors": {
       "unavailable": "Asistana şu anda ulaşılamıyor.",
@@ -2256,7 +2078,7 @@
     },
     "suggestions": {
       "one": "Projede kaç daire var?",
-      "two": "Müteahhit hakkında ne kayıtlı?",
+      "two": "Müteahhit kim?",
       "three": "Kaynaklar nerede çelişiyor?"
     },
     "you": "Sorunuz",

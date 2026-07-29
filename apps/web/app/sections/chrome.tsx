@@ -63,7 +63,6 @@ export async function Navbar({
     { href: "/#what", label: t("nav.project") },
     { href: "/#site", label: t("nav.site") },
     { href: "/#hotel", label: t("nav.hotel") },
-    { href: "/#evidence", label: t("nav.evidence") },
   ] as const
 
   return (

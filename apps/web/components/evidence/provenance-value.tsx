@@ -1,54 +1,53 @@
-"use client"
-
 import type { ReactNode } from "react"
 
-import { cn } from "@/lib/cn"
 import type { SourcedFact } from "@/lib/contracts"
-
-import { ConfidenceBadge, type ConfidenceLabels } from "./confidence-badge"
-import { ConflictPopover, type ConflictLabels } from "./conflict-popover"
-import { conflictRange, formatFactValue, type ProvenanceFormat } from "./format"
-import { SourceChipList, type SourceChipLabels } from "./source-chip"
+import { cn } from "@/lib/cn"
+import type { ConfidenceLabels } from "./confidence-badge"
+import type { ConflictLabels } from "./conflict-popover"
+import type { SourceChipLabels } from "./source-chip"
+import { formatFactValue, type ProvenanceFormat } from "./format"
 
 /**
- * ProvenanceValue — the component that makes this project honest.
- *                                                          Owner: W1-D
+ * Renders a `SourcedFact` as its value.                    Owner: W1-D · PIVOT P2
  *
- * Every number a user sees goes through here. CONTRACTS §8 lists "a number in
- * JSX with no source" as a review rejection, and this is the component that
- * makes complying easier than not.
+ * ## This component used to be the product, and now it is a formatter
  *
- *     <ProvenanceValue fact={project.plotAreaSqm} format="area" locale="de" … />
- *     → 76.000 m²   with its sources reachable
+ * `PIVOT.md` §4 removes everything that presents the application as research
+ * *about* the client rather than a system *for* them. That is the source chips,
+ * the confidence badges, the conflict popovers and the dotted single-source
+ * underline — all of which lived here.
  *
- * The treatment per confidence level is a design contract, not a style choice
- * (W1-D brief §2):
+ * `PIVOT.md` §5 is explicit about how to remove them, and this file is the
+ * clearest case of it: **pass 1 removes what the client can see; pass 2, after
+ * the pitch, unwraps the types.** `SourcedFact<T>` therefore still flows through
+ * `lib/contracts.ts`, every repository and every call site unchanged. Roughly
+ * thirty components still pass a `fact` and a `ProvenanceLabels` here and still
+ * compile; they simply get a number back instead of a number with its evidence
+ * attached.
  *
- *   confirmed / official   normal. Quiet source affordance.
- *   single_source          dotted underline.
- *   conflicted             amber badge, ALWAYS VISIBLE, never hover-only;
- *                          value shown as a range where one is honest.
- *   inferred               italic + a "berechnet" marker.
- *   gap                    "—" and "Nicht belegt". Never 0. Never blank.
+ * That is why {@link ProvenanceLabels} is kept whole rather than trimmed to the
+ * one field still read. Narrowing it would push a mechanical edit into all
+ * thirty of those files hours before a pitch, for no visible difference. When
+ * pass 2 unwraps the types, this interface goes with them.
  *
- * THE `gap` CASE IS THE ONE THAT MATTERS MOST. `displayValue()` in
- * contracts.ts already returns `null` for a gap regardless of what is stored,
- * so a stale value cannot leak through; this component then renders an em dash
- * rather than falling back to `0`, `""`, or `"N/A"`. A missing price is
- * honest. A plausible-looking made-up price is fraud (SYSTEM-PROMPT §2.3).
+ * ## The one honesty rule that stays
+ *
+ * A `gap` still renders **"Keine Angabe"**, never a blank and never `0`.
+ * `PIVOT.md` §4 removes provenance, not truthfulness: a missing figure printed
+ * as zero is an invented figure, and that rule survives the pivot untouched.
+ * The value is still read through the `confidence === "gap"` guard rather than
+ * from `fact.value`, so a dataset that violates its own invariant still cannot
+ * leak a number onto the screen.
  */
 
 export interface ProvenanceLabels {
   confidence: ConfidenceLabels
   conflict: ConflictLabels
   source: SourceChipLabels
-  /** e.g. "Nicht belegt" */
+  /** Rendered for a gap, e.g. "Keine Angabe". The one label still read. */
   gap: string
-  /** e.g. "berechnet" */
   inferred: string
-  /** Template with a `{count}` placeholder, e.g. "+{count} weitere". */
   more: string
-  /** e.g. "Quellen" — labels the source list for screen readers. */
   sources: string
 }
 
@@ -57,232 +56,60 @@ export function ProvenanceValue<T>({
   format = "text",
   locale,
   labels,
-  /** Show the source chips inline under the value. Off inside dense tables. */
-  showSources = false,
-  /** Base path of the snapshot route, e.g. "/api/evidence/snapshot". */
-  snapshotBasePath,
   className,
 }: {
   fact: SourcedFact<T>
   format?: ProvenanceFormat
   locale: string
   labels: ProvenanceLabels
+  /** Accepted and ignored since P2. Kept so call sites compile unchanged. */
   showSources?: boolean
+  /** Accepted and ignored since P2. */
   snapshotBasePath?: string
   className?: string
 }): ReactNode {
   const { confidence } = fact
 
   // Never trust `fact.value` for a gap. The contract says a gap's value is
-  // null, but reading it through this guard means a dataset that violates the
+  // null; reading it through this guard means a dataset that violates the
   // invariant still cannot leak a number into the UI.
   const rawValue = confidence === "gap" ? null : fact.value
   const formatted = formatFactValue(rawValue, format, locale)
 
-  // ---- gap ---------------------------------------------------------------
   if (confidence === "gap" || formatted === null) {
     return (
       <span
         data-slot="provenance-value"
-        data-confidence="gap"
-        className={cn("inline-flex items-center gap-2", className)}
+        className={cn("text-muted-foreground", className)}
       >
-        <span
-          aria-hidden="true"
-          className="font-display text-confidence-gap"
-          data-numeric
-        >
-          —
-        </span>
-        {/* The em dash alone means nothing to a screen reader, and "blank"
-            would be read as a value. The reason is the content. */}
-        <span className="sr-only">{labels.gap}</span>
-        <ConfidenceBadge
-          confidence="gap"
-          labels={labels.confidence}
-          className="align-middle"
-        />
-        {fact.note !== undefined && fact.note.length > 0 ? (
-          <span className="sr-only">{fact.note}</span>
-        ) : null}
+        {labels.gap}
       </span>
     )
   }
 
-  // ---- conflicted --------------------------------------------------------
-  if (confidence === "conflicted") {
-    const competing = [
-      fact.value,
-      ...(fact.conflictsWith ?? []).map((entry) => entry.value),
-    ]
-    const range = conflictRange(competing, locale, format)
-
-    return (
-      <span
-        data-slot="provenance-value"
-        data-confidence="conflicted"
-        className={cn(
-          "inline-flex flex-wrap items-center gap-x-2 gap-y-1",
-          className
-        )}
-      >
-        <span data-numeric className="font-display font-semibold">
-          {range ?? formatted}
-        </span>
-        <ConflictPopover
-          fact={fact}
-          locale={locale}
-          labels={labels.conflict}
-          formatValue={(value) =>
-            formatFactValue(value, format, locale) ?? String(value)
-          }
-          {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-        />
-        {showSources ? (
-          <SourceList
-            fact={fact}
-            locale={locale}
-            labels={labels}
-            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-          />
-        ) : null}
-      </span>
-    )
-  }
-
-  // ---- inferred ----------------------------------------------------------
-  if (confidence === "inferred") {
-    return (
-      <span
-        data-slot="provenance-value"
-        data-confidence="inferred"
-        className={cn(
-          "inline-flex flex-wrap items-center gap-x-2 gap-y-1",
-          className
-        )}
-      >
-        <span data-numeric className="font-display font-semibold italic">
-          {formatted}
-        </span>
-        <span className="text-xs text-confidence-inferred italic">
-          {labels.inferred}
-        </span>
-        {/* Invariant 4 guarantees a note explaining the computation. It is the
-            only thing that makes an inferred number auditable, so it is text,
-            not a tooltip. */}
-        {fact.note !== undefined && fact.note.length > 0 ? (
-          <span className="sr-only">{fact.note}</span>
-        ) : null}
-        {showSources ? (
-          <SourceList
-            fact={fact}
-            locale={locale}
-            labels={labels}
-            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-          />
-        ) : null}
-      </span>
-    )
-  }
-
-  // ---- single_source -----------------------------------------------------
-  if (confidence === "single_source") {
-    return (
-      <span
-        data-slot="provenance-value"
-        data-confidence="single_source"
-        className={cn(
-          "inline-flex flex-wrap items-center gap-x-2 gap-y-1",
-          className
-        )}
-      >
-        <span
-          data-numeric
-          className="azura-underline-dotted font-display font-semibold"
-          title={labels.confidence.single_source}
-        >
-          {formatted}
-        </span>
-        {/* The dotted underline is decorative to assistive tech; the level has
-            to be said out loud somewhere. */}
-        <span className="sr-only">{labels.confidence.single_source}</span>
-        {showSources ? (
-          <SourceList
-            fact={fact}
-            locale={locale}
-            labels={labels}
-            {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-          />
-        ) : null}
-      </span>
-    )
-  }
-
-  // ---- confirmed / official ----------------------------------------------
   return (
     <span
       data-slot="provenance-value"
-      data-confidence={confidence}
-      className={cn(
-        "inline-flex flex-wrap items-center gap-x-2 gap-y-1",
-        className
-      )}
+      className={cn("font-display font-semibold", className)}
+      data-numeric
     >
-      <span data-numeric className="font-display font-semibold">
-        {formatted}
-      </span>
-      <span className="sr-only">{labels.confidence[confidence]}</span>
-      {showSources ? (
-        <SourceList
-          fact={fact}
-          locale={locale}
-          labels={labels}
-          {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-        />
-      ) : null}
-    </span>
-  )
-}
-
-function SourceList<T>({
-  fact,
-  locale,
-  labels,
-  snapshotBasePath,
-}: {
-  fact: SourcedFact<T>
-  locale: string
-  labels: ProvenanceLabels
-  snapshotBasePath?: string
-}): ReactNode {
-  if (fact.sources.length === 0) return null
-  return (
-    <span className="inline-flex flex-wrap items-center gap-1.5">
-      <span className="sr-only">{labels.sources}</span>
-      <SourceChipList
-        sources={fact.sources}
-        locale={locale}
-        labels={labels.source}
-        moreLabel={labels.more}
-        {...(snapshotBasePath !== undefined ? { snapshotBasePath } : {})}
-      />
+      {formatted}
     </span>
   )
 }
 
 /**
- * Quality marker for a unit row.
+ * The `modelled` vs `portal_listing` marker. **Renders nothing since P2.**
  *
- * W1-D brief §2: a `modelled` unit must be distinguishable from a
- * `portal_listing` AT A GLANCE, IN THE LIST — not only on a detail page. 631
- * of the 656 units are modelled, so getting this wrong would present a
- * synthesised inventory as a real one on every screen that shows units.
+ * `PIVOT.md` §4: *"the `modelled` vs `portal_listing` distinction in the UI —
+ * for a pitch, all 656 units are simply the client's inventory."*
+ *
+ * The distinction is not deleted, only unrendered: `units.data_quality` is
+ * untouched in the database, in `inventory-repository.ts` and in the generated
+ * dataset, so nothing is lost and pass 2 can decide what the product does with
+ * it. The export is kept as a no-op so its call sites compile.
  */
-export function DataQualityMark({
-  dataQuality,
-  labels,
-  className,
-}: {
+export function DataQualityMark(props: {
   dataQuality: "portal_listing" | "official" | "modelled" | "source_missing"
   labels: Record<
     "portal_listing" | "official" | "modelled" | "source_missing",
@@ -290,23 +117,6 @@ export function DataQualityMark({
   >
   className?: string
 }): ReactNode {
-  if (dataQuality === "portal_listing" || dataQuality === "official") {
-    return null
-  }
-
-  return (
-    <span
-      data-slot="data-quality"
-      data-quality={dataQuality}
-      className={cn(
-        "inline-flex min-h-6 items-center gap-1 rounded-md border px-1.5 text-[0.6875rem] font-semibold tracking-[0.06em] uppercase",
-        dataQuality === "modelled"
-          ? "border-quality-modelled/40 bg-quality-modelled/10 text-quality-modelled"
-          : "border-confidence-gap/40 bg-confidence-gap/10 text-confidence-gap",
-        className
-      )}
-    >
-      {labels[dataQuality]}
-    </span>
-  )
+  void props
+  return null
 }

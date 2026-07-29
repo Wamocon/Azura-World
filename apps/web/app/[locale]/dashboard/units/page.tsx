@@ -1,15 +1,9 @@
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
-import { InventorySplitSummary } from "@/components/inventory/inventory-split-summary"
-import {
-  UnitProvenanceBadge,
-  type UnitProvenanceLabels,
-} from "@/components/inventory/unit-provenance-badge"
 import { Link } from "@/app/navigation"
 import { getUserProfile } from "@/lib/auth"
 import { hasPermission } from "@/lib/rbac"
-import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
 import { formatArea, formatMoney } from "@/lib/format"
 import {
@@ -17,7 +11,6 @@ import {
   getUnits,
   type InventoryUnit,
 } from "@/lib/inventory-repository"
-import type { UnitDataQuality } from "@/lib/inventory-data"
 import {
   Table,
   TableBody,
@@ -32,21 +25,17 @@ import {
 /**
  * /[locale]/dashboard/units — the inventory list.            Owner: W3-C
  *
- * ## Why this page exists at all
+ * ## What this page is, after the pivot
  *
- * `HANDOFF/W3-C.md` §9 carried this as the gap that mattered most: *"the
- * `modelled` vs `portal_listing` split is NOT rendered anywhere yet"*. 631 of
- * 656 units are synthesised to fill an inventory whose real composition nobody
- * published, and 25 came from an actual portal listing. Until this page
- * existed, nothing in the product showed that — the honesty control for the
- * whole module was a number in a handoff.
+ * The client's apartment inventory: 656 rows, paged, sorted, filterable by the
+ * things a property manager cares about.
  *
- * It is rendered three ways here, because one way is a thing a reader can miss:
- *
- *   1. the header — counts, percentages and a proportion bar (3.8% is real);
- *   2. a `Herkunft` COLUMN, so every row states its own provenance;
- *   3. a row treatment — modelled rows are recessed and carry a left accent, so
- *      the 25 real listings stand out while SCANNING, before anything is read.
+ * It used to be the honesty control for the whole module — it rendered the
+ * `modelled` vs `portal_listing` split three ways, in a header, a `Herkunft`
+ * column and a row accent. `PIVOT.md` §4 removes all three: *"for a pitch, all
+ * 656 units are simply the client's inventory."* `dataQuality` still arrives on
+ * every row from the repository and is no longer read here. Pass 2 decides
+ * whether it stays in the model at all.
  *
  * ## Pagination, not virtualisation
  *
@@ -71,26 +60,11 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 50
 
-const DATA_QUALITIES: UnitDataQuality[] = [
-  "portal_listing",
-  "official",
-  "modelled",
-  "source_missing",
-]
-
-function isDataQuality(value: string | undefined): value is UnitDataQuality {
-  return value !== undefined && (DATA_QUALITIES as string[]).includes(value)
-}
-
 /** `?page=` is 1-based for humans; the repository takes a 0-based offset. */
 function parsePage(value: string | string[] | undefined): number {
   const raw = Array.isArray(value) ? value[0] : value
   const n = Number.parseInt(raw ?? "1", 10)
   return Number.isFinite(n) && n >= 1 ? n : 1
-}
-
-function first(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value
 }
 
 export default async function UnitsPage({
@@ -133,8 +107,6 @@ export default async function UnitsPage({
     )
   }
 
-  const qualityFilter = first(query["quality"])
-  const activeQuality = isDataQuality(qualityFilter) ? qualityFilter : undefined
   const page = parsePage(query["page"])
   const offset = (page - 1) * PAGE_SIZE
 
@@ -144,7 +116,6 @@ export default async function UnitsPage({
       ...scope,
       limit: PAGE_SIZE,
       offset,
-      ...(activeQuality ? { dataQuality: activeQuality } : {}),
     }),
   ])
 
@@ -153,41 +124,15 @@ export default async function UnitsPage({
   const degraded =
     rollupResult.source === "local-seed" || unitsResult.source === "local-seed"
 
-  const labels: UnitProvenanceLabels = {
-    portal_listing: t("provenance.portal_listing"),
-    official: t("provenance.official"),
-    modelled: t("provenance.modelled"),
-    source_missing: t("provenance.source_missing"),
-  }
-  const meanings: Record<UnitDataQuality, string> = {
-    portal_listing: t("provenance.portalMeaning"),
-    official: t("provenance.portalMeaning"),
-    modelled: t("provenance.modelledMeaning"),
-    source_missing: t("provenance.modelledMeaning"),
-  }
-
-  const portalCount = rollup.byDataQuality.portal_listing ?? 0
-  const modelledCount = rollup.byDataQuality.modelled ?? 0
   const total = rollup.totalUnits
 
-  // The filtered count drives paging; the rollup total never changes with the
-  // filter, so the header keeps telling the truth about the whole inventory
-  // even while the list below shows one slice of it.
-  const filteredTotal = activeQuality
-    ? (rollup.byDataQuality[activeQuality] ?? 0)
-    : total
+  const filteredTotal = total
   const pageCount = Math.max(1, Math.ceil(filteredTotal / PAGE_SIZE))
   const from = filteredTotal === 0 ? 0 : offset + 1
   const to = Math.min(offset + units.length, filteredTotal)
 
-  const hrefFor = (next: {
-    quality?: UnitDataQuality | null
-    page?: number
-  }) => {
+  const hrefFor = (next: { page?: number }) => {
     const sp = new URLSearchParams()
-    const q =
-      next.quality === undefined ? activeQuality : (next.quality ?? undefined)
-    if (q) sp.set("quality", q)
     const p = next.page ?? 1
     if (p > 1) sp.set("page", String(p))
     const s = sp.toString()
@@ -213,46 +158,10 @@ export default async function UnitsPage({
         </p>
       ) : null}
 
-      <InventorySplitSummary
-        byDataQuality={rollup.byDataQuality}
-        total={total}
-        labels={labels}
-        heading={t("split.heading")}
-        caption={t("split.caption", {
-          portal: portalCount,
-          modelled: modelledCount,
-          total,
-        })}
-        countLabel={(count) => t("count", { count })}
-      />
-
-      {/* Filter by provenance. Plain links, so this works with no JavaScript —
-          the same reason the page pages on the server. */}
-      <nav
-        aria-label={t("provenance.filterLabel")}
-        className="flex flex-wrap items-center gap-2"
-      >
-        <FilterChip
-          href={hrefFor({ quality: null })}
-          active={activeQuality === undefined}
-        >
-          {t("provenance.filterAll")}
-        </FilterChip>
-        {DATA_QUALITIES.filter((q) => (rollup.byDataQuality[q] ?? 0) > 0).map(
-          (quality) => (
-            <FilterChip
-              key={quality}
-              href={hrefFor({ quality })}
-              active={activeQuality === quality}
-            >
-              {labels[quality]}
-              <span className="ml-1.5 tabular-nums opacity-70">
-                {rollup.byDataQuality[quality] ?? 0}
-              </span>
-            </FilterChip>
-          )
-        )}
-      </nav>
+      {/* PIVOT P2 §4: the inventory split summary and the provenance filter are
+          gone. All 656 units are the client's inventory here; `dataQuality` is
+          untouched in the database and in the repository, it is simply not a
+          thing this screen talks about any more. */}
 
       {units.length === 0 ? (
         <p className="rounded-lg border border-border bg-background/50 p-6 text-sm text-muted-foreground">
@@ -280,9 +189,6 @@ export default async function UnitsPage({
                   {t("columns.price")}
                 </TableHead>
                 <TableHead>{t("columns.status")}</TableHead>
-                {/* The honesty column. Deliberately not last-and-forgotten on
-                    wide screens — it sits next to the price it qualifies. */}
-                <TableHead>{t("provenance.label")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -291,9 +197,6 @@ export default async function UnitsPage({
                   key={unit.id}
                   unit={unit}
                   locale={locale}
-                  labels={labels}
-                  meanings={meanings}
-                  rowNote={t("split.rowNote")}
                   statusLabel={statusLabelFor(unit, t)}
                   noPrice={tCommon("notAvailable")}
                 />
@@ -332,43 +235,30 @@ export default async function UnitsPage({
 /**
  * One row.
  *
- * `data-modelled` plus the left accent are what make the split visible while
- * SCANNING rather than only while reading. The treatment is a recession, not an
- * alarm: a modelled unit is legitimate data doing a legitimate job, it simply
- * must never be mistaken for an offer. Colour is not carrying the meaning on
- * its own — the badge in the last column states it in words, and the accent is
- * a second, redundant channel.
+ * PIVOT P2 §4: the provenance column, the `data-modelled` attribute and the row
+ * accent are gone. Every row is one of the client's apartments and is drawn the
+ * same way. `unit.dataQuality` still arrives on the object and is simply not
+ * read here.
+ *
+ * A missing area or price still renders "Keine Angabe" rather than a blank or a
+ * zero. That is not a provenance affordance, it is not inventing a number, and
+ * the pivot does not touch it.
  */
 function UnitRow({
   unit,
   locale,
-  labels,
-  meanings,
-  rowNote,
   statusLabel,
   noPrice,
 }: {
   unit: InventoryUnit
   locale: Locale
-  labels: UnitProvenanceLabels
-  meanings: Record<UnitDataQuality, string>
-  rowNote: string
   statusLabel: string
   noPrice: string
 }) {
-  const isModelled = unit.dataQuality === "modelled"
   const price = unit.askingPrice?.value ?? null
 
   return (
-    <TableRow
-      data-modelled={isModelled ? "" : undefined}
-      className={cn(
-        "border-l-2",
-        isModelled
-          ? "border-l-muted-foreground/30 bg-muted/20"
-          : "border-l-confidence-confirmed"
-      )}
-    >
+    <TableRow>
       <TableCell className="font-medium tabular-nums">
         {unit.unitNo || unit.id}
       </TableCell>
@@ -388,22 +278,10 @@ function UnitRow({
           <span className="text-muted-foreground">{noPrice}</span>
         ) : (
           // Rendered in its own currency, never converted (CONVENTIONS §5).
-          <span className={cn(isModelled && "text-muted-foreground")}>
-            {formatMoney(price, locale)}
-          </span>
+          formatMoney(price, locale)
         )}
       </TableCell>
       <TableCell>{statusLabel}</TableCell>
-      <TableCell>
-        <UnitProvenanceBadge
-          dataQuality={unit.dataQuality}
-          labels={labels}
-          {...(meanings[unit.dataQuality] !== undefined
-            ? { description: meanings[unit.dataQuality] as string }
-            : {})}
-        />
-        {isModelled ? <span className="sr-only"> — {rowNote}</span> : null}
-      </TableCell>
     </TableRow>
   )
 }
@@ -417,32 +295,6 @@ function statusLabelFor(
   if (status === "reserved") return t("status.reserved")
   if (status === "sold") return t("status.sold")
   return t("status.blocked")
-}
-
-function FilterChip({
-  href,
-  active,
-  children,
-}: {
-  href: string
-  active: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 text-sm transition-colors",
-        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
-      )}
-    >
-      {children}
-    </Link>
-  )
 }
 
 function PageLink({

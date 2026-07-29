@@ -125,7 +125,7 @@
     "hotel": "Hotel",
     "amenities": "Amenities",
     "location": "Location",
-    "evidence": "Evidence",
+    "evidence": "Operations",
     "report": "Report",
     "dashboard": "Dashboard",
     "login": "Sign in",
@@ -139,7 +139,7 @@
       "immersion": "Walkthrough",
       "amenities": "Amenities",
       "desire": "Hotel",
-      "evidence": "Sources",
+      "evidence": "Operations",
       "action": "Contact",
       "share": "Share",
       "love": "Closing"
@@ -153,7 +153,7 @@
     },
     "modules": {
       "overview": "Overview",
-      "evidence": "Evidence",
+      "evidence": "Operations",
       "units": "Units",
       "listings": "Listings",
       "leads": "Leads",
@@ -236,15 +236,15 @@
   },
   "landing": {
     "topBar": {
-      "notice": "Evidence-backed competitive analysis: every figure sourced",
-      "cta": "See the evidence"
+      "notice": "Your complex, run from one place.",
+      "cta": "See the system"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "A residence and five-star hotel on Türkiye's Mediterranean coast. Documented, figure by figure.",
+      "subtitle": "A residence and five-star hotel on Türkiye's Mediterranean coast. Inventory, operations and billing in one place.",
       "ctaPrimary": "See the project",
-      "ctaSecondary": "Check the sources",
+      "ctaSecondary": "See the site",
       "figures": {
         "area": "Site area",
         "blocks": "Blocks",
@@ -253,13 +253,13 @@
       },
       "scrollHint": "Scroll",
       "posterAlt": "View of the Azura World Residence & Hotel development",
-      "plateTitle": "Survey · Türkler, Alanya",
-      "entryPriceNote": "Shown is the only figure a portal itself labels as a “from” price. The other 18 are in the evidence.",
-      "conflictCallout": "Three of these four figures are corroborated more than once. The fourth is not, and the page says so in the same place, in the same type."
+      "plateTitle": "Site · Türkler, Alanya",
+      "entryPriceNote": "Entry price per the current sales position.",
+      "conflictCallout": "Plot, blocks, apartments and entry price at a glance."
     },
     "why": {
       "title": "What Azura World is",
-      "lead": "A residential and hotel complex by {developer} in {district}. Everything below comes from publicly accessible sources only.",
+      "lead": "A residential and hotel complex by {developer} in {district}. This is how the site looks in the system.",
       "developerLabel": "Developer",
       "locationLabel": "Location",
       "timelineLabel": "Completion",
@@ -286,11 +286,11 @@
     },
     "amenities": {
       "title": "Amenities",
-      "lead": "Each item is attributed to the page that lists it.",
-      "empty": "No sourced amenity data is available.",
+      "lead": "What the site has, grouped by area.",
+      "empty": "No facilities list has been recorded yet.",
       "categoryLabel": "Category",
-      "gapTitle": "No sourced amenity list",
-      "gapBody": "Across 60 fetched sources, no amenity list could be attributed item by item. The dataset therefore carries zero entries. A plausible list would be quick to write here. It just would not be evidenced."
+      "gapTitle": "Facilities list to follow",
+      "gapBody": "Facilities are recorded together with the management team and maintained here afterwards."
     },
     "desire": {
       "title": "The hotel on site",
@@ -306,33 +306,9 @@
       "floorsLabel": "Floors",
       "checkInLabel": "Check-in from"
     },
-    "evidenceBand": {
-      "title": "Where these figures come from",
-      "lead": "Every figure on this page is linked to its source. Where sources disagree, the disagreement is shown here. It is not resolved.",
-      "sourcesLabel": "Sources reviewed",
-      "conflictsLabel": "Disagreements",
-      "gapsLabel": "Open items",
-      "cta": "Open the full evidence report",
-      "designation": "Evidence position",
-      "sourcesAttempted": "Sources fetched",
-      "sourcesReachable": "Content-validated",
-      "publishersLabel": "Publishers cited",
-      "factsLabel": "Figures on this page",
-      "findingsLabel": "Recorded findings",
-      "confidenceHeading": "By strength of evidence",
-      "priceHeading": "F-002: four publishers, four prices",
-      "priceIntro": "The same apartment size, four sellers, a factor of {factor}. Two currencies, no observation dates, at least one stale listing. Unresolved, the values stand side by side.",
-      "colPublisher": "Publisher",
-      "colPrice": "Price",
-      "colArea": "Area",
-      "colNote": "Note",
-      "staleNote": "stale",
-      "unitSplitLabel": "Units in inventory",
-      "unitSplitValue": "{listing} real listings · {modelled} modelled · {total} total"
-    },
     "action": {
       "title": "Request access",
-      "lead": "The full dataset sits behind sign-in. Access is reviewed and granted manually.",
+      "lead": "The full inventory sits behind the sign-in. Access is reviewed and granted by hand.",
       "cta": "Request access",
       "secondary": "View the public report"
     },
@@ -342,37 +318,35 @@
       "items": {
         "1": {
           "title": "Inventory and contracts",
-          "body": "All 656 units with owner, contract and payment status. Real listings and modelled records stay distinguishable."
+          "body": "All 656 units with owner, contract and payment status in one place."
         },
         "2": {
           "title": "Operations and service charges",
           "body": "Maintenance, allocations and billing per block, with immutable postings in the ledger."
         },
         "3": {
-          "title": "A source on every figure",
-          "body": "The same provenance display as this page, in the back office, in the report and in the export."
+          "title": "One system, one sign-in",
+          "body": "Management, report and export all read the same inventory."
         }
       }
     },
     "share": {
-      "title": "Pass it on",
-      "lead": "The public report carries the same figures with the same sources.",
+      "title": "Share",
+      "lead": "The public report shows the same site in short form.",
       "copyLink": "Copy link",
       "linkCopied": "Link copied"
     },
     "love": {
       "title": "Why it is built this way",
-      "lead": "A figure without a source is a claim. This project shows both or neither."
+      "lead": "A management system has to cover the everyday, not only the sale. That is why everything sits in one place."
     },
     "footer": {
-      "rights": "Analysis for competitive purposes. All trademarks and image rights remain with their owners.",
-      "sourcesLink": "Source register",
+      "rights": "A management-system demonstration. All trademarks and image rights remain with their owners.",
       "legalLink": "Legal",
-      "updated": "Data as of {date}",
+      "updated": "As of {date}",
       "contactHeading": "Subject contact",
-      "sourcesHeading": "Evidence",
-      "aboutHeading": "About this analysis",
-      "generated": "Generated from the dataset of {date}"
+      "aboutHeading": "About this system",
+      "generated": "Generated on {date}"
     },
     "provenance": {
       "confidence": {
@@ -422,27 +396,18 @@
       "more": "+{count} more",
       "sources": "Sources"
     },
-    "sourceCount": "{count, plural, one {# source} other {# sources}}",
     "skipToContent": "Skip to content",
     "nav": {
       "project": "Project",
       "site": "Site",
       "hotel": "Hotel",
-      "evidence": "Evidence",
       "access": "Access"
-    },
-    "record": {
-      "idLabel": "Subject",
-      "placeLabel": "Location",
-      "dataLabel": "Data as of",
-      "sheetLabel": "Sheet",
-      "sheetValue": "1 of 1 · public"
     },
     "designation": {
       "interest": "What it is",
       "search": "The site",
       "desire": "The hotel",
-      "trust": "Evidence",
+      "trust": "Operations",
       "action": "Access",
       "loyalty": "After purchase",
       "share": "Pass it on",
@@ -455,13 +420,7 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mediterranean",
       "selectedLabel": "Selected:",
-      "schematicNote": "Schematic. No source publishes the building geometry. This shows the composition, not the layout. Select a block for detail.",
-      "quality": {
-        "portal_listing": "Real listing",
-        "official": "Official statement",
-        "modelled": "Modelled",
-        "source_missing": "No source"
-      }
+      "schematicNote": "Schematic. It shows how the site is composed, not the floor plan. Pick a block for detail."
     }
   },
   "dashboard": {
@@ -507,94 +466,6 @@
       "groupDocuments": "Documents",
       "groupPeople": "People"
     },
-    "evidence": {
-      "title": "Sources and evidence",
-      "lead": "Coverage, disagreements and gaps across the dataset.",
-      "coverage": "Coverage",
-      "conflicts": "Disagreements",
-      "gaps": "Gaps",
-      "findings": "Findings",
-      "sourceRegister": "Source register",
-      "lastHarvest": "Last harvest",
-      "empty": "No evidence on record yet.",
-      "seedNotice": "Demo data: showing a representative slice of the evidence store, not the full harvest.",
-      "observedRange": "Observed range",
-      "finding": {
-        "id": "Finding {id}",
-        "severity": {
-          "critical": "Critical",
-          "high": "High",
-          "medium": "Medium",
-          "low": "Low",
-          "info": "Info"
-        },
-        "area": {
-          "structure": "Structure",
-          "pricing": "Pricing",
-          "timeline": "Timeline",
-          "geography": "Location",
-          "branding": "Branding",
-          "availability": "Availability",
-          "harvest": "Harvest"
-        },
-        "resolutionHeading": "How the conflict is handled",
-        "resolvedHeading": "Resolved to",
-        "unresolved": "Deliberately left open",
-        "unresolvedNote": "No value was chosen for this field. An average, or picking the “most likely” figure, would be an invented number with a citation stapled to it.",
-        "observationSummary": "{count} observations from {publishers} portals",
-        "headline": "Four portals, four prices for the same 1+1 apartment",
-        "recordLabel": "Finding text as recorded"
-      },
-      "ladder": {
-        "railSummary": "{count} observations · {publishers}",
-        "notComparable": "not comparable · no conversion",
-        "spread": "Spread {ratio}× ({currency} only)",
-        "stale": "Stale listing",
-        "lowest": "lowest quoted price",
-        "highest": "highest quoted price",
-        "singleObservation": "one observation only",
-        "negligible": "Practically identical · {percent} apart"
-      },
-      "table": {
-        "caption": "Every observed price with its source, collection date and evidence link",
-        "price": "Price",
-        "layout": "Layout",
-        "area": "Area",
-        "publisher": "Portal",
-        "observed": "Collected",
-        "evidence": "Evidence",
-        "stale": "Stale",
-        "note": "Harvest note",
-        "layoutUnstated": "not stated",
-        "areaUnstated": "not stated"
-      },
-      "source": {
-        "tier": {
-          "official": "Official source",
-          "developer": "Developer",
-          "hotel": "Hotel operation",
-          "portal": "Property portal",
-          "review": "Review platform",
-          "press": "Press"
-        }
-      },
-      "unstatedHeading": "Further sale listings with no layout stated",
-      "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above, the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names.",
-      "forbidden": "This view is not available for your role. The evidence cockpit requires the “evidence:view” permission.",
-      "export": {
-        "link": "Export evidence as CSV",
-        "note": "With source URL, fetch date and snapshot hash on every row."
-      },
-      "annotation": {
-        "heading": "Annotate finding",
-        "hint": "Administrators only. The note is attached to the finding and does not stand in for a source.",
-        "placeholder": "What was checked on this finding, and what stays open …",
-        "submit": "Save note",
-        "pending": "Saving …",
-        "forbidden": "Your role may read findings but not annotate them.",
-        "saved": "Note saved."
-      }
-    },
     "units": {
       "title": "Units",
       "lead": "Unit inventory across all blocks.",
@@ -622,33 +493,16 @@
         "priceRange": "Price range",
         "areaRange": "Area",
         "status": "Status"
-      },
-      "modelledNotice": "This inventory is modelled and does not represent a real listing.",
-      "provenance": {
-        "label": "Provenance",
-        "portal_listing": "Real listing",
-        "official": "Official statement",
-        "modelled": "Modelled",
-        "source_missing": "No source",
-        "portalMeaning": "Taken from a real portal listing",
-        "modelledMeaning": "Modelled record: not a real listing",
-        "filterLabel": "Filter by provenance",
-        "filterAll": "All provenances"
-      },
-      "split": {
-        "heading": "Where this inventory comes from",
-        "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled: they fill out the inventory and represent no real offer.",
-        "rowNote": "Modelled: not a real listing"
       }
     },
     "listings": {
-      "title": "Portal listings",
-      "lead": "The same unit across several portals, with price, date and variance.",
+      "title": "Marketing",
+      "lead": "Where the site's apartments are offered, with price and date.",
       "count": "{count, plural, one {# listing} other {# listings}}",
       "empty": "No listings on record.",
       "seedNotice": "Demo data: a section of the collected records is shown, not live data.",
       "openListing": "Open listing",
-      "openSource": "Open source",
+      "openSource": "Open offer",
       "columns": {
         "portal": "Portal",
         "title": "Title",
@@ -659,45 +513,17 @@
         "layout": "Layout",
         "area": "Size",
         "kind": "Type",
-        "source": "Source"
+        "source": "Portal"
       },
       "staleNotice": "This listing has not been confirmed for {days} days.",
       "overview": {
-        "heading": "What was collected",
+        "heading": "Overview",
         "listings": "Listings",
         "publishers": "Portals",
         "currencies": "Currencies",
         "stale": "Outdated",
-        "caveat": "These are counts of what this collection found. They say nothing about how many apartments are actually on the market.",
+        "caveat": "This counts recorded offers. It is not the number of apartments available.",
         "withoutPrice": "{count} listings state no price. They are counted, never treated as 0."
-      },
-      "compare": {
-        "heading": "Four portals, four prices",
-        "lead": "The same layout at every portal that offers it. Prices exactly as published. Nothing is converted.",
-        "layoutFilterLabel": "Choose layout",
-        "caption": "Prices per portal, separated by currency",
-        "countHeader": "Listings",
-        "notComparable": "not comparable, no conversion",
-        "spread": "Spread {ratio}x ({currency} only)",
-        "singlePrice": "one price only",
-        "listingCount": "{count} listings",
-        "upTo": "up to",
-        "empty": "No portal states a sale price for {layout}.",
-        "unstatedHeading": "Portals stating no layout",
-        "unstatedLead": "These rows carry a price the portal attached to no layout. Sometimes that is an entry price for the whole project, sometimes a room count we cannot represent. They stay separate, and without a spread.",
-        "findingNote": "Finding F-002 states its range separately per currency and gives a ratio within EUR only. It does not compare a euro price with a dollar price. Each column above carries its own spread."
-      },
-      "claims": {
-        "heading": "What does each portal say about the project?",
-        "lead": "Prices are one thing. This is what each portal claims about the building itself.",
-        "blocks": "Blocks",
-        "units": "Apartments",
-        "buildStatus": "Build status",
-        "notStated": "Not stated",
-        "dissenting": "Differs",
-        "caption": "Portal statements about the project, one row per portal",
-        "empty": "No source is on record for these statements yet.",
-        "harvestGap": "The collection did not record the project figures per listing. All 47 rows are empty there. The table above therefore comes from the source register, not from the listings."
       },
       "buildStatus": {
         "completed": "Completed",
@@ -737,7 +563,7 @@
       },
       "register": {
         "heading": "All listings by portal",
-        "lead": "Every collected row, grouped by the portal that published it.",
+        "lead": "Every offer, grouped by the portal carrying it.",
         "filterLabel": "Filter listings",
         "filterAll": "All",
         "filterStale": "Outdated only",
@@ -1261,7 +1087,7 @@
       "hourUnit": "h",
       "dayUnit": "days",
       "unassigned": "Nobody assigned",
-      "modelledUnitNotice": "This ticket belongs to an apartment whose figures are calculated, not confirmed by a source. Do not treat it as a real work order.",
+      "modelledUnitNotice": "This ticket belongs to an apartment from the demo inventory.",
       "actionsHeading": "Next step",
       "noActions": "There is no next step on this ticket that you may take.",
       "noteLabel": "Reason",
@@ -1691,10 +1517,6 @@
         "source": "Data origin"
       },
       "reports": {
-        "evidence_coverage": {
-          "title": "Evidence coverage",
-          "lead": "How many statements are backed by evidence, how many are only asserted, and where the gaps are."
-        },
         "source_register": {
           "title": "Source register",
           "lead": "Every source with address, tier, retrieval time and the checksum of the stored copy."
@@ -1850,7 +1672,7 @@
       },
       "system": {
         "title": "System details",
-        "lead": "What this installation can demonstrate about itself.",
+        "lead": "What this installation knows about itself.",
         "contractVersion": "Interface version",
         "locales": "Languages",
         "accessProfiles": "Role switcher for testing",
@@ -1966,7 +1788,7 @@
         "name": "Current name",
         "formerName": "Former name",
         "brand": "Chain affiliation",
-        "brandNotStated": "Named by no 2026 source (F-018)",
+        "brandNotStated": "Not stated",
         "rooms": "Rooms",
         "stars": "Category",
         "floors": "Floors",
@@ -1994,7 +1816,7 @@
       },
       "occupancyPanel": {
         "heading": "Occupancy",
-        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent: it is exactly what a competitor analysis gets read for."
+        "gap": "No booking system is connected for this hotel yet, so there is no occupancy rate."
       },
       "relationship": {
         "heading": "Hotel and residence",
@@ -2003,7 +1825,7 @@
     },
     "reviews": {
       "title": "Reviews",
-      "lead": "Guest reviews across all portals, with source and date.",
+      "lead": "Guest reviews across all portals, with dates.",
       "count": "{count, plural, one {# review} other {# reviews}}",
       "empty": "No reviews on record.",
       "average": "Average",
@@ -2051,7 +1873,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "The 5-star hotel on the complex's grounds, with its reviews, its contradictions, and the sources behind both.",
+    "lead": "The five-star hotel on the site, with its rooms, occupancy and reviews.",
     "formerNameNotice": "Previously operated as {formerName}. The rebrand is recorded as a finding.",
     "rooms": "Rooms",
     "stars": "Class",
@@ -2064,12 +1886,12 @@
     "gallery": "Gallery",
     "galleryEmpty": "No cleared images are available for this property.",
     "reviewsTitle": "What guests write",
-    "reviewsLead": "Extracts from public review platforms, each with its source.",
+    "reviewsLead": "Extracts from public review portals.",
     "bookExternal": "View on the portal",
     "eyebrow": "Hotel operation · review position",
     "meta": {
-      "title": "Azura World Hotel: reviews and sources",
-      "description": "The complex's 5-star hotel: operating figures, review platforms and contradictions, each with its source."
+      "title": "Azura World Hotel: rooms and reviews",
+      "description": "The site's five-star hotel: key figures, rooms and guest reviews."
     },
     "rebrand": {
       "heading": "The hotel was renamed",
@@ -2080,7 +1902,7 @@
     },
     "facts": {
       "heading": "Operating figures",
-      "intro": "Every figure leads back to the source it came from. Where sources disagree, the disagreement sits on the number itself, not in a footnote."
+      "intro": "The hotel's key figures at a glance."
     },
     "floors": "Floors",
     "distance": {
@@ -2178,7 +2000,7 @@
   },
   "report": {
     "title": "Public report",
-    "lead": "The Azura World dataset. Same figures, same sources, no sign-in.",
+    "lead": "The Azura World inventory in short form, without signing in.",
     "generatedAt": "Generated {date}",
     "sectionProject": "Project",
     "sectionHotel": "Hotel",
@@ -2238,7 +2060,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Questions about the project. Answered from the sourced dataset only.",
+    "subtitle": "Questions about the site, answered from the stored data.",
     "placeholder": "Ask a question …",
     "send": "Send",
     "thinking": "Preparing an answer …",
@@ -2246,7 +2068,7 @@
     "clear": "Clear history",
     "empty": "No questions asked yet.",
     "disclaimer": "Answers come from the collected dataset and name their source. Where there is no source, it says so.",
-    "noAnswer": "There is no sourced figure for that.",
+    "noAnswer": "Nothing is stored for that.",
     "sourcesLabel": "Sources used",
     "errors": {
       "unavailable": "The assistant is currently unreachable.",
@@ -2256,7 +2078,7 @@
     },
     "suggestions": {
       "one": "How many units does the development have?",
-      "two": "What is on record about the developer?",
+      "two": "Who is the developer?",
       "three": "Where do the sources disagree?"
     },
     "you": "Your question",

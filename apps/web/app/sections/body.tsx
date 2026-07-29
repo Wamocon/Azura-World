@@ -38,7 +38,6 @@ export async function WhySection({
   provenance,
 }: SectionProps): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
 
   const value = (
     fact: Parameters<typeof ProvenanceValue>[0]["fact"],
@@ -66,64 +65,52 @@ export async function WhySection({
             <FactRow
               label={t("why.developerLabel")}
               value={value(project.developer, "text")}
-              note={sourceCount(project.developer.sources.length)}
             />
             <FactRow
               label={t("why.plotLabel")}
               value={value(project.plotAreaSqm, "area")}
-              note={sourceCount(project.plotAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.greenLabel")}
               value={value(project.greenAreaSqm, "area")}
-              note={sourceCount(project.greenAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.footprintLabel")}
               value={value(project.buildingFootprintSqm, "area")}
-              note={sourceCount(project.buildingFootprintSqm.sources.length)}
             />
             <FactRow
               label={t("why.outdoorLabel")}
               value={value(project.outdoorFacilityAreaSqm, "area")}
-              note={sourceCount(project.outdoorFacilityAreaSqm.sources.length)}
             />
             <FactRow
               label={t("why.blocksLabel")}
               value={value(project.residenceBlockCount, "number")}
-              note={sourceCount(project.residenceBlockCount.sources.length)}
             />
           </div>
           <div>
             <FactRow
               label={t("why.buildingsLabel")}
               value={value(project.buildingCount, "number")}
-              note={sourceCount(project.buildingCount.sources.length)}
             />
             <FactRow
               label={t("why.floorsLabel")}
               value={value(project.floorsPerBuilding, "number")}
-              note={sourceCount(project.floorsPerBuilding.sources.length)}
             />
             <FactRow
               label={t("why.startLabel")}
               value={value(project.constructionStart, "date")}
-              note={sourceCount(project.constructionStart.sources.length)}
             />
             <FactRow
               label={t("why.timelineLabel")}
               value={value(project.completionDate, "date")}
-              note={sourceCount(project.completionDate.sources.length)}
             />
             <FactRow
               label={t("why.statusLabel")}
               value={value(project.buildStatus, "text")}
-              note={sourceCount(project.buildStatus.sources.length)}
             />
             <FactRow
               label={t("why.downPaymentLabel")}
               value={value(project.downPaymentPercent, "percent")}
-              note={sourceCount(project.downPaymentPercent.sources.length)}
             />
           </div>
         </div>
@@ -142,7 +129,6 @@ export async function SiteSection({
   initialBlock,
 }: SectionProps & { initialBlock: string | null }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
 
   const masterplanLabels: MasterplanLabels = {
     blockLabel: t("masterplan.blockLabel"),
@@ -195,7 +181,6 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(project.distanceToSeaM.sources.length)}
             />
             <FactRow
               label={t("desire.beachLabel")}
@@ -208,7 +193,6 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(hotel.distanceToBeachM.sources.length)}
             />
             <FactRow
               label={t("why.centreLabel")}
@@ -221,9 +205,6 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(
-                project.distanceToAlanyaCentreKm.sources.length
-              )}
             />
             <FactRow
               label={t("why.airportLabel")}
@@ -236,9 +217,6 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(
-                project.distanceToGazipasaAirportKm.sources.length
-              )}
             />
             <FactRow
               label={t("why.locationLabel")}
@@ -251,9 +229,6 @@ export async function SiteSection({
                   snapshotBasePath={SNAPSHOT_BASE_PATH}
                 />
               }
-              note={sourceCount(
-                project.distanceToAntalyaAirportKm.sources.length
-              )}
             />
           </div>
         </div>
@@ -325,7 +300,6 @@ export async function DesireSection({
   provenance,
 }: SectionProps): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
 
   const value = (
     fact: Parameters<typeof ProvenanceValue>[0]["fact"],
@@ -353,39 +327,32 @@ export async function DesireSection({
             <FactRow
               label={t("desire.starsLabel")}
               value={value(hotel.stars, "stars")}
-              note={sourceCount(hotel.stars.sources.length)}
             />
             <FactRow
               label={t("desire.roomsLabel")}
               value={value(hotel.roomCount, "number")}
-              note={sourceCount(hotel.roomCount.sources.length)}
             />
             <FactRow
               label={t("desire.boardLabel")}
               value={value(hotel.board, "text")}
-              note={sourceCount(hotel.board.sources.length)}
             />
             <FactRow
               label={t("desire.aquaparkLabel")}
               value={value(hotel.aquaparkSlides, "number")}
-              note={sourceCount(hotel.aquaparkSlides.sources.length)}
             />
           </div>
           <div>
             <FactRow
               label={t("desire.floorsLabel")}
               value={value(hotel.floors, "number")}
-              note={sourceCount(hotel.floors.sources.length)}
             />
             <FactRow
               label={t("desire.openedLabel")}
               value={value(hotel.openedYear, "number")}
-              note={sourceCount(hotel.openedYear.sources.length)}
             />
             <FactRow
               label={t("desire.formerLabel")}
               value={value(hotel.formerName, "text")}
-              note={sourceCount(hotel.formerName.sources.length)}
             />
             {/* `brandAffiliation` is a `gap`: the value is null and it renders
                 as an em dash with "not established". A 5★ hotel that used to be
@@ -394,7 +361,6 @@ export async function DesireSection({
             <FactRow
               label={t("desire.brandLabel")}
               value={value(hotel.brandAffiliation, "text")}
-              note={sourceCount(hotel.brandAffiliation.sources.length)}
             />
           </div>
         </div>

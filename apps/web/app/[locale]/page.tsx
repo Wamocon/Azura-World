@@ -65,7 +65,6 @@ import {
   SiteSection,
   WhySection,
 } from "@/app/sections/body"
-import { EvidenceBandSection } from "@/app/sections/evidence-band"
 import {
   ActionSection,
   AfterSection,
@@ -202,7 +201,6 @@ export default async function LandingPage({
           />
           <AmenitiesSection locale={locale} />
           <DesireSection locale={locale} provenance={provenance} />
-          <EvidenceBandSection locale={locale} provenance={provenance} />
           <ActionSection locale={locale} />
           <AfterSection locale={locale} />
           <ShareSection locale={locale} />

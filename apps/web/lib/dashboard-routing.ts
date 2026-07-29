@@ -129,14 +129,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
 
   // intelligence
   {
-    href: "/dashboard/evidence",
-    labelKey: "dashboard.evidence.title",
-    icon: "ShieldCheck",
-    permission: "evidence:view",
-    group: "intelligence",
-    resource: "evidence",
-  },
-  {
     href: "/dashboard/reports",
     labelKey: "dashboard.reports.title",
     icon: "FileBarChart",

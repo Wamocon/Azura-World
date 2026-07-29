@@ -125,7 +125,7 @@
     "hotel": "Hotel",
     "amenities": "Ausstattung",
     "location": "Lage",
-    "evidence": "Belege",
+    "evidence": "Betrieb",
     "report": "Report",
     "dashboard": "Dashboard",
     "login": "Anmelden",
@@ -139,7 +139,7 @@
       "immersion": "Rundgang",
       "amenities": "Ausstattung",
       "desire": "Hotel",
-      "evidence": "Quellen",
+      "evidence": "Betrieb",
       "action": "Kontakt",
       "share": "Teilen",
       "love": "Abschluss"
@@ -153,7 +153,7 @@
     },
     "modules": {
       "overview": "Übersicht",
-      "evidence": "Belege",
+      "evidence": "Betrieb",
       "units": "Wohnungen",
       "listings": "Inserate",
       "leads": "Anfragen",
@@ -236,15 +236,15 @@
   },
   "landing": {
     "topBar": {
-      "notice": "Evidenzbasierte Wettbewerbsanalyse. Jede Zahl mit Quelle.",
-      "cta": "Belege ansehen"
+      "notice": "Ihre Anlage, aus einem System verwaltet.",
+      "cta": "System ansehen"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
       "title": "Azura World Residence & Hotel",
-      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste, vollständig belegt, Zahl für Zahl.",
+      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste. Bestand, Betrieb und Abrechnung an einer Stelle.",
       "ctaPrimary": "Projekt ansehen",
-      "ctaSecondary": "Quellen prüfen",
+      "ctaSecondary": "Anlage ansehen",
       "figures": {
         "area": "Grundstück",
         "blocks": "Blöcke",
@@ -253,13 +253,13 @@
       },
       "scrollHint": "Scrollen",
       "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel",
-      "plateTitle": "Aufnahme · Türkler, Alanya",
-      "entryPriceNote": "Angezeigt wird der einzige Wert, den ein Portal selbst als „ab“-Preis ausweist. Die übrigen 18 Angaben stehen im Beleg.",
-      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht. Die Seite sagt das an derselben Stelle, in derselben Schrift."
+      "plateTitle": "Anlage · Türkler, Alanya",
+      "entryPriceNote": "Einstiegspreis laut aktuellem Vermarktungsstand.",
+      "conflictCallout": "Grundstück, Blöcke, Wohnungen und Preis auf einen Blick."
     },
     "why": {
       "title": "Was Azura World ist",
-      "lead": "Ein Wohn- und Hotelkomplex des Bauträgers {developer} in {district}. Die folgenden Angaben stammen ausschließlich aus öffentlich zugänglichen Quellen.",
+      "lead": "Ein Wohn- und Hotelkomplex des Bauträgers {developer} in {district}. So sieht die Anlage im System aus.",
       "developerLabel": "Bauträger",
       "locationLabel": "Standort",
       "timelineLabel": "Fertigstellung",
@@ -286,11 +286,11 @@
     },
     "amenities": {
       "title": "Ausstattung",
-      "lead": "Jede Position ist der Seite zugeordnet, die sie nennt.",
-      "empty": "Für die Ausstattung liegt keine belegte Quelle vor.",
+      "lead": "Was es auf der Anlage gibt, nach Bereich.",
+      "empty": "Für die Ausstattung liegt noch keine Liste vor.",
       "categoryLabel": "Kategorie",
-      "gapTitle": "Keine belegte Ausstattungsliste",
-      "gapBody": "Aus 60 abgerufenen Quellen liess sich keine Ausstattungsliste gewinnen, die einzeln zuordenbar wäre. Der Datensatz führt deshalb null Positionen. Eine plausible Liste stünde hier schnell. Sie wäre nur nicht belegt."
+      "gapTitle": "Ausstattungsliste folgt",
+      "gapBody": "Die Ausstattung wird gemeinsam mit der Verwaltung erfasst und dann hier gepflegt."
     },
     "desire": {
       "title": "Das Hotel vor Ort",
@@ -306,33 +306,9 @@
       "floorsLabel": "Geschosse",
       "checkInLabel": "Anreise ab"
     },
-    "evidenceBand": {
-      "title": "Woher diese Zahlen kommen",
-      "lead": "Jede Angabe auf dieser Seite ist mit ihrer Quelle verknüpft. Wo Quellen sich widersprechen, steht der Widerspruch hier. Er wird nicht aufgelöst.",
-      "sourcesLabel": "Ausgewertete Quellen",
-      "conflictsLabel": "Widersprüche",
-      "gapsLabel": "Offene Punkte",
-      "cta": "Vollständigen Beleg-Report öffnen",
-      "designation": "Beleglage",
-      "sourcesAttempted": "Abgerufene Quellen",
-      "sourcesReachable": "Inhalt bestätigt",
-      "publishersLabel": "Zitierte Herausgeber",
-      "factsLabel": "Zahlen auf dieser Seite",
-      "findingsLabel": "Erfasste Befunde",
-      "confidenceHeading": "Nach Belegstärke",
-      "priceHeading": "F-002: vier Herausgeber, vier Preise",
-      "priceIntro": "Dieselbe Wohnungsgrösse, vier Anbieter, ein Faktor von {factor}. Zwei Währungen, keine Beobachtungsdaten, mindestens ein veraltetes Inserat. Nicht aufgelöst. Die Werte stehen nebeneinander.",
-      "colPublisher": "Herausgeber",
-      "colPrice": "Preis",
-      "colArea": "Fläche",
-      "colNote": "Hinweis",
-      "staleNote": "veraltet",
-      "unitSplitLabel": "Wohnungen im Bestand",
-      "unitSplitValue": "{listing} reale Inserate · {modelled} modelliert · {total} gesamt"
-    },
     "action": {
       "title": "Zugang anfragen",
-      "lead": "Der vollständige Datenbestand liegt hinter der Anmeldung. Zugang wird geprüft und manuell freigegeben.",
+      "lead": "Der vollständige Bestand liegt hinter der Anmeldung. Zugang wird geprüft und manuell freigegeben.",
       "cta": "Zugang anfragen",
       "secondary": "Öffentlichen Report ansehen"
     },
@@ -342,37 +318,35 @@
       "items": {
         "1": {
           "title": "Bestand und Verträge",
-          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand. Reale Inserate und modellierte Datensätze bleiben unterscheidbar."
+          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand an einer Stelle."
         },
         "2": {
           "title": "Betrieb und Nebenkosten",
           "body": "Instandhaltung, Umlagen und Abrechnung je Block, mit unveränderlichen Buchungen im Hauptbuch."
         },
         "3": {
-          "title": "Beleg an jeder Zahl",
-          "body": "Dieselbe Herkunftsanzeige wie auf dieser Seite, in der Verwaltung, im Report und im Export."
+          "title": "Ein System, ein Zugang",
+          "body": "Verwaltung, Report und Export greifen auf denselben Bestand zu."
         }
       }
     },
     "share": {
       "title": "Weitergeben",
-      "lead": "Der öffentliche Report enthält dieselben Zahlen mit denselben Quellen.",
+      "lead": "Der öffentliche Report zeigt dieselbe Anlage in Kurzform.",
       "copyLink": "Link kopieren",
       "linkCopied": "Link kopiert"
     },
     "love": {
       "title": "Warum das so gebaut ist",
-      "lead": "Eine Zahl ohne Quelle ist eine Behauptung. Dieses Projekt zeigt beides oder nichts."
+      "lead": "Ein Verwaltungssystem muss den Alltag abbilden, nicht nur den Verkauf. Deshalb liegt hier alles an einer Stelle."
     },
     "footer": {
-      "rights": "Analyse zu Wettbewerbszwecken. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
-      "sourcesLink": "Quellenverzeichnis",
+      "rights": "Demonstration eines Verwaltungssystems. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
       "legalLink": "Rechtliches",
-      "updated": "Datenstand {date}",
+      "updated": "Stand {date}",
       "contactHeading": "Kontakt zum Objekt",
-      "sourcesHeading": "Belege",
-      "aboutHeading": "Zu dieser Analyse",
-      "generated": "Erzeugt aus dem Datensatz vom {date}"
+      "aboutHeading": "Zu diesem System",
+      "generated": "Erzeugt am {date}"
     },
     "provenance": {
       "confidence": {
@@ -422,27 +396,18 @@
       "more": "+{count} weitere",
       "sources": "Quellen"
     },
-    "sourceCount": "{count, plural, one {# Quelle} other {# Quellen}}",
     "skipToContent": "Zum Inhalt springen",
     "nav": {
       "project": "Projekt",
       "site": "Anlage",
       "hotel": "Hotel",
-      "evidence": "Belege",
       "access": "Zugang"
-    },
-    "record": {
-      "idLabel": "Objekt",
-      "placeLabel": "Lage",
-      "dataLabel": "Datenstand",
-      "sheetLabel": "Blatt",
-      "sheetValue": "1 von 1 · öffentlich"
     },
     "designation": {
       "interest": "Was es ist",
       "search": "Die Anlage",
       "desire": "Das Hotel",
-      "trust": "Belege",
+      "trust": "Betrieb",
       "action": "Zugang",
       "loyalty": "Nach dem Kauf",
       "share": "Weitergeben",
@@ -455,13 +420,7 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mittelmeer",
       "selectedLabel": "Ausgewählt:",
-      "schematicNote": "Schematisch. Keine Quelle veröffentlicht die Gebäudegeometrie. Dargestellt ist die Zusammensetzung, nicht der Grundriss. Block wählen für Details.",
-      "quality": {
-        "portal_listing": "Reales Inserat",
-        "official": "Offizielle Angabe",
-        "modelled": "Modelliert",
-        "source_missing": "Ohne Quelle"
-      }
+      "schematicNote": "Schematisch. Dargestellt ist die Zusammensetzung der Anlage, nicht der Grundriss. Block wählen für Details."
     }
   },
   "dashboard": {
@@ -507,94 +466,6 @@
       "groupDocuments": "Dokumente",
       "groupPeople": "Personen"
     },
-    "evidence": {
-      "title": "Quellen und Nachweise",
-      "lead": "Vollständigkeit, Widersprüche und Lücken des Datenbestands.",
-      "coverage": "Belegquote",
-      "conflicts": "Widersprüche",
-      "gaps": "Lücken",
-      "findings": "Befunde",
-      "sourceRegister": "Quellenverzeichnis",
-      "lastHarvest": "Letzte Erhebung",
-      "empty": "Es liegen noch keine Belege vor.",
-      "seedNotice": "Demodaten: Es wird ein repräsentativer Ausschnitt des Belegbestands angezeigt, keine vollständige Erhebung.",
-      "observedRange": "Beobachtete Spanne",
-      "finding": {
-        "id": "Befund {id}",
-        "severity": {
-          "critical": "Kritisch",
-          "high": "Hoch",
-          "medium": "Mittel",
-          "low": "Gering",
-          "info": "Hinweis"
-        },
-        "area": {
-          "structure": "Struktur",
-          "pricing": "Preis",
-          "timeline": "Termine",
-          "geography": "Lage",
-          "branding": "Marke",
-          "availability": "Verfügbarkeit",
-          "harvest": "Erhebung"
-        },
-        "resolutionHeading": "Umgang mit dem Widerspruch",
-        "resolvedHeading": "Aufgelöst zu",
-        "unresolved": "Bewusst offen gelassen",
-        "unresolvedNote": "Für dieses Feld wurde kein Wert festgelegt. Ein Mittelwert oder eine Auswahl der „wahrscheinlichsten“ Angabe wäre eine erfundene Zahl mit einer Quellenangabe daneben.",
-        "observationSummary": "{count} Beobachtungen von {publishers} Portalen",
-        "headline": "Vier Portale, vier Preise für dieselbe 1+1-Wohnung",
-        "recordLabel": "Befundtext im Original"
-      },
-      "ladder": {
-        "railSummary": "{count} Beobachtungen · {publishers}",
-        "notComparable": "nicht vergleichbar · keine Umrechnung",
-        "spread": "Spanne {ratio}× (nur {currency})",
-        "stale": "Veraltetes Inserat",
-        "lowest": "günstigste Angabe",
-        "highest": "teuerste Angabe",
-        "singleObservation": "nur eine Beobachtung",
-        "negligible": "Praktisch identisch · {percent} Unterschied"
-      },
-      "table": {
-        "caption": "Alle beobachteten Preisangaben mit Quelle, Erhebungsdatum und Beleg",
-        "price": "Preis",
-        "layout": "Grundriss",
-        "area": "Fläche",
-        "publisher": "Portal",
-        "observed": "Erhoben",
-        "evidence": "Beleg",
-        "stale": "Veraltet",
-        "note": "Erhebungsnotiz",
-        "layoutUnstated": "nicht angegeben",
-        "areaUnstated": "nicht angegeben"
-      },
-      "source": {
-        "tier": {
-          "official": "Offizielle Quelle",
-          "developer": "Bauträger",
-          "hotel": "Hotelbetrieb",
-          "portal": "Immobilienportal",
-          "review": "Bewertungsportal",
-          "press": "Presse"
-        }
-      },
-      "unstatedHeading": "Weitere Verkaufsangebote ohne Grundriss-Angabe",
-      "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben. Welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt.",
-      "forbidden": "Diese Ansicht ist für Ihre Rolle nicht freigegeben. Das Beleg-Cockpit setzt die Berechtigung „evidence:view“ voraus.",
-      "export": {
-        "link": "Belege als CSV exportieren",
-        "note": "Mit Quell-URL, Abrufdatum und Snapshot-Hash je Zeile."
-      },
-      "annotation": {
-        "heading": "Befund annotieren",
-        "hint": "Nur für Administratoren. Die Notiz wird dem Befund zugeordnet und ersetzt keinen Quellenbeleg.",
-        "placeholder": "Was an diesem Befund geprüft wurde und was offen bleibt …",
-        "submit": "Notiz speichern",
-        "pending": "Wird gespeichert …",
-        "forbidden": "Ihre Rolle darf Befunde lesen, aber nicht annotieren.",
-        "saved": "Notiz gespeichert."
-      }
-    },
     "units": {
       "title": "Wohnungen",
       "lead": "Wohnungsbestand über alle Blöcke.",
@@ -622,33 +493,16 @@
         "priceRange": "Preisspanne",
         "areaRange": "Fläche",
         "status": "Status"
-      },
-      "modelledNotice": "Dieser Bestand ist modelliert und bildet kein reales Inserat ab.",
-      "provenance": {
-        "label": "Herkunft",
-        "portal_listing": "Reales Inserat",
-        "official": "Offizielle Angabe",
-        "modelled": "Modelliert",
-        "source_missing": "Ohne Quelle",
-        "portalMeaning": "Aus einem realen Portal-Inserat übernommen",
-        "modelledMeaning": "Modellierter Datensatz: kein reales Inserat",
-        "filterLabel": "Nach Herkunft filtern",
-        "filterAll": "Alle Herkünfte"
-      },
-      "split": {
-        "heading": "Herkunft des Bestands",
-        "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert: sie füllen den Bestand auf und bilden kein reales Angebot ab.",
-        "rowNote": "Modelliert: kein reales Inserat"
       }
     },
     "listings": {
-      "title": "Portal-Inserate",
-      "lead": "Dieselbe Wohnung auf mehreren Portalen, mit Preis, Datum und Abweichung.",
+      "title": "Vermarktung",
+      "lead": "Wo die Wohnungen der Anlage angeboten werden, mit Preis und Datum.",
       "count": "{count, plural, one {# Inserat} other {# Inserate}}",
       "empty": "Keine Inserate erfasst.",
       "seedNotice": "Demodaten: Es wird ein Ausschnitt des erfassten Bestands gezeigt, keine Live-Daten.",
       "openListing": "Inserat öffnen",
-      "openSource": "Quelle öffnen",
+      "openSource": "Angebot öffnen",
       "columns": {
         "portal": "Portal",
         "title": "Titel",
@@ -659,45 +513,17 @@
         "layout": "Grundriss",
         "area": "Fläche",
         "kind": "Art",
-        "source": "Quelle"
+        "source": "Portal"
       },
       "staleNotice": "Dieses Inserat wurde seit {days} Tagen nicht bestätigt.",
       "overview": {
-        "heading": "Was erfasst wurde",
+        "heading": "Überblick",
         "listings": "Inserate",
         "publishers": "Portale",
         "currencies": "Währungen",
         "stale": "Veraltet",
-        "caveat": "Gezählt wird, was diese Erhebung gefunden hat. Das sagt nichts darüber aus, wie viele Wohnungen tatsächlich angeboten werden.",
+        "caveat": "Gezählt werden die erfassten Angebote. Das ist nicht die Zahl der verfügbaren Wohnungen.",
         "withoutPrice": "{count} Inserate nennen keinen Preis. Sie werden gezählt, nie als 0 gerechnet."
-      },
-      "compare": {
-        "heading": "Vier Portale, vier Preise",
-        "lead": "Derselbe Grundriss bei jedem Portal, das ihn anbietet. Preise so, wie sie dort stehen. Nichts wird umgerechnet.",
-        "layoutFilterLabel": "Grundriss wählen",
-        "caption": "Preise je Portal, getrennt nach Währung",
-        "countHeader": "Inserate",
-        "notComparable": "nicht vergleichbar, keine Umrechnung",
-        "spread": "Spanne {ratio}-fach (nur {currency})",
-        "singlePrice": "nur ein Preis",
-        "listingCount": "{count} Inserate",
-        "upTo": "bis",
-        "empty": "Kein Portal nennt einen Verkaufspreis für {layout}.",
-        "unstatedHeading": "Portale ohne Grundrissangabe",
-        "unstatedLead": "Diese Zeilen tragen einen Preis, den das Portal keinem Grundriss zugeordnet hat. Mal ist es ein Einstiegspreis für das ganze Projekt, mal eine Zimmerangabe, die wir nicht abbilden können. Sie bleiben getrennt und ohne Spanne.",
-        "findingNote": "Befund F-002 nennt die Spanne je Währung und ein Verhältnis nur innerhalb EUR. Er vergleicht keinen Euro-Preis mit einem Dollar-Preis. Jede Spalte oben hat ihre eigene Spanne."
-      },
-      "claims": {
-        "heading": "Was sagt welches Portal über das Projekt?",
-        "lead": "Preise sind das eine. Hier steht, was jedes Portal über den Bau selbst behauptet.",
-        "blocks": "Blöcke",
-        "units": "Wohnungen",
-        "buildStatus": "Baustatus",
-        "notStated": "Keine Angabe",
-        "dissenting": "Abweichend",
-        "caption": "Angaben der Portale zum Projekt, je Portal eine Zeile",
-        "empty": "Zu diesen Angaben liegt noch keine Quelle vor.",
-        "harvestGap": "Die Erhebung hat die Projektangaben je Inserat nicht mitgeschrieben. Alle 47 Zeilen sind dort leer. Die Tabelle oben stammt deshalb aus dem Quellenverzeichnis, nicht aus den Inseraten."
       },
       "buildStatus": {
         "completed": "Fertiggestellt",
@@ -737,7 +563,7 @@
       },
       "register": {
         "heading": "Alle Inserate nach Portal",
-        "lead": "Jede erfasste Zeile, gruppiert nach dem Portal, das sie veröffentlicht hat.",
+        "lead": "Jedes Angebot, gruppiert nach dem Portal, auf dem es steht.",
         "filterLabel": "Inserate filtern",
         "filterAll": "Alle",
         "filterStale": "Nur veraltete",
@@ -1261,7 +1087,7 @@
       "hourUnit": "Std.",
       "dayUnit": "Tage",
       "unassigned": "Niemand zugewiesen",
-      "modelledUnitNotice": "Dieses Ticket gehört zu einer Wohnung, deren Daten berechnet und nicht von einer Quelle bestätigt sind. Behandeln Sie es nicht als echten Arbeitsauftrag.",
+      "modelledUnitNotice": "Dieses Ticket gehört zu einer Wohnung aus dem Demo-Bestand.",
       "actionsHeading": "Nächster Schritt",
       "noActions": "Für diesen Vorgang gibt es keinen nächsten Schritt, den Sie ausführen dürfen.",
       "noteLabel": "Grund",
@@ -1691,10 +1517,6 @@
         "source": "Datenherkunft"
       },
       "reports": {
-        "evidence_coverage": {
-          "title": "Belegdeckung",
-          "lead": "Wie viele Angaben belegt sind, wie viele nur behauptet, und wo es Lücken gibt."
-        },
         "source_register": {
           "title": "Quellenverzeichnis",
           "lead": "Jede Quelle mit Adresse, Rang, Abrufzeitpunkt und Prüfsumme der gespeicherten Fassung."
@@ -1850,7 +1672,7 @@
       },
       "system": {
         "title": "Systemangaben",
-        "lead": "Was diese Installation über sich selbst belegen kann.",
+        "lead": "Was diese Installation über sich selbst weiss.",
         "contractVersion": "Schnittstellenstand",
         "locales": "Sprachen",
         "accessProfiles": "Rollenumschalter für Tests",
@@ -1966,7 +1788,7 @@
         "name": "Aktueller Name",
         "formerName": "Früherer Name",
         "brand": "Kettenbindung",
-        "brandNotStated": "Von keiner Quelle aus 2026 genannt (F-018)",
+        "brandNotStated": "Keine Angabe",
         "rooms": "Zimmer",
         "stars": "Kategorie",
         "floors": "Etagen",
@@ -1994,7 +1816,7 @@
       },
       "occupancyPanel": {
         "heading": "Belegung",
-        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte: genau danach wird eine Wettbewerbsanalyse gelesen."
+        "gap": "Für dieses Haus ist noch kein Buchungssystem angebunden, daher gibt es keine Belegungsquote."
       },
       "relationship": {
         "heading": "Hotel und Wohnanlage",
@@ -2003,7 +1825,7 @@
     },
     "reviews": {
       "title": "Bewertungen",
-      "lead": "Gästebewertungen über alle Portale, mit Quelle und Datum.",
+      "lead": "Gästebewertungen über alle Portale, mit Datum.",
       "count": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
       "empty": "Keine Bewertungen erfasst.",
       "average": "Durchschnitt",
@@ -2051,7 +1873,7 @@
   },
   "hotel": {
     "title": "Azura World Hotel",
-    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage, mit seinen Bewertungen, seinen Widersprüchen und den Quellen, die beides belegen.",
+    "lead": "Das 5-Sterne-Haus auf dem Gelände der Anlage, mit Zimmern, Belegung und Bewertungen.",
     "formerNameNotice": "Zuvor unter dem Namen {formerName} geführt. Die Umbenennung ist als Befund erfasst.",
     "rooms": "Zimmer",
     "stars": "Kategorie",
@@ -2064,12 +1886,12 @@
     "gallery": "Galerie",
     "galleryEmpty": "Für dieses Objekt liegen keine freigegebenen Bilder vor.",
     "reviewsTitle": "Was Gäste schreiben",
-    "reviewsLead": "Auszüge aus öffentlichen Bewertungsportalen, jeweils mit Quelle.",
+    "reviewsLead": "Auszüge aus öffentlichen Bewertungsportalen.",
     "bookExternal": "Beim Portal ansehen",
     "eyebrow": "Hotelbetrieb · Bewertungslage",
     "meta": {
-      "title": "Azura World Hotel: Bewertungen und Quellen",
-      "description": "Das 5-Sterne-Haus der Anlage: Kennzahlen, Bewertungsportale und Widersprüche, jeweils mit Quelle."
+      "title": "Azura World Hotel: Zimmer und Bewertungen",
+      "description": "Das 5-Sterne-Haus der Anlage: Kennzahlen, Zimmer und Gästebewertungen."
     },
     "rebrand": {
       "heading": "Das Haus wurde umbenannt",
@@ -2080,7 +1902,7 @@
     },
     "facts": {
       "heading": "Kennzahlen des Betriebs",
-      "intro": "Jede Angabe führt auf die Quelle zurück, aus der sie stammt. Wo Quellen sich widersprechen, steht der Widerspruch an der Zahl, nicht in einer Fußnote."
+      "intro": "Die Eckdaten des Hauses auf einen Blick."
     },
     "floors": "Etagen",
     "distance": {
@@ -2178,7 +2000,7 @@
   },
   "report": {
     "title": "Offener Report",
-    "lead": "Der Datenbestand zu Azura World. Dieselben Zahlen, dieselben Quellen, ohne Anmeldung.",
+    "lead": "Der Bestand zu Azura World in Kurzform, ohne Anmeldung.",
     "generatedAt": "Erstellt am {date}",
     "sectionProject": "Projekt",
     "sectionHotel": "Hotel",
@@ -2238,7 +2060,7 @@
   },
   "concierge": {
     "title": "Azura Concierge",
-    "subtitle": "Fragen zum Projekt, beantwortet ausschließlich aus dem belegten Datenbestand.",
+    "subtitle": "Fragen zur Anlage, beantwortet aus dem hinterlegten Datenbestand.",
     "placeholder": "Frage stellen …",
     "send": "Senden",
     "thinking": "Antwort wird erstellt …",
@@ -2246,7 +2068,7 @@
     "clear": "Verlauf löschen",
     "empty": "Noch keine Fragen gestellt.",
     "disclaimer": "Antworten stammen aus dem erhobenen Datenbestand und nennen ihre Quelle. Wo keine Quelle vorliegt, wird das gesagt.",
-    "noAnswer": "Dazu liegt keine belegte Angabe vor.",
+    "noAnswer": "Dazu ist nichts hinterlegt.",
     "sourcesLabel": "Genutzte Quellen",
     "errors": {
       "unavailable": "Der Assistent ist derzeit nicht erreichbar.",
@@ -2256,7 +2078,7 @@
     },
     "suggestions": {
       "one": "Wie viele Wohnungen hat die Anlage?",
-      "two": "Was ist über den Bauträger belegt?",
+      "two": "Wer ist der Bauträger?",
       "three": "Wo widersprechen sich die Quellen?"
     },
     "you": "Ihre Frage",

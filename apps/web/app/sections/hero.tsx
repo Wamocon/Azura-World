@@ -19,19 +19,14 @@ import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { ScrambleText } from "@/components/anim/scramble-text"
-import { Plate, RecordLine, Sounding } from "@/components/azura/chart"
+import { Plate, Sounding } from "@/components/azura/chart"
 import { Container } from "@/components/azura/section"
 import { SNAPSHOT_BASE_PATH } from "@/components/azura/labels"
 import { ProvenanceValue } from "@/components/evidence/provenance-value"
 import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
 import { CoastMaquette } from "@/components/three/coast-maquette"
 import { Link } from "@/app/navigation"
-import {
-  entryPriceFact,
-  generatedAt,
-  project,
-} from "@/components/azura/landing-data"
-import { intlLocaleTag } from "@/lib/format"
+import { entryPriceFact, project } from "@/components/azura/landing-data"
 
 export async function HeroSection({
   locale,
@@ -41,25 +36,12 @@ export async function HeroSection({
   provenance: ProvenanceLabels
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const dataDate = new Intl.DateTimeFormat(intlLocaleTag(locale), {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(generatedAt))
-
-  const sourceCount = (n: number): string => t("sourceCount", { count: n })
 
   return (
     <section id="top" className="pt-6 pb-14 sm:pt-10 sm:pb-20">
       <Container className="flex flex-col gap-8">
-        <RecordLine
-          items={[
-            { label: t("record.idLabel"), value: project.code },
-            { label: t("record.placeLabel"), value: t("hero.eyebrow") },
-            { label: t("record.dataLabel"), value: dataDate },
-            { label: t("record.sheetLabel"), value: t("record.sheetValue") },
-          ]}
-        />
+        {/* PIVOT P2 §4: the SUBJECT / PLACE / DATA AS OF / SHEET record
+            strip is removed. It framed the page as a survey document. */}
 
         <div className="flex flex-col gap-5">
           {/* The one scramble on the page. Under reduced motion the component
@@ -72,10 +54,7 @@ export async function HeroSection({
           </p>
         </div>
 
-        <Plate
-          title={t("hero.plateTitle")}
-          meta={`${t("record.dataLabel")} ${dataDate}`}
-        >
+        <Plate title={t("hero.plateTitle")}>
           {/* Height is capped, not left to the component's own 400/260. The
               four soundings under it ARE the first viewport's argument; a
               maquette that pushes them below the fold turns the thesis into
@@ -91,7 +70,6 @@ export async function HeroSection({
           <div className="relative grid grid-cols-2 border-t border-[color-mix(in_srgb,var(--sea-mid)_24%,transparent)] lg:grid-cols-4">
             <Sounding
               label={t("hero.figures.area")}
-              note={sourceCount(project.plotAreaSqm.sources.length)}
               className="border-r border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-b-0"
             >
               <ProvenanceValue
@@ -105,7 +83,6 @@ export async function HeroSection({
 
             <Sounding
               label={t("hero.figures.blocks")}
-              note={sourceCount(project.residenceBlockCount.sources.length)}
               className="border-b border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)] lg:border-r lg:border-b-0"
             >
               <ProvenanceValue
@@ -119,7 +96,6 @@ export async function HeroSection({
 
             <Sounding
               label={t("hero.figures.units")}
-              note={sourceCount(project.totalUnits.sources.length)}
               className="border-r border-[color-mix(in_srgb,var(--sea-mid)_18%,transparent)]"
             >
               <ProvenanceValue

@@ -6,20 +6,13 @@ import {
   applyFilter,
   bandsByCurrency,
   blamedFilter,
-  buildComparison,
   groupByPublisher,
   type ListingFilter,
 } from "@/components/inventory/listing-analysis"
-import { ListingPriceComparison } from "@/components/inventory/listing-price-comparison"
-import {
-  buildClaimRows,
-  PortalClaimMatrix,
-  type ClaimColumn,
-} from "@/components/inventory/portal-claim-matrix"
 import { PublisherListingGroup } from "@/components/inventory/publisher-listing-group"
 import { getUserProfile } from "@/lib/auth"
 import { cn } from "@/lib/cn"
-import type { Locale, UnitLayout } from "@/lib/contracts"
+import type { Locale } from "@/lib/contracts"
 import { getFactsForEntity } from "@/lib/evidence-repository"
 import { getPortalListings } from "@/lib/portal-repository"
 import { hasPermission } from "@/lib/rbac"
@@ -72,35 +65,15 @@ export const metadata: Metadata = {
 const PROJECT_ENTITY_ID = "AZW-TRK"
 
 /**
- * Layouts offered in the comparison switcher.
- *
- * Not every member of `UnitLayout` — only the ones some publisher actually
- * quotes. A chip for `president_villa` that always lands on an empty state
- * teaches a reader that the page is broken rather than that nobody lists one.
- */
-const COMPARABLE_LAYOUTS: readonly UnitLayout[] = [
-  "1+1",
-  "2+1",
-  "3+1",
-  "4+1",
-  "5+1",
-]
-
-/**
  * The layout the comparison opens on.
  *
  * 1+1 because that is F-002: four publishers, four prices, one of them in
  * dollars. It is the cheapest layout and therefore the one a reader is most
  * likely to quote, which makes it the one that most needs its caveats attached.
  */
-const DEFAULT_LAYOUT: UnitLayout = "1+1"
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value
-}
-
-function isLayout(value: string | undefined): value is UnitLayout {
-  return value !== undefined && (COMPARABLE_LAYOUTS as string[]).includes(value)
 }
 
 export default async function ListingsPage({
@@ -149,7 +122,6 @@ export default async function ListingsPage({
 
   // ---- filter state ------------------------------------------------------
   const publisherParam = first(query["publisher"])
-  const layoutParam = first(query["layout"])
   const kindParam = first(query["kind"])
   const staleParam = first(query["stale"])
 
@@ -173,22 +145,6 @@ export default async function ListingsPage({
   const groups = groupByPublisher(filtered)
 
   // ---- the comparison ----------------------------------------------------
-  // Sale only. A monthly rent of €1 000 inside a sale series is wrong by two
-  // orders of magnitude and would make it the cheapest "1+1 for sale" on screen.
-  const comparisonLayout = isLayout(layoutParam) ? layoutParam : DEFAULT_LAYOUT
-  const saleRows = all.filter((row) => row.priceKind === "sale")
-  const comparisonRows = saleRows.filter(
-    (row) => row.layout === comparisonLayout
-  )
-  const comparison = buildComparison(comparisonRows)
-
-  // Rows whose publisher stated a price but no layout at all. Kept as a separate
-  // band rather than dropped: Alanya-Home's entry price is one of the four
-  // figures F-002 names, and filtering strictly by layout would delete it from
-  // the one view built to show it.
-  const unstatedLayoutRows = saleRows.filter((row) => row.layout === null)
-  const unstatedComparison = buildComparison(unstatedLayoutRows)
-
   // ---- headline counts ---------------------------------------------------
   // Counts of what THIS harvest collected, not claims about the market. The
   // copy says so; "47 Inserate" with no qualifier would read as "47 apartments
@@ -199,38 +155,9 @@ export default async function ListingsPage({
   ).size
   const { withoutPrice } = bandsByCurrency(all)
 
-  // ---- the claim matrix --------------------------------------------------
-  const claimColumns: ClaimColumn[] = [
-    { path: "project.residenceBlockCount", header: t("claims.blocks") },
-    { path: "project.totalUnits", header: t("claims.units") },
-    { path: "project.buildStatus", header: t("claims.buildStatus") },
-  ]
-  const claimRows = buildClaimRows(factsResult.data, claimColumns)
-
-  // A publisher's raw claim, rendered. Anything this does not recognise falls
-  // back to "Keine Angabe" rather than printing a raw enum member at a reader:
-  // a stored value the UI has no word for is a gap in the UI, and saying so is
-  // better than showing `under_construction` to a property manager.
-  const formatClaimValue = (path: string, value: unknown): string => {
-    if (path === "project.buildStatus") {
-      if (value === "completed") return t("buildStatus.completed")
-      if (value === "under_construction")
-        return t("buildStatus.underConstruction")
-      if (value === "planned") return t("buildStatus.planned")
-      return t("claims.notStated")
-    }
-    if (typeof value === "number") {
-      return new Intl.NumberFormat(intlLocaleTag(locale)).format(value)
-    }
-    return typeof value === "string" && value.length > 0
-      ? value
-      : t("claims.notStated")
-  }
-
   // ---- href helper -------------------------------------------------------
   const hrefFor = (next: {
     publisher?: string | null
-    layout?: UnitLayout
     kind?: "sale" | "rent" | null
     stale?: boolean
     clear?: true
@@ -250,9 +177,6 @@ export default async function ListingsPage({
       const stale = next.stale ?? staleOnly
       if (stale) sp.set("stale", "1")
     }
-    const layout = next.layout ?? comparisonLayout
-    if (layout !== DEFAULT_LAYOUT) sp.set("layout", layout)
-
     const s = sp.toString()
     return `/dashboard/listings${s ? `?${s}` : ""}`
   }
@@ -269,21 +193,6 @@ export default async function ListingsPage({
     publisher: t("register.emptyBy.publisher"),
     priceKind: t("register.emptyBy.priceKind"),
     staleOnly: t("register.emptyBy.staleOnly"),
-  }
-
-  const comparisonLabels = {
-    publisher: t("columns.portal"),
-    price: t("columns.price"),
-    count: t("compare.countHeader"),
-    notComparable: t("compare.notComparable"),
-    spread: t("compare.spread"),
-    singlePrice: t("compare.singlePrice"),
-    stale: t("stale.badge"),
-    staleReason: t("stale.reason"),
-    listingCount: t("compare.listingCount"),
-    upTo: t("compare.upTo"),
-    openListing: t("openListing"),
-    caption: t("compare.caption"),
   }
 
   const groupLabels = {
@@ -374,136 +283,11 @@ export default async function ListingsPage({
         ) : null}
       </section>
 
-      {/* ---- 2. the comparison ------------------------------------------- */}
-      <section
-        aria-labelledby="listings-compare"
-        className="flex flex-col gap-3"
-      >
-        <div className="flex flex-col gap-1.5">
-          <h2
-            id="listings-compare"
-            className="font-display text-lg font-semibold tracking-[-0.012em] text-foreground"
-          >
-            {t("compare.heading")}
-          </h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
-            {t("compare.lead")}
-          </p>
-        </div>
-
-        <nav
-          aria-label={t("compare.layoutFilterLabel")}
-          className="flex flex-wrap items-center gap-2"
-        >
-          {COMPARABLE_LAYOUTS.map((layout) => (
-            <Chip
-              key={layout}
-              href={hrefFor({ layout })}
-              active={layout === comparisonLayout}
-            >
-              {layout}
-            </Chip>
-          ))}
-        </nav>
-
-        {comparison.length === 0 ? (
-          <p className="rounded-lg border border-border bg-background/50 p-6 text-sm text-muted-foreground">
-            {t("compare.empty", { layout: comparisonLayout })}
-          </p>
-        ) : (
-          <ListingPriceComparison
-            columns={comparison}
-            locale={locale}
-            labels={comparisonLabels}
-          />
-        )}
-
-        {unstatedComparison.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            <h3 className="text-sm font-semibold text-foreground">
-              {t("compare.unstatedHeading")}
-            </h3>
-            <p className="max-w-prose text-sm text-muted-foreground">
-              {t("compare.unstatedLead")}
-            </p>
-            <ListingPriceComparison
-              columns={unstatedComparison}
-              locale={locale}
-              labels={comparisonLabels}
-              // No spread here. These rows have no layout for two different
-              // reasons - a "from" price for the whole project, and an
-              // apartment whose page says "5+ rooms" - so a ratio across them
-              // would compare an entry price with a 305 m2 penthouse.
-              showSpread={false}
-            />
-          </div>
-        ) : null}
-
-        {/* The finding's own wording, attributed, never recomputed here.
-            F-002 used to headline a 2.1x spread that divided a dollar price by
-            a euro one, and this note existed to warn the reader about it
-            (MANUAL-TEST-REPORT M-003). F2 rewrote the finding to state its
-            range per currency and to scope its ratio to EUR, so the note now
-            says that instead. A caveat about a claim that no longer exists is
-            its own small inaccuracy. */}
-        <p className="max-w-prose rounded-lg border border-confidence-conflicted/30 bg-confidence-conflicted/[0.07] px-3 py-2.5 text-sm text-foreground">
-          {t("compare.findingNote")}
-        </p>
-      </section>
-
-      {/* ---- 3. what each publisher claims -------------------------------- */}
-      <section
-        aria-labelledby="listings-claims"
-        className="flex flex-col gap-3"
-      >
-        <div className="flex flex-col gap-1.5">
-          <h2
-            id="listings-claims"
-            className="font-display text-lg font-semibold tracking-[-0.012em] text-foreground"
-          >
-            {t("claims.heading")}
-          </h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
-            {t("claims.lead")}
-          </p>
-        </div>
-
-        {claimRows.length === 0 ? (
-          <p className="rounded-lg border border-border bg-background/50 p-6 text-sm text-muted-foreground">
-            {t("claims.empty")}
-          </p>
-        ) : (
-          <div className="rounded-xl border border-border bg-card px-4 py-3 sm:px-5">
-            <PortalClaimMatrix
-              rows={claimRows}
-              columns={claimColumns}
-              locale={locale}
-              formatValue={formatClaimValue}
-              labels={{
-                publisher: t("columns.portal"),
-                notStated: t("claims.notStated"),
-                dissenting: t("claims.dissenting"),
-                openSource: t("openSource"),
-                caption: t("claims.caption"),
-                tier: {
-                  "1": t("tier.official"),
-                  "2": t("tier.developer"),
-                  "3": t("tier.hotel"),
-                  "4": t("tier.portal"),
-                  "5": t("tier.review"),
-                  "6": t("tier.press"),
-                },
-              }}
-            />
-          </div>
-        )}
-
-        {/* The harvest gap, stated. Three empty columns would have read as
-            "no portal claims anything", which is not what the data says. */}
-        <p className="max-w-prose text-sm text-muted-foreground">
-          {t("claims.harvestGap")}
-        </p>
-      </section>
+      {/* PIVOT P2 §4: the cross-portal price comparison and the "what does each
+          publisher claim about the project" matrix are removed. Both existed to
+          show publishers disagreeing, which is the research framing this pivot
+          drops. What stays is the register below: where the client's apartments
+          are listed, at what price, and how current each listing is. */}
 
       {/* ---- 4. the register --------------------------------------------- */}
       <section
