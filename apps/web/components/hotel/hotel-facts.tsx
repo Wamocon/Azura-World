@@ -53,11 +53,15 @@ function FactRow<T>({
   provenance: ProvenanceLabels
 }) {
   return (
-    <div className="flex flex-col gap-1.5 border-t border-border/60 py-4">
+    // Same tile as `FactRow` in components/azura/section.tsx, kept in the
+    // dl/dt/dd markup this grid already had. The shared one is divs and this
+    // one is a real description list, which is the correct semantic for a
+    // label/value pair — the styling converges, the markup does not regress.
+    <div className="flex min-w-0 flex-col gap-1.5 rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--foreground)_10%,transparent)] bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] p-5 transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)] hover:border-[color-mix(in_srgb,var(--primary)_45%,transparent)]">
       <dt className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
         {label}
       </dt>
-      <dd className="text-lg">
+      <dd className="m-0 font-display text-[1.25rem] leading-[1.25] tracking-[-0.02em] text-balance">
         <ProvenanceValue
           fact={fact}
           format={format}
@@ -85,7 +89,7 @@ export function HotelFactGrid({
 }) {
   return (
     <dl
-      className={cn("grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3", className)}
+      className={cn("grid gap-3 sm:grid-cols-2 lg:grid-cols-3", className)}
     >
       <FactRow
         label={labels.stars}

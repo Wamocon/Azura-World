@@ -1,20 +1,31 @@
 /**
- * Section shell and the label/value row.                             Owner: W3-A
+ * Section shell, the label/value row, and the night panel.      Owner: W3-A
  *
  * One spacing rhythm for the whole page lives here, so a section cannot quietly
  * invent its own. More space above a heading than below it — the rule that most
  * reliably separates a paced page from a stack of blocks.
  *
- * The heading treatment is the chart's, not a hero's: a hairline rule that runs
- * the full measure with the section's own designation set into it, the way a
- * sheet in a drawing set carries its title in the rule above the drawing. The
- * designation is real information — it is the funnel stage this section serves,
- * which is the document's own structure — and not a decorative `01 / 02 / 03`.
+ * ## What changed on the night surface
+ *
+ * The heading used to be a designation, a hairline, and an `h2` at
+ * `clamp(1.6rem, 4vw, 2.5rem)`. On cream that read as a working paper. On the
+ * night ground it read as small, because a dark surface swallows type that a
+ * light one carries: the same size that looked deliberate at 90% lightness
+ * looks timid at 5%.
+ *
+ * So the display step went up, the designation moved onto the accent, and the
+ * heading arrives through a clip mask (`data-rise`) instead of a fade. The rule
+ * became `azura-rule`, which starts and ends in nothing — a hard 1px line all
+ * the way across a dark page reads as a table border.
+ *
+ * The mask matters for a reason beyond taste: `[data-rise]` is only ever
+ * animated by the choreography island, and only for elements BELOW the fold at
+ * setup. Anything already on screen is left exactly as the server rendered it,
+ * so there is no state in which a heading is invisible.
  */
 
 import type { ReactNode } from "react"
 
-import { Reveal } from "@/components/anim/reveal"
 import { cn } from "@/lib/cn"
 
 export function Section({
@@ -26,6 +37,8 @@ export function Section({
   className,
   /** Set on the one section that must not carry the standard rhythm. */
   bare = false,
+  /** Right-hand column of the heading block: a figure, a link, a note. */
+  aside,
 }: {
   id: string
   /** Short, uppercase, real: the stage this section serves. */
@@ -35,6 +48,7 @@ export function Section({
   children: ReactNode
   className?: string
   bare?: boolean
+  aside?: ReactNode
 }): ReactNode {
   return (
     <section
@@ -42,33 +56,40 @@ export function Section({
       // `scroll-mt` so a `#amenities` deep link does not park the heading under
       // the sticky top bar. Lenis honours native anchor offsets.
       className={cn(
-        "scroll-mt-24",
-        bare ? "" : "border-t border-border/60 pt-16 pb-14 sm:pt-24 sm:pb-20",
+        "scroll-mt-28",
+        bare ? "" : "pt-20 pb-16 sm:pt-28 sm:pb-24",
         className
       )}
     >
       {title !== undefined ? (
-        <Reveal as="header" className="mb-8 sm:mb-10">
+        <header className="mb-10 sm:mb-14">
           {designation !== undefined ? (
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+            <div className="mb-6 flex items-center gap-4">
+              <span className="azura-label shrink-0 text-primary">
                 {designation}
               </span>
-              <span
-                aria-hidden="true"
-                className="h-px flex-1 bg-[color-mix(in_srgb,var(--foreground)_16%,transparent)]"
-              />
+              <span aria-hidden="true" className="azura-rule flex-1" />
             </div>
           ) : null}
-          <h2 className="font-display text-[clamp(1.6rem,4vw,2.5rem)] leading-[1.1] tracking-[-0.02em] text-balance">
-            {title}
-          </h2>
-          {lead !== undefined ? (
-            <p className="mt-4 max-w-[68ch] text-[1.0625rem] leading-[1.6] text-muted-foreground">
-              {lead}
-            </p>
-          ) : null}
-        </Reveal>
+
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <div className="min-w-0 flex-1">
+              <h2 className="azura-mask font-display text-[clamp(1.9rem,4.6vw,3.25rem)] leading-[1.06] tracking-[-0.03em] text-balance">
+                <span data-rise className="block">
+                  {title}
+                </span>
+              </h2>
+              {lead !== undefined ? (
+                <p className="mt-5 max-w-[62ch] text-[1.0625rem] leading-[1.65] text-muted-foreground">
+                  {lead}
+                </p>
+              ) : null}
+            </div>
+            {aside !== undefined ? (
+              <div className="shrink-0 lg:pb-2">{aside}</div>
+            ) : null}
+          </div>
+        </header>
       ) : null}
       {children}
     </section>
@@ -76,10 +97,25 @@ export function Section({
 }
 
 /**
- * A label, a leader, and a value. The page's workhorse row.
+ * One fact, as a tile. The page's workhorse.
  *
- * `value` is always a provenance component. `note` carries the source count or
- * a qualifier — it is the part that turns a fact sheet into a working paper.
+ * This was a dot-leader row — `LABEL ......... value`, the shape a restaurant
+ * menu and a table of contents share. It was defended here on the grounds that
+ * the leader lets the eye track from label to value without drawing a table,
+ * which is true, and beside the point: the register it carries is *printed
+ * document*. A stack of them reads as a specification sheet, and the product is
+ * a system somebody runs a building with.
+ *
+ * The tile inverts the reading order. The value is the largest thing in the
+ * cell and the label sits above it small, because a person scanning this is
+ * looking for the number and then checking what it is — not reading a label and
+ * following a line to find out. It also gives each fact its own edge, so an
+ * eight-fact group becomes eight objects rather than one undifferentiated
+ * column, which is what makes the grid work at any width without a leader to
+ * hold the rows together.
+ *
+ * `data-numeric` stays on the value. The tabular-figures rule keys off it and a
+ * column of prices still has to align.
  */
 export function FactRow({
   label,
@@ -95,31 +131,64 @@ export function FactRow({
   return (
     <div
       className={cn(
-        "flex flex-col gap-1 border-b border-border/50 py-3.5 last:border-b-0",
-        "sm:flex-row sm:items-baseline sm:gap-0",
+        "group relative flex min-w-0 flex-col gap-1.5 rounded-[var(--radius)]",
+        "border border-[color-mix(in_srgb,var(--foreground)_10%,transparent)]",
+        "bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] p-5",
+        "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+        "hover:border-[color-mix(in_srgb,var(--primary)_45%,transparent)]",
         className
       )}
     >
-      <span className="shrink-0 text-[0.8125rem] tracking-[0.02em] text-muted-foreground uppercase sm:text-[0.875rem]">
-        {label}
-      </span>
+      <span className="azura-label text-muted-foreground">{label}</span>
       <span
-        aria-hidden="true"
-        className="mx-2 hidden min-w-4 flex-1 translate-y-[-0.28em] self-center border-b border-dotted border-[color-mix(in_srgb,var(--foreground)_22%,transparent)] sm:block"
-      />
-      <span className="flex min-w-0 flex-col items-start gap-0.5 sm:items-end">
-        <span
-          data-numeric
-          className="text-[1rem] leading-[1.5] text-foreground"
-        >
-          {value}
-        </span>
-        {note !== undefined ? (
-          <span className="text-[0.75rem] leading-[1.4] text-muted-foreground">
-            {note}
-          </span>
-        ) : null}
+        data-numeric
+        className="font-display text-[1.25rem] leading-[1.25] tracking-[-0.02em] text-balance text-foreground"
+      >
+        {value}
       </span>
+      {note !== undefined ? (
+        <span className="text-[0.8125rem] leading-[1.5] text-muted-foreground">
+          {note}
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
+/**
+ * The night panel: the page's one container for grouped content.
+ *
+ * Two effects rather than a `backdrop-filter`. A blurred backdrop over a
+ * full-bleed photograph costs a compositor layer per panel and this page
+ * carries a dozen of them, which is a measurable scroll cost for a look that
+ * `azura-pane`'s inset highlight already produces on a surface this dark.
+ *
+ * `data-sheen` opts the panel into the pointer-tracked highlight. It is a
+ * `::before` on a `radial-gradient` at `--mx`/`--my`, both of which default to
+ * the top centre — so a panel on a touch device, or before the choreography
+ * island has run, is lit rather than looking unstyled.
+ */
+export function Panel({
+  children,
+  className,
+  sheen = true,
+}: {
+  children: ReactNode
+  className?: string
+  sheen?: boolean
+}): ReactNode {
+  return (
+    <div
+      {...(sheen ? { "data-sheen": "" } : {})}
+      className={cn(
+        "azura-pane relative overflow-hidden",
+        sheen && "azura-sheen",
+        className
+      )}
+    >
+      {/* The sheen paints on a `::before` at the panel's own stacking level, so
+          content needs a layer above it or the highlight washes over the type. */}
+      <div className="relative z-[1]">{children}</div>
     </div>
   )
 }

@@ -1170,6 +1170,18 @@ body:has([data-surface="night"]) {
   .azura-caustics {
     position: relative;
     isolation: isolate;
+
+    /* `clip`, and only on the x-axis.
+       The ::before below is inset -10% -5% so the blurred gradient reaches past
+       the edges instead of stopping at a visible seam, and `azura-drift` then
+       translates it. Nothing contained it, so it pushed the document 48px wider
+       than the viewport and the page carried a horizontal scrollbar that grew
+       as the animation ran.
+       `clip` rather than `hidden` because `hidden` makes this a scroll
+       container, which silently breaks `position: sticky` in any descendant.
+       x-only because the -10% vertical bleed is the point: clipping it too
+       would put a hard edge exactly where the gradient exists to soften one. */
+    overflow-x: clip;
   }
   .azura-caustics::before {
     content: "";
@@ -1288,17 +1300,35 @@ body:has([data-surface="night"]) {
     min-height: 34rem;
   }
 
-  /* A frame in the cross-dissolve. All of them are stacked and absolutely
-     positioned; the choreography moves opacity and scale only. Frame 0 is
-     opaque in the markup so the stack is correct before JS and under reduced
-     motion. */
+  /* A frame in the cross-dissolve.
+     ---------------------------------------------------------------------
+     IT IS NOT POSITIONED HERE, and that is the bug this comment exists to
+     stop someone re-introducing.
+
+     The first version declared `position: absolute; inset: 0` on this class
+     unconditionally, on the theory that the `@media (scripting: enabled) and
+     (prefers-reduced-motion: no-preference)` block below would be the only
+     thing that mattered. It was not: outside that query the five frames stayed
+     absolutely positioned inside a container that had collapsed to 50px, so
+     they piled on top of each other AND on top of the section beneath. A
+     reduced-motion reader got a living room photograph with the site's fact
+     tiles printed across it. Screenshotted with `reducedMotion: "reduce"`.
+
+     Everything that makes this a stacked stage now lives in the query, and
+     nowhere else. What is left here is only what is true in BOTH modes. */
   .azura-frame {
-    position: absolute;
-    inset: 0;
+    position: relative;
     overflow: hidden;
   }
-  .azura-frame > picture,
-  .azura-frame > picture > img {
+  .azura-frame-media {
+    position: relative;
+    overflow: hidden;
+    /* The gallery height. In stage mode the query overrides this to fill. */
+    height: 62svh;
+    min-height: 18rem;
+  }
+  .azura-frame-media > picture,
+  .azura-frame-media > picture > img {
     height: 100%;
     width: 100%;
     object-fit: cover;
@@ -1434,23 +1464,38 @@ body:has([data-surface="night"]) {
     margin-top: 0;
   }
 
-  .azura-cine-pin [data-cine-frame] {
+  /* THE ONLY PLACE the frames become a stack. */
+  .azura-cine-pin .azura-frame {
     position: absolute;
     inset: 0;
-    height: auto;
     border-radius: 0;
+  }
+
+  .azura-cine-pin .azura-frame-media {
+    height: 100%;
+    min-height: 0;
   }
 
   /* Every frame but the first starts hidden. The choreography sets the same
      value inline a frame later; declaring it here too is what removes the gap
      between first paint and hydration, which is exactly long enough to see. */
-  .azura-cine-pin [data-cine-frame]:not(:first-child) {
+  .azura-cine-pin .azura-frame:not(:first-child) {
     opacity: 0;
   }
 
+  /* Over the photograph in stage mode; under it, in flow, everywhere else.
+     This positioning must NOT move into the JSX as a Tailwind class — that is
+     how the reduced-motion break happened the first time. */
   .azura-cine-pin [data-cine-caption] {
     position: absolute;
     inset-inline: 0;
     bottom: 0;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 640px) {
+  .azura-cine-pin [data-cine-caption] {
+    padding-bottom: 3rem;
   }
 }
