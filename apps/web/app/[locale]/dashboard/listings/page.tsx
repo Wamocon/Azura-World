@@ -438,10 +438,13 @@ export default async function ListingsPage({
           </div>
         ) : null}
 
-        {/* The finding's own wording, attributed, never recomputed here. Its
-            2.1x compares a euro price against a dollar one, which is the
-            conversion this product refuses to make; the columns above each
-            state their own spread within one currency. */}
+        {/* The finding's own wording, attributed, never recomputed here.
+            F-002 used to headline a 2.1x spread that divided a dollar price by
+            a euro one, and this note existed to warn the reader about it
+            (MANUAL-TEST-REPORT M-003). F2 rewrote the finding to state its
+            range per currency and to scope its ratio to EUR, so the note now
+            says that instead. A caveat about a claim that no longer exists is
+            its own small inaccuracy. */}
         <p className="max-w-prose rounded-lg border border-confidence-conflicted/30 bg-confidence-conflicted/[0.07] px-3 py-2.5 text-sm text-foreground">
           {t("compare.findingNote")}
         </p>

@@ -681,7 +681,7 @@
         "empty": "No portal states a sale price for {layout}.",
         "unstatedHeading": "Portals stating no layout",
         "unstatedLead": "These rows carry a price the portal attached to no layout. Sometimes that is an entry price for the whole project, sometimes a room count we cannot represent. They stay separate, and without a spread.",
-        "findingNote": "Finding F-002 quotes a 2.1x spread across four portals. That number compares a euro price with a dollar price. We do not convert, so each currency above carries its own spread."
+        "findingNote": "Finding F-002 states its range separately per currency and gives a ratio within EUR only. It does not compare a euro price with a dollar price. Each column above carries its own spread."
       },
       "claims": {
         "heading": "What does each portal say about the project?",

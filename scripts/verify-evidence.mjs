@@ -46,6 +46,359 @@ const fail = (rule, where, detail) => violations.push({ rule, where, detail });
  */
 let skippedHashResolutions = 0;
 
+/* --------------------------------------------------- overclaim gates (F2) -- */
+
+/**
+ * Number words a finding might use for a publisher count, up to twelve.
+ * A count can be written either way and both must be checked; "four publishers"
+ * is exactly how M-010 was written.
+ */
+const NUMBER_WORDS = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+  seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+};
+
+/** Distinct publishers named by a finding's own competing values. */
+function competingPublishers(finding) {
+  return new Set(
+    (finding.competingValues || [])
+      .map((entry) => entry?.source?.publisher)
+      .filter((publisher) => typeof publisher === "string"),
+  );
+}
+
+/** Distinct currencies in a finding's own competing values. */
+function competingCurrencies(finding) {
+  return new Set(
+    (finding.competingValues || [])
+      .map((entry) => entry?.value?.currency)
+      .filter((currency) => typeof currency === "string"),
+  );
+}
+
+/**
+ * A finding may not state a ratio it computed across two currencies.
+ *
+ * MANUAL-TEST-REPORT M-003 / SECURITY-REVIEW SEC-007: F-002's headline "2.1x"
+ * was 239,171 USD divided by 112,000 EUR, an implied rate of exactly 1.0. It was
+ * rendered to users two lines below the sentence saying amounts in different
+ * currencies are never converted.
+ *
+ * This does not merely look for the word "currency" near the number. It:
+ *
+ *   1. finds every multiplier token in the message (`2.1x`, `2,1-fach`);
+ *   2. if the finding's competing values carry more than one currency, requires
+ *      the multiplier to be qualified by a currency code in the same sentence;
+ *   3. **recomputes** the ratio within that currency and requires the stated
+ *      figure to match.
+ *
+ * Step 3 is what makes this a check rather than a lint. A message could satisfy
+ * steps 1 and 2 by naming a currency beside a number that still came from a
+ * cross-currency division; recomputing catches that.
+ */
+function checkNoCrossCurrencyRatio(finding) {
+  const message = String(finding.message || "");
+  const currencies = competingCurrencies(finding);
+
+  // Every way this codebase writes a multiple, in the four locales it ships.
+  //
+  // `-fach` carries NO word boundary, deliberately. German inflects it:
+  // "2,1-fache Spanne" has a letter straight after "fach", so `-fach\b` did
+  // not match the exact string this project actually shipped in its German
+  // search title. The negative control found that too.
+  //
+  // THE FIRST VERSION OF THIS PATTERN MATCHED ONLY `Nx` AND `N-fach`, AND THE
+  // NEGATIVE CONTROL CAUGHT IT: `compose_f002_message()` writes "a factor of 2.8
+  // within EUR alone", which has no `x` in it, so the gate would have skipped
+  // the very sentence it exists to police. A corrupted build stating "a factor
+  // of 9.9" passed with exit 0. Extended, and the control now fails it.
+  const tokens = [
+    ...message.matchAll(
+      /(?:factor(?:\s+of)?|faktor|kat|раз(?:а|)|multiple\s+of)\s+(\d+(?:[.,]\d+)?)|(\d+(?:[.,]\d+)?)\s*(?:[x×]\b|-fach|\s+times\b)/gi,
+    ),
+  ].map((match) => ({
+    // One of the two capture groups fires, never both.
+    text: match[0],
+    value: match[1] ?? match[2],
+    index: match.index,
+  }));
+  if (tokens.length === 0) return;
+
+  // One currency in the record: any ratio is necessarily within it.
+  if (currencies.size <= 1) return;
+
+  for (const token of tokens) {
+    const stated = Number(String(token.value).replace(",", "."));
+
+    // The sentence the token sits in. Ratios are qualified locally or not at all.
+    //
+    // BOUNDARIES ARE ". " AND NOT ".", because a decimal point is a full stop to
+    // a naive split: "a factor of 2.8 within EUR alone" cut at the first "." and
+    // yielded "That is a factor of 2", which contains no currency code, and the
+    // gate then reported its own correct message as a violation. Found by
+    // running the gate against the artefact rather than by reading it.
+    const before = message.lastIndexOf(". ", token.index);
+    const start = before === -1 ? 0 : before + 2;
+    const after = message.indexOf(". ", token.index);
+    const sentence = message.slice(start, after === -1 ? message.length : after);
+
+    const named = [...currencies].filter((currency) =>
+      sentence.includes(currency),
+    );
+    if (named.length !== 1) {
+      fail(
+        "finding-cross-currency-ratio",
+        finding.id,
+        `message states "${token.text.trim()}" while competingValues carry ${[...currencies].sort().join(" + ")}, and the sentence names ${named.length === 0 ? "no currency" : `${named.length} currencies`}. A ratio spanning currencies is a conversion at an invented rate (CONVENTIONS §5).`,
+      );
+      continue;
+    }
+
+    const currency = named[0];
+    const amounts = (finding.competingValues || [])
+      .filter((entry) => entry?.value?.currency === currency)
+      .map((entry) => entry?.value?.amount)
+      .filter((amount) => typeof amount === "number" && amount > 0);
+    if (amounts.length < 2) continue;
+
+    // The message may legitimately restrict the ratio to a subset (F-002 uses
+    // the rows whose publisher states a 1+1 layout), so the stated figure must
+    // fall inside the full within-currency span rather than equal its extremes.
+    const widest = Math.max(...amounts) / Math.min(...amounts);
+    if (stated > widest + 0.05) {
+      fail(
+        "finding-ratio-exceeds-record",
+        finding.id,
+        `message states a factor of ${stated} in ${currency}, but the widest ${currency} span in its own competingValues is ${widest.toFixed(2)}. A ratio larger than the record supports cannot have been computed from it.`,
+      );
+    }
+  }
+}
+
+/**
+ * A publisher count stated in a message must equal the count in the record.
+ *
+ * MANUAL-TEST-REPORT M-010: F-002 said "across four publishers" while carrying
+ * nineteen observations from six. SECURITY-REVIEW SEC-006 recorded the same
+ * drift and was itself wrong in the other direction ("carries three"). Three
+ * documents disagreed about one array, because the number was maintained by hand
+ * beside data rebuilt on every harvest.
+ *
+ * `build-azura-dataset.py` now composes F-002's message from its own
+ * competingValues, so the two cannot disagree. This gate is what keeps that true
+ * for every finding, including ones a later window writes by hand.
+ */
+function checkPublisherCountMatchesRecord(finding) {
+  const message = String(finding.message || "");
+  const publishers = competingPublishers(finding);
+  if (publishers.size === 0) return;
+
+  // ONLY COUNTING CONSTRUCTIONS. The first version of this pattern matched any
+  // "<number> publishers" and immediately produced a WRONG finding: F-013 reads
+  // "a stronger signal ... than two publishers disagreeing", which is a
+  // rhetorical contrast, not a count of its own record. A check that cannot tell
+  // a count from a comparison costs more than the drift it catches, which is the
+  // reasoning SECURITY-REVIEW.md applies to narrowing its own SEC-006 pattern so
+  // it would not report F-006.
+  //
+  // Requiring a counting preposition still catches the defect this gate exists
+  // for, verbatim: M-010's message said "spans a 2.1x range ACROSS four
+  // publishers", and F-002's composed replacement says "from 6 publishers".
+  const pattern = new RegExp(
+    String.raw`\b(?:across|from|among|by|over)\s+(\d+|${Object.keys(NUMBER_WORDS).join("|")})\s+(?:distinct\s+|different\s+|separate\s+)?publishers\b`,
+    "gi",
+  );
+
+  for (const match of message.matchAll(pattern)) {
+    const raw = String(match[1]).toLowerCase();
+    const stated = NUMBER_WORDS[raw] ?? Number(raw);
+    if (!Number.isFinite(stated)) continue;
+    if (stated !== publishers.size) {
+      fail(
+        "finding-publisher-count",
+        finding.id,
+        `message says "${match[0]}" but competingValues carry ${publishers.size} distinct publishers (${[...publishers].sort().join(", ")}). Compose the count from the record instead of typing it.`,
+      );
+    }
+  }
+}
+
+/**
+ * Remove comments from TypeScript source, leaving string literals intact.
+ *
+ * WITHOUT THIS THE SWEEP REPORTS ITS OWN DOCUMENTATION. The seed file explains
+ * the fix by quoting the sentence that was removed, and a scanner that treats
+ * any quoted run as a literal flagged that comment as a live overclaim. That is
+ * the second false positive this exercise produced, and both had the same
+ * shape: a pattern that could not tell what kind of text it was reading.
+ * `check-plain-language.mjs` strips comments for the same reason and says so.
+ *
+ * A small hand scanner rather than a regex: a regex cannot tell `//` inside a
+ * URL string from the start of a comment, and this file is full of URLs.
+ */
+function stripComments(source) {
+  let out = "";
+  let index = 0;
+  const n = source.length;
+
+  while (index < n) {
+    const char = source[index];
+
+    if (char === '"' || char === "'" || char === "`") {
+      const quote = char;
+      out += char;
+      index += 1;
+      while (index < n) {
+        if (source[index] === "\\") {
+          out += source[index] + (source[index + 1] ?? "");
+          index += 2;
+          continue;
+        }
+        out += source[index];
+        if (source[index] === quote) {
+          index += 1;
+          break;
+        }
+        index += 1;
+      }
+      continue;
+    }
+
+    if (char === "/" && source[index + 1] === "/") {
+      while (index < n && source[index] !== "\n") index += 1;
+      continue;
+    }
+
+    if (char === "/" && source[index + 1] === "*") {
+      index += 2;
+      while (index < n && !(source[index] === "*" && source[index + 1] === "/")) {
+        // Newlines are kept so nothing downstream depends on line numbers
+        // shifting; everything else in the comment is dropped.
+        if (source[index] === "\n") out += "\n";
+        index += 1;
+      }
+      index += 2;
+      continue;
+    }
+
+    out += char;
+    index += 1;
+  }
+
+  return out;
+}
+
+/**
+ * Files that carry findings as HAND-WRITTEN prose rather than as generated
+ * output, and are therefore not covered by the checks above.
+ *
+ * ## Why this list exists at all
+ *
+ * This validator was built to read the emitted artefact, and that was the right
+ * instinct. But `apps/web/lib/evidence-data.ts` also carries an F-002, written
+ * by hand, with its own message and its own three competing values. **Nothing
+ * checked it, and it held the same overclaim for two days after the artefact
+ * was fixed.**
+ *
+ * It is also why two reviews disagreed about one number: SECURITY-REVIEW SEC-006
+ * read this file and reported "claims four publishers and carries three";
+ * MANUAL-TEST-REPORT M-010 read the generated dataset and reported six. Both
+ * were right about the file they read. Neither noticed there were two.
+ */
+const SEED_FILES = [path.join(ROOT, "apps", "web", "lib", "evidence-data.ts")];
+
+const CURRENCY_CODES = ["EUR", "USD", "TRY", "GBP"];
+
+/**
+ * `message: "…"`, `title: "…"`, and the other prose fields, across line breaks.
+ *
+ * Built with `new RegExp` and `String.raw` rather than written as a literal, and
+ * that is not a style choice. As a literal this pattern silently matched
+ * NOTHING at runtime while reading correctly in every editor and in `git diff`,
+ * and the gate reported success over a file that contained the defect. Given
+ * this validator's whole purpose is to not be fooled by something that looks
+ * right, a construction whose escaping is visible in one place is the safer
+ * one.
+ *
+ * A prose field is anchored by name rather than by scanning for long quoted
+ * runs, because one stray quote anywhere earlier in a TypeScript file flips the
+ * parity of every quote after it. Flat quote-pairing is not a parser and should
+ * not pretend to be one.
+ */
+const PROSE_FIELD = new RegExp(
+  String.raw`(?:message|title|summary|resolution|note)\s*:\s*"((?:[^"\\]|\\.)*)"`,
+  "g",
+);
+
+/**
+ * Text-level sweep for a multiplier stated across two currencies, in files whose
+ * findings are prose rather than data.
+ *
+ * This is deliberately weaker than `checkNoCrossCurrencyRatio`: there is no
+ * `competingValues` array to recompute against, so it cannot verify arithmetic.
+ * What it can do is refuse the shape of the defect — a multiple stated inside a
+ * string that names two currencies, without the multiple being scoped to one of
+ * them in its own sentence.
+ *
+ * KNOWN LIMIT, stated rather than papered over: it reasons about one string
+ * literal at a time. The same seed carried "2,1-fache Spanne über vier Portale"
+ * as a search TITLE with the amounts in a separate SUMMARY field, and this sweep
+ * would not have joined the two. That instance was found by reading, and is
+ * fixed; a title-plus-summary rule would need the object graph this check
+ * deliberately does not parse.
+ */
+async function checkSeedFiles() {
+  for (const file of SEED_FILES) {
+    if (!existsSync(file)) {
+      fail("seed-file-missing", path.relative(ROOT, file), "expected to scan this file");
+      continue;
+    }
+    // Comments stripped first: this file documents the defect by quoting it.
+    const source = stripComments(await readFile(file, "utf8"));
+
+    // `PROSE_FIELD` carries a `g` flag and is module-scoped, so `lastIndex`
+    // is reset before each file; otherwise a second file would resume from
+    // wherever the first one stopped.
+    PROSE_FIELD.lastIndex = 0;
+    for (const match of source.matchAll(PROSE_FIELD)) {
+      const text = match[1].replace(/\\"/g, '"');
+      // `String.raw` already passes the backslash through, so this is `\b` and
+      // not `\\b`. It was `\\b` for one revision, which compiles to "a literal
+      // backslash followed by b", matched nothing, and made the whole gate a
+      // no-op that reported success. The negative control below is the only
+      // reason that was caught.
+      const currencies = CURRENCY_CODES.filter((code) =>
+        new RegExp(String.raw`\b${code}\b`).test(text),
+      );
+      if (currencies.length < 2) continue;
+
+      const tokens = [
+        ...text.matchAll(
+          /(?:factor(?:\s+of)?|faktor|multiple\s+of)\s+(\d+(?:[.,]\d+)?)|(\d+(?:[.,]\d+)?)\s*(?:[x×]\b|-fach|\s+times\b)/gi,
+        ),
+      ];
+      for (const token of tokens) {
+        const before = text.lastIndexOf(". ", token.index);
+        const after = text.indexOf(". ", token.index);
+        const sentence = text.slice(
+          before === -1 ? 0 : before + 2,
+          after === -1 ? text.length : after,
+        );
+        const named = currencies.filter((code) =>
+          new RegExp(String.raw`\b${code}\b`).test(sentence),
+        );
+        if (named.length !== 1) {
+          fail(
+            "seed-cross-currency-ratio",
+            path.relative(ROOT, file),
+            `a string states "${token[0].trim()}" and names ${currencies.join(" + ")}; the sentence carrying the multiple names ${named.length === 0 ? "no currency" : `${named.length} currencies`}. Scope the ratio to one currency or drop it (CONVENTIONS §5).`,
+          );
+        }
+      }
+    }
+  }
+}
+
 /* ------------------------------------------------------------------ input -- */
 
 /**
@@ -364,6 +717,18 @@ async function main() {
       );
     }
   }
+
+  // Two overclaim gates, added by F2 after MANUAL-TEST-REPORT M-003 and M-010.
+  // Both apply to EVERY finding, not only to F-002: the class of defect is "a
+  // sentence that says more than its own data supports", and naming one finding
+  // would leave the other 23 unguarded.
+  for (const finding of dataset.findings || []) {
+    checkNoCrossCurrencyRatio(finding);
+    checkPublisherCountMatchesRecord(finding);
+  }
+
+  // The generated artefact is not the only place a finding is written.
+  await checkSeedFiles();
 
   // F-002 must stay unresolved. It is named explicitly because it is the one
   // conflict a well-meaning later change is most likely to "tidy up" into a

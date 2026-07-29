@@ -681,7 +681,7 @@
         "empty": "Kein Portal nennt einen Verkaufspreis für {layout}.",
         "unstatedHeading": "Portale ohne Grundrissangabe",
         "unstatedLead": "Diese Zeilen tragen einen Preis, den das Portal keinem Grundriss zugeordnet hat. Mal ist es ein Einstiegspreis für das ganze Projekt, mal eine Zimmerangabe, die wir nicht abbilden können. Sie bleiben getrennt und ohne Spanne.",
-        "findingNote": "Befund F-002 nennt eine Spanne von 2,1-fach über vier Portale. Diese Zahl vergleicht einen Euro-Preis mit einem Dollar-Preis. Wir rechnen nicht um, deshalb steht oben je Währung eine eigene Spanne."
+        "findingNote": "Befund F-002 nennt die Spanne je Währung und ein Verhältnis nur innerhalb EUR. Er vergleicht keinen Euro-Preis mit einem Dollar-Preis. Jede Spalte oben hat ihre eigene Spanne."
       },
       "claims": {
         "heading": "Was sagt welches Portal über das Projekt?",

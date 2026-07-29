@@ -529,8 +529,21 @@ const FINDINGS: Finding[] = [
     severity: "critical",
     area: "pricing",
     field: "units[].askingPrice",
+    // REWRITTEN BY F2. The previous text was:
+    //
+    //   "The 1+1 entry price spans a 2.1x range across four publishers ..."
+    //
+    // `2.1x` was 239,171 USD divided by 112,000 EUR, a conversion at an implied
+    // rate of exactly 1.0 (MANUAL-TEST-REPORT M-003, SECURITY-REVIEW SEC-007).
+    // "four publishers" was stated beside three competing values (M-010).
+    //
+    // THIS COPY IS WHY TWO REVIEWS DISAGREED ABOUT ONE NUMBER. SEC-006 read this
+    // file and reported "claims four publishers and carries three"; M-010 read
+    // `azura-world-data.ts` and reported "carries six". Both were right about
+    // the file they read, and neither noticed there were two F-002s. The count
+    // below is this slice's own, and it says so.
     message:
-      "The 1+1 entry price spans a 2.1x range across four publishers — Haspo EUR 112,000 (80-89 m²), Seaside EUR 185,000 (85-92 m²), Housearch USD 239,171 (75 m²). The causes compound: two currencies, no observation dates, different unit subsets, and at least one listing stale by roughly two years (F-006).",
+      "The 1+1 entry price is unresolved. This seed carries 3 observations from 3 publishers, a slice of the 19 in the full harvest: Haspo 112,000 EUR (80-89 m²), Seaside 185,000 EUR (85-92 m²), Housearch 239,171 USD (75 m²). Within EUR, the two observations here run 112,000 to 185,000 EUR, a factor of 1.7 within EUR alone. The USD figure is neither converted nor compared to them: no source in this dataset publishes an exchange rate or a rate date, so any ratio spanning the two would be arithmetic on an invented rate. The causes compound: two currencies, no observation dates, different unit subsets, and at least one listing stale by roughly two years (F-006).",
     competingValues: [
       { value: { amount: 112000, currency: "EUR" }, source: HASPO },
       { value: { amount: 185000, currency: "EUR" }, source: SEASIDE },
@@ -844,9 +857,14 @@ const SEARCH_DOCUMENTS: SeedSearchDocument[] = [
   {
     entityTable: "findings",
     entityId: "F-002",
-    title: "F-002 · 1+1 Einstiegspreis: 2,1-fache Spanne über vier Portale",
+    // The German half of the same overclaim: "2,1-fache Spanne über vier
+    // Portale" is the cross-currency ratio (M-003) and the wrong publisher
+    // count (M-010), in a search result. A finding's search title is the first
+    // thing a user reads about it, so it is the last place the claim should be
+    // loose.
+    title: "F-002 · 1+1 Einstiegspreis: Portale widersprechen sich",
     summary:
-      "Kritischer Preisbefund. Haspo EUR 112.000, Seaside EUR 185.000, Housearch USD 239.171. Bewusst ungelöst.",
+      "Kritischer Preisbefund. Haspo 112.000 EUR, Seaside 185.000 EUR, Housearch 239.171 USD. Beträge in zwei Währungen, nicht umgerechnet. Bewusst ungelöst.",
     language: "de",
     minRoleLevel: 70,
     metadata: { severity: "critical", area: "pricing", resolved: false },
