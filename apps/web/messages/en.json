@@ -627,14 +627,14 @@
         "modelled": "Modelled",
         "source_missing": "No source",
         "portalMeaning": "Taken from a real portal listing",
-        "modelledMeaning": "Modelled record — not a real listing",
+        "modelledMeaning": "Modelled record: not a real listing",
         "filterLabel": "Filter by provenance",
         "filterAll": "All provenances"
       },
       "split": {
         "heading": "Where this inventory comes from",
-        "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled — they fill out the inventory and represent no real offer.",
-        "rowNote": "Modelled — not a real listing"
+        "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled: they fill out the inventory and represent no real offer.",
+        "rowNote": "Modelled: not a real listing"
       }
     },
     "listings": {
@@ -1990,11 +1990,11 @@
       },
       "occupancyPanel": {
         "heading": "Occupancy",
-        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent — it is exactly what a competitor analysis gets read for."
+        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent: it is exactly what a competitor analysis gets read for."
       },
       "relationship": {
         "heading": "Hotel and residence",
-        "body": "The hotel and the residence share a site but not their figures. 188 hotel rooms sit beside 656 residential units; the distances to water are kept apart because they measure two different walks from two different starting points — the residence to the sea, the hotel to the public beach (F-003). Combined, two evidenced figures would become one unevidenced one."
+        "body": "The hotel and the residence share a site but not their figures. 188 hotel rooms sit beside 656 residential units; the distances to water are kept apart because they measure two different walks from two different starting points: the residence to the sea, the hotel to the public beach (F-003). Combined, two evidenced figures would become one unevidenced one."
       }
     },
     "reviews": {
@@ -2018,7 +2018,7 @@
         "publishedAt": "Date"
       },
       "seedNotice": "This view shows local seed data, not live inventory.",
-      "noAverageNote": "There is deliberately no overall score here. A 4.6 out of 5 and a 6.7 out of 10 cannot be combined — any number that came out would have no source. The platforms therefore sit side by side, not on top of one another.",
+      "noAverageNote": "There is deliberately no overall score here. A 4.6 out of 5 and a 6.7 out of 10 cannot be combined: any number that came out would have no source. The platforms therefore sit side by side, not on top of one another.",
       "table": {
         "caption": "Scores per platform, each on the scale it was published on",
         "platform": "Platform",
@@ -2038,8 +2038,8 @@
         "lowest": "lowest recorded score",
         "highest": "highest recorded score",
         "notTranslated": "Original text, not translated.",
-        "languageGap": "Review language: not captured — the dataset carries no language field, and a guessed language would be the same error as a translation.",
-        "titleGap": "Review title: not captured — the harvest recovered bodies only.",
+        "languageGap": "Review language: not captured, the dataset carries no language field, and a guessed language would be the same error as a translation.",
+        "titleGap": "Review title: not captured, the harvest recovered bodies only.",
         "open": "Open the review on the platform",
         "none": "There are no rated reviews."
       }

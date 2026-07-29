@@ -377,7 +377,7 @@
         "single_source": "Eine Quelle",
         "conflicted": "Widerspruch",
         "inferred": "Berechnet",
-        "gap": "Nicht belegt"
+        "gap": "Keine Angabe"
       },
       "conflict": {
         "trigger": "Widerspruch",
@@ -413,7 +413,7 @@
           "press": "Presse"
         }
       },
-      "gap": "Nicht belegt",
+      "gap": "Keine Angabe",
       "inferred": "berechnet",
       "more": "+{count} weitere",
       "sources": "Quellen"
@@ -627,14 +627,14 @@
         "modelled": "Modelliert",
         "source_missing": "Ohne Quelle",
         "portalMeaning": "Aus einem realen Portal-Inserat übernommen",
-        "modelledMeaning": "Modellierter Datensatz — kein reales Inserat",
+        "modelledMeaning": "Modellierter Datensatz: kein reales Inserat",
         "filterLabel": "Nach Herkunft filtern",
         "filterAll": "Alle Herkünfte"
       },
       "split": {
         "heading": "Herkunft des Bestands",
-        "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert — sie füllen den Bestand auf und bilden kein reales Angebot ab.",
-        "rowNote": "Modelliert — kein reales Inserat"
+        "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert: sie füllen den Bestand auf und bilden kein reales Angebot ab.",
+        "rowNote": "Modelliert: kein reales Inserat"
       }
     },
     "listings": {
@@ -1990,11 +1990,11 @@
       },
       "occupancyPanel": {
         "heading": "Belegung",
-        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte — genau danach wird eine Wettbewerbsanalyse gelesen."
+        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte: genau danach wird eine Wettbewerbsanalyse gelesen."
       },
       "relationship": {
         "heading": "Hotel und Wohnanlage",
-        "body": "Hotel und Wohnanlage teilen sich ein Grundstück, aber nicht ihre Kennzahlen. 188 Hotelzimmer stehen 656 Wohneinheiten gegenüber; die Entfernungen zum Wasser werden getrennt geführt, weil sie zwei verschiedene Strecken von zwei verschiedenen Ausgangspunkten messen — die Anlage zum Meer, das Hotel zum öffentlichen Strand (F-003). Zusammengefasst würden aus zwei belegten Angaben eine unbelegte."
+        "body": "Hotel und Wohnanlage teilen sich ein Grundstück, aber nicht ihre Kennzahlen. 188 Hotelzimmer stehen 656 Wohneinheiten gegenüber; die Entfernungen zum Wasser werden getrennt geführt, weil sie zwei verschiedene Strecken von zwei verschiedenen Ausgangspunkten messen: die Anlage zum Meer, das Hotel zum öffentlichen Strand (F-003). Zusammengefasst würden aus zwei belegten Angaben eine unbelegte."
       }
     },
     "reviews": {
@@ -2018,7 +2018,7 @@
         "publishedAt": "Datum"
       },
       "seedNotice": "Diese Ansicht zeigt lokale Seed-Daten, keinen Live-Bestand.",
-      "noAverageNote": "Es gibt hier bewusst keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen — jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander.",
+      "noAverageNote": "Es gibt hier bewusst keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen: jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander.",
       "table": {
         "caption": "Bewertungen je Plattform, jeweils auf der veröffentlichten Skala",
         "platform": "Plattform",
@@ -2038,8 +2038,8 @@
         "lowest": "niedrigste erfasste Wertung",
         "highest": "höchste erfasste Wertung",
         "notTranslated": "Originaltext, nicht übersetzt.",
-        "languageGap": "Sprache der Rezension: nicht erfasst — der Datensatz führt kein Sprachfeld, und eine geratene Sprache wäre derselbe Fehler wie eine Übersetzung.",
-        "titleGap": "Titel der Rezension: nicht erfasst — die Erhebung hat nur die Fließtexte gesichert.",
+        "languageGap": "Sprache der Rezension: nicht erfasst, der Datensatz führt kein Sprachfeld, und eine geratene Sprache wäre derselbe Fehler wie eine Übersetzung.",
+        "titleGap": "Titel der Rezension: nicht erfasst, die Erhebung hat nur die Fließtexte gesichert.",
         "open": "Rezension beim Portal öffnen",
         "none": "Keine bewerteten Rezensionen."
       }

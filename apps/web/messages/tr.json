@@ -627,14 +627,14 @@
         "modelled": "Modellenmiş",
         "source_missing": "Kaynak yok",
         "portalMeaning": "Gerçek bir portal ilanından alındı",
-        "modelledMeaning": "Modellenmiş kayıt — gerçek bir ilan değildir",
+        "modelledMeaning": "Modellenmiş kayıt: gerçek bir ilan değildir",
         "filterLabel": "Kaynağa göre filtrele",
         "filterAll": "Tüm kaynaklar"
       },
       "split": {
         "heading": "Envanterin kaynağı",
-        "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir — envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
-        "rowNote": "Modellenmiş — gerçek ilan değil"
+        "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir: envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
+        "rowNote": "Modellenmiş: gerçek ilan değil"
       }
     },
     "listings": {
@@ -1990,11 +1990,11 @@
       },
       "occupancyPanel": {
         "heading": "Doluluk",
-        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu — rekabet analizleri tam da bunun için okunur."
+        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu: rekabet analizleri tam da bunun için okunur."
       },
       "relationship": {
         "heading": "Otel ve konut sitesi",
-        "body": "Otel ve site aynı araziyi paylaşır, rakamlarını değil. 188 otel odasının yanında 656 konut birimi bulunur; suya olan mesafeler ayrı tutulur, çünkü iki farklı başlangıç noktasından iki farklı güzergâhı ölçerler — site denize, otel halk plajına (F-003). Birleştirildiğinde, belgelenmiş iki değer belgelenmemiş tek bir değere dönüşürdü."
+        "body": "Otel ve site aynı araziyi paylaşır, rakamlarını değil. 188 otel odasının yanında 656 konut birimi bulunur; suya olan mesafeler ayrı tutulur, çünkü iki farklı başlangıç noktasından iki farklı güzergâhı ölçerler: site denize, otel halk plajına (F-003). Birleştirildiğinde, belgelenmiş iki değer belgelenmemiş tek bir değere dönüşürdü."
       }
     },
     "reviews": {
@@ -2018,7 +2018,7 @@
         "publishedAt": "Tarih"
       },
       "seedNotice": "Bu görünüm canlı envanteri değil, yerel örnek verileri gösterir.",
-      "noAverageNote": "Burada bilinçli olarak genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez — ortaya çıkacak her sayının kaynağı olmazdı. Bu nedenle platformlar üst üste değil, yan yana durur.",
+      "noAverageNote": "Burada bilinçli olarak genel bir puan yok. 5 üzerinden 4,6 ile 10 üzerinden 6,7 birleştirilemez: ortaya çıkacak her sayının kaynağı olmazdı. Bu nedenle platformlar üst üste değil, yan yana durur.",
       "table": {
         "caption": "Platform başına puanlar, her biri yayımlandığı ölçekte",
         "platform": "Platform",
@@ -2038,8 +2038,8 @@
         "lowest": "kaydedilen en düşük puan",
         "highest": "kaydedilen en yüksek puan",
         "notTranslated": "Özgün metin, çevrilmemiştir.",
-        "languageGap": "Değerlendirmenin dili: kaydedilmedi — veri kümesinde dil alanı yok ve tahmin edilen bir dil, çeviriyle aynı hatadır.",
-        "titleGap": "Değerlendirme başlığı: kaydedilmedi — derleme yalnızca metin gövdelerini aldı.",
+        "languageGap": "Değerlendirmenin dili: kaydedilmedi, veri kümesinde dil alanı yok ve tahmin edilen bir dil, çeviriyle aynı hatadır.",
+        "titleGap": "Değerlendirme başlığı: kaydedilmedi, derleme yalnızca metin gövdelerini aldı.",
         "open": "Değerlendirmeyi platformda aç",
         "none": "Puanlanmış değerlendirme bulunmuyor."
       }
