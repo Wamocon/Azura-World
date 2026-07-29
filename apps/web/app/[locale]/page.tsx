@@ -57,16 +57,19 @@ import type { ReactNode } from "react"
 
 import { generatedAt, project } from "@/components/azura/landing-data"
 import { HeroSection } from "@/app/sections/hero"
-import { Footer, Navbar, TopBar } from "@/app/sections/chrome"
+import { Footer, Navbar } from "@/app/sections/chrome"
 import {
   AmenitiesSection,
   DesireSection,
   SiteSection,
   WhySection,
 } from "@/app/sections/body"
+import { CinemaSection } from "@/app/sections/cinema"
 import { SystemSection } from "@/app/sections/system"
-import { OperatingMap } from "@/components/azura/operating-map"
+import { SiteModelSection } from "@/components/azura/site-model-section"
 import { ActionSection } from "@/app/sections/close"
+import { LandingChoreography } from "@/components/anim/landing-choreography"
+import { LenisProvider } from "@/components/providers/lenis-provider"
 import { defaultLocale, locales } from "@/lib/contracts"
 import { publicEnv } from "@/lib/env"
 
@@ -136,10 +139,15 @@ export default async function LandingPage({
 
   const t = await getTranslations({ locale, namespace: "landing" })
 
-  // The nonce the proxy minted for THIS request. Next stamps its own scripts
-  // from the request header; anything we add inline has to carry it explicitly
-  // or `strict-dynamic` blocks it.
-  const nonce = (await headers()).get("x-nonce")
+  // `headers()` is read for its side effect, not its value.
+  //
+  // It is a Dynamic API, and calling it is what keeps this route out of static
+  // generation — which `app/layout.tsx` explains at length is the whole reason
+  // the per-request CSP nonce works at all. The route must never be
+  // prerendered; reading a header is the thing that guarantees it.
+  //
+  // The VALUE is deliberately unused. See the JSON-LD block at the bottom.
+  await headers()
 
   /**
    * JSON-LD describes the *analysis*, not the property.
@@ -152,8 +160,15 @@ export default async function LandingPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Dataset",
-    name: `${t("hero.title")} — ${t("topBar.notice")}`,
-    description: t("evidenceBand.lead"),
+    name: `${t("hero.title")} · ${t("topBar.notice")}`,
+    // `evidenceBand.lead` stood here and that namespace has not existed since
+    // PIVOT.md removed the evidence band. next-intl throws `MISSING_MESSAGE`
+    // rather than returning a placeholder, so every render of this route logged
+    // a server error and the structured data was emitted with the key name
+    // where the description should be. `hero.subtitle` is the same string the
+    // `<meta name="description">` already uses, which is what a `Dataset`
+    // description should agree with anyway.
+    description: t("hero.subtitle"),
     url: `${SITE_URL}/${locale}`,
     inLanguage: locale,
     dateModified: generatedAt,
@@ -182,32 +197,90 @@ export default async function LandingPage({
         {t("skipToContent")}
       </a>
 
-      <TopBar locale={locale} />
-      <Navbar locale={locale} />
+      {/* ═══════════════════════════════════════════════════════════════
+          The night surface.
 
-      <main id="main">
-        <HeroSection locale={locale} />
-        <div className="mx-auto w-full max-w-[72rem] px-5 sm:px-8">
-          <WhySection locale={locale} />
-          <SiteSection locale={locale} initialBlock={initialBlock} />
-            <OperatingMap locale={locale} />
-          <AmenitiesSection locale={locale} />
-          <DesireSection locale={locale} />
-          {/* The complex, then the system that runs it, then the way in.
-              PIVOT.md added this section and removed four: the evidence band,
-              and the three closers that framed the page as a research report
-              ("Der öffentliche Report enthält dieselben Zahlen mit denselben
-              Quellen", "Eine Zahl ohne Quelle ist eine Behauptung"). */}
-          <SystemSection locale={locale} />
-          <ActionSection locale={locale} />
+          `data-surface="night"` re-declares the token set inside this subtree
+          and nowhere else (globals.css §"NIGHT SURFACE"). Everything below
+          keeps reading `var(--foreground)` and comes out correct without
+          knowing it moved, and `/dashboard` keeps the daylight theme a
+          property manager actually reads a hundred rows in.
+
+          Lenis wraps the surface rather than the app: smooth scroll is a
+          marketing-surface behaviour, and it declines to mount at all under
+          reduced motion, at which point the browser's native scroll is the
+          correct answer. `LandingChoreography` renders nothing — it is the
+          single GSAP context for the whole route.
+          ═══════════════════════════════════════════════════════════════ */}
+      <LenisProvider>
+        <div data-surface="night" className="relative min-h-dvh">
+          {/* Reading progress. Fixed, hairline, and `aria-hidden`: it is a
+              second rendering of the scrollbar, which every assistive
+              technology already exposes. Sits behind the chrome's z-40. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed top-0 left-0 z-30 hidden h-dvh w-px bg-[color-mix(in_srgb,var(--foreground)_8%,transparent)] lg:block"
+          >
+            <span
+              data-rail
+              className="block h-full w-full origin-top scale-y-0 bg-[linear-gradient(to_bottom,var(--primary),var(--accent))]"
+            />
+          </div>
+
+          <Navbar locale={locale} />
+
+          <main id="main">
+            {/* Hero and walk-through are full-bleed and own their own width.
+                Everything after them shares the 72rem measure. */}
+            <HeroSection locale={locale} />
+            <CinemaSection locale={locale} />
+
+            <div className="mx-auto w-full max-w-[72rem] px-5 sm:px-8">
+              <WhySection locale={locale} />
+              <SiteSection locale={locale} initialBlock={initialBlock} />
+              <SiteModelSection locale={locale} selectedBlock={initialBlock} />
+              <AmenitiesSection locale={locale} />
+              <DesireSection locale={locale} />
+              {/* The complex, then the system that runs it, then the way in.
+                  PIVOT.md added the system section and removed four: the
+                  evidence band, and the three closers that framed the page as a
+                  research report. */}
+              <SystemSection locale={locale} />
+            </div>
+
+            {/* The close is full-bleed for the same reason the hero is: the
+                page opens and ends on a photograph, and the ask sits on it. */}
+            <ActionSection locale={locale} />
+          </main>
+
+          <Footer locale={locale} />
+          <LandingChoreography />
         </div>
-      </main>
+      </LenisProvider>
 
-      <Footer locale={locale} />
-
+      {/* NO `nonce` HERE, and it is not an oversight.
+       *
+       * It carried one, and it produced a hydration mismatch on every single
+       * load of this route: server HTML said `nonce="58zrQ2fEXG…"`, the client
+       * DOM said `nonce=""`, React logged "a tree hydrated but some attributes
+       * of the server rendered HTML didn't match" and gave up patching the
+       * subtree. Read off the Next.js dev overlay pointing at this element.
+       *
+       * The cause is *nonce hiding*, which is a browser security feature rather
+       * than a bug: once a document is parsed, the browser clears the `nonce`
+       * content attribute and keeps the value only on the `.nonce` IDL
+       * property, so a script cannot exfiltrate the nonce by reading the DOM.
+       * React hydrates against the content attribute, which is by then empty,
+       * so ANY server-rendered `nonce` attribute mismatches by construction.
+       *
+       * Removing it is safe because this is a data block, not a script.
+       * `type="application/ld+json"` is not a JavaScript MIME type, so the HTML
+       * spec's "prepare the script element" bails before the CSP check and the
+       * browser never executes or evaluates it. `script-src` does not apply.
+       * Verified rather than reasoned: `pnpm qa:csp` drives Chromium against
+       * `next start` and reports 0 CSP violations on /de with this shipped. */}
       <script
         type="application/ld+json"
-        {...(nonce === null ? {} : { nonce })}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </>

@@ -280,7 +280,8 @@
         "completed": "Fertiggestellt",
         "under_construction": "Im Bau",
         "planned": "Geplant"
-      }
+      },
+      "antalyaAirportLabel": "Entfernung Flughafen Antalya"
     },
     "immersion": {
       "title": "Ein Tag vor Ort",
@@ -401,7 +402,8 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mittelmeer",
       "selectedLabel": "Ausgewählt:",
-      "schematicNote": "Schematische Darstellung der Zusammensetzung, kein Grundriss. Block wählen für Details."
+      "schematicNote": "Schematische Darstellung der Zusammensetzung, kein Grundriss. Block wählen für Details.",
+      "blockNote": "Wie sich die Wohnungen auf die Blöcke verteilen, gibt keine Quelle an. Die Aufteilung ist hier gleichmäßig angenommen."
     },
     "system": {
       "title": "Was das System kann",
@@ -443,7 +445,8 @@
     "mediaKind": {
       "render": "Visualisierung des Bauträgers",
       "floorplan": "Grundriss",
-      "siteplan": "Lageplan"
+      "siteplan": "Lageplan",
+      "allRenders": "Alle Aufnahmen in diesem Abschnitt sind Visualisierungen des Bauträgers, keine Fotos der fertigen Anlage."
     }
   },
   "dashboard": {
@@ -2338,5 +2341,53 @@
       "lead": "Bildmaterial stammt aus öffentlich zugänglichen Quellen und wird nur mit Quellenangabe gezeigt. Rechte verbleiben bei den jeweiligen Inhabern.",
       "attribution": "Quelle: {source}"
     }
+  },
+  "siteModel": {
+    "heading": "Ein Tag auf Ihrer Anlage",
+    "lead": "Die Zeichnung zeigt Ihre Blöcke so, wie der Bauträger sie veröffentlicht hat. Darüber läuft ein Tag im System: Meldungen kommen an, werden zugewiesen und wieder geschlossen.",
+    "bannerTitle": "Beispieldaten",
+    "bannerBody": "Die Gebäude und die Blockbuchstaben sind die Ihrer Anlage. Alles, was sich darüber bewegt, wurde für diese Vorführung erzeugt.",
+    "compression": "Eine Sekunde hier sind etwa zweieinhalb Minuten eines normalen Tages.",
+    "schematic": "Die Zeichnung ist ein Schema, keine Vermessung.",
+    "identifiers": "Wohnungsnummern zeigt diese Ansicht nicht an.",
+    "feedHeading": "Was gerade passiert",
+    "rowPrefix": "Beispiel",
+    "openReports": "Offene Meldungen",
+    "reportRef": "Meldung {n}",
+    "blockRef": "Block {key}",
+    "wholeSite": "Ganze Anlage",
+    "accounts": "{count} Konten",
+    "error": "Die Ansicht konnte nicht geladen werden. Die Zeichnung bleibt sichtbar.",
+    "groups": {
+      "intake": "Eingang",
+      "work": "Arbeit",
+      "money": "Abrechnung",
+      "exception": "Achtung",
+      "milestone": "Ablauf"
+    },
+    "cadence": {
+      "daily": "Kommt jeden Tag vor",
+      "monthly": "Einmal im Monat",
+      "sixWeekly": "Etwa alle sechs Wochen"
+    },
+    "events": {
+      "report_opened": "Meldung aufgenommen",
+      "resident_message": "Nachricht eingegangen",
+      "payment_received": "Zahlung zugeordnet",
+      "payment_overdue": "Abrechnung überfällig",
+      "finance_approval_requested": "Freigabe angefordert",
+      "document_filed": "Dokument abgelegt",
+      "activity_opened": "Termin eingetragen",
+      "vendor_invoice_approved": "Handwerkerrechnung freigegeben",
+      "report_assigned": "Meldung zugewiesen",
+      "report_resolved": "Meldung erledigt",
+      "report_overdue": "Frist überschritten",
+      "hotel_check_in": "Anreise im Hotel",
+      "hotel_check_out": "Abreise im Hotel",
+      "lift_fault": "Störung an gemeinsamer Anlage",
+      "service_charge_run_posted": "Hausgeldlauf gebucht",
+      "unit_handover": "Wohnung übergeben"
+    },
+    "bannerShort": "BEISPIEL"
   }
 }

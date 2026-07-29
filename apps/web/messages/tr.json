@@ -280,7 +280,8 @@
         "completed": "Tamamlandı",
         "under_construction": "İnşa hâlinde",
         "planned": "Planlandı"
-      }
+      },
+      "antalyaAirportLabel": "Antalya havalimanına uzaklık"
     },
     "immersion": {
       "title": "Sitede bir gün",
@@ -401,7 +402,8 @@
       "hotelLabel": "Otel",
       "seaLabel": "Akdeniz",
       "selectedLabel": "Seçili:",
-      "schematicNote": "Yerleşimin şematik gösterimi, kat planı değil. Ayrıntılar için blok seçin."
+      "schematicNote": "Yerleşimin şematik gösterimi, kat planı değil. Ayrıntılar için blok seçin.",
+      "blockNote": "Dairelerin bloklara nasıl dağıldığını hiçbir kaynak belirtmiyor. Buradaki dağılım eşit varsayılmıştır."
     },
     "system": {
       "title": "Sistem ne yapar",
@@ -443,7 +445,8 @@
     "mediaKind": {
       "render": "Müteahhit görselleştirmesi",
       "floorplan": "Kat planı",
-      "siteplan": "Vaziyet planı"
+      "siteplan": "Vaziyet planı",
+      "allRenders": "Bu bölümdeki tüm görseller müteahhit görselleştirmesidir, tamamlanmış tesisin fotoğrafı değildir."
     }
   },
   "dashboard": {
@@ -2338,5 +2341,53 @@
       "lead": "Görseller kamuya açık kaynaklardan alınmıştır ve yalnızca kaynak belirtilerek gösterilir. Haklar sahiplerine aittir.",
       "attribution": "Kaynak: {source}"
     }
+  },
+  "siteModel": {
+    "heading": "Sitenizde bir gün",
+    "lead": "Çizim bloklarınızı, müteahhidin yayımladığı haliyle gösterir. Üzerinde sistemde bir gün akar: bildirimler gelir, atanır ve kapanır.",
+    "bannerTitle": "Örnek veri",
+    "bannerBody": "Binalar ve blok harfleri sizin sitenize aittir. Üzerlerinde hareket eden her şey bu sunum için üretilmiştir.",
+    "compression": "Buradaki bir saniye, normal bir günün yaklaşık iki buçuk dakikasıdır.",
+    "schematic": "Çizim bir şemadır, ölçüm değildir.",
+    "identifiers": "Bu görünüm daire numaralarını göstermez.",
+    "feedHeading": "Şu anda olanlar",
+    "rowPrefix": "Örnek",
+    "openReports": "Açık bildirimler",
+    "reportRef": "Bildirim {n}",
+    "blockRef": "Blok {key}",
+    "wholeSite": "Tüm site",
+    "accounts": "{count} hesap",
+    "error": "Bu görünüm yüklenemedi. Çizim görünür kalır.",
+    "groups": {
+      "intake": "Giriş",
+      "work": "İş",
+      "money": "Hesap",
+      "exception": "Dikkat",
+      "milestone": "Rutin"
+    },
+    "cadence": {
+      "daily": "Her gün olur",
+      "monthly": "Ayda bir",
+      "sixWeekly": "Yaklaşık altı haftada bir"
+    },
+    "events": {
+      "report_opened": "Bir bildirim açıldı",
+      "resident_message": "Bir mesaj geldi",
+      "payment_received": "Bir ödeme eşleştirildi",
+      "payment_overdue": "Bir aidat vadesini geçti",
+      "finance_approval_requested": "Bir onay istendi",
+      "document_filed": "Bir belge dosyalandı",
+      "activity_opened": "Bir randevu girildi",
+      "vendor_invoice_approved": "Bir usta faturası onaylandı",
+      "report_assigned": "Bildirim atandı",
+      "report_resolved": "Bildirim kapatıldı",
+      "report_overdue": "Bildirim süresini aştı",
+      "hotel_check_in": "Otelde bir giriş",
+      "hotel_check_out": "Otelden bir çıkış",
+      "lift_fault": "Ortak bir tesiste arıza",
+      "service_charge_run_posted": "Aidat dönemi işlendi",
+      "unit_handover": "Bir daire teslim edildi"
+    },
+    "bannerShort": "ÖRNEK"
   }
 }

@@ -280,7 +280,8 @@
         "completed": "Completed",
         "under_construction": "Under construction",
         "planned": "Planned"
-      }
+      },
+      "antalyaAirportLabel": "Distance to Antalya airport"
     },
     "immersion": {
       "title": "A day on site",
@@ -401,7 +402,8 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mediterranean",
       "selectedLabel": "Selected:",
-      "schematicNote": "A schematic of how the site is composed, not a floor plan. Select a block for details."
+      "schematicNote": "A schematic of how the site is composed, not a floor plan. Select a block for details.",
+      "blockNote": "No source states how the apartments are split across the blocks. The split shown here is assumed to be even."
     },
     "system": {
       "title": "What the system does",
@@ -443,7 +445,8 @@
     "mediaKind": {
       "render": "Developer visualisation",
       "floorplan": "Floor plan",
-      "siteplan": "Site plan"
+      "siteplan": "Site plan",
+      "allRenders": "Every frame in this section is a developer visualisation, not a photograph of the finished site."
     }
   },
   "dashboard": {
@@ -2338,5 +2341,53 @@
       "lead": "Images come from publicly accessible sources and are shown with attribution only. Rights remain with their owners.",
       "attribution": "Source: {source}"
     }
+  },
+  "siteModel": {
+    "heading": "A day on your site",
+    "lead": "The drawing shows your blocks as the developer published them. A day in the system runs across it: reports arrive, get assigned, and close again.",
+    "bannerTitle": "Sample data",
+    "bannerBody": "The buildings and the block letters are yours. Everything moving across them was created for this demonstration.",
+    "compression": "One second here is about two and a half minutes of a normal day.",
+    "schematic": "The drawing is a schematic, not a survey.",
+    "identifiers": "This view does not show apartment numbers.",
+    "feedHeading": "What is happening now",
+    "rowPrefix": "Sample",
+    "openReports": "Open reports",
+    "reportRef": "Report {n}",
+    "blockRef": "Block {key}",
+    "wholeSite": "Whole site",
+    "accounts": "{count} accounts",
+    "error": "This view could not load. The drawing stays visible.",
+    "groups": {
+      "intake": "Intake",
+      "work": "Work",
+      "money": "Accounts",
+      "exception": "Attention",
+      "milestone": "Routine"
+    },
+    "cadence": {
+      "daily": "Happens every day",
+      "monthly": "Once a month",
+      "sixWeekly": "About every six weeks"
+    },
+    "events": {
+      "report_opened": "A report was raised",
+      "resident_message": "A message came in",
+      "payment_received": "A payment was matched",
+      "payment_overdue": "A charge passed its due date",
+      "finance_approval_requested": "An approval was requested",
+      "document_filed": "A document was filed",
+      "activity_opened": "An appointment was entered",
+      "vendor_invoice_approved": "A contractor invoice was approved",
+      "report_assigned": "The report was assigned",
+      "report_resolved": "The report was closed",
+      "report_overdue": "The report passed its deadline",
+      "hotel_check_in": "An arrival at the hotel",
+      "hotel_check_out": "A departure from the hotel",
+      "lift_fault": "A fault on a shared installation",
+      "service_charge_run_posted": "The service charge run was posted",
+      "unit_handover": "An apartment was handed over"
+    },
+    "bannerShort": "SAMPLE"
   }
 }
