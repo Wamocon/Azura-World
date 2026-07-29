@@ -164,6 +164,69 @@ export function buildAccessProfileFor(
 // ---------------------------------------------------------------------------
 
 /** The columns read from `profiles`. W1-A owns the table; this is the contract. */
+/**
+ * The columns read from `public.profiles`, and **only columns a migration
+ * actually creates**.
+ *
+ * ## Why this is a named constant, and why it lives in this module
+ *
+ * It used to be a string literal inside `lib/auth.ts`, and it named two columns
+ * that do not exist: `roles` and `anonymized_at`. PostgREST answers a select
+ * over an unknown column with `42703` for the **whole request**, so
+ * `profileError` was non-null on every authenticated request,
+ * {@link resolveSupabaseProfile} took its `profileReadFailed` branch, and every
+ * user in the product resolved to `tenant`. An administrator was a tenant, the
+ * eleven-role matrix was inert, and it had never once been exercised against the
+ * database.
+ *
+ * Reproduced against the live project before the fix (SEC-002, M-002):
+ *
+ * ```
+ * profiles?select=role           -> 200  {"role":"admin"}
+ * profiles?select=roles          -> 400  42703  column profiles.roles does not exist
+ * profiles?select=anonymized_at  -> 400  42703  column profiles.anonymized_at does not exist
+ * ```
+ *
+ * The failure direction was fail-closed, so it was never an escalation. It was
+ * worse in one specific way: it is indistinguishable from working.
+ *
+ * It lives **here** rather than beside the query because `lib/auth.ts` imports
+ * `next/headers` and cannot be loaded outside a Next runtime. A projection that
+ * no test can import is a projection that drifts from the schema unobserved,
+ * which is the whole history of this defect. `HANDOFF/F1-role-resolution-probe.mts`
+ * issues this exact list against the live database.
+ *
+ * ## Why the two columns were removed rather than added
+ *
+ * `CONTRACTS.md` §3 freezes the role list, so the resolution is what may change,
+ * never the list. Fifteen migrations create `public.profiles` with exactly these
+ * columns plus `created_at`/`updated_at`; `roles` appears in four migrations in
+ * comments only. There is no multi-role assignment and no anonymisation feature
+ * to preserve, only two names in a select list.
+ *
+ * ## If W1-A ever adds them
+ *
+ * Add the column here **in the same commit as the migration**. Both downstream
+ * checks re-arm on their own: `normalizeRoleList(row.roles, role)` and the
+ * `anonymized_at` suspension test below are already written to tolerate
+ * `undefined`. That defensive design was correct all along; naming the columns
+ * in the projection was the one thing that defeated it.
+ */
+export const PROFILE_COLUMNS = [
+  "id",
+  "email",
+  "full_name",
+  "role",
+  "is_active",
+  "company_id",
+  "phone",
+  "locale",
+  "avatar_url",
+] as const
+
+/** The projection PostgREST is given. One source, one join. */
+export const PROFILE_SELECT: string = PROFILE_COLUMNS.join(", ")
+
 export interface ProfileRow {
   id?: unknown
   email?: unknown
@@ -263,6 +326,14 @@ export function resolveSupabaseProfile(facts: SupabaseAuthFacts): UserProfile {
   // A suspended or anonymised profile is treated as no session at all, so the
   // route guard sends it to login exactly like an expired token. `is_active ===
   // false` rather than falsy, so a legacy NULL stays active.
+  //
+  // **`anonymized_at` is inert today, and that is a schema fact, not a bug
+  // here.** No migration creates the column, so `PROFILE_COLUMNS` in
+  // `lib/auth.ts` cannot select it and `row.anonymized_at` is always
+  // `undefined`. `is_active` is the suspension control that actually runs. The
+  // test is kept rather than deleted because it costs nothing and re-arms by
+  // itself the day W1-A adds the column and it joins the projection; deleting it
+  // would mean rediscovering the requirement later. See SEC-002.
   if (row.is_active === false || (row.anonymized_at ?? null) !== null) {
     return ANONYMOUS_PROFILE
   }
@@ -281,6 +352,11 @@ export function resolveSupabaseProfile(facts: SupabaseAuthFacts): UserProfile {
     email: facts.userEmail ?? asString(row.email),
     fullName: asString(row.full_name),
     role,
+    // `row.roles` is likewise always `undefined`: the column exists in no
+    // migration. `normalizeRoleList` therefore returns `[role]`, which is the
+    // correct representation of a single-role user and is exactly what this
+    // module's header says it should be. Multi-role assignment is unbuilt, not
+    // broken.
     roles: normalizeRoleList(row.roles, role),
     isActive: true,
     companyId: asString(row.company_id),
