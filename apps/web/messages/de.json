@@ -275,7 +275,12 @@
       "seaLabel": "Entfernung zum Meer",
       "centreLabel": "Entfernung Alanya-Zentrum",
       "airportLabel": "Entfernung Flughafen Gazipaşa",
-      "downPaymentLabel": "Anzahlung"
+      "downPaymentLabel": "Anzahlung",
+      "status": {
+        "completed": "Fertiggestellt",
+        "under_construction": "Im Bau",
+        "planned": "Geplant"
+      }
     },
     "immersion": {
       "title": "Ein Tag vor Ort",

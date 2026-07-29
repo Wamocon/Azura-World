@@ -109,7 +109,19 @@ export async function WhySection({ locale }: SectionProps): Promise<ReactNode> {
             />
             <FactRow
               label={t("why.statusLabel")}
-              value={value(project.buildStatus, "text")}
+              value={value(
+                // "completed" is a database enum. A property manager reads
+                // "Fertiggestellt". Translate the value and keep the fact
+                // wrapper, so the row renders like every other one.
+                {
+                  ...project.buildStatus,
+                  value:
+                    typeof project.buildStatus.value === "string"
+                      ? t(`why.status.${project.buildStatus.value}`)
+                      : project.buildStatus.value,
+                },
+                "text",
+              )}
             />
             <FactRow
               label={t("why.downPaymentLabel")}
@@ -329,7 +341,7 @@ export async function DesireSection({
 
   const value = (
     fact: Parameters<typeof InventoryValue>[0]["fact"],
-    format: "number" | "text" | "date" | "stars"
+    format: "number" | "text" | "date" | "stars" | "year"
   ): ReactNode => (
     <InventoryValue
       fact={fact}
@@ -373,7 +385,7 @@ export async function DesireSection({
             />
             <FactRow
               label={t("desire.openedLabel")}
-              value={value(hotel.openedYear, "number")}
+              value={value(hotel.openedYear, "year")}
             />
             <FactRow
               label={t("desire.formerLabel")}

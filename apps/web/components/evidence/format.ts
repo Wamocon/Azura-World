@@ -53,6 +53,8 @@ export function snapshotUrl(basePath: string, snapshotHash: string): string {
 /** Built-in presets. Anything else: pass a function. */
 export type ProvenanceFormat =
   | "text"
+  /** A calendar year. Never grouped: 2025, not "2.025". */
+  | "year"
   | "number"
   | "area"
   | "money"
@@ -111,6 +113,12 @@ export function formatFactValue(
   switch (format) {
     case "text":
       return typeof value === "string" ? value : String(value)
+
+    case "year":
+      // A year is an identifier, not a quantity. German grouping turns 2025
+      // into "2.025", which reads as a decimal and looks like a bug because
+      // it is one.
+      return typeof value === "number" ? String(Math.trunc(value)) : String(value)
 
     case "number":
       return typeof value === "number"

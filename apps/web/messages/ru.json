@@ -275,7 +275,12 @@
       "seaLabel": "Расстояние до моря",
       "centreLabel": "Расстояние до центра Аланьи",
       "airportLabel": "Расстояние до аэропорта Газипаша",
-      "downPaymentLabel": "Первый взнос"
+      "downPaymentLabel": "Первый взнос",
+      "status": {
+        "completed": "Построен",
+        "under_construction": "Строится",
+        "planned": "Запланирован"
+      }
     },
     "immersion": {
       "title": "День на территории",

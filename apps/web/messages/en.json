@@ -275,7 +275,12 @@
       "seaLabel": "Distance to the sea",
       "centreLabel": "Distance to Alanya centre",
       "airportLabel": "Distance to Gazipaşa airport",
-      "downPaymentLabel": "Down payment"
+      "downPaymentLabel": "Down payment",
+      "status": {
+        "completed": "Completed",
+        "under_construction": "Under construction",
+        "planned": "Planned"
+      }
     },
     "immersion": {
       "title": "A day on site",

@@ -275,7 +275,12 @@
       "seaLabel": "Denize uzaklık",
       "centreLabel": "Alanya merkezine uzaklık",
       "airportLabel": "Gazipaşa havalimanına uzaklık",
-      "downPaymentLabel": "Peşinat"
+      "downPaymentLabel": "Peşinat",
+      "status": {
+        "completed": "Tamamlandı",
+        "under_construction": "İnşa hâlinde",
+        "planned": "Planlandı"
+      }
     },
     "immersion": {
       "title": "Sitede bir gün",
