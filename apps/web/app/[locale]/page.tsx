@@ -52,6 +52,7 @@
 
 import type { Metadata } from "next"
 import { headers } from "next/headers"
+import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
 
@@ -67,6 +68,7 @@ import {
 import { CinemaSection } from "@/app/sections/cinema"
 import { SystemSection } from "@/app/sections/system"
 import { SiteModelSection } from "@/components/azura/site-model-section"
+import { ConciergeDock } from "@/components/azura/concierge-dock"
 import { ActionSection } from "@/app/sections/close"
 import { LandingChoreography } from "@/components/anim/landing-choreography"
 import { LenisProvider } from "@/components/providers/lenis-provider"
@@ -91,6 +93,10 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
+  // `locale` is a route param and therefore a string. The concierge takes the
+  // narrowed union, so it is validated here rather than cast at the call site.
+  const conciergeLocale = hasLocale(locales, locale) ? locale : defaultLocale
+
   const t = await getTranslations({ locale, namespace: "landing" })
 
   const languages: Record<string, string> = {}
@@ -137,17 +143,21 @@ export default async function LandingPage({
   const blockParam = (await searchParams)["block"]
   const initialBlock = typeof blockParam === "string" ? blockParam : null
 
+  // `locale` arrives as a route param and is therefore a plain string. The
+  // concierge takes the narrowed union, so it is validated here rather than
+  // cast away at the call site.
+  const conciergeLocale = hasLocale(locales, locale) ? locale : defaultLocale
+
   const t = await getTranslations({ locale, namespace: "landing" })
 
-  // `headers()` is read for its side effect, not its value.
+  // The nonce the proxy minted for THIS request. Next stamps its own scripts
+  // from the request header; anything we add inline has to carry it explicitly
+  // or `strict-dynamic` blocks it.
   //
-  // It is a Dynamic API, and calling it is what keeps this route out of static
-  // generation — which `app/layout.tsx` explains at length is the whole reason
-  // the per-request CSP nonce works at all. The route must never be
-  // prerendered; reading a header is the thing that guarantees it.
-  //
-  // The VALUE is deliberately unused. See the JSON-LD block at the bottom.
-  await headers()
+  // Reading `headers()` is also what keeps this route out of static generation,
+  // which `app/layout.tsx` explains at length is the whole reason the
+  // per-request nonce works at all.
+  const nonce = (await headers()).get("x-nonce")
 
   /**
    * JSON-LD describes the *analysis*, not the property.
@@ -254,33 +264,46 @@ export default async function LandingPage({
           </main>
 
           <Footer locale={locale} />
+
+          {/* The assistant. It has worked since W3-H against a live gateway and
+              was reachable from one unlinked URL, which is why it read as
+              missing. Mounted last so it docks above everything without
+              entering the page's flow. */}
+          <ConciergeDock locale={conciergeLocale} />
           <LandingChoreography />
         </div>
       </LenisProvider>
 
-      {/* NO `nonce` HERE, and it is not an oversight.
+      {/* `suppressHydrationWarning` is load-bearing, and the reason is subtle.
        *
-       * It carried one, and it produced a hydration mismatch on every single
-       * load of this route: server HTML said `nonce="58zrQ2fEXG…"`, the client
-       * DOM said `nonce=""`, React logged "a tree hydrated but some attributes
-       * of the server rendered HTML didn't match" and gave up patching the
-       * subtree. Read off the Next.js dev overlay pointing at this element.
+       * Without it this element logged on every single load of the route:
+       * server HTML said `nonce="58zrQ2fEXG…"`, the client DOM said `nonce=""`,
+       * and React reported "a tree hydrated but some attributes of the server
+       * rendered HTML didn't match" and stopped patching the subtree. Read off
+       * the Next.js dev overlay, which pointed straight at this tag.
        *
-       * The cause is *nonce hiding*, which is a browser security feature rather
-       * than a bug: once a document is parsed, the browser clears the `nonce`
-       * content attribute and keeps the value only on the `.nonce` IDL
-       * property, so a script cannot exfiltrate the nonce by reading the DOM.
-       * React hydrates against the content attribute, which is by then empty,
-       * so ANY server-rendered `nonce` attribute mismatches by construction.
+       * The cause is *nonce hiding*, a browser security feature rather than a
+       * bug: once the document is parsed the browser clears the `nonce` content
+       * attribute and keeps the value only on the `.nonce` IDL property, so a
+       * script cannot exfiltrate the nonce by reading the DOM. React hydrates
+       * against the content attribute, which is by then empty, so ANY
+       * server-rendered `nonce` mismatches by construction.
        *
-       * Removing it is safe because this is a data block, not a script.
-       * `type="application/ld+json"` is not a JavaScript MIME type, so the HTML
-       * spec's "prepare the script element" bails before the CSP check and the
-       * browser never executes or evaluates it. `script-src` does not apply.
-       * Verified rather than reasoned: `pnpm qa:csp` drives Chromium against
-       * `next start` and reports 0 CSP violations on /de with this shipped. */}
+       * The obvious fix — drop the nonce, since `application/ld+json` is a data
+       * block that the HTML spec never executes and `script-src` never governs —
+       * is wrong here for a concrete reason: `scripts/csp-probe.mjs` asserts
+       * that EVERY script tag on the page carries the response nonce, because
+       * one unnonced script is the signature of S-009, the bug that shipped
+       * pages with zero working JavaScript for a night. Weakening a gate that
+       * catches a real outage, to silence a warning, is a bad trade.
+       *
+       * So the nonce stays and React is told not to diff this one element.
+       * That is exactly what `suppressHydrationWarning` is for: an attribute the
+       * browser itself is known to rewrite after parse. */}
       <script
         type="application/ld+json"
+        suppressHydrationWarning
+        {...(nonce === null ? {} : { nonce })}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </>
