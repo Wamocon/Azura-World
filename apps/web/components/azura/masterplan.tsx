@@ -135,7 +135,22 @@ export function Masterplan({
                         : "border-[color-mix(in_srgb,var(--foreground)_18%,transparent)] bg-card/70 hover:border-primary/60"
                     )}
                   >
-                    <span className="flex w-full min-w-0 items-center justify-between gap-2">
+                    {/* `flex-wrap`: the provenance mark drops to its own line
+                        rather than being cut off.
+
+                        `pnpm qa:layout` caught this in TURKISH only, at 320 and
+                        1024: "Modellenmiş" was clipped by 5 to 6px by the
+                        plate's `overflow-hidden`. azura-ui-ux §5.6 warns that
+                        German runs ~30% longer and Russian ~35%, so those are
+                        the locales one tests by hand; Turkish is longer than
+                        both for this particular word and nobody had looked.
+
+                        Wrapping rather than truncating is the point. A modelled
+                        badge that reads "Modellenmi…" still says modelled, but
+                        this is the honesty control for 631 of 656 units
+                        (azura-ui-ux §6) and a control that renders half-cut
+                        invites the reader to skim past it. */}
+                    <span className="flex w-full min-w-0 flex-wrap items-center justify-between gap-2">
                       <span className="font-display text-base leading-none tracking-[-0.01em]">
                         {block.code}
                       </span>
@@ -171,9 +186,27 @@ export function Masterplan({
             </span>
           </div>
 
+          {/* `text-foreground`, not `text-muted-foreground`.
+
+              `pnpm qa:layout` measured this label from rendered pixels at
+              **4.24:1** against the plate's sea gradient (`#4a6472` on
+              `rgb(195,216,224)`), under the 4.5 azura-ui-ux §5.5 requires. It
+              is the only contrast failure on a real product surface, and it was
+              invisible to a token-level check because the background is a
+              gradient, not a colour.
+
+              `--sea-deep` was the tempting choice, since a label reading
+              "Mittelmeer" in the sea colour is nicer. It was rejected: in dark
+              mode `--sea-deep` is `#02202f` against a dark plate, which fails
+              contrast in the other direction — and dark mode is currently
+              UNMEASURABLE here, because `forcedTheme="light"` (SEC-022) makes
+              every "dark" row in that audit really a light one. Picking a colour
+              that only works in the theme the harness can see is how a defect
+              gets shipped behind a green gate. `--foreground` is correct in
+              both. */}
           <p
             aria-hidden="true"
-            className="text-center text-[0.6875rem] tracking-[0.06em] text-muted-foreground uppercase"
+            className="text-center text-[0.6875rem] tracking-[0.06em] text-foreground uppercase"
           >
             {labels.seaLabel}
           </p>

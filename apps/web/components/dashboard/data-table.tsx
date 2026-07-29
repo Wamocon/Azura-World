@@ -409,7 +409,23 @@ export function DataTable<TRow>({
             <TableCell className="w-10">
               <input
                 type="checkbox"
-                className="size-4 accent-[var(--primary)]"
+                // 24px, not 16px. azura-ui-ux §5.7 sets the tap-target floor at
+                // 24px and `size-4` is 16. `pnpm qa:layout` measured this
+                // one input 1600 times: 25 instances × 8 widths × 4 locales
+                // × 2 themes, the largest single finding in the audit.
+                //
+                // It was only VISIBLE there because /kitchen-sink is public
+                // (SEC-019). The harness does not audit /dashboard/* at all
+                // (its blind spot 9), and this component is the selection
+                // control on every dashboard table, so the same 16px target
+                // shipped on every one of them unmeasured.
+                //
+                // A pseudo-element hit area would keep the 16px look, and
+                // was rejected: `getBoundingClientRect()` does not include
+                // it, so the control would still measure 16px to this
+                // harness and to anything else reading the box. Making the
+                // target real is the fix; making it look bigger is not.
+                className="size-6 accent-[var(--primary)]"
                 checked={selected.has(id)}
                 onChange={() => toggleRow(id)}
                 onClick={(event) => event.stopPropagation()}
@@ -457,7 +473,23 @@ export function DataTable<TRow>({
           <TableHead className="w-10">
             <input
               type="checkbox"
-              className="size-4 accent-[var(--primary)]"
+              // 24px, not 16px. azura-ui-ux §5.7 sets the tap-target floor at
+                // 24px and `size-4` is 16. `pnpm qa:layout` measured this
+                // one input 1600 times: 25 instances × 8 widths × 4 locales
+                // × 2 themes, the largest single finding in the audit.
+                //
+                // It was only VISIBLE there because /kitchen-sink is public
+                // (SEC-019). The harness does not audit /dashboard/* at all
+                // (its blind spot 9), and this component is the selection
+                // control on every dashboard table, so the same 16px target
+                // shipped on every one of them unmeasured.
+                //
+                // A pseudo-element hit area would keep the 16px look, and
+                // was rejected: `getBoundingClientRect()` does not include
+                // it, so the control would still measure 16px to this
+                // harness and to anything else reading the box. Making the
+                // target real is the fix; making it look bigger is not.
+                className="size-6 accent-[var(--primary)]"
               checked={allOnPageSelected}
               onChange={toggleAllOnPage}
               aria-label={labels.selectAll}
@@ -595,7 +627,23 @@ export function DataTable<TRow>({
                     >
                       <input
                         type="checkbox"
-                        className="size-4 accent-[var(--primary)]"
+                        // 24px, not 16px. azura-ui-ux §5.7 sets the tap-target floor at
+                // 24px and `size-4` is 16. `pnpm qa:layout` measured this
+                // one input 1600 times: 25 instances × 8 widths × 4 locales
+                // × 2 themes, the largest single finding in the audit.
+                //
+                // It was only VISIBLE there because /kitchen-sink is public
+                // (SEC-019). The harness does not audit /dashboard/* at all
+                // (its blind spot 9), and this component is the selection
+                // control on every dashboard table, so the same 16px target
+                // shipped on every one of them unmeasured.
+                //
+                // A pseudo-element hit area would keep the 16px look, and
+                // was rejected: `getBoundingClientRect()` does not include
+                // it, so the control would still measure 16px to this
+                // harness and to anything else reading the box. Making the
+                // target real is the fix; making it look bigger is not.
+                className="size-6 accent-[var(--primary)]"
                         checked={!hiddenColumns.has(column.id)}
                         onChange={() => {
                           const next = new Set(hiddenColumns)

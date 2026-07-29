@@ -179,8 +179,20 @@ export function PlatformScoreCard({
                   href={capture.url}
                   target="_blank"
                   rel="noreferrer noopener nofollow"
+                  // `inline-flex` + `min-h-6` gives the 24px floor
+                  // azura-ui-ux §5.7 requires. `pnpm qa:layout` measured this
+                  // link at 17px tall at EVERY width, locale and theme — 64 of
+                  // the audit's 138 failing rows were this one anchor.
+                  //
+                  // The harness exempts inline links inside a text block, per
+                  // WCAG 2.2 SC 2.5.8's own inline exception. This one is not
+                  // inline: it is the whole content of its `<li>`, a standalone
+                  // target in a list, so the exception does not apply and the
+                  // floor does. `review-quote-card.tsx` already carries
+                  // `min-h-6` for the same reason; this is the sibling that did
+                  // not.
                   className={cn(
-                    "rounded-sm underline underline-offset-4",
+                    "inline-flex min-h-6 items-center rounded-sm underline underline-offset-4",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   )}
                 >

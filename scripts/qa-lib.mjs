@@ -34,9 +34,10 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -126,12 +127,92 @@ export function waitForPort(port, timeoutMs = 60_000) {
   });
 }
 
+/** Source trees whose contents end up in the build the harnesses measure. */
+const BUILD_INPUTS = ["app", "components", "lib", "hooks", "i18n", "messages"];
+
+/**
+ * Refuse to audit a build older than the source it was built from.
+ *
+ * ## Why this exists
+ *
+ * `startServer` runs `next start` against **whatever `.next` already exists**.
+ * It checked that a build was present and never that it was current, so a
+ * harness could measure code nobody had built and report the result as fact.
+ *
+ * That is not hypothetical. Fixing four layout defects and re-running
+ * `pnpm qa:layout` produced **byte-identical counts** — 1664 tap-target, 136
+ * truncation, 6 contrast, 4 clipping — because the audit was still measuring the
+ * previous build. Twice. The only reason it was caught is that the numbers were
+ * *too* identical to be real; a run that had merely drifted a little would have
+ * been believed.
+ *
+ * It fails in both directions, and the dangerous one is the opposite of what
+ * happened here: fix a defect, forget to build, get the old failures and keep
+ * digging; or break something, forget to build, and get a **green gate over code
+ * you did not build**. `SECURITY-REVIEW.md` SEC-016 is the same species — a CI
+ * step named "Scan history" that does not scan history. A gate that can pass
+ * without measuring the artefact is decoration.
+ *
+ * ## Why a timestamp and not a hash
+ *
+ * A content hash of the input tree would be exact and would also have to be
+ * stored, invalidated and kept in step with the bundler's own input set. `mtime`
+ * is what every make-like tool uses for this, it needs no state, and its failure
+ * mode is a false ALARM (rebuild unnecessarily), never a false pass.
+ *
+ * Set `AZURA_ALLOW_STALE_BUILD=1` to override. It exists for bisecting a
+ * harness against a deliberately old build, it prints what it is doing, and it
+ * is the kind of flag that should never appear in CI.
+ */
+function assertBuildIsNotStale() {
+  const buildId = join(APP_DIR, ".next", "BUILD_ID");
+  const builtAt = statSync(buildId).mtimeMs;
+
+  let newest = { path: "", mtime: 0 };
+  const walk = (dir) => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return; // an input tree that does not exist is not a staleness signal
+    }
+    for (const entry of entries) {
+      if (entry.name === "node_modules" || entry.name.startsWith(".")) continue;
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+        continue;
+      }
+      const { mtimeMs } = statSync(full);
+      if (mtimeMs > newest.mtime) newest = { path: full, mtime: mtimeMs };
+    }
+  };
+  for (const input of BUILD_INPUTS) walk(join(APP_DIR, input));
+
+  if (newest.mtime <= builtAt) return;
+
+  const behindSeconds = Math.round((newest.mtime - builtAt) / 1000);
+  const message =
+    `the build is STALE: ${relative(APP_DIR, newest.path)} is ${behindSeconds}s ` +
+    `newer than .next/BUILD_ID. This harness runs \`next start\` against the ` +
+    `existing build, so it would measure code you did not build. Run ` +
+    `\`pnpm --dir apps/web build\` first.`;
+
+  if (process.env.AZURA_ALLOW_STALE_BUILD === "1") {
+    console.warn(`  WARN  ${message}\n  WARN  AZURA_ALLOW_STALE_BUILD=1 — measuring it anyway.`);
+    return;
+  }
+  throw new Error(message);
+}
+
 /**
  * Starts `next start` against the existing build.
  *
  * `AZURA_ENABLE_KITCHEN_SINK=1` because that route calls `notFound()` in a
  * production build without it, and a harness measuring the 404 page would pass
  * while proving nothing. Same reasoning as `csp-probe.mjs`.
+ *
+ * The build is checked for staleness first — see `assertBuildIsNotStale`.
  */
 export function startServer(port, extraEnv = {}) {
   const nextBin = join(APP_DIR, "node_modules", "next", "dist", "bin", "next");
@@ -145,6 +226,7 @@ export function startServer(port, extraEnv = {}) {
       `no production build at ${join(APP_DIR, ".next")} — run \`pnpm --dir apps/web build\` first`,
     );
   }
+  assertBuildIsNotStale();
 
   const child = spawn(
     process.execPath,
