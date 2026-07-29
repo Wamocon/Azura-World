@@ -1,0 +1,596 @@
+[
+  {
+    "mode": "session",
+    "role": "admin",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "admin",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "admin",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "manager",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "manager",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "manager",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "accountant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "accountant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "accountant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "staff",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "staff",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "staff",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "owner",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "owner",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "owner",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "tenant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "tenant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "tenant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "guest",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "guest",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "guest",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "service_provider",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "service_provider",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "service_provider",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_owner",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_owner",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_owner",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_tenant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_tenant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_tenant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_guest",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_guest",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "session",
+    "role": "child_guest",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "admin",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "admin",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "admin",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "manager",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "manager",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "manager",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "accountant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "accountant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "accountant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "staff",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "staff",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "staff",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "allow",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "owner",
+    "surface": "finance",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "owner",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "owner",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "tenant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "tenant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "tenant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "guest",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "guest",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "guest",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "service_provider",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "service_provider",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "service_provider",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_owner",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_owner",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_owner",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_tenant",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_tenant",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "allow",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_tenant",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_guest",
+    "surface": "finance",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_guest",
+    "surface": "wallet",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  },
+  {
+    "mode": "anon",
+    "role": "child_guest",
+    "surface": "vendor_invoices",
+    "status": 200,
+    "expected": "refuse",
+    "actual": "refuse",
+    "ok": true
+  }
+]

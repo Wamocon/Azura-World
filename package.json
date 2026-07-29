@@ -13,6 +13,8 @@
     "qa:csp": "node scripts/csp-probe.mjs",
     "qa:dashboard": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/dashboard-probe.mts",
     "qa:evidence": "node scripts/verify-evidence.mjs",
+    "gate:finance": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/finance-gate-parity.mts",
+    "qa:finance-roles": "node scripts/finance-role-matrix.mjs",
     "qa:layout": "node scripts/layout-audit.mjs",
     "qa:perf": "node scripts/perf.mjs",
     "quality:gate": "node scripts/quality-gate.mjs",

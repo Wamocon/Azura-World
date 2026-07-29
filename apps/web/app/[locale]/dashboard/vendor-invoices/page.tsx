@@ -10,6 +10,7 @@ import {
   MoneyCell,
   type CurrencyTotalLabels,
 } from "@/components/finance/currency-total-list"
+import { anyRefused, readFinance } from "@/components/finance/finance-read"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import {
   daysOverdue,
@@ -132,18 +133,55 @@ export default async function VendorInvoicesPage({
     ? (rawCurrency as CurrencyCode)
     : undefined
 
-  const [allResult, filteredResult] = await Promise.all([
+  // Every read goes through `readFinance`, so a repository refusal renders the
+  // refusal panel instead of throwing into the error boundary. CONTRACTS §5:
+  // never 500 for a handled condition. See `components/finance/finance-read.ts`.
+  const ctx = {
+    surface: "vendor_invoices",
+    role: scope.role,
+    profileId: scope.profileId,
+  } as const
+  const [allRead, filteredRead] = await Promise.all([
     // The unfiltered set, so duplicate detection sees the whole visible list.
     // A duplicate pair split by a status filter would otherwise go unflagged,
     // which is the case that matters most: a draft duplicating a paid invoice.
-    getVendorInvoices({ ...scope.access, limit: INVOICE_LIMIT }),
-    getVendorInvoices({
-      ...scope.access,
-      limit: INVOICE_LIMIT,
-      ...(activeStatus === undefined ? {} : { status: activeStatus }),
-      ...(activeCurrency === undefined ? {} : { currency: activeCurrency }),
-    }),
+    readFinance(
+      () => getVendorInvoices({ ...scope.access, limit: INVOICE_LIMIT }),
+      { ...ctx, target: "vendor_invoices (all)" }
+    ),
+    readFinance(
+      () =>
+        getVendorInvoices({
+          ...scope.access,
+          limit: INVOICE_LIMIT,
+          ...(activeStatus === undefined ? {} : { status: activeStatus }),
+          ...(activeCurrency === undefined ? {} : { currency: activeCurrency }),
+        }),
+      { ...ctx, target: "vendor_invoices (filtered)" }
+    ),
   ])
+
+  if (anyRefused([allRead, filteredRead])) {
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={t("forbidden")}
+        hint={t("forbiddenHint")}
+      />
+    )
+  }
+  if (!allRead.ok || !filteredRead.ok) {
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={tCommon("errors.serverError")}
+        hint={tCommon("errors.tryAgain")}
+      />
+    )
+  }
+
+  const allResult = allRead.value
+  const filteredResult = filteredRead.value
 
   const allInvoices = allResult.data
   const invoices = filteredResult.data
@@ -196,7 +234,9 @@ export default async function VendorInvoicesPage({
     const status =
       next.status === undefined ? activeStatus : (next.status ?? undefined)
     const currency =
-      next.currency === undefined ? activeCurrency : (next.currency ?? undefined)
+      next.currency === undefined
+        ? activeCurrency
+        : (next.currency ?? undefined)
     if (status !== undefined) sp.set("status", status)
     if (currency !== undefined) sp.set("currency", currency)
     const s = sp.toString()
@@ -251,25 +291,25 @@ export default async function VendorInvoicesPage({
           {t("totals.heading")}
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <CurrencyTotalCard
-          label={t("totals.open")}
-          totals={openTotals}
-          locale={locale}
-          labels={totalLabels}
-        />
-        <CurrencyTotalCard
-          label={t("totals.settled")}
-          totals={settledTotals}
-          locale={locale}
-          labels={totalLabels}
-        />
-        <CurrencyTotalCard
-          label={t("totals.overdue")}
-          totals={overdueTotals}
-          locale={locale}
-          labels={totalLabels}
-          hint={t("overdue.label")}
-        />
+          <CurrencyTotalCard
+            label={t("totals.open")}
+            totals={openTotals}
+            locale={locale}
+            labels={totalLabels}
+          />
+          <CurrencyTotalCard
+            label={t("totals.settled")}
+            totals={settledTotals}
+            locale={locale}
+            labels={totalLabels}
+          />
+          <CurrencyTotalCard
+            label={t("totals.overdue")}
+            totals={overdueTotals}
+            locale={locale}
+            labels={totalLabels}
+            hint={t("overdue.label")}
+          />
         </div>
       </section>
 
@@ -497,10 +537,10 @@ function InvoiceRow({
         {invoice.invoiceNo}
       </TableCell>
       <TableCell className="whitespace-nowrap">{statusLabel}</TableCell>
-      <TableCell className="tabular-nums whitespace-nowrap">
+      <TableCell className="whitespace-nowrap tabular-nums">
         {formatDate(invoice.issuedOn, locale)}
       </TableCell>
-      <TableCell className="tabular-nums whitespace-nowrap">
+      <TableCell className="whitespace-nowrap tabular-nums">
         {invoice.dueOn === null ? (
           <span className="text-muted-foreground">{labels.noDueDate}</span>
         ) : (

@@ -36,6 +36,11 @@ import {
   PaymentConsole,
   type AllocationOption,
 } from "@/components/finance/payment-console"
+import {
+  anyRefused,
+  anyUnavailable,
+  readFinance,
+} from "@/components/finance/finance-read"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
@@ -107,7 +112,8 @@ function first(value: string | string[] | undefined): string | undefined {
 
 function isStatus(value: string | undefined): value is LedgerEntryStatus {
   return (
-    value !== undefined && (ledgerEntryStatuses as readonly string[]).includes(value)
+    value !== undefined &&
+    (ledgerEntryStatuses as readonly string[]).includes(value)
   )
 }
 
@@ -133,7 +139,10 @@ export default async function FinancePage({
   const query = await searchParams
 
   const t = await getTranslations({ locale, namespace: "dashboard.finance" })
-  const tPay = await getTranslations({ locale, namespace: "dashboard.payments" })
+  const tPay = await getTranslations({
+    locale,
+    namespace: "dashboard.payments",
+  })
   const tEvidence = await getTranslations({ locale, namespace: "evidence" })
   const tCommon = await getTranslations({ locale, namespace: "common" })
 
@@ -164,28 +173,87 @@ export default async function FinancePage({
   const filterFor = <T,>(value: T | undefined, key: string) =>
     value === undefined ? {} : { [key]: value }
 
-  const [
-    entriesResult,
-    analysisResult,
-    summaryResult,
-    invoicesResult,
-    paymentsResult,
-  ] = await Promise.all([
-    getLedgerEntries({
-      ...scope.access,
-      limit: PAGE_SIZE,
-      offset,
-      ...filterFor(activeStatus, "status"),
-      ...filterFor(activeCurrency, "currency"),
-    }),
-    // A second, wider read for the panels that must reason over the whole
-    // visible set rather than over one page. Bounded at 500 by the repository;
-    // the panels say so when they are looking at a truncated view.
-    getLedgerEntries({ ...scope.access, limit: ANALYSIS_LIMIT }),
-    getFinanceSummary(scope.access),
-    getVendorInvoices({ ...scope.access, limit: ANALYSIS_LIMIT }),
-    getPaymentTransactions({ ...scope.access, limit: ANALYSIS_LIMIT }),
-  ])
+  // Every read goes through `readFinance`, so a repository refusal renders the
+  // refusal panel instead of throwing into the error boundary. CONTRACTS §5:
+  // never 500 for a handled condition. See `components/finance/finance-read.ts`.
+  const ctx = {
+    surface: "finance",
+    role: scope.role,
+    profileId: scope.profileId,
+  } as const
+  const [entriesRead, analysisRead, summaryRead, invoicesRead, paymentsRead] =
+    await Promise.all([
+      readFinance(
+        () =>
+          getLedgerEntries({
+            ...scope.access,
+            limit: PAGE_SIZE,
+            offset,
+            ...filterFor(activeStatus, "status"),
+            ...filterFor(activeCurrency, "currency"),
+          }),
+        { ...ctx, target: "finance_ledger_entries" }
+      ),
+      // A second, wider read for the panels that must reason over the whole
+      // visible set rather than over one page. Bounded at 500 by the repository;
+      // the panels say so when they are looking at a truncated view.
+      readFinance(
+        () => getLedgerEntries({ ...scope.access, limit: ANALYSIS_LIMIT }),
+        { ...ctx, target: "finance_ledger_entries (analysis)" }
+      ),
+      readFinance(() => getFinanceSummary(scope.access), {
+        ...ctx,
+        target: "finance summary",
+      }),
+      readFinance(
+        () => getVendorInvoices({ ...scope.access, limit: ANALYSIS_LIMIT }),
+        { ...ctx, target: "vendor_invoices" }
+      ),
+      readFinance(
+        () =>
+          getPaymentTransactions({ ...scope.access, limit: ANALYSIS_LIMIT }),
+        { ...ctx, target: "payment_transactions" }
+      ),
+    ])
+
+  const financeReads = [
+    entriesRead,
+    analysisRead,
+    summaryRead,
+    invoicesRead,
+    paymentsRead,
+  ]
+  if (anyRefused(financeReads)) {
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={t("forbidden")}
+        hint={t("forbiddenHint")}
+      />
+    )
+  }
+  if (
+    anyUnavailable(financeReads) ||
+    !entriesRead.ok ||
+    !analysisRead.ok ||
+    !summaryRead.ok ||
+    !invoicesRead.ok ||
+    !paymentsRead.ok
+  ) {
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={tCommon("errors.serverError")}
+        hint={tCommon("errors.tryAgain")}
+      />
+    )
+  }
+
+  const entriesResult = entriesRead.value
+  const analysisResult = analysisRead.value
+  const summaryResult = summaryRead.value
+  const invoicesResult = invoicesRead.value
+  const paymentsResult = paymentsRead.value
 
   const entries = entriesResult.data
   const allEntries = analysisResult.data
@@ -296,7 +364,9 @@ export default async function FinancePage({
     const status =
       next.status === undefined ? activeStatus : (next.status ?? undefined)
     const currency =
-      next.currency === undefined ? activeCurrency : (next.currency ?? undefined)
+      next.currency === undefined
+        ? activeCurrency
+        : (next.currency ?? undefined)
     if (status !== undefined) sp.set("status", status)
     if (currency !== undefined) sp.set("currency", currency)
     const p = next.page ?? 1
@@ -507,7 +577,7 @@ export default async function FinancePage({
                 {tCommon("pagination.first")}
               </PageLink>
             ) : null}
-            <span className="text-sm tabular-nums text-muted-foreground">
+            <span className="text-sm text-muted-foreground tabular-nums">
               {tCommon("pagination.pageOf", { page, total: pageCount })}
             </span>
             {page < pageCount ? (
@@ -526,7 +596,10 @@ export default async function FinancePage({
           description={t("balanceCheck.description")}
         />
         {balances.groups.length === 0 ? (
-          <EmptyPanel title={t("balanceCheck.empty")} body={t("balanceCheck.singleSidedHint")} />
+          <EmptyPanel
+            title={t("balanceCheck.empty")}
+            body={t("balanceCheck.singleSidedHint")}
+          />
         ) : balances.unbalanced.length === 0 ? (
           <p className="rounded-xl border border-confidence-confirmed/30 bg-confidence-confirmed/5 px-4 py-3 text-sm text-foreground">
             {t("balanceCheck.allBalanced", { count: balances.groups.length })}
@@ -570,7 +643,10 @@ export default async function FinancePage({
           description={t("debtors.description")}
         />
         {debtors.length === 0 ? (
-          <EmptyPanel title={t("debtors.empty")} body={t("debtors.description")} />
+          <EmptyPanel
+            title={t("debtors.empty")}
+            body={t("debtors.description")}
+          />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {debtors.map((row) => (
