@@ -255,7 +255,9 @@
       "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel",
       "plateTitle": "Aufnahme · Türkler, Alanya",
       "entryPriceNote": "Angezeigt wird der einzige Wert, den ein Portal selbst als „ab“-Preis ausweist. Die übrigen 18 Angaben stehen im Beleg.",
-      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht. Die Seite sagt das an derselben Stelle, in derselben Schrift."
+      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht. Die Seite sagt das an derselben Stelle, in derselben Schrift.",
+      "creditLabel": "Aufnahmen",
+      "creditStale": "aus einem veralteten Inserat"
     },
     "why": {
       "title": "Was Azura World ist",
