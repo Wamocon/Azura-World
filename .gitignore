@@ -84,3 +84,4 @@ supabase/.temp/
 # Keep the directory itself, so a fresh clone has somewhere for the harnesses
 # to write. Same pattern as sources/media/.gitkeep.
 !quality/.gitkeep
+quality/manual/.seed-password
