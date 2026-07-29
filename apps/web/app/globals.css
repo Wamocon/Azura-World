@@ -966,3 +966,25 @@
     max-width: 1200px;
   }
 }
+
+/* Hero: the photograph breaks the container and fills the viewport, the way
+   azuraworldhotel.com does it. Their site carries 34 images and no video; a
+   boxed 21:9 card inside a text column was never going to read as arrival. */
+.azura-bleed {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+/* Ken Burns. Transform only, so it stays on the compositor. 28s is slow enough
+   to read as the camera breathing rather than as motion. */
+@keyframes azura-kenburns {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to   { transform: scale(1.12) translate3d(0, -1.5%, 0); }
+}
+.azura-kenburns img {
+  animation: azura-kenburns 28s var(--ease-in-out, ease-in-out) infinite alternate;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .azura-kenburns img { animation: none; transform: scale(1.04); }
+}

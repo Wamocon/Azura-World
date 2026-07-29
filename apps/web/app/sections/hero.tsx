@@ -94,14 +94,14 @@ export async function HeroSection({
             soundings return to the page background below, where they were
             legible, and the maquette moves out of the frame entirely - it
             belongs to the site section, where the camera has room to move. */}
-        <figure className="relative isolate m-0 overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--sea-mid)_22%,transparent)] bg-[#0a1216]">
-          <div className="relative aspect-[21/9] w-full">
+        <figure className="azura-bleed relative isolate m-0 overflow-hidden bg-[#0a1216]">
+          <div className="relative h-[72svh] min-h-[26rem] w-full sm:h-[82svh]">
             {heroImage !== undefined ? (
               <ActMedia
                 image={heroImage}
                 priority
                 alt={t("hero.posterAlt")}
-                className="[&_img]:scale-[1.03] [&_img]:contrast-[1.04] [&_img]:saturate-[1.06]"
+                className="azura-kenburns [&_img]:contrast-[1.04] [&_img]:saturate-[1.06]"
               />
             ) : null}
             {/* Vignette and base gradient. Clear centre to dark edges, so the
