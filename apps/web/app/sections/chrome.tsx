@@ -5,10 +5,11 @@
  * document — and splitting them would put three near-identical import blocks in
  * the tree without making anything easier to find.
  *
- * **The wordmark is typographic and it is ours.** Cebeci Group's marks are in
- * the harvest and they stay there: their logo in our header would imply
- * endorsement, which is the one use LANDING-CRAFT §2 rules out. Their name
- * appears as the subject of the analysis, attributed, which is nominative use.
+ * **The wordmark is Azura World's own.** That reverses the earlier rule, and the
+ * reversal is the point: this is no longer competitor analysis, it is a proposal
+ * we are presenting TO Azura World (PIVOT.md). A client's mark belongs on their
+ * own proposal. The endorsement worry only applied while we were an outside
+ * party publishing about them.
  */
 
 import { getTranslations } from "next-intl/server"
@@ -66,10 +67,30 @@ export async function Navbar({
       <Container className="flex items-center justify-between gap-4 py-3">
         <Link
           href="/#top"
-          className="azura-tap-compact inline-flex items-center font-display text-[1.0625rem] leading-none tracking-[-0.01em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+          className="azura-tap-compact inline-flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
         >
-          Azura&nbsp;World&nbsp;
-          <span className="text-muted-foreground">CATI</span>
+          {/* Their wordmark, on their own proposal. */}
+          <img
+            src="/brand/azura-world-wordmark-dark.svg"
+            alt="Azura World"
+            width={875}
+            height={263}
+            className="h-6 w-auto dark:hidden"
+          />
+          <img
+            src="/brand/azura-world-wordmark-light.svg"
+            alt="Azura World"
+            width={875}
+            height={263}
+            className="hidden h-6 w-auto dark:block"
+          />
+          <span
+            aria-hidden
+            className="h-5 w-px shrink-0 bg-border"
+          />
+          <span className="font-display text-[0.9375rem] leading-none tracking-[0.06em] text-muted-foreground">
+            CATI
+          </span>
         </Link>
 
         <nav aria-label={t("nav.project")} className="hidden md:block">

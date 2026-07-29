@@ -65,6 +65,7 @@ import {
   WhySection,
 } from "@/app/sections/body"
 import { SystemSection } from "@/app/sections/system"
+import { OperatingMap } from "@/components/azura/operating-map"
 import { ActionSection } from "@/app/sections/close"
 import { defaultLocale, locales } from "@/lib/contracts"
 import { publicEnv } from "@/lib/env"
@@ -189,6 +190,7 @@ export default async function LandingPage({
         <div className="mx-auto w-full max-w-[72rem] px-5 sm:px-8">
           <WhySection locale={locale} />
           <SiteSection locale={locale} initialBlock={initialBlock} />
+            <OperatingMap locale={locale} />
           <AmenitiesSection locale={locale} />
           <DesireSection locale={locale} />
           {/* The complex, then the system that runs it, then the way in.

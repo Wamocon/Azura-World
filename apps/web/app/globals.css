@@ -208,12 +208,17 @@
 
 :root {
   --font-sans: "Manrope", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  /* One typeface for everything, headings included — the way 1Çatı does it
+     (`--font-heading: var(--font-sans)`). A serif headline reads editorial;
+     a sans headline reads product. This is a management system, so it is the
+     sans. Every `font-display` usage in the tree reads this variable, so the
+     whole site follows from this one line. */
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
 
-  /* 0.875rem, against 1Çatı's 0.625rem. Softer corners read resort, not
-     registry — and it is visible at a glance in a side-by-side screenshot. */
-  --radius: 0.875rem;
+  /* 0.625rem, matching 1Çatı. Tighter corners read as software; the softer
+     0.875rem read as brochure. */
+  --radius: 0.625rem;
 
   color-scheme: light;
 
