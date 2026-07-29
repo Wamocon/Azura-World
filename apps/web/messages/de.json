@@ -904,7 +904,7 @@
       "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Buchungen.",
       "unreadableNote": "{count} Positionen konnten nicht gelesen werden und fehlen in allen Summen.",
       "overflowNote": "Die Summe für {currency} ist zu groß für eine sichere Berechnung und wird deshalb nicht angezeigt.",
-      "forbidden": "Kein Zugriff auf die Finanzen.",
+      "forbidden": "Kein Zugriff auf Finanzen.",
       "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen. Wenden Sie sich an die Verwaltung, wenn Sie Zugriff brauchen.",
       "totals": {
         "heading": "Summen je Währung",
@@ -915,12 +915,12 @@
         "draftNet": "Entwürfe, Saldo",
         "openInvoices": "Offene Lieferantenrechnungen",
         "walletBalance": "Guthaben",
-        "noneYet": "Noch keine Beträge vorhanden."
+        "noneYet": "Noch keine Beträge."
       },
       "ledger": {
         "heading": "Buchungen",
         "description": "Neueste Buchung zuerst. Entwürfe stehen am Ende, weil sie noch kein Buchungsdatum haben.",
-        "empty": "Keine Buchungen gefunden.",
+        "empty": "Keine Buchungen.",
         "emptyHint": "Für den gewählten Filter gibt es keine Buchungen. Setzen Sie den Filter zurück, um alles zu sehen.",
         "rowsShown": "{shown} von {total} Buchungen"
       },
@@ -961,7 +961,7 @@
         "group": "Vorgang",
         "difference": "Differenz",
         "allBalanced": "Alle {count} Vorgänge gehen auf.",
-        "empty": "Keine zusammengehörenden Vorgänge im gewählten Ausschnitt."
+        "empty": "Keine Vorgänge in dieser Ansicht."
       },
       "debtors": {
         "heading": "Offene Posten",
@@ -970,7 +970,7 @@
         "unit": "Wohneinheit",
         "open": "Offen",
         "empty": "Keine offenen Posten.",
-        "noUnit": "Ohne Zuordnung zu einer Wohneinheit"
+        "noUnit": "Keiner Einheit zugeordnet"
       },
       "ageing": {
         "heading": "Fälligkeiten",
@@ -981,7 +981,7 @@
         "days31To60": "31 bis 60 Tage",
         "days61To90": "61 bis 90 Tage",
         "days90Plus": "Über 90 Tage",
-        "empty": "Keine offenen Rechnungen."
+        "empty": "Keine offenen Posten."
       },
       "reconciliation": {
         "heading": "Zahlungsabgleich",
@@ -1005,9 +1005,9 @@
       "statement": {
         "title": "Kontoauszug {unit}",
         "lead": "Alle gebuchten Positionen zu dieser Wohneinheit, je Währung getrennt.",
-        "back": "Zurück zu den Finanzen",
+        "back": "Zurück zu Finanzen",
         "forbidden": "Kein Zugriff auf diesen Kontoauszug.",
-        "forbiddenHint": "Diese Wohneinheit gehört nicht zu Ihrem Bereich. Der Aufruf wurde protokolliert.",
+        "forbiddenHint": "Diese Einheit ist nicht in Ihrem Bereich. Der Zugriff wurde protokolliert.",
         "notFound": "Zu dieser Wohneinheit gibt es keine Buchungen.",
         "openBalance": "Saldo",
         "entries": "Positionen"
@@ -1105,7 +1105,7 @@
       "withdraw": "Auszahlen",
       "intro": "Ein Guthaben je Person und Währung. Guthaben in verschiedenen Währungen werden nie zusammengezählt.",
       "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Guthaben.",
-      "forbidden": "Kein Zugriff auf die Guthaben.",
+      "forbidden": "Kein Zugriff auf Guthaben.",
       "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen.",
       "columns": {
         "holder": "Inhaber",
@@ -1136,7 +1136,7 @@
         "rejected": "Ohne erlaubte Überziehung wird eine Buchung ins Minus abgewiesen. Es wird nichts gespeichert."
       },
       "lowBalance": {
-        "label": "Unter Mindestbestand",
+        "label": "Unter Minimum",
         "hint": "{count} Guthaben liegen unter ihrem Mindestbestand."
       },
       "history": {
@@ -1167,7 +1167,7 @@
       },
       "intro": "Eingangsrechnungen mit Freigabestand und offenem Rest, je Währung getrennt.",
       "seedNotice": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Rechnungen.",
-      "forbidden": "Kein Zugriff auf die Lieferantenrechnungen.",
+      "forbidden": "Kein Zugriff auf Rechnungen.",
       "forbiddenHint": "Ihre Rolle darf diese Seite nicht öffnen.",
       "emptyHint": "Für den gewählten Filter gibt es keine Rechnungen.",
       "columns": {
@@ -1193,7 +1193,7 @@
         "description": "Rechnungen mit gleichem Lieferanten, gleicher Rechnungsnummer und gleichem Betrag. Sie werden markiert, nicht gelöscht.",
         "flagged": "{count} mögliche Doppelerfassungen",
         "flaggedRow": "Gleicher Lieferant, gleiche Nummer, gleicher Betrag wie {other}.",
-        "none": "Keine Doppelerfassung erkannt.",
+        "none": "Keine Doppelungen.",
         "matchOn": "Geprüft wird auf Lieferant, Rechnungsnummer und Betrag zusammen."
       },
       "approval": {
@@ -1207,7 +1207,7 @@
         "label": "Überfällig",
         "days": "{days} Tage überfällig",
         "notDue": "Noch nicht fällig",
-        "noDueDate": "Kein Fälligkeitsdatum"
+        "noDueDate": "Ohne Fälligkeit"
       },
       "export": {
         "csv": "Als CSV herunterladen",
