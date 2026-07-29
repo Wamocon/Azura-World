@@ -1,0 +1,60 @@
+{
+  "label": "before",
+  "jsRequests": 24,
+  "jsBytesTotal": 1705133,
+  "jsKbTotal": 1665.2,
+  "jsGzKbTotal": 493.1,
+  "threeChunkKb": 0,
+  "threeGzKb": 0,
+  "jsKbExcludingThree": 1665.2,
+  "budgetedGzKb": 493.1,
+  "heaviest": [
+    {
+      "kb": 98.1,
+      "url": "_next/static/chunks/aaa38339.bfa09531f5751e9d.js"
+    },
+    {
+      "kb": 85.3,
+      "url": "_next/static/chunks/4e77bd5d.75d75592bdf63628.js"
+    },
+    {
+      "kb": 61.4,
+      "url": "_next/static/chunks/ca18b617-9c96b0ddd1600e8d.js"
+    },
+    {
+      "kb": 59.7,
+      "url": "_next/static/chunks/2498-4737ae2ff8f36d73.js"
+    },
+    {
+      "kb": 44.8,
+      "url": "_next/static/chunks/e28dcc29.caff7ed4e22e1721.js"
+    },
+    {
+      "kb": 26,
+      "url": "_next/static/chunks/9235-1c5ba346b424504d.js"
+    },
+    {
+      "kb": 25.4,
+      "url": "_next/static/chunks/2423-38cea76e4248fb56.js"
+    },
+    {
+      "kb": 19.3,
+      "url": "_next/static/chunks/e809d3ec-a9f99fc8d47d8780.js"
+    }
+  ],
+  "images": 0,
+  "videos": 0,
+  "canvases": 1,
+  "sections": 10,
+  "pageHeight": 6946,
+  "h1Count": 1,
+  "h1s": [
+    "Azura World Residence & HotelAzura World Residence & Hotel"
+  ],
+  "amenityItems": 0,
+  "emptyAmenityNote": true,
+  "httpFailures": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Azura World CATI">
+  <!--
+    Our mark, not the subject's.                              Owner: W-CINEMA
+
+    MEDIA-LICENSE.md and azura-ui-ux §7 are explicit: Cebeci Group's logo may
+    identify the subject of an analysis, but it may never appear AS our
+    branding, in our header, or as our icon, because that implies endorsement.
+    A browser tab icon is branding in the strongest sense, so this is drawn
+    rather than borrowed.
+
+    The form is the page's own subject read literally: a horizon over water
+    (the coast, 300 m away) with a sounding mark below it - the same
+    hydrographic-chart vocabulary the landing page's direction contract already
+    commits to. Azure, per the identity: --primary #0E6B8C.
+
+    SVG, not .ico: it is ~700 bytes against a multi-kilobyte binary, it scales
+    to every density without a set, and Next 16 emits the <link rel="icon">
+    from `app/icon.svg` automatically.
+  -->
+  <rect width="32" height="32" rx="7" fill="#0E6B8C" />
+  <!-- horizon -->
+  <path d="M6 13.5h20" stroke="#EAF4F8" stroke-width="1.6" stroke-linecap="round" opacity="0.9" />
+  <!-- water, shoal to deep: three contours tightening downward -->
+  <path d="M6 18h20" stroke="#EAF4F8" stroke-width="1.2" stroke-linecap="round" opacity="0.55" />
+  <path d="M8 21.5h16" stroke="#EAF4F8" stroke-width="1.2" stroke-linecap="round" opacity="0.4" />
+  <path d="M11 25h10" stroke="#EAF4F8" stroke-width="1.2" stroke-linecap="round" opacity="0.28" />
+  <!-- the sounding: one measured point above the horizon -->
+  <circle cx="16" cy="9" r="2.4" fill="#D98E3A" />
+</svg>
