@@ -8,6 +8,12 @@ import {
   MoneyCell,
   type CurrencyTotalLabels,
 } from "@/components/finance/currency-total-list"
+import {
+  anyRefused,
+  anyUnavailable,
+  readFinance,
+  valueOr,
+} from "@/components/finance/finance-read"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import { formatMinor, toMinor, totalRows } from "@/components/finance/money"
 import {
@@ -83,7 +89,10 @@ export default async function WalletPage({
   const { locale } = await params
 
   const t = await getTranslations({ locale, namespace: "dashboard.wallet" })
-  const tPay = await getTranslations({ locale, namespace: "dashboard.payments" })
+  const tPay = await getTranslations({
+    locale,
+    namespace: "dashboard.payments",
+  })
   const tEvidence = await getTranslations({ locale, namespace: "evidence" })
   const tCommon = await getTranslations({ locale, namespace: "common" })
 
@@ -102,10 +111,62 @@ export default async function WalletPage({
     )
   }
 
-  const [walletsResult, paymentsResult] = await Promise.all([
-    getWallets({ ...scope.access, limit: WALLET_LIMIT }),
-    getPaymentTransactions({ ...scope.access, limit: MOVEMENT_LIMIT }),
+  // Every read goes through `readFinance`. `withRepository()` THROWS when
+  // Supabase is configured and a query is refused, and an unhandled throw in a
+  // Server Component is an HTTP 500 - which CONTRACTS §5 forbids for a handled
+  // condition, and a refusal is the most handled condition there is. Measured
+  // on this branch before the fix: admin on this route returned 500 because
+  // `anon` holds no GRANT on `payment_transactions`. See `finance-read.ts`.
+  const reads = {
+    surface: "wallet",
+    role: scope.role,
+    profileId: scope.profileId,
+  } as const
+  const [walletsRead, paymentsRead] = await Promise.all([
+    readFinance(() => getWallets({ ...scope.access, limit: WALLET_LIMIT }), {
+      ...reads,
+      target: "wallets",
+    }),
+    readFinance(
+      () => getPaymentTransactions({ ...scope.access, limit: MOVEMENT_LIMIT }),
+      { ...reads, target: "payment_transactions" }
+    ),
   ])
+
+  if (anyRefused([walletsRead, paymentsRead])) {
+    // The RBAC gate admitted this caller and the data plane refused them. The
+    // divergence is already logged by `readFinance`; the reader gets the
+    // refusal this page has always been able to render.
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={t("forbidden")}
+        hint={t("forbiddenHint")}
+      />
+    )
+  }
+  if (anyUnavailable([walletsRead, paymentsRead])) {
+    // Not a refusal: an outage. Different answer, because retrying helps.
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={tCommon("errors.serverError")}
+        hint={tCommon("errors.tryAgain")}
+      />
+    )
+  }
+
+  const walletsResult = valueOr(walletsRead, null)
+  const paymentsResult = valueOr(paymentsRead, null)
+  if (walletsResult === null || paymentsResult === null) {
+    return (
+      <AccessRefused
+        title={t("title")}
+        message={tCommon("errors.serverError")}
+        hint={tCommon("errors.tryAgain")}
+      />
+    )
+  }
 
   const wallets = walletsResult.data
   const payments = paymentsResult.data
@@ -197,7 +258,7 @@ export default async function WalletPage({
           <p className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {t("lowBalance.label")}
           </p>
-          <p className="text-2xl font-semibold tabular-nums text-foreground">
+          <p className="text-2xl font-semibold text-foreground tabular-nums">
             {belowThreshold.length}
           </p>
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -208,7 +269,7 @@ export default async function WalletPage({
           <p className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
             {t("overdraft.inOverdraft")}
           </p>
-          <p className="text-2xl font-semibold tabular-nums text-foreground">
+          <p className="text-2xl font-semibold text-foreground tabular-nums">
             {inOverdraft.length}
           </p>
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -319,7 +380,9 @@ export default async function WalletPage({
         ) : (
           <div className="flex flex-col gap-4">
             {wallets
-              .filter((wallet) => (movementsByWallet.get(wallet.id) ?? []).length > 0)
+              .filter(
+                (wallet) => (movementsByWallet.get(wallet.id) ?? []).length > 0
+              )
               .map((wallet) => (
                 <div key={wallet.id} className="flex flex-col gap-2">
                   <h3 className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
@@ -346,7 +409,7 @@ export default async function WalletPage({
                         {(movementsByWallet.get(wallet.id) ?? []).map(
                           (payment) => (
                             <TableRow key={payment.id}>
-                              <TableCell className="tabular-nums whitespace-nowrap">
+                              <TableCell className="whitespace-nowrap tabular-nums">
                                 {payment.paidAt === null ? (
                                   <span className="text-confidence-gap">
                                     {gapLabel}
@@ -453,7 +516,9 @@ function WalletRow({
       </TableCell>
       <TableCell>{labels.kind[wallet.kind]}</TableCell>
       <TableCell className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase">
-        {wallet.currency ?? <span className="text-confidence-gap">{gapLabel}</span>}
+        {wallet.currency ?? (
+          <span className="text-confidence-gap">{gapLabel}</span>
+        )}
       </TableCell>
       <TableCell className="text-right">
         <MoneyCell
@@ -461,7 +526,10 @@ function WalletRow({
           currency={wallet.currency}
           locale={locale}
           gapLabel={gapLabel}
-          className={cn("font-semibold", negative && "text-confidence-conflicted")}
+          className={cn(
+            "font-semibold",
+            negative && "text-confidence-conflicted"
+          )}
         />
       </TableCell>
       <TableCell className="text-right">
@@ -473,14 +541,14 @@ function WalletRow({
         />
       </TableCell>
       <TableCell className="text-sm">
-        {wallet.allowsOverdraft && limit !== null && wallet.currency !== null ? (
+        {wallet.allowsOverdraft &&
+        limit !== null &&
+        wallet.currency !== null ? (
           // `formatMinor`, not a locally constructed `Intl.NumberFormat`. A
           // second formatter would be a second locale-mapping table to keep in
           // step with `lib/format.ts`, and `limit / 100` here would be the one
           // float division this module spent a file avoiding.
-          labels.overdraftAllowed(
-            formatMinor(limit, wallet.currency, locale)
-          )
+          labels.overdraftAllowed(formatMinor(limit, wallet.currency, locale))
         ) : (
           <span className="text-muted-foreground">
             {labels.overdraftNotAllowed}
@@ -488,7 +556,7 @@ function WalletRow({
         )}
       </TableCell>
       <TableCell>{labels.status[wallet.status]}</TableCell>
-      <TableCell className="tabular-nums whitespace-nowrap">
+      <TableCell className="whitespace-nowrap tabular-nums">
         {formatDate(wallet.updatedAt, locale)}
       </TableCell>
     </TableRow>

@@ -29,7 +29,12 @@ export function AccessRefused({
   hint: string
 }): ReactNode {
   return (
-    <div className="flex flex-col gap-4">
+    // `data-slot` is a test seam, added by F5. The role matrix previously
+    // detected a refusal by grepping the page for "Kein Zugriff", which matched
+    // a per-KPI-card refusal elsewhere on a fully-rendered page and reported
+    // seventeen false failures. A surface either rendered this panel INSTEAD of
+    // its content or it did not, and that is a structural fact, not a string.
+    <div data-slot="access-refused" className="flex flex-col gap-4">
       <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
         {title}
       </h1>
