@@ -2,6 +2,7 @@ import { cn } from "@/lib/cn"
 import type { AzuraReviewSentiment } from "@/lib/azura-world-data"
 
 import { sentimentBreakdown, type SentimentBucket } from "./select"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * A platform's own rating distribution.                           Owner: W3-G
@@ -73,7 +74,7 @@ export function SentimentDistribution({
   const breakdown = sentimentBreakdown(sentiment)
   if (breakdown === null) return null
 
-  const number = new Intl.NumberFormat(locale)
+  const number = new Intl.NumberFormat(intlLocaleTag(locale))
 
   if (breakdown.foldOnly) {
     return (

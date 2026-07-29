@@ -24,6 +24,7 @@
  * is the question a dashboard is actually asking.
  */
 
+import { defaultLocale, locales } from "./contracts"
 import type { Locale, Money } from "./contracts"
 import { collatorFor } from "./utils"
 
@@ -48,6 +49,83 @@ export const PROJECT_TIME_ZONE = "Europe/Istanbul" as const
 /** Resolves an app locale to the BCP-47 tag `Intl` expects. */
 export function intlLocale(locale: Locale): string {
   return INTL_LOCALE[locale]
+}
+
+/**
+ * Is this string one of the four locales? A real runtime check, not a cast.
+ *
+ * Next hands a route segment through as `params.locale`, and a page may
+ * *declare* that field `Locale` without anything having verified it. The
+ * declaration is a promise about the URL that the URL never made.
+ */
+export function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" && (locales as readonly string[]).includes(value)
+  )
+}
+
+/**
+ * Any string at all → a BCP-47 tag `Intl` accepts. **Never throws.**
+ *
+ * ## Why this exists
+ *
+ * `HANDOFF/F1.md` F1-002: `RangeError: Incorrect locale information provided`,
+ * thrown out of the landing page in production. Three sections were calling
+ * `new Intl.DateTimeFormat(locale)` / `new Intl.NumberFormat(locale)` with the
+ * **raw route segment**, and `Intl` rejects anything that is not a structurally
+ * well-formed language tag.
+ *
+ * The trigger is not an exotic locale. Measured against this Node:
+ *
+ * ```
+ * "de" "en" "tr" "ru" "xx" "wp-admin"   ok      (structurally valid tags)
+ * "favicon.ico" "robots.txt" "index.php" ".well-known"
+ * "apple-touch-icon.png" "de_DE" "de-" "" " " "a" "123"   RangeError
+ * ```
+ *
+ * So every browser asking for `/favicon.ico` and every crawler asking for
+ * `/index.php` threw inside the landing page. The response was a 404 only
+ * because `app/[locale]/layout.tsx` calls `notFound()` and won the race; the
+ * page function still threw, on every one of those requests, in production.
+ *
+ * ## Why a guard and not just the right tag
+ *
+ * Passing `intlLocale(locale)` fixes the tag for the four locales we know. It
+ * does nothing for the fifth string, and there is always a fifth string,
+ * because the argument is a URL segment. The brief's rule is the one that
+ * matters: **a landing page that throws on one locale is a dead page for that
+ * market**, so an unrecognised locale has to degrade to the default rather than
+ * take the page down.
+ *
+ * ## Why the tag is re-verified
+ *
+ * The last branch looks paranoid and is not. `INTL_LOCALE` is a hand-maintained
+ * map; a locale added to `CONTRACTS.md` §7 without an entry here yields
+ * `undefined`, and a typo yields a malformed tag. Both would put the original
+ * `RangeError` back, in a module whose whole purpose is that it cannot happen.
+ * The check runs once per distinct input and is cached.
+ */
+const resolvedTags = new Map<string, string>()
+
+export function intlLocaleTag(value: string): string {
+  const cached = resolvedTags.get(value)
+  if (cached !== undefined) return cached
+
+  const candidate = isLocale(value)
+    ? INTL_LOCALE[value]
+    : INTL_LOCALE[defaultLocale]
+
+  let tag: string
+  try {
+    // Throws on a malformed tag, exactly as the `Intl` constructors do, so a
+    // broken map entry is caught here instead of at a render.
+    tag = Intl.getCanonicalLocales(candidate)[0] ?? INTL_LOCALE[defaultLocale]
+  } catch {
+    tag = INTL_LOCALE[defaultLocale]
+  }
+
+  resolvedTags.set(value, tag)
+  return tag
 }
 
 // ---------------------------------------------------------------------------

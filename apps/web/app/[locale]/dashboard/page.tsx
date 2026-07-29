@@ -21,6 +21,7 @@ import {
   DashboardSection,
 } from "@/components/dashboard/section"
 import { EmptyState } from "@/components/ui/empty-state"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * The role-aware home.                                     Owner: W3-B
@@ -276,7 +277,7 @@ function resolveKpi(
   copy: ReturnType<typeof shellCopy>,
   locale: Locale
 ): { label: string; value: number | null; hint?: string } {
-  const number = (value: number) => new Intl.NumberFormat(locale).format(value)
+  const number = (value: number) => new Intl.NumberFormat(intlLocaleTag(locale)).format(value)
 
   switch (id) {
     case "unitsTotal":

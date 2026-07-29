@@ -23,6 +23,7 @@ import type { Locale, UnitLayout } from "@/lib/contracts"
 import { getFactsForEntity } from "@/lib/evidence-repository"
 import { getPortalListings } from "@/lib/portal-repository"
 import { hasPermission } from "@/lib/rbac"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * /[locale]/dashboard/listings — the portal register.        Owner: W3-C / N1
@@ -219,7 +220,7 @@ export default async function ListingsPage({
       return t("claims.notStated")
     }
     if (typeof value === "number") {
-      return new Intl.NumberFormat(locale).format(value)
+      return new Intl.NumberFormat(intlLocaleTag(locale)).format(value)
     }
     return typeof value === "string" && value.length > 0
       ? value
@@ -645,7 +646,7 @@ function Stat({
           tone === "stale" ? "text-quality-stale" : "text-foreground"
         )}
       >
-        {new Intl.NumberFormat(locale).format(value)}
+        {new Intl.NumberFormat(intlLocaleTag(locale)).format(value)}
       </dd>
     </div>
   )

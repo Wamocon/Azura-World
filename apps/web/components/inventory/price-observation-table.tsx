@@ -10,6 +10,7 @@ import {
 import type { SourceRef } from "@/lib/contracts"
 
 import type { PriceObservation } from "./price-conflict-ladder"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * PriceObservationTable — the record behind the ladder.      Owner: W3-C
@@ -228,7 +229,7 @@ export function PriceObservationTable({
                         {labels.areaUnstated}
                       </span>
                     ) : (
-                      `${new Intl.NumberFormat(locale).format(observation.interiorM2)} m²`
+                      `${new Intl.NumberFormat(intlLocaleTag(locale)).format(observation.interiorM2)} m²`
                     )}
                   </td>
                   <td className="py-2.5 pr-4">{observation.publisher}</td>

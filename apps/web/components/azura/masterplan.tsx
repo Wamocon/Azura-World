@@ -24,6 +24,7 @@ import type { ReactNode } from "react"
 
 import { DataQualityMark } from "@/components/evidence/provenance-value"
 import { cn } from "@/lib/cn"
+import { intlLocaleTag } from "@/lib/format"
 
 export interface MasterplanBlock {
   code: string
@@ -147,7 +148,7 @@ export function Masterplan({
                       data-numeric
                       className="text-[0.75rem] tracking-[0.01em] text-muted-foreground"
                     >
-                      {new Intl.NumberFormat(locale).format(block.unitCount)}{" "}
+                      {new Intl.NumberFormat(intlLocaleTag(locale)).format(block.unitCount)}{" "}
                       {labels.unitsLabel}
                     </span>
                   </button>
@@ -187,7 +188,7 @@ export function Masterplan({
             <p className="text-[0.8125rem] font-medium">
               {labels.selectedLabel} {active.code} ·{" "}
               <span data-numeric>
-                {new Intl.NumberFormat(locale).format(active.unitCount)}
+                {new Intl.NumberFormat(intlLocaleTag(locale)).format(active.unitCount)}
               </span>{" "}
               {labels.unitsLabel}
             </p>

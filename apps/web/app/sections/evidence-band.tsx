@@ -43,6 +43,7 @@ import {
   renderedFacts,
   unitSplit,
 } from "@/components/azura/landing-data"
+import { intlLocaleTag } from "@/lib/format"
 
 /** Only the levels that actually occur on this page get a row. */
 const CONFIDENCE_ORDER: readonly Confidence[] = [
@@ -62,7 +63,7 @@ export async function EvidenceBandSection({
   provenance: ProvenanceLabels
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const number = new Intl.NumberFormat(locale)
+  const number = new Intl.NumberFormat(intlLocaleTag(locale))
   const factTotal = renderedFacts.length + (entryPriceFact === null ? 0 : 1)
   const sourceLabels = provenance.source as SourceChipLabels
 
@@ -168,7 +169,7 @@ export async function EvidenceBandSection({
                 {t("evidenceBand.priceIntro", {
                   factor: Number.isNaN(priceSpan.factor)
                     ? "—"
-                    : new Intl.NumberFormat(locale, {
+                    : new Intl.NumberFormat(intlLocaleTag(locale), {
                         minimumFractionDigits: 1,
                         maximumFractionDigits: 1,
                       }).format(priceSpan.factor),

@@ -42,6 +42,7 @@ import {
   useTableScrollRef,
   VirtualTableBody,
 } from "@/components/ui/table"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * DataTable — the workhorse six modules share.             Owner: W3-B
@@ -811,7 +812,7 @@ function formatCount(
   total: number | null,
   locale: string
 ): string {
-  const format = new Intl.NumberFormat(locale)
+  const format = new Intl.NumberFormat(intlLocaleTag(locale))
   return template
     .replace("{visible}", format.format(visible))
     .replace("{total}", format.format(total ?? visible))

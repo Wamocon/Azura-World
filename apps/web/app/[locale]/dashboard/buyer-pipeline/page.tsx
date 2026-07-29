@@ -14,6 +14,7 @@ import {
   type PipelineStageSummary,
 } from "@/lib/lead-repository"
 import { hasPermission } from "@/lib/rbac"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * /[locale]/dashboard/buyer-pipeline — the funnel.           Owner: W3-C / N1
@@ -167,7 +168,7 @@ export default async function BuyerPipelinePage({
               data-numeric
               className="font-display text-2xl font-semibold tracking-[-0.018em] text-foreground tabular-nums"
             >
-              {new Intl.NumberFormat(locale).format(summary.totalEntries)}
+              {new Intl.NumberFormat(intlLocaleTag(locale)).format(summary.totalEntries)}
             </dd>
           </div>
           <div className="flex flex-col gap-1 rounded-lg border border-border bg-card px-3 py-2.5">
@@ -329,7 +330,7 @@ function StageBlock({
             data-numeric
             className="text-sm font-normal text-muted-foreground tabular-nums"
           >
-            {new Intl.NumberFormat(locale).format(count)}
+            {new Intl.NumberFormat(intlLocaleTag(locale)).format(count)}
           </span>
         </h3>
         {summary !== null && !isEmpty ? (
@@ -346,7 +347,7 @@ function StageBlock({
                 ? labels.noProbability
                 : labels.averageProbability.replace(
                     "{value}",
-                    new Intl.NumberFormat(locale, {
+                    new Intl.NumberFormat(intlLocaleTag(locale), {
                       maximumFractionDigits: 1,
                     }).format(summary.averageProbability)
                   )}
@@ -439,7 +440,7 @@ function EntryRow({
               ? labels.probabilityUnset
               : labels.probability.replace(
                   "{value}",
-                  new Intl.NumberFormat(locale).format(entry.probability)
+                  new Intl.NumberFormat(intlLocaleTag(locale)).format(entry.probability)
                 )}
           </span>
         </div>
@@ -466,7 +467,7 @@ function EntryRow({
           <span className="tabular-nums">
             {daysInStage === null
               ? formatDay(entry.enteredStageAt, locale)
-              : new Intl.NumberFormat(locale).format(daysInStage)}
+              : new Intl.NumberFormat(intlLocaleTag(locale)).format(daysInStage)}
           </span>
           {/* The audit trail this page CAN show: where the entry came from and
               when. There is no write path, so this is history, not a control. */}
@@ -514,7 +515,7 @@ function MetaField({
 function formatDay(iso: string, locale: string): string {
   const parsed = Date.parse(iso)
   if (Number.isNaN(parsed)) return iso
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(intlLocaleTag(locale), {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
