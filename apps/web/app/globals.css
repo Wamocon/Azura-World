@@ -222,24 +222,24 @@
 
   color-scheme: light;
 
-  --background: #f4f9fb;
-  --foreground: #08161f;
+  --background: #faf8f4;
+  --foreground: #1a1814;
   --card: #ffffff;
-  --card-foreground: #08161f;
+  --card-foreground: #1a1814;
   --popover: #ffffff;
-  --popover-foreground: #08161f;
+  --popover-foreground: #1a1814;
 
-  --primary: #0b5e7d;
-  --primary-foreground: #f4f9fb;
-  --secondary: #e2eef3;
-  --secondary-foreground: #0b3446;
-  --muted: #e7f0f4;
-  --muted-foreground: #4a6472;
+  --primary: #907040;
+  --primary-foreground: #ffffff;
+  --secondary: #f1eee8;
+  --secondary-foreground: #3a352c;
+  --muted: #f1eee8;
+  --muted-foreground: #6b6558;
 
   /* Warm sand. CTAs only — never a surface, never body text at small sizes.
      It is the single warm note in a cold palette and stops being special the
      moment it is used twice on a screen. */
-  --accent: #a75b12;
+  --accent: #4090e0;
   --accent-foreground: #ffffff;
 
   --destructive: #b0243a;

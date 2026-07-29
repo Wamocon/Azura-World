@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
 import { Building2, Home, KeyRound, ShieldCheck, type LucideIcon } from "lucide-react"
 import { ActMedia } from "@/components/journey/act-media"
 import { imagesForAct, type JourneyAct, type JourneyImage } from "@/lib/journey-media"
@@ -183,16 +183,23 @@ const COPY: Record<Locale, Copy> = {
   },
 }
 
+function subscribeToReducedMotion(onChange: () => void): () => void {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+  mq.addEventListener("change", onChange)
+  return () => mq.removeEventListener("change", onChange)
+}
+
+/**
+ * `useSyncExternalStore` rather than an effect: setting state synchronously
+ * inside an effect triggers a cascading render, and the server snapshot has to
+ * be `false` so the markup matches before hydration.
+ */
 function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setReduced(mq.matches)
-    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches)
-    mq.addEventListener("change", onChange)
-    return () => mq.removeEventListener("change", onChange)
-  }, [])
-  return reduced
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  )
 }
 
 export function OperatingMap({ locale }: { locale: string }) {
