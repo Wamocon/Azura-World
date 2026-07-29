@@ -47,6 +47,15 @@
 
 import type { Role } from "@/lib/contracts"
 import { seedIso } from "@/lib/repository-base"
+import {
+  at,
+  DEMO_MARK,
+  DEMO_PROFILE_IDS,
+  demoId,
+  monthStarts,
+  stream,
+  YEAR_START_OFFSET,
+} from "@/lib/demo-operations"
 
 // ---------------------------------------------------------------------------
 // Row shapes
@@ -366,35 +375,203 @@ export function seedGuardianships(): GuardianshipRecord[] {
 }
 
 // ---------------------------------------------------------------------------
-// The three empty tables
+// The three tables that used to be empty
 //
-// `supabase/seed.sql` inserts no rows into `audit_events`, `access_events` or
-// `compliance_checks`, and W1-A's handoff records that as a `[GAP]` with
-// W3-D/E/F named as the owners of the missing fixtures. These builders return
-// empty rather than filling it: SYSTEM-PROMPT §3 says never to fill a `[GAP]`
-// with a plausible guess, and a fabricated audit row is the most plausible-
-// looking guess in this whole repository — it would read as a record of
+// They returned `[]` and the reason was good: SYSTEM-PROMPT §3 forbids filling
+// a `[GAP]` with a plausible guess, and a fabricated audit row is the most
+// plausible-looking guess in this repository — it reads as a record of
 // something that happened.
 //
-// The exported row types above are the contract to build fixtures against. The
-// fixtures themselves belong in `seed.sql`, where both modes can see them.
+// `PIVOT.md` §2 changes what these rows ARE. This is a product demonstration,
+// not a dossier about a real operator, so the audit trail has to show what it
+// records or the governance module demonstrates nothing. The standard that does
+// not move: every generated row carries `demo: true`, and none of them claims a
+// real person did a real thing. `supabase/seed.sql` still has no rows in these
+// three tables — that is W1-A's, and it is a request in HANDOFF/P1.md.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// The generated operating year
+//
+// The three tables above shipped EMPTY, and the comment explaining why was
+// right under the old framing: this was competitor intelligence and a fabricated
+// audit row would have been a fabricated claim about somebody's real conduct.
+//
+// `PIVOT.md` §2 changes the framing, not the standard. These rows are a
+// demonstration of what the audit trail records, every one carries
+// `demo: true`, and none describes an action a real person took.
 // ---------------------------------------------------------------------------
 
 /**
- * Empty. See the note above — the audit trail has no seeded rows, and
- * `getAuditEvents()` returning `[]` in local-seed mode is the honest report of
- * that, not a failure.
+ * A year of audit entries: the actions this system actually writes.
+ *
+ * `beforeData` / `afterData` carry the two values a reviewer needs to see, and
+ * nothing else. An audit row that dumps a whole record is a row nobody reads,
+ * and it is also the row most likely to carry a resident's personal data into a
+ * table with a longer retention than the record it describes.
  */
+function generatedAuditEvents(): AuditEventRecord[] {
+  const rng = stream("audit")
+  const out: AuditEventRecord[] = []
+
+  const ACTIONS: ReadonlyArray<
+    readonly [string, string, string, number]
+  > = [
+    // action, entity table, actor role key, weight
+    ["ticket.status_changed", "service_tickets", "staff", 30],
+    ["ticket.assigned", "service_tickets", "manager", 18],
+    ["finance.entry_posted", "finance_ledger_entries", "accountant", 16],
+    ["invoice.settled", "vendor_invoices", "accountant", 10],
+    ["document.uploaded", "documents", "staff", 8],
+    ["document.reviewed", "documents", "manager", 6],
+    ["profile.role_changed", "profiles", "admin", 4],
+    ["compliance.decided", "compliance_checks", "manager", 4],
+    ["unit.resident_added", "unit_residents", "manager", 4],
+  ]
+
+  for (let index = 1; index <= 220; index += 1) {
+    const entry = rng.weighted(ACTIONS.map((row) => [row, row[3]] as const))
+    const [action, entityTable, actorKey] = entry
+    const offset = rng.int(YEAR_START_OFFSET, -1)
+    out.push({
+      id: demoId("aud", index),
+      companyId: SEED_GOVERNANCE_COMPANY_ID,
+      actorProfileId:
+        DEMO_PROFILE_IDS[actorKey as keyof typeof DEMO_PROFILE_IDS] ??
+        DEMO_PROFILE_IDS.staff,
+      action,
+      entityTable,
+      entityId: null,
+      beforeData: { ...DEMO_MARK, state: "before" },
+      afterData: { ...DEMO_MARK, state: "after" },
+      // No IP and no user agent. They are not needed to demonstrate what the
+      // trail records, and a plausible-looking address in a demo is one more
+      // thing a reader has to be told is not real.
+      ipAddress: null,
+      userAgent: null,
+      requestId: null,
+      createdAt: at(offset, rng.int(8, 19)),
+    })
+  }
+  return out
+}
+
+/**
+ * Access decisions, including the refusals.
+ *
+ * A log of nothing but grants is not an access log. Roughly one in seven is a
+ * denial, which is what makes the governance screen worth opening: the row that
+ * matters is the one where somebody reached for a unit that was not theirs.
+ */
+function generatedAccessEvents(): AccessEventRecord[] {
+  const rng = stream("access")
+  const out: AccessEventRecord[] = []
+
+  const RESOURCES: readonly string[] = [
+    "/dashboard/finance",
+    "/dashboard/units",
+    "/dashboard/tickets",
+    "/dashboard/documents",
+    "/dashboard/users",
+    "/dashboard/vendor-invoices",
+  ]
+
+  for (let index = 1; index <= 140; index += 1) {
+    const denied = rng.chance(0.15)
+    const offset = rng.int(YEAR_START_OFFSET, -1)
+    out.push({
+      id: demoId("acc", index),
+      companyId: SEED_GOVERNANCE_COMPANY_ID,
+      actorProfileId: rng.pick([
+        DEMO_PROFILE_IDS.owner,
+        DEMO_PROFILE_IDS.tenant,
+        DEMO_PROFILE_IDS.staff,
+        DEMO_PROFILE_IDS.serviceProvider,
+        DEMO_PROFILE_IDS.accountant,
+      ]),
+      eventType: denied ? "route_denied" : "route_allowed",
+      decision: denied ? "deny" : "allow",
+      resource: rng.pick(RESOURCES),
+      reason: denied ? "forbidden" : null,
+      ipAddress: null,
+      userAgent: null,
+      requestId: null,
+      sessionId: null,
+      createdAt: at(offset, rng.int(7, 21)),
+    })
+  }
+  return out
+}
+
+/**
+ * The compliance calendar a building actually has to keep.
+ *
+ * Lift inspections, fire safety, legionella, electrical testing and insurance
+ * renewal, on the cadence each is genuinely required at. Some are overdue,
+ * because the point of the module is the ones that are.
+ */
+function generatedComplianceChecks(): ComplianceCheckRecord[] {
+  const rng = stream("compliance")
+  const out: ComplianceCheckRecord[] = []
+  let index = 0
+
+  const REGIME: ReadonlyArray<readonly [string, string, string, number]> = [
+    // check type, subject type, risk level, months between checks
+    ["lift_inspection", "site", "high", 6],
+    ["fire_safety", "site", "high", 12],
+    ["legionella_test", "site", "high", 6],
+    ["electrical_test", "site", "medium", 12],
+    ["pool_water_quality", "site", "medium", 1],
+    ["insurance_renewal", "company", "medium", 12],
+    ["lease_compliance", "unit", "low", 12],
+  ]
+
+  for (const [checkType, subjectType, riskLevel, everyMonths] of REGIME) {
+    const months = monthStarts()
+    for (let m = 0; m < months.length; m += everyMonths) {
+      const offset = months[m]
+      if (offset === undefined) continue
+      index += 1
+      const dueOffset = offset + everyMonths * 30
+      const overdue = dueOffset < 0 && rng.chance(0.22)
+      const decided = dueOffset < 0 && !overdue
+
+      out.push({
+        id: demoId("cmp", index),
+        companyId: SEED_GOVERNANCE_COMPANY_ID,
+        siteId: subjectType === "company" ? null : SEED_GOVERNANCE_SITE_ID,
+        subjectType,
+        subjectId:
+          subjectType === "unit" ? "AZW-B03-0042" : SEED_GOVERNANCE_SITE_ID,
+        checkType,
+        // `overdue` is a fact about the due date, not a label: the status and
+        // `dueAt` are derived from the same offset so they cannot disagree.
+        status: overdue ? "overdue" : decided ? "passed" : "scheduled",
+        riskLevel,
+        rationale: null,
+        evidenceDocumentId: null,
+        humanDecisionRequired: riskLevel === "high",
+        decidedBy: decided ? DEMO_PROFILE_IDS.manager : null,
+        decidedAt: decided ? at(dueOffset - 2, 11) : null,
+        dueAt: at(dueOffset, 9),
+        metadata: { ...DEMO_MARK, cadenceMonths: everyMonths },
+        version: 1,
+        createdAt: at(offset, 9),
+        updatedAt: at(Math.min(0, dueOffset), 9),
+      })
+    }
+  }
+  return out
+}
+
 export function seedAuditEvents(): AuditEventRecord[] {
-  return []
+  return generatedAuditEvents()
 }
 
-/** Empty, for the same reason as `seedAuditEvents()`. */
 export function seedAccessEvents(): AccessEventRecord[] {
-  return []
+  return generatedAccessEvents()
 }
 
-/** Empty, for the same reason as `seedAuditEvents()`. */
 export function seedComplianceChecks(): ComplianceCheckRecord[] {
-  return []
+  return generatedComplianceChecks()
 }

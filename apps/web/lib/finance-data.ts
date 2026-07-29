@@ -29,6 +29,17 @@
 
 import type { Money } from "@/lib/contracts"
 import { seedIso } from "@/lib/repository-base"
+import {
+  at,
+  DEMO_MARK,
+  demoId,
+  inPeriod,
+  monthStarts,
+  occupancy,
+  onDate,
+  quarterlyServiceCharge,
+  stream,
+} from "@/lib/demo-operations"
 
 // ---------------------------------------------------------------------------
 // Shared identifiers
@@ -386,7 +397,7 @@ const GROUP_UTILITY_TRY = "a2000000-0000-4000-8000-000000000003"
  * a single-sided reversal, and three currencies so that any aggregate which
  * forgets to group by currency is visibly wrong rather than quietly wrong.
  */
-export function seedLedgerEntries(): LedgerEntry[] {
+function anchorLedgerEntries(): LedgerEntry[] {
   return [
     // --- Balanced group 1: July dues on AZW-B01-0001, EUR 450.00 -------------
     {
@@ -689,7 +700,7 @@ export function seedLedgerEntries(): LedgerEntry[] {
  * sitting negative within its limit, one vendor wallet, one company-level wallet
  * (no holder, second currency) and one frozen wallet.
  */
-export function seedWallets(): Wallet[] {
+function anchorWallets(): Wallet[] {
   return [
     {
       id: "a3000000-0000-4000-8000-000000000001",
@@ -791,7 +802,7 @@ function withOutstanding(
  * `AZW-VI-2026-0001` is the **partially paid** one the brief requires; its
  * remainder is what makes "open" a derived quantity rather than a stored flag.
  */
-export function seedVendorInvoices(): VendorInvoice[] {
+function anchorVendorInvoices(): VendorInvoice[] {
   return [
     withOutstanding({
       id: "a4000000-0000-4000-8000-000000000001",
@@ -923,7 +934,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
 }
 
 /** Six provider-side movements: captured, pending, failed and refunded, in and out. */
-export function seedPaymentTransactions(): PaymentTransaction[] {
+function anchorPaymentTransactions(): PaymentTransaction[] {
   return [
     {
       id: "a5000000-0000-4000-8000-000000000001",
@@ -1060,4 +1071,377 @@ export function seedPaymentTransactions(): PaymentTransaction[] {
       updatedAt: seedIso(-38, 11),
     },
   ]
+}
+
+// ---------------------------------------------------------------------------
+// The generated operating year
+//
+// Twelve months of a real book: quarterly service charges per unit, the
+// payments against them, the arrears that did not arrive, the vendor invoices
+// that run the building, and one recurring common-area utility in lira.
+//
+// ## Why quarterly and not monthly
+//
+// `MAX_PAGE_SIZE` is 500 and `getFinanceSummary()` aggregates over ONE page
+// without surfacing a `truncated` flag. Monthly billing for a believable number
+// of units puts the ledger past 500 rows, at which point every headline total
+// on `/dashboard/finance` is quietly short — the worst failure available on a
+// money screen, because it looks fine. Quarterly billing across 12 months
+// covers the same year, is what a Hausverwaltung actually does, and keeps the
+// whole book inside one page so every total the dashboard shows is EXACT.
+//
+// Raising `MAX_PAGE_SIZE`, or adding the SQL-side aggregate W2-A already asked
+// W1-A for, is what unlocks a monthly book. Recorded in HANDOFF/P1.md.
+//
+// ## Currency
+//
+// EUR for dwellings, TRY for the common-area electricity the site actually pays
+// in lira. Two currencies in one ledger is not decoration: it is what makes a
+// cross-currency aggregate visibly wrong rather than plausibly wrong, and
+// CONVENTIONS §5 forbids one.
+// ---------------------------------------------------------------------------
+
+/** Units carrying a service-charge account. A slice of the occupied stock. */
+function billedUnits(): ReadonlyArray<{
+  unitId: string
+  blockCode: string
+  residentId: string
+  charge: Money
+}> {
+  const rng = stream("finance-billing")
+  return occupancy()
+    .filter(() => rng.chance(0.13))
+    .slice(0, 50)
+    .map((entry) => ({
+      unitId: entry.unit.unitId,
+      blockCode: entry.unit.blockCode,
+      residentId: entry.residentId,
+      charge: quarterlyServiceCharge(entry.unit),
+    }))
+}
+
+/** The four quarter-start day offsets inside the operating year. */
+function quarterStarts(): readonly number[] {
+  const months = monthStarts()
+  return [months[0], months[3], months[6], months[9]].filter(
+    (value): value is number => value !== undefined
+  )
+}
+
+function generatedLedgerEntries(): LedgerEntry[] {
+  const rng = stream("finance-ledger")
+  const out: LedgerEntry[] = []
+  let index = 0
+
+  const push = (entry: Omit<LedgerEntry, "id">) => {
+    index += 1
+    out.push({ ...entry, id: demoId("led", index) })
+  }
+
+  // --- Service charges, and the payments against them ----------------------
+  for (const quarter of quarterStarts()) {
+    for (const unit of billedUnits()) {
+      const dueOffset = quarter + 14
+      push({
+        companyId: SEED_COMPANY_ID,
+        siteId: SEED_SITE_ID,
+        unitId: unit.unitId,
+        residentId: null,
+        transactionGroupId: null,
+        entryType: "service_charge",
+        status: "posted",
+        period: inPeriod(quarter),
+        dueDate: onDate(dueOffset),
+        postedAt: at(quarter, 8),
+        debitAmount: unit.charge.amount,
+        creditAmount: 0,
+        currency: "EUR",
+        signedAmount: unit.charge.amount,
+        description: "Hausgeld " + inPeriod(quarter) + " " + unit.unitId,
+        reference: "SC-" + inPeriod(quarter) + "-" + unit.unitId,
+        idempotencyKey: null,
+        reversalOf: null,
+        createdBy: SEED_PROFILE_IDS.accountant,
+        metadata: { ...DEMO_MARK, block: unit.blockCode },
+        createdAt: at(quarter, 8),
+        updatedAt: at(quarter, 8),
+      })
+
+      // 84% pay. The rest is the arrears the debtor panel exists to show, and
+      // it is deliberately uneven: a few units carry most of the debt, which is
+      // what a real ageing report looks like.
+      if (!rng.chance(0.84)) continue
+      const paidOffset = dueOffset + rng.int(-10, 26)
+      if (paidOffset > 0) continue
+      push({
+        companyId: SEED_COMPANY_ID,
+        siteId: SEED_SITE_ID,
+        unitId: unit.unitId,
+        residentId: null,
+        transactionGroupId: null,
+        entryType: "payment",
+        status: "posted",
+        period: inPeriod(quarter),
+        dueDate: null,
+        postedAt: at(paidOffset, 11),
+        debitAmount: 0,
+        creditAmount: unit.charge.amount,
+        currency: "EUR",
+        signedAmount: -unit.charge.amount,
+        description: "Zahlungseingang Hausgeld " + inPeriod(quarter),
+        reference: "SC-" + inPeriod(quarter) + "-" + unit.unitId,
+        idempotencyKey: null,
+        reversalOf: null,
+        createdBy: SEED_PROFILE_IDS.accountant,
+        metadata: { ...DEMO_MARK, block: unit.blockCode },
+        createdAt: at(paidOffset, 11),
+        updatedAt: at(paidOffset, 11),
+      })
+    }
+  }
+
+  // --- Common-area electricity, monthly, in lira ---------------------------
+  //
+  // A BALANCED pair per month sharing a transaction_group_id. W1-A's deferred
+  // trigger checks sum(debit) = sum(credit) per (group, currency) at COMMIT, so
+  // both legs are emitted together and in the same currency, or the SQL seed
+  // would be refused at the first commit.
+  for (const month of monthStarts()) {
+    const groupId = demoId("grp", 900 - month)
+    const amount = 9000 + rng.int(0, 6000)
+    const shared = {
+      companyId: SEED_COMPANY_ID,
+      siteId: SEED_SITE_ID,
+      unitId: null,
+      residentId: null,
+      transactionGroupId: groupId,
+      status: "posted" as const,
+      period: inPeriod(month),
+      dueDate: null,
+      postedAt: at(month + 6, 7),
+      currency: "TRY" as const,
+      reference: "UTIL-" + inPeriod(month),
+      idempotencyKey: null,
+      reversalOf: null,
+      createdBy: SEED_PROFILE_IDS.accountant,
+      metadata: { ...DEMO_MARK, meter: "common_area" },
+      createdAt: at(month + 6, 7),
+      updatedAt: at(month + 6, 7),
+    }
+    push({
+      ...shared,
+      entryType: "utility",
+      debitAmount: amount,
+      creditAmount: 0,
+      signedAmount: amount,
+      description: "Elektrik ortak alanlar " + inPeriod(month),
+    })
+    push({
+      ...shared,
+      entryType: "adjustment",
+      debitAmount: 0,
+      creditAmount: amount,
+      signedAmount: -amount,
+      description: "Gegenbuchung Elektrik " + inPeriod(month),
+    })
+  }
+
+  return out
+}
+
+/**
+ * Contractors a coastal complex actually runs on, in the currency each is paid
+ * in. Plausible Turkish trade names attached to `demo: true` rows; none is
+ * presented as a supplier Azura World uses.
+ */
+const DEMO_VENDORS: ReadonlyArray<readonly [string, CurrencyCode]> = [
+  ["Cebeci Teknik Servis", "EUR"],
+  ["Alanya Peyzaj Ltd.", "EUR"],
+  ["Anadolu Asansör", "TRY"],
+  ["Mavi Havuz Kimya", "EUR"],
+  ["Türkler Güvenlik A.Ş.", "TRY"],
+  ["Azura Temizlik", "EUR"],
+  ["Akdeniz Klima Servisi", "TRY"],
+  ["Toros Elektrik", "TRY"],
+]
+
+function generatedVendorInvoices(): VendorInvoice[] {
+  const rng = stream("finance-vendors")
+  const out: VendorInvoice[] = []
+  let index = 0
+
+  for (const month of monthStarts()) {
+    for (let n = 0; n < 4; n += 1) {
+      index += 1
+      const vendor = rng.pick(DEMO_VENDORS)
+      const vendorName = vendor[0]
+      const currency = vendor[1]
+      const total =
+        currency === "TRY" ? rng.int(8000, 90000) : rng.int(400, 9000)
+      const issuedOffset = month + rng.int(1, 25)
+      if (issuedOffset > 0) continue
+      const dueOffset = issuedOffset + 30
+
+      // Settlement is a FACT about paid_amount, not a label somebody applied:
+      // `vendor_invoices_paid_status_agrees` refuses `paid` unless
+      // paid_amount = total_amount. So the amount is derived FROM the status,
+      // never chosen beside it.
+      const settled = rng.weighted<
+        "paid" | "partially_paid" | "open" | "disputed"
+      >([
+        ["paid", 58],
+        ["partially_paid", 14],
+        ["open", 22],
+        ["disputed", 6],
+      ])
+      const paidAmount =
+        settled === "paid"
+          ? total
+          : settled === "partially_paid"
+            ? Math.round(total * 0.4)
+            : 0
+
+      out.push({
+        id: demoId("vin", index),
+        companyId: SEED_COMPANY_ID,
+        siteId: SEED_SITE_ID,
+        vendorProfileId: null,
+        vendorName,
+        invoiceNo:
+          "AZW-VI-" +
+          inPeriod(month).replace("-", "") +
+          "-" +
+          String(n + 1).padStart(2, "0"),
+        status: settled,
+        totalAmount: total,
+        taxAmount: Math.round(total * 0.18),
+        paidAmount,
+        outstandingAmount: total - paidAmount,
+        currency,
+        issuedOn: onDate(issuedOffset),
+        dueOn: onDate(dueOffset),
+        ledgerEntryId: null,
+        documentPath: null,
+        notes: null,
+        version: 1,
+        createdAt: at(issuedOffset, 9),
+        updatedAt: at(Math.min(0, dueOffset), 9),
+      })
+    }
+  }
+  return out
+}
+
+function generatedPaymentTransactions(): PaymentTransaction[] {
+  const rng = stream("finance-payments")
+  const out: PaymentTransaction[] = []
+  let index = 0
+
+  // One outbound movement per settled vendor invoice, so the reconciliation
+  // panel has real matches rather than a list of orphans.
+  for (const invoice of generatedVendorInvoices()) {
+    if (invoice.paidAmount === null || invoice.paidAmount <= 0) continue
+    index += 1
+    const paidOffset = rng.int(-360, -2)
+    out.push({
+      id: demoId("pay", index),
+      companyId: SEED_COMPANY_ID,
+      ledgerEntryId: null,
+      vendorInvoiceId: invoice.id,
+      walletId: null,
+      unitId: null,
+      residentId: null,
+      provider: rng.pick(["bank_transfer", "iyzico"]),
+      providerReference: "TR-" + invoice.invoiceNo,
+      direction: "outbound",
+      status: "captured",
+      amount: invoice.paidAmount,
+      currency: invoice.currency,
+      paidAt: at(paidOffset, 10),
+      failureReason: null,
+      idempotencyKey: null,
+      providerPayload: { ...DEMO_MARK },
+      createdBy: SEED_PROFILE_IDS.accountant,
+      createdAt: at(paidOffset, 10),
+      updatedAt: at(paidOffset, 10),
+    })
+  }
+
+  // A handful of failed and pending inbound movements: a payment screen with
+  // nothing but successes is not a payment screen.
+  for (let n = 0; n < 14; n += 1) {
+    index += 1
+    const failed = rng.chance(0.5)
+    const paidOffset = rng.int(-120, -1)
+    out.push({
+      id: demoId("pay", index),
+      companyId: SEED_COMPANY_ID,
+      ledgerEntryId: null,
+      vendorInvoiceId: null,
+      walletId: null,
+      unitId: null,
+      residentId: null,
+      provider: "iyzico",
+      providerReference: failed ? null : "iyz-" + String(1000 + n),
+      direction: "inbound",
+      status: failed ? "failed" : "pending",
+      amount: rng.int(120, 900),
+      currency: "EUR",
+      paidAt: null,
+      // NOT NULL whenever status is 'failed' — a CHECK constraint, so a failure
+      // that cannot say why is refused at the storage layer.
+      failureReason: failed ? "issuer_declined" : null,
+      idempotencyKey: null,
+      providerPayload: { ...DEMO_MARK },
+      createdBy: null,
+      createdAt: at(paidOffset, 12),
+      updatedAt: at(paidOffset, 12),
+    })
+  }
+
+  return out
+}
+
+/** A resident wallet per billed unit. */
+function generatedWallets(): Wallet[] {
+  const rng = stream("finance-wallets")
+  return billedUnits().map((unit, index) => {
+    const allowsOverdraft = rng.chance(0.18)
+    return {
+      id: demoId("wal", index + 1),
+      companyId: SEED_COMPANY_ID,
+      // No profile: wallets of record for residents who have never signed in.
+      // Only the eleven seeded accounts have a login.
+      owningProfileId: null,
+      kind: "resident" as const,
+      currency: "EUR" as const,
+      // A negative balance is legal ONLY with the flag and inside the limit.
+      // Both are CHECK constraints in migration 07, so the generator obeys them
+      // rather than emitting rows the database would refuse.
+      balanceAmount: allowsOverdraft ? -rng.int(20, 380) : rng.int(0, 2400),
+      allowsOverdraft,
+      overdraftLimitAmount: allowsOverdraft ? 500 : 0,
+      lowBalanceThresholdAmount: 150,
+      status: "active" as const,
+      version: 1,
+      createdAt: at(-365, 8),
+      updatedAt: at(-7, 8),
+    }
+  })
+}
+
+export function seedLedgerEntries(): LedgerEntry[] {
+  return [...anchorLedgerEntries(), ...generatedLedgerEntries()]
+}
+
+export function seedWallets(): Wallet[] {
+  return [...anchorWallets(), ...generatedWallets()]
+}
+
+export function seedVendorInvoices(): VendorInvoice[] {
+  return [...anchorVendorInvoices(), ...generatedVendorInvoices()]
+}
+
+export function seedPaymentTransactions(): PaymentTransaction[] {
+  return [...anchorPaymentTransactions(), ...generatedPaymentTransactions()]
 }

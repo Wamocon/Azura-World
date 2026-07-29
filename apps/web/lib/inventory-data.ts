@@ -60,6 +60,7 @@
 
 import type { Confidence, Money, SourceTier, UnitLayout } from "@/lib/contracts"
 import { seedIso } from "@/lib/repository-base"
+import { demoId, occupancy } from "@/lib/demo-operations"
 
 // ---------------------------------------------------------------------------
 // Column enums, derived from the frozen contract so they cannot drift
@@ -1272,7 +1273,15 @@ export function seedUnitFactRows(
 // Residents — the data role scoping is tested against
 // ---------------------------------------------------------------------------
 
-export function seedResidentRows(): SeedResidentRow[] {
+/**
+ * The three residents role scoping is tested against.
+ *
+ * Kept verbatim and kept FIRST. `repository-contract.test.ts` proves "owner A
+ * cannot read owner B's unit" and "a child role sees a strict subset of its
+ * guardian" against exactly these, and `04-rls-negative.sql` mirrors them in
+ * SQL. The generated population below never touches their three units.
+ */
+function anchorResidentRows(): SeedResidentRow[] {
   return [
     {
       id: SEED_RESIDENT_IDS.ownerOne,
@@ -1326,7 +1335,7 @@ export function seedResidentRows(): SeedResidentRow[] {
  * `AZW-B01-0003` carries an ended tenancy so the "expired edge" path is covered
  * — an end date in the past must not grant access.
  */
-export function seedUnitResidentRows(): SeedUnitResidentRow[] {
+function anchorUnitResidentRows(): SeedUnitResidentRow[] {
   return [
     {
       id: "e0000000-0000-4000-8000-000000000001",
@@ -1390,6 +1399,68 @@ export function seedUnitResidentRows(): SeedUnitResidentRow[] {
       residents: { profile_id: SEED_PROFILE_IDS.tenantOne },
     },
   ]
+}
+
+// ---------------------------------------------------------------------------
+// The generated population
+// ---------------------------------------------------------------------------
+
+/**
+ * Residents for the occupied units, and their holdings.
+ *
+ * `occupancy()` in `lib/demo-operations.ts` decides who lives where; this turns
+ * that into the two row shapes the repository reads. Split across two builders
+ * because the tables are separate, but they walk the SAME occupancy list, so a
+ * resident always has a holding and a holding always has a resident. Generating
+ * them independently is how you end up with orphan rows that only show up as a
+ * blank cell three screens away.
+ *
+ * **`profile_id` is null for every generated resident.** They are people of
+ * record, not logins: only the eleven seeded accounts can sign in. That matters
+ * for scoping, because `current_user_scope_profile_id()` resolves through a
+ * profile, so a generated resident widens nobody's horizon. It also keeps the
+ * demo honest about what it is: 400 rows of residents, 11 of whom have an
+ * account, which is what a real handover would look like on day one.
+ */
+function generatedResidentRows(): SeedResidentRow[] {
+  return occupancy().map((entry) => ({
+    id: entry.residentId,
+    company_id: SEED_COMPANY_ID,
+    profile_id: null,
+    full_name: entry.residentName,
+    email: entry.email,
+    phone: null,
+    nationality: null,
+    locale: entry.locale,
+    kind: "individual",
+    created_at: seedIso(entry.startedOffset),
+    updated_at: seedIso(entry.startedOffset),
+  }))
+}
+
+function generatedUnitResidentRows(): SeedUnitResidentRow[] {
+  return occupancy().map((entry, index) => ({
+    id: demoId("ure", index + 1),
+    unit_id: entry.unit.unitId,
+    resident_id: entry.residentId,
+    relation: entry.relation,
+    // An owner holds 100%; a tenant holds no share of the freehold, which is
+    // what the null means rather than "unknown".
+    share_percent: entry.relation === "owner" ? numericString(100) : null,
+    start_date: seedIso(entry.startedOffset).slice(0, 10),
+    end_date: null,
+    is_primary: true,
+    created_at: seedIso(entry.startedOffset),
+    residents: { profile_id: null },
+  }))
+}
+
+export function seedResidentRows(): SeedResidentRow[] {
+  return [...anchorResidentRows(), ...generatedResidentRows()]
+}
+
+export function seedUnitResidentRows(): SeedUnitResidentRow[] {
+  return [...anchorUnitResidentRows(), ...generatedUnitResidentRows()]
 }
 
 export function seedGuardianshipRows(): SeedGuardianshipRow[] {

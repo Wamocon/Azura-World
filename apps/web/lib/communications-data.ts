@@ -37,6 +37,14 @@ import {
   SEED_UNIT_ID_TENANT,
 } from "@/lib/document-data"
 import { seedIso } from "@/lib/repository-base"
+import { seedServiceTickets } from "@/lib/operations-data"
+import {
+  at,
+  DEMO_MARK,
+  DEMO_PROFILE_IDS,
+  demoId,
+  stream,
+} from "@/lib/demo-operations"
 
 export {
   SEED_COMPANY_ID,
@@ -194,7 +202,7 @@ export const SEED_THREAD_IDS = {
  * and one in a staff-only thread, so the internal-note filter is exercised in
  * both shapes.
  */
-export function seedMessages(): MessageRecord[] {
+function anchorMessages(): MessageRecord[] {
   return [
     {
       id: "0a1b2c3d-0005-4000-8000-000000000001",
@@ -375,7 +383,7 @@ function threadActivity(
  * Three threads, ordered newest-activity-first — the order `getThreads()`
  * returns them in, matching `idx_threads_company_activity`.
  */
-export function seedThreads(): ThreadRecord[] {
+function anchorThreads(): ThreadRecord[] {
   const messages = seedMessages()
 
   return [
@@ -448,7 +456,7 @@ export function seedThreads(): ThreadRecord[] {
  * `is_read` is true (the `notifications_read_at_consistent` CHECK). One row has
  * already expired at the anchor so the default expiry filter is exercised.
  */
-export function seedNotifications(): NotificationRecord[] {
+function anchorNotifications(): NotificationRecord[] {
   return [
     {
       id: "0a1b2c3d-0006-4000-8000-000000000001",
@@ -564,4 +572,230 @@ export function seedNotifications(): NotificationRecord[] {
       createdAt: seedIso(-12, 16),
     },
   ]
+}
+
+// ---------------------------------------------------------------------------
+// The generated operating year
+//
+// Threads hang off REAL tickets and REAL units. A communications module whose
+// conversations reference nothing is a list of paragraphs; the value of the
+// screen is that a manager can read a complaint and open the ticket it is about.
+// ---------------------------------------------------------------------------
+
+/** Opening messages, by what the resident is writing about. */
+const THREAD_OPENERS: ReadonlyArray<readonly [string, string, string]> = [
+  // subject, resident opener, management reply
+  [
+    "Klimaanlage in der Wohnung",
+    "Guten Tag, die Klimaanlage kühlt seit gestern nicht mehr. Können Sie jemanden vorbeischicken?",
+    "Guten Tag, vielen Dank für die Meldung. Wir haben einen Termin für morgen zwischen 9 und 12 Uhr eingeplant.",
+  ],
+  [
+    "Nebenkostenabrechnung",
+    "Ich habe eine Frage zur letzten Abrechnung. Die Position für Wasser weicht deutlich vom Vorjahr ab.",
+    "Wir prüfen das gern. Die Ablesung liegt uns vor, wir senden Ihnen die Aufstellung bis Ende der Woche zu.",
+  ],
+  [
+    "Paketannahme",
+    "Können Sie ein Paket für mich annehmen? Ich bin bis Freitag nicht vor Ort.",
+    "Ja, gern. Wir nehmen es an der Rezeption an und legen es in Ihr Fach.",
+  ],
+  [
+    "Lärm am Pool",
+    "Am Wochenende war es bis nach Mitternacht sehr laut am Pool. Gibt es feste Ruhezeiten?",
+    "Die Ruhezeit beginnt um 23 Uhr. Wir haben den Sicherheitsdienst gebeten, das abends zu kontrollieren.",
+  ],
+  [
+    "Zweitschlüssel",
+    "Wir benötigen einen zweiten Schlüssel für die Wohnung. Wie gehen wir vor?",
+    "Bitte kommen Sie mit einem Ausweis zur Verwaltung, dann geben wir den Auftrag noch am selben Tag heraus.",
+  ],
+  [
+    "Wasserdruck im Bad",
+    "Der Wasserdruck im Bad ist seit einigen Tagen sehr niedrig.",
+    "Danke für den Hinweis. Die Technik prüft den Strang, wir melden uns mit einem Termin.",
+  ],
+  [
+    "Parkplatz",
+    "Auf meinem Stellplatz parkt regelmäßig ein fremdes Fahrzeug.",
+    "Wir sprechen den Halter an. Falls es sich wiederholt, lassen wir das Fahrzeug abschleppen.",
+  ],
+]
+
+function generatedThreads(): ThreadRecord[] {
+  const rng = stream("threads")
+  const out: ThreadRecord[] = []
+  let index = 0
+
+  // Only tickets that a resident raised on their own unit produce a thread:
+  // nobody writes to the management about a lobby light.
+  const conversational = seedServiceTickets().filter(
+    (ticket) => ticket.unitId !== null
+  )
+
+  for (const ticket of conversational) {
+    if (!rng.chance(0.28)) continue
+    index += 1
+    const opener = rng.pick(THREAD_OPENERS)
+    const messageCount = rng.int(2, 5)
+    const lastOffset = rng.int(-350, -1)
+
+    out.push({
+      id: demoId("thr", index),
+      companyId: SEED_COMPANY_ID,
+      siteId: SEED_SITE_ID,
+      unitId: ticket.unitId,
+      residentId: null,
+      subject: opener[0],
+      // A closed ticket has a closed conversation. Deriving the status from the
+      // ticket is what stops the two screens contradicting each other.
+      status:
+        ticket.status === "closed"
+          ? "closed"
+          : ticket.status === "resolved"
+            ? "resolved"
+            : "open",
+      priority:
+        ticket.priority === "urgent"
+          ? "urgent"
+          : ticket.priority === "high"
+            ? "high"
+            : "normal",
+      locale: rng.weighted<Locale>([
+        ["de", 46],
+        ["tr", 30],
+        ["ru", 14],
+        ["en", 10],
+      ]),
+      channel: rng.weighted<CommunicationChannel>([
+        ["portal", 52],
+        ["email", 24],
+        ["whatsapp", 14],
+        ["walk_in", 10],
+      ]),
+      createdBy: null,
+      assignedTo: ticket.assigneeProfileId,
+      lastMessageAt: at(lastOffset, 14),
+      messageCount,
+      version: 1,
+      createdAt: at(lastOffset - messageCount, 9),
+      updatedAt: at(lastOffset, 14),
+    })
+  }
+  return out
+}
+
+/**
+ * The messages inside those threads.
+ *
+ * Alternating resident and management, and `messageCount` on the thread is the
+ * number actually emitted here rather than a number chosen beside it. A counter
+ * that disagrees with the list it counts is the sort of thing that survives
+ * every test and gets spotted in the room.
+ */
+function generatedMessages(): MessageRecord[] {
+  const rng = stream("messages")
+  const out: MessageRecord[] = []
+  let index = 0
+
+  for (const thread of generatedThreads()) {
+    const opener =
+      THREAD_OPENERS.find((row) => row[0] === thread.subject) ??
+      THREAD_OPENERS[0]
+    if (opener === undefined) continue
+
+    const created = new Date(thread.createdAt).getTime()
+    for (let n = 0; n < thread.messageCount; n += 1) {
+      index += 1
+      const fromResident = n % 2 === 0
+      out.push({
+        id: demoId("msg", index),
+        threadId: thread.id,
+        companyId: SEED_COMPANY_ID,
+        senderProfileId: fromResident ? null : thread.assignedTo,
+        senderKind: fromResident ? "user" : "user",
+        body: fromResident ? opener[1] : opener[2],
+        channel: thread.channel,
+        locale: thread.locale,
+        // An internal note is staff-only and RLS does NOT filter that column;
+        // `getMessages()` drops it below staff in the repository. Kept false
+        // here so the demo never depends on that single application-side guard.
+        isInternalNote: false,
+        idempotencyKey: null,
+        attachmentDocumentId: null,
+        deliveredAt: new Date(created + n * 86_400_000).toISOString(),
+        readAt: rng.chance(0.8)
+          ? new Date(created + n * 86_400_000 + 3_600_000).toISOString()
+          : null,
+        createdAt: new Date(created + n * 86_400_000).toISOString(),
+      })
+    }
+  }
+  return out
+}
+
+/** Notifications for the eleven accounts that can actually sign in. */
+function generatedNotifications(): NotificationRecord[] {
+  const rng = stream("notifications")
+  const out: NotificationRecord[] = []
+
+  const TEMPLATES: ReadonlyArray<
+    readonly [NotificationCategory, NotificationSeverity, string]
+  > = [
+    ["service", "warning", "Ticket überschreitet die Reaktionszeit"],
+    ["service", "info", "Neues Ticket in Ihrem Bereich"],
+    ["finance", "warning", "Offener Posten seit über 30 Tagen"],
+    ["finance", "info", "Zahlungseingang verbucht"],
+    ["document", "info", "Dokument wartet auf Freigabe"],
+    ["compliance", "critical", "Prüfung überfällig"],
+    ["announcement", "info", "Wartungsfenster angekündigt"],
+  ]
+
+  const recipients = [
+    DEMO_PROFILE_IDS.admin,
+    DEMO_PROFILE_IDS.manager,
+    DEMO_PROFILE_IDS.accountant,
+    DEMO_PROFILE_IDS.staff,
+    DEMO_PROFILE_IDS.owner,
+    DEMO_PROFILE_IDS.tenant,
+  ]
+
+  let index = 0
+  for (const profileId of recipients) {
+    for (let n = 0; n < 14; n += 1) {
+      index += 1
+      const template = rng.pick(TEMPLATES)
+      const offset = rng.int(-120, -1)
+      const read = rng.chance(0.55)
+      out.push({
+        id: demoId("ntf", index),
+        companyId: SEED_COMPANY_ID,
+        profileId,
+        category: template[0],
+        severity: template[1],
+        title: template[2],
+        body: null,
+        payload: { ...DEMO_MARK },
+        link: null,
+        locale: "de",
+        isRead: read,
+        readAt: read ? at(offset, 16) : null,
+        expiresAt: null,
+        createdAt: at(offset, 8),
+      })
+    }
+  }
+  return out
+}
+
+export function seedThreads(): ThreadRecord[] {
+  return [...anchorThreads(), ...generatedThreads()]
+}
+
+export function seedMessages(): MessageRecord[] {
+  return [...anchorMessages(), ...generatedMessages()]
+}
+
+export function seedNotifications(): NotificationRecord[] {
+  return [...anchorNotifications(), ...generatedNotifications()]
 }
