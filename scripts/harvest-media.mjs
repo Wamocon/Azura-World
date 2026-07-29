@@ -1254,8 +1254,18 @@ export function resolveUsage(asset, policy) {
     reason: "implicit default",
   };
 
+  // rights-policy.json v2. The three hosts the proposal is ADDRESSED TO, where
+  // a `render` or a `siteplan` is the developer's own work being shown back to
+  // the developer. Absent from a v1 policy, so this is a no-op against one.
+  // MEDIA-LICENSE.md §9 is the decision record.
+  const official = (policy.officialHosts ?? []).some(
+    (h) => h === asset.sourceHost || h.replace(/^www\./, "") === asset.sourceHost,
+  );
+
   const floor = policy.categoryFloors?.[asset.category];
-  if (floor)
+  const floorWaived =
+    official && typeof floor === "object" && floor?.officialHostException === true;
+  if (floor && !floorWaived)
     candidates.push({
       usage: typeof floor === "string" ? floor : floor.usage,
       reason: `category floor for "${asset.category}": ${typeof floor === "string" ? "set in rights-policy.json" : floor.reason}`,
@@ -1290,7 +1300,14 @@ export function resolveUsage(asset, policy) {
       reason:
         "user-generated content — rights held by the individual traveller, not the publisher",
     });
-  if (asset.tlsInvalid)
+  // `tlsInvalid` is a PROVENANCE control, not a rights one: it says we cannot
+  // be sure whose server we reached. That doubt does not survive on an official
+  // host, where the question the flag exists to answer is already settled by
+  // the amendment naming that host. azuraworldhotel.com serves an incomplete
+  // certificate chain, so every one of its 79 assets carries the flag; leaving
+  // the override unqualified would have made the v2 host decision a no-op there
+  // while appearing to have changed something.
+  if (asset.tlsInvalid && !official)
     candidates.push({
       usage: "internal_only",
       reason:

@@ -240,3 +240,51 @@ lands — each recorded in `rights-policy.json` with its evidence:
 
 Until then: **if in doubt, `unknown`, and it renders internally only.** The dashboard is
 authorised internal use. The public landing page is publication, and that is a different question.
+
+---
+
+## 9. Amendment, 2026-07-29: the party relationship changed
+
+**Recorded late.** `scripts/publish-journey-media.mjs` has been promoting assets to
+`attributed_display` since the landing journey was built, citing _"the repository owner's explicit
+instruction, recorded in MEDIA-LICENSE.md"_. No such record existed in this file. The instruction
+was real and the promotion was authorised; the entry meant to carry it was never written. This
+section is that entry, written after the fact and saying so.
+
+### What changed
+
+Sections 1 to 8 were decided on 2026-07-27, when this repository was competitive analysis of a
+rival development. Section 1 still opens _"These images are not ours."_ That was correct then and
+is the wrong frame now.
+
+The work is now a **proposal presented to Azura World and Cebeci Group** for a system to run their
+own residence and hotel. The audience for these pages is the rights holder. Showing a client their
+own building, in a demonstration of software for managing that building, is the ordinary form of a
+pitch rather than a republication.
+
+This is the same reversal already applied to the wordmark in `app/sections/chrome.tsx`, for the
+reason recorded there: the endorsement problem existed only while we were an outside party
+publishing about them.
+
+### What it does and does not permit
+
+| Scope | Posture |
+| --- | --- |
+| The three official hosts: `www.cebecigroup.com`, `azuraworldhotel.com`, `www.azuraworld.com` | Usable in this proposal, including the `render` and `siteplan` categories that §3's category floors otherwise hold at `internal_only`. |
+| The other 20 registered sources | **Unchanged**, `internal_only` or `unknown` exactly as §7 records. Assets already published from `housearch.com`, `terrarealestate.com`, `hasporealty.com` and `enspride.com` predate this amendment and rest on the original owner instruction, not on it. |
+| Anything `watermarked` | **Still refused**, on every host. A watermark is a third party's active rights claim, and the four masterplan scans from `alanya-home.com` carry one. The unwatermarked official site plan at `www.azuraworld.com/assets/3d-vaziyet-plan.jpg` is used instead. |
+| `userGeneratedContent` | **Still refused.** Rights sit with the individual and the pivot does not touch them. |
+| `document` | **Still refused.** A brochure or a sustainability report is a whole published work, and nothing here needs one. |
+| Public distribution | **Still refused.** `CLAUDE.md` §1 stands: do not publish this, do not push it to a public remote. The proposal is shown to the client. |
+
+### What has not changed
+
+The finding in §1 remains factually true: **none of the 23 sources grants a right to reproduce.**
+No term was found, no permission was obtained, and none is claimed here. What changed is who is
+being shown the result, not what the sources permit. If this material were ever put in front of
+anyone other than the rights holder, §§1 to 8 govern again without modification and the correct
+posture is the restrictive one.
+
+`sources/media/rights-policy.json` is at `version: 2` and carries the machine-readable form of the
+table above. §8 still governs generally: written permission from Cebeci Group remains the only
+thing that would make any of this publishable to the public.
