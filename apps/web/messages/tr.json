@@ -111,7 +111,11 @@
       "no": "Hayır"
     },
     "required": "Zorunlu",
-    "optional": "İsteğe bağlı"
+    "optional": "İsteğe bağlı",
+    "notAvailable": "Belirtilmemiş",
+    "dataSource": {
+      "localSeedHint": "Bu sayfa yerel veri kümesinden örnek veri gösterir, canlı veri değil."
+    }
   },
   "nav": {
     "brand": "Azura World Residence & Hotel",

@@ -111,7 +111,11 @@
       "no": "Нет"
     },
     "required": "Обязательно",
-    "optional": "Необязательно"
+    "optional": "Необязательно",
+    "notAvailable": "Нет данных",
+    "dataSource": {
+      "localSeedHint": "На этой странице показаны примерные данные из локального набора, а не живые данные."
+    }
   },
   "nav": {
     "brand": "Azura World Residence & Hotel",

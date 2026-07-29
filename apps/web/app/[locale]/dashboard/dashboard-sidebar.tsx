@@ -142,7 +142,14 @@ export function DashboardSidebar({
     (route: DashboardRoute): string => {
       // `t.has` rather than a try/catch: next-intl throws on a missing key, and
       // one unwritten label must not take down the entire navigation.
-      // `dashboard.deals.title` is the known gap — see HANDOFF/W3-B.md.
+      //
+      // Every route in the config now HAS its label (M-009 removed the one that
+      // did not), so this branch is currently unreachable. It stays because the
+      // failure it prevents is the whole nav disappearing, and because the next
+      // module window adds a route before it adds four translations. What it is
+      // NOT is a licence to ship an untranslated entry: the slug fallback is
+      // what made `deals` render as an English word among German labels, and a
+      // gate now asserts no route reaches it (see HANDOFF/F3.md).
       return t.has(route.labelKey)
         ? t(route.labelKey)
         : (route.href.split("/").pop() ?? route.href)

@@ -2,6 +2,7 @@ import "./globals.css"
 
 import type { Metadata } from "next"
 import { headers } from "next/headers"
+import { getLocale } from "next-intl/server"
 import type { ReactNode } from "react"
 
 // ---------------------------------------------------------------------------
@@ -69,10 +70,9 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 /**
  * Azura World Residence & Hotel — Türkler, Alanya, Antalya, Türkiye.
  *
- * `lang` is the default locale (CONTRACTS §7: `de`). Localised routes live
- * under `app/[locale]/` and W1-C overrides `lang` per locale from its own
- * layout. `dir` is always `ltr` — CONVENTIONS §5 states RTL is explicitly not
- * required, since no Arabic or Hebrew locale is in scope.
+ * `dir` is always `ltr` — CONVENTIONS §5 states RTL is explicitly not required,
+ * since no Arabic or Hebrew locale is in scope. `lang` is resolved per request;
+ * see `RootLayout` below.
  */
 export const metadata: Metadata = {
   title: {
@@ -86,6 +86,36 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
+/**
+ * M-007 — `<html lang>` tracks the requested locale.
+ *
+ * It was hard-coded `"de"`, so `/en`, `/tr` and `/ru` all served `lang="de"`
+ * and a screen reader pronounced Russian and Turkish with a German voice.
+ * Hyphenation, spell-check and translation prompts read the same attribute.
+ *
+ * **Why the fix lives here and not in `app/[locale]/layout.tsx`.** That layout
+ * cannot own it: `<html>` belongs to the root layout, and a second nested
+ * `<html>` is invalid. W1-C's header says exactly this and filed the request
+ * rather than reaching across (SYSTEM-PROMPT §4.1). This is that request, done.
+ *
+ * `getLocale()` resolves through `i18n/request.ts`, which reads the
+ * `X-NEXT-INTL-LOCALE` request header that `proxy.ts` deliberately folds into
+ * the forwarded headers (see `absorbIntlRequestHeaders` there). So the value is
+ * the same one the page's own messages were loaded with, by construction —
+ * parsing the pathname here would be a second, independent derivation of the
+ * locale and the two would eventually disagree.
+ *
+ * **Non-locale routes.** This layout also wraps `app/not-found.tsx`,
+ * `app/global-error.tsx` and the API tree. For those the request config falls
+ * back to `defaultLocale`, which is what their German copy is written in, so
+ * `de` is correct rather than merely a default.
+ *
+ * **Bare subtag, not `de-DE`.** `lib/format.ts` maps to regional tags because
+ * `Intl` needs them to pick separators. `lang` does not: WCAG 3.1.1 wants the
+ * language of the content, and claiming `en-US` would be wrong for a British
+ * reader while `en` is right for both. The four values are exactly the four
+ * routing segments, which is also what makes the assertion below checkable.
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -95,11 +125,12 @@ export default async function RootLayout({
   // It is absent only where the proxy did not run — an unmatched path, or a
   // build-time render, which the gate exists to make impossible.
   const nonce = (await headers()).get("x-nonce")
+  const locale = await getLocale()
 
   return (
     // `suppressHydrationWarning` is here for W1-D's theme provider, which sets
     // a `class`/`data-theme` attribute on <html> before React hydrates.
-    <html lang="de" dir="ltr" suppressHydrationWarning>
+    <html lang={locale} dir="ltr" suppressHydrationWarning>
       <body>
         {/* Conditional spread rather than `nonce={nonce ?? undefined}`:
             `exactOptionalPropertyTypes` is on, so `nonce?: string` does not
