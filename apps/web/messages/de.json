@@ -236,32 +236,30 @@
   },
   "landing": {
     "topBar": {
-      "notice": "Evidenzbasierte Wettbewerbsanalyse. Jede Zahl mit Quelle.",
-      "cta": "Belege ansehen"
+      "notice": "Verwaltungssystem für Azura World Residence & Hotel. Vorführung mit Beispieldaten.",
+      "cta": "Was das System kann"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
-      "title": "Azura World Residence & Hotel",
-      "subtitle": "Wohnanlage und 5-Sterne-Hotel an der türkischen Mittelmeerküste, vollständig belegt, Zahl für Zahl.",
-      "ctaPrimary": "Projekt ansehen",
-      "ctaSecondary": "Quellen prüfen",
+      "title": "Azura World Residence & Hotel, an einem Ort verwaltet.",
+      "subtitle": "656 Wohnungen, 7 Blöcke und 188 Hotelzimmer. Bestand, Technik, Buchhaltung und Dokumente in einem System, mit Ihren eigenen Daten.",
+      "ctaPrimary": "Was das System kann",
+      "ctaSecondary": "Die Anlage ansehen",
       "figures": {
         "area": "Grundstück",
         "blocks": "Blöcke",
         "units": "Wohnungen",
-        "entryPrice": "Einstiegspreis 1+1"
+        "hotelRooms": "Hotelzimmer"
       },
       "scrollHint": "Scrollen",
       "posterAlt": "Ansicht der Anlage Azura World Residence & Hotel",
       "plateTitle": "Aufnahme · Türkler, Alanya",
-      "entryPriceNote": "Angezeigt wird der einzige Wert, den ein Portal selbst als „ab“-Preis ausweist. Die übrigen 18 Angaben stehen im Beleg.",
-      "conflictCallout": "Drei dieser vier Zahlen sind mehrfach bestätigt. Die vierte nicht. Die Seite sagt das an derselben Stelle, in derselben Schrift.",
       "creditLabel": "Aufnahmen",
       "creditStale": "aus einem veralteten Inserat"
     },
     "why": {
       "title": "Was Azura World ist",
-      "lead": "Ein Wohn- und Hotelkomplex des Bauträgers {developer} in {district}. Die folgenden Angaben stammen ausschließlich aus öffentlich zugänglichen Quellen.",
+      "lead": "Ein Wohn- und Hotelkomplex des Bauträgers {developer} in {district}. Das sind die Eckdaten, wie sie im System hinterlegt sind.",
       "developerLabel": "Bauträger",
       "locationLabel": "Standort",
       "timelineLabel": "Fertigstellung",
@@ -287,12 +285,10 @@
       "noWebglNotice": "Die 3D-Ansicht ist auf diesem Gerät nicht verfügbar. Es wird ein Standbild gezeigt."
     },
     "amenities": {
-      "title": "Ausstattung",
-      "lead": "Jede Position ist der Seite zugeordnet, die sie nennt.",
-      "empty": "Für die Ausstattung liegt keine belegte Quelle vor.",
+      "title": "Die Außenanlagen",
+      "lead": "Pools, Aquapark und Gartenanlagen der Anlage.",
       "categoryLabel": "Kategorie",
-      "gapTitle": "Keine belegte Ausstattungsliste",
-      "gapBody": "Aus 60 abgerufenen Quellen liess sich keine Ausstattungsliste gewinnen, die einzeln zuordenbar wäre. Der Datensatz führt deshalb null Positionen. Eine plausible Liste stünde hier schnell. Sie wäre nur nicht belegt."
+      "imageAlt": "Außenanlagen der Anlage"
     },
     "desire": {
       "title": "Das Hotel vor Ort",
@@ -308,73 +304,17 @@
       "floorsLabel": "Geschosse",
       "checkInLabel": "Anreise ab"
     },
-    "evidenceBand": {
-      "title": "Woher diese Zahlen kommen",
-      "lead": "Jede Angabe auf dieser Seite ist mit ihrer Quelle verknüpft. Wo Quellen sich widersprechen, steht der Widerspruch hier. Er wird nicht aufgelöst.",
-      "sourcesLabel": "Ausgewertete Quellen",
-      "conflictsLabel": "Widersprüche",
-      "gapsLabel": "Offene Punkte",
-      "cta": "Vollständigen Beleg-Report öffnen",
-      "designation": "Beleglage",
-      "sourcesAttempted": "Abgerufene Quellen",
-      "sourcesReachable": "Inhalt bestätigt",
-      "publishersLabel": "Zitierte Herausgeber",
-      "factsLabel": "Zahlen auf dieser Seite",
-      "findingsLabel": "Erfasste Befunde",
-      "confidenceHeading": "Nach Belegstärke",
-      "priceHeading": "F-002: vier Herausgeber, vier Preise",
-      "priceIntro": "Dieselbe Wohnungsgrösse, vier Anbieter, ein Faktor von {factor}. Zwei Währungen, keine Beobachtungsdaten, mindestens ein veraltetes Inserat. Nicht aufgelöst. Die Werte stehen nebeneinander.",
-      "colPublisher": "Herausgeber",
-      "colPrice": "Preis",
-      "colArea": "Fläche",
-      "colNote": "Hinweis",
-      "staleNote": "veraltet",
-      "unitSplitLabel": "Wohnungen im Bestand",
-      "unitSplitValue": "{listing} reale Inserate · {modelled} modelliert · {total} gesamt"
-    },
     "action": {
       "title": "Zugang anfragen",
-      "lead": "Der vollständige Datenbestand liegt hinter der Anmeldung. Zugang wird geprüft und manuell freigegeben.",
+      "lead": "Der vollstaendige Zugang liegt hinter der Anmeldung. Zugaenge werden geprueft und manuell freigegeben.",
       "cta": "Zugang anfragen",
-      "secondary": "Öffentlichen Report ansehen"
-    },
-    "after": {
-      "title": "Nach dem Kauf",
-      "lead": "Verwaltung, Nebenkosten, Vermietung und Instandhaltung. Der Teil, den Verkaufsseiten auslassen.",
-      "items": {
-        "1": {
-          "title": "Bestand und Verträge",
-          "body": "Alle 656 Einheiten mit Eigentümer, Vertrag und Zahlungsstand. Reale Inserate und modellierte Datensätze bleiben unterscheidbar."
-        },
-        "2": {
-          "title": "Betrieb und Nebenkosten",
-          "body": "Instandhaltung, Umlagen und Abrechnung je Block, mit unveränderlichen Buchungen im Hauptbuch."
-        },
-        "3": {
-          "title": "Beleg an jeder Zahl",
-          "body": "Dieselbe Herkunftsanzeige wie auf dieser Seite, in der Verwaltung, im Report und im Export."
-        }
-      }
-    },
-    "share": {
-      "title": "Weitergeben",
-      "lead": "Der öffentliche Report enthält dieselben Zahlen mit denselben Quellen.",
-      "copyLink": "Link kopieren",
-      "linkCopied": "Link kopiert"
-    },
-    "love": {
-      "title": "Warum das so gebaut ist",
-      "lead": "Eine Zahl ohne Quelle ist eine Behauptung. Dieses Projekt zeigt beides oder nichts."
+      "secondary": "Was das System kann"
     },
     "footer": {
-      "rights": "Analyse zu Wettbewerbszwecken. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
-      "sourcesLink": "Quellenverzeichnis",
+      "rights": "Vorführung für Azura World Residence & Hotel. Alle Marken und Bildrechte liegen bei den jeweiligen Inhabern.",
       "legalLink": "Rechtliches",
-      "updated": "Datenstand {date}",
       "contactHeading": "Kontakt zum Objekt",
-      "sourcesHeading": "Belege",
-      "aboutHeading": "Zu dieser Analyse",
-      "generated": "Erzeugt aus dem Datensatz vom {date}"
+      "aboutHeading": "Zu dieser Vorführung"
     },
     "provenance": {
       "confidence": {
@@ -424,31 +364,20 @@
       "more": "+{count} weitere",
       "sources": "Quellen"
     },
-    "sourceCount": "{count, plural, one {# Quelle} other {# Quellen}}",
     "skipToContent": "Zum Inhalt springen",
     "nav": {
       "project": "Projekt",
       "site": "Anlage",
       "hotel": "Hotel",
-      "evidence": "Belege",
-      "access": "Zugang"
-    },
-    "record": {
-      "idLabel": "Objekt",
-      "placeLabel": "Lage",
-      "dataLabel": "Datenstand",
-      "sheetLabel": "Blatt",
-      "sheetValue": "1 von 1 · öffentlich"
+      "access": "Zugang",
+      "system": "System"
     },
     "designation": {
       "interest": "Was es ist",
       "search": "Die Anlage",
       "desire": "Das Hotel",
-      "trust": "Belege",
       "action": "Zugang",
-      "loyalty": "Nach dem Kauf",
-      "share": "Weitergeben",
-      "love": "Warum so"
+      "system": "Das System"
     },
     "masterplan": {
       "title": "Lageplan",
@@ -457,12 +386,43 @@
       "hotelLabel": "Hotel",
       "seaLabel": "Mittelmeer",
       "selectedLabel": "Ausgewählt:",
-      "schematicNote": "Schematisch. Keine Quelle veröffentlicht die Gebäudegeometrie. Dargestellt ist die Zusammensetzung, nicht der Grundriss. Block wählen für Details.",
-      "quality": {
-        "portal_listing": "Reales Inserat",
-        "official": "Offizielle Angabe",
-        "modelled": "Modelliert",
-        "source_missing": "Ohne Quelle"
+      "schematicNote": "Schematische Darstellung der Zusammensetzung, kein Grundriss. Block wählen für Details."
+    },
+    "system": {
+      "title": "Was das System kann",
+      "lead": "Bewohner, Verwaltung und Buchhaltung arbeiten im selben System. Jede Rolle sieht genau das, was sie braucht.",
+      "demoNote": "Bestand, Blöcke und Hotelzimmer entsprechen Ihrer Anlage. Die Vorgänge darin sind Beispieldaten: Meldungen, Buchungen und Dokumente wurden für die Vorführung angelegt und sind im System als Beispieldaten gekennzeichnet.",
+      "groups": {
+        "residents": {
+          "title": "Bewohner und Eigentümer",
+          "body": "Eigene Wohnung, Verträge, Zahlungsstand und Hausordnung. Eine Meldung ist in zwei Schritten abgeschickt, ohne Anruf und ohne Papier.",
+          "detail": "Eigentümer, Mieter und Gast, dazu Unterkonten für Familienmitglieder."
+        },
+        "management": {
+          "title": "Verwaltung vor Ort",
+          "body": "Der Tagesbetrieb über alle 7 Blöcke und 656 Wohnungen. Wer ist zuständig, was ist offen, was ist heute fällig.",
+          "detail": "Objektleitung, technischer Dienst und externe Dienstleister mit eigenem Zugang."
+        },
+        "tickets": {
+          "title": "Meldungen und Termine",
+          "body": "Vom Schaden bis zur Abnahme in einer Spur. Zuweisung, Frist, Rückmeldung an den Melder und ein Verlauf, der nachher noch lesbar ist.",
+          "detail": "Meldungen, Massnahmen, Kalender und Nachrichten."
+        },
+        "finance": {
+          "title": "Buchhaltung und Zahlungen",
+          "body": "Nebenkosten je Block, Zahlungen, Guthaben und Rechnungen von Dienstleistern. Beträge bleiben je Währung getrennt und werden nie vermischt.",
+          "detail": "Hauptbuch, Wallets und Eingangsrechnungen mit Freigabe."
+        },
+        "documents": {
+          "title": "Dokumente und Fristen",
+          "body": "Verträge, Protokolle und Nachweise liegen an der Einheit, zu der sie gehören. Fristen melden sich selbst, bevor sie ablaufen.",
+          "detail": "Dokumente, Prüfungen und Auswertungen zum Export."
+        },
+        "admin": {
+          "title": "Sie verwalten es selbst",
+          "body": "Personen anlegen, Rollen ändern, Zugänge entziehen. Alles ohne Entwickler, und jede Änderung steht mit Name und Zeitpunkt im Protokoll.",
+          "detail": "Benutzer, Rollen, Einstellungen und ein Protokoll zum Export."
+        }
       }
     }
   },

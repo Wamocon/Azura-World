@@ -236,32 +236,30 @@
   },
   "landing": {
     "topBar": {
-      "notice": "Kanıta dayalı rekabet analizi: her veri kaynaklı",
-      "cta": "Kaynakları gör"
+      "notice": "Azura World Residence & Hotel için yönetim sistemi. Örnek verilerle sunum.",
+      "cta": "Sistem ne yapar"
     },
     "hero": {
       "eyebrow": "Türkler · Alanya · Antalya",
-      "title": "Azura World Residence & Hotel",
-      "subtitle": "Türkiye'nin Akdeniz kıyısında konut sitesi ve beş yıldızlı otel. Veri veri belgelenmiş.",
-      "ctaPrimary": "Projeyi gör",
-      "ctaSecondary": "Kaynakları incele",
+      "title": "Azura World Residence & Hotel, tek yerden yönetiliyor.",
+      "subtitle": "656 daire, 7 blok ve 188 otel odası. Envanter, teknik, muhasebe ve belgeler tek sistemde, kendi verilerinizle.",
+      "ctaPrimary": "Sistem ne yapar",
+      "ctaSecondary": "Tesisi görüntüle",
       "figures": {
         "area": "Arsa alanı",
         "blocks": "Blok",
         "units": "Daire",
-        "entryPrice": "Giriş fiyatı 1+1"
+        "hotelRooms": "Otel odası"
       },
       "scrollHint": "Kaydır",
       "posterAlt": "Azura World Residence & Hotel projesinin görünümü",
       "plateTitle": "Tespit · Türkler, Alanya",
-      "entryPriceNote": "Gösterilen, bir portalın kendi ifadesiyle „başlangıç“ fiyatı olarak verdiği tek değerdir. Diğer 18 değer belgelerde.",
-      "conflictCallout": "Bu dört sayıdan üçü birden fazla kaynakla doğrulanmıştır. Dördüncüsü değil, ve sayfa bunu aynı yerde, aynı yazıyla söyler.",
       "creditLabel": "Görseller",
       "creditStale": "eski bir ilandan"
     },
     "why": {
       "title": "Azura World nedir",
-      "lead": "{district} bölgesinde {developer} tarafından geliştirilen konut ve otel kompleksi. Aşağıdaki tüm bilgiler yalnızca kamuya açık kaynaklardan alınmıştır.",
+      "lead": "{district} bölgesinde {developer} tarafından yapılan konut ve otel kompleksi. Sistemde tutulan temel veriler bunlar.",
       "developerLabel": "Müteahhit",
       "locationLabel": "Konum",
       "timelineLabel": "Teslim",
@@ -287,12 +285,10 @@
       "noWebglNotice": "3B görünüm bu cihazda kullanılamıyor. Sabit görsel gösteriliyor."
     },
     "amenities": {
-      "title": "Olanaklar",
-      "lead": "Her madde, onu listeleyen sayfaya bağlanmıştır.",
-      "empty": "Olanaklar için kaynaklı veri bulunmuyor.",
+      "title": "Dış alanlar",
+      "lead": "Havuzlar, aquapark ve bahçeler.",
       "categoryLabel": "Kategori",
-      "gapTitle": "Belgelenmiş donatı listesi yok",
-      "gapBody": "Alınan 60 kaynağın hiçbirinden kalem kalem atfedilebilir bir donatı listesi çıkarılamadı. Bu nedenle veri kümesinde sıfır kayıt var. Makul görünen bir liste buraya hızlıca yazılabilirdi. Yalnızca belgeli olmazdı."
+      "imageAlt": "Tesisin dış alanları"
     },
     "desire": {
       "title": "Site içindeki otel",
@@ -308,73 +304,17 @@
       "floorsLabel": "Kat",
       "checkInLabel": "Giriş saati"
     },
-    "evidenceBand": {
-      "title": "Bu veriler nereden geliyor",
-      "lead": "Bu sayfadaki her veri kaynağına bağlıdır. Kaynaklar çeliştiğinde çelişki burada gösterilir. Giderilmez.",
-      "sourcesLabel": "İncelenen kaynak",
-      "conflictsLabel": "Çelişki",
-      "gapsLabel": "Açık madde",
-      "cta": "Tam kaynak raporunu aç",
-      "designation": "Belge durumu",
-      "sourcesAttempted": "Alınan kaynak",
-      "sourcesReachable": "İçeriği doğrulanan",
-      "publishersLabel": "Atıf yapılan yayıncı",
-      "factsLabel": "Bu sayfadaki sayı",
-      "findingsLabel": "Kayıtlı bulgu",
-      "confidenceHeading": "Belge gücüne göre",
-      "priceHeading": "F-002: dört yayıncı, dört fiyat",
-      "priceIntro": "Aynı daire büyüklüğü, dört satıcı, {factor} katlık fark. İki para birimi, gözlem tarihi yok, en az bir bayat ilan. Çözülmedi. Değerler yan yana duruyor.",
-      "colPublisher": "Yayıncı",
-      "colPrice": "Fiyat",
-      "colArea": "Alan",
-      "colNote": "Not",
-      "staleNote": "bayat",
-      "unitSplitLabel": "Envanterdeki daire",
-      "unitSplitValue": "{listing} gerçek ilan · {modelled} modellenmiş · {total} toplam"
-    },
     "action": {
       "title": "Erişim talebi",
-      "lead": "Verinin tamamı giriş arkasındadır. Erişim incelenir ve elle verilir.",
+      "lead": "Tam erişim girişin arkasındadır. Hesaplar incelenir ve elle açılır.",
       "cta": "Erişim iste",
-      "secondary": "Genel raporu gör"
-    },
-    "after": {
-      "title": "Satın alma sonrası",
-      "lead": "Yönetim, aidat, kiralama ve bakım. Satış sayfalarının atladığı kısım.",
-      "items": {
-        "1": {
-          "title": "Envanter ve sözleşmeler",
-          "body": "656 dairenin tamamı; malik, sözleşme ve ödeme durumu ile. Gerçek ilanlar ve modellenmiş kayıtlar ayırt edilebilir kalır."
-        },
-        "2": {
-          "title": "İşletme ve aidatlar",
-          "body": "Blok bazında bakım, paylaştırma ve faturalama; muhasebe kayıtları değiştirilemez."
-        },
-        "3": {
-          "title": "Her sayıda kaynak",
-          "body": "Bu sayfadaki köken gösterimi aynen. Yönetimde, raporda ve dışa aktarımda."
-        }
-      }
-    },
-    "share": {
-      "title": "Paylaş",
-      "lead": "Genel rapor aynı verileri aynı kaynaklarla taşır.",
-      "copyLink": "Bağlantıyı kopyala",
-      "linkCopied": "Bağlantı kopyalandı"
-    },
-    "love": {
-      "title": "Neden böyle kuruldu",
-      "lead": "Kaynağı olmayan bir veri, yalnızca bir iddiadır. Bu proje ikisini birden gösterir ya da hiçbirini."
+      "secondary": "Sistem ne yapar"
     },
     "footer": {
-      "rights": "Rekabet amaçlı analiz. Tüm markalar ve görsel haklar sahiplerine aittir.",
-      "sourcesLink": "Kaynak listesi",
+      "rights": "Azura World Residence & Hotel için bir sunum. Tüm markalar ve görsel hakları sahiplerine aittir.",
       "legalLink": "Yasal",
-      "updated": "Veri tarihi {date}",
       "contactHeading": "Konu iletişim",
-      "sourcesHeading": "Belgeler",
-      "aboutHeading": "Bu analiz hakkında",
-      "generated": "{date} tarihli veri kümesinden üretildi"
+      "aboutHeading": "Bu sunum hakkında"
     },
     "provenance": {
       "confidence": {
@@ -424,31 +364,20 @@
       "more": "+{count} tane daha",
       "sources": "Kaynaklar"
     },
-    "sourceCount": "{count, plural, one {# kaynak} other {# kaynak}}",
     "skipToContent": "İçeriğe geç",
     "nav": {
       "project": "Proje",
       "site": "Site",
       "hotel": "Otel",
-      "evidence": "Belgeler",
-      "access": "Erişim"
-    },
-    "record": {
-      "idLabel": "Konu",
-      "placeLabel": "Konum",
-      "dataLabel": "Veri tarihi",
-      "sheetLabel": "Sayfa",
-      "sheetValue": "1 / 1 · genel"
+      "access": "Erişim",
+      "system": "Sistem"
     },
     "designation": {
       "interest": "Nedir",
       "search": "Site",
       "desire": "Otel",
-      "trust": "Belgeler",
       "action": "Erişim",
-      "loyalty": "Satın alma sonrası",
-      "share": "Paylaş",
-      "love": "Neden böyle kurulu"
+      "system": "Sistem"
     },
     "masterplan": {
       "title": "Vaziyet planı",
@@ -457,12 +386,43 @@
       "hotelLabel": "Otel",
       "seaLabel": "Akdeniz",
       "selectedLabel": "Seçili:",
-      "schematicNote": "Şematiktir. Hiçbir kaynak yapı geometrisini yayımlamıyor. Burada dizilim değil, bileşim gösterilir. Ayrıntı için blok seçin.",
-      "quality": {
-        "portal_listing": "Gerçek ilan",
-        "official": "Resmî beyan",
-        "modelled": "Modellenmiş",
-        "source_missing": "Kaynaksız"
+      "schematicNote": "Yerleşimin şematik gösterimi, kat planı değil. Ayrıntılar için blok seçin."
+    },
+    "system": {
+      "title": "Sistem ne yapar",
+      "lead": "Sakinler, yönetim ve muhasebe aynı sistemde çalışır. Her rol tam olarak ihtiyacı olanı görür.",
+      "demoNote": "Daireler, bloklar ve otel odaları sizin tesisinize aittir. İçindeki işlemler örnek veridir: bildirimler, kayıtlar ve belgeler bu sunum için oluşturuldu ve sistemde örnek veri olarak işaretlidir.",
+      "groups": {
+        "residents": {
+          "title": "Sakinler ve malikler",
+          "body": "Kendi dairesi, sözleşmeleri, ödeme durumu ve site kuralları. Bir bildirim iki adımda gider, telefon ve evrak olmadan.",
+          "detail": "Malik, kiracı ve misafir, ayrıca aile üyeleri için alt hesaplar."
+        },
+        "management": {
+          "title": "Yerinde yönetim",
+          "body": "7 blok ve 656 dairenin günlük işletmesi. Kim sorumlu, ne açık, bugün ne var.",
+          "detail": "Tesis yönetimi, teknik ekip ve kendi girişi olan dış firmalar."
+        },
+        "tickets": {
+          "title": "Bildirimler ve randevular",
+          "body": "Arızadan teslime kadar tek hatta. Atama, süre, bildirimi yapana geri dönüş ve sonradan da okunabilen bir geçmiş.",
+          "detail": "Bildirimler, iş kalemleri, takvim ve mesajlar."
+        },
+        "finance": {
+          "title": "Muhasebe ve ödemeler",
+          "body": "Blok bazında aidat, ödemeler, bakiyeler ve tedarikçi faturaları. Tutarlar para birimine göre ayrı kalır ve asla karıştırılmaz.",
+          "detail": "Ana defter, cüzdanlar ve onaylı gelen faturalar."
+        },
+        "documents": {
+          "title": "Belgeler ve süreler",
+          "body": "Sözleşmeler, tutanaklar ve belgeler ait oldukları birimde durur. Süreler dolmadan önce kendini hatırlatır.",
+          "detail": "Belgeler, denetimler ve dışa aktarılabilir raporlar."
+        },
+        "admin": {
+          "title": "Kendiniz yönetirsiniz",
+          "body": "Kişi ekleyin, rol değiştirin, erişim kaldırın. Hepsi geliştirici olmadan ve her değişiklik ad ve zamanla kayda geçer.",
+          "detail": "Kullanıcılar, roller, ayarlar ve dışa aktarılabilir kayıt izi."
+        }
       }
     }
   },

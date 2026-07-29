@@ -17,13 +17,8 @@ import type { ReactNode } from "react"
 import { Link } from "@/app/navigation"
 import { Container } from "@/components/azura/section"
 import { LocaleSwitcher } from "@/components/locale-switcher"
-import { SourceChipList } from "@/components/evidence/source-chip"
-import type { SourceChipLabels } from "@/components/evidence/source-chip"
-import { ProvenanceValue } from "@/components/evidence/provenance-value"
-import type { ProvenanceLabels } from "@/components/evidence/provenance-value"
-import { SNAPSHOT_BASE_PATH } from "@/components/azura/labels"
-import { generatedAt, project } from "@/components/azura/landing-data"
-import { intlLocaleTag } from "@/lib/format"
+import { InventoryValue } from "@/components/azura/inventory-value"
+import { project } from "@/components/azura/landing-data"
 
 export async function TopBar({
   locale,
@@ -38,7 +33,7 @@ export async function TopBar({
           {t("topBar.notice")}
         </p>
         <Link
-          href="/#evidence"
+          href="/#system"
           className="azura-tap-compact inline-flex items-center text-[0.75rem] font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
         >
           {t("topBar.cta")}
@@ -63,7 +58,7 @@ export async function Navbar({
     { href: "/#what", label: t("nav.project") },
     { href: "/#site", label: t("nav.site") },
     { href: "/#hotel", label: t("nav.hotel") },
-    { href: "/#evidence", label: t("nav.evidence") },
+    { href: "/#system", label: t("nav.system") },
   ] as const
 
   return (
@@ -108,34 +103,11 @@ export async function Navbar({
 
 export async function Footer({
   locale,
-  provenance,
 }: {
   locale: string
-  provenance: ProvenanceLabels
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const dataDate = new Intl.DateTimeFormat(intlLocaleTag(locale), {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(generatedAt))
-
-  // Every distinct source behind the facts this page renders, deduplicated by
-  // URL. The footer is where a reader who wants the whole citation list finds
-  // it without opening a popover per number.
-  const allSources = [
-    ...project.contact.phone.sources,
-    ...project.contact.email.sources,
-    ...project.plotAreaSqm.sources,
-    ...project.totalUnits.sources,
-    ...project.completionDate.sources,
-  ]
-  const seen = new Set<string>()
-  const sources = allSources.filter((s) => {
-    if (seen.has(s.url)) return false
-    seen.add(s.url)
-    return true
-  })
+  const gapLabel = t("provenance.gap")
 
   return (
     <footer className="border-t border-border pt-14 pb-12">
@@ -146,43 +118,21 @@ export async function Footer({
               {t("footer.contactHeading")}
             </h2>
             <p className="text-[0.9375rem] leading-[1.6]">
-              <ProvenanceValue
+              <InventoryValue
                 fact={project.contact.phone}
                 format="text"
                 locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
+                gapLabel={gapLabel}
               />
             </p>
             <p className="text-[0.9375rem] leading-[1.6]">
-              <ProvenanceValue
+              <InventoryValue
                 fact={project.contact.email}
                 format="text"
                 locale={locale}
-                labels={provenance}
-                snapshotBasePath={SNAPSHOT_BASE_PATH}
+                gapLabel={gapLabel}
               />
             </p>
-          </div>
-
-          <div className="flex min-w-0 flex-col gap-3">
-            <h2 className="text-[0.6875rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
-              {t("footer.sourcesHeading")}
-            </h2>
-            <SourceChipList
-              sources={sources}
-              locale={locale}
-              labels={provenance.source as SourceChipLabels}
-              max={6}
-              moreLabel={provenance.more}
-              snapshotBasePath={SNAPSHOT_BASE_PATH}
-            />
-            <Link
-              href="/#evidence"
-              className="azura-tap-compact inline-flex items-center text-[0.875rem] text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
-            >
-              {t("footer.sourcesLink")}
-            </Link>
           </div>
 
           <div className="flex min-w-0 flex-col gap-3">
@@ -192,18 +142,14 @@ export async function Footer({
             <p className="max-w-[42ch] text-[0.875rem] leading-[1.6] text-muted-foreground">
               {t("footer.rights")}
             </p>
-            <p data-numeric className="text-[0.8125rem] text-muted-foreground">
-              {t("footer.generated", { date: dataDate })}
-            </p>
           </div>
         </div>
 
-        <p
-          data-numeric
-          className="border-t border-border/60 pt-6 text-[0.75rem] tracking-[0.01em] text-muted-foreground"
-        >
-          {t("footer.updated", { date: dataDate })}
-        </p>
+        {/* "Datenstand {date}" stood here, and it was the last surviving piece
+            of the record line the hero dropped. A data-as-of stamp in a footer
+            tells a reader they are looking at a snapshot of a dataset. They are
+            looking at a system that runs their building, and a system does not
+            have a data date. PIVOT §4 lists `DATA AS OF` by name. */}
       </Container>
     </footer>
   )
