@@ -18,6 +18,7 @@ import { getProfiles } from "@/lib/governance-repository"
 import { getLeads } from "@/lib/lead-repository"
 import { hasPermission } from "@/lib/rbac"
 import { totalsByCurrency } from "@/lib/repository-base"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * /[locale]/dashboard/leads — the enquiry list.              Owner: W3-C / N1
@@ -260,7 +261,7 @@ export default async function LeadsPage({
               data-numeric
               className="font-display text-2xl font-semibold tracking-[-0.018em] text-foreground tabular-nums"
             >
-              {new Intl.NumberFormat(locale).format(rows.length)}
+              {new Intl.NumberFormat(intlLocaleTag(locale)).format(rows.length)}
               {rows.length !== all.length ? (
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
                   {t("summary.ofTotal", { total: all.length })}
@@ -610,7 +611,7 @@ function Field({
 function formatDay(iso: string, locale: string): string {
   const parsed = Date.parse(iso)
   if (Number.isNaN(parsed)) return iso
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(intlLocaleTag(locale), {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

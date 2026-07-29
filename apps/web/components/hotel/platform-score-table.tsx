@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn"
 import type { ReviewSourceRecord } from "@/lib/hotel-data"
 
 import { formatFetchedDate } from "./select"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * Per-platform scores, each on its own scale.                     Owner: W3-G
@@ -151,7 +152,7 @@ export function PlatformScoreTable({
                   <td className="px-4 py-3 text-right tabular-nums text-foreground">
                     {source.reviewCount === null
                       ? "—"
-                      : new Intl.NumberFormat(locale).format(source.reviewCount)}
+                      : new Intl.NumberFormat(intlLocaleTag(locale)).format(source.reviewCount)}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{source.ranking ?? "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">

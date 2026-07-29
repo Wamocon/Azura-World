@@ -31,6 +31,7 @@ import {
   generatedAt,
   project,
 } from "@/components/azura/landing-data"
+import { intlLocaleTag } from "@/lib/format"
 
 export async function HeroSection({
   locale,
@@ -40,7 +41,7 @@ export async function HeroSection({
   provenance: ProvenanceLabels
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
-  const dataDate = new Intl.DateTimeFormat(locale, {
+  const dataDate = new Intl.DateTimeFormat(intlLocaleTag(locale), {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

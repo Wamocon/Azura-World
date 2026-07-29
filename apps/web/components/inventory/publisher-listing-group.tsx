@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn"
 
 import type { PublisherGroup } from "./listing-analysis"
 import { ListingStaleBadge } from "./listing-stale-badge"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * One publisher's listings, as published.                    Owner: W3-C / N1
@@ -224,7 +225,7 @@ export function PublisherListingGroup({
                         {labels.areaUnstated}
                       </span>
                     ) : (
-                      `${new Intl.NumberFormat(locale).format(listing.interiorM2)} m²`
+                      `${new Intl.NumberFormat(intlLocaleTag(locale)).format(listing.interiorM2)} m²`
                     )}
                   </td>
                   <td className="py-2.5 pr-4 text-muted-foreground">

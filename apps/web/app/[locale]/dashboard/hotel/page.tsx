@@ -7,6 +7,7 @@ import { getUserProfile } from "@/lib/auth"
 import type { Locale } from "@/lib/contracts"
 import { getHotel, getHotelRooms } from "@/lib/hotel-repository"
 import { hasPermission } from "@/lib/rbac"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * /[locale]/dashboard/hotel — the hotel operations surface.  Owner: W3-G
@@ -72,7 +73,7 @@ export default async function HotelDashboardPage({
   const seeded = hotelResult.source === "local-seed" || roomsResult.source === "local-seed"
 
   const number = (value: number | null): string =>
-    value === null ? "—" : new Intl.NumberFormat(locale).format(value)
+    value === null ? "—" : new Intl.NumberFormat(intlLocaleTag(locale)).format(value)
 
   /**
    * A metre distance, presented as km once it passes 1000.
@@ -86,10 +87,10 @@ export default async function HotelDashboardPage({
    */
   const distance = (metres: number | null): { text: string; exact: string } | null => {
     if (metres === null) return null
-    const exact = `${new Intl.NumberFormat(locale).format(metres)} m`
+    const exact = `${new Intl.NumberFormat(intlLocaleTag(locale)).format(metres)} m`
     if (metres < 1000) return { text: exact, exact }
     return {
-      text: `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(metres / 1000)} km`,
+      text: `${new Intl.NumberFormat(intlLocaleTag(locale), { maximumFractionDigits: 1 }).format(metres / 1000)} km`,
       exact,
     }
   }

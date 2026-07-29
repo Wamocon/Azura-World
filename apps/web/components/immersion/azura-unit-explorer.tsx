@@ -21,6 +21,7 @@ import {
   useTableScrollRef,
   VirtualTableBody,
 } from "@/components/ui/table"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * AzuraUnitExplorer — filter and search 656 units, live.   Owner: W3-I
@@ -244,11 +245,11 @@ export function AzuraUnitExplorer({
         {labels.count
           .replace(
             "{visible}",
-            new Intl.NumberFormat(locale).format(visible.length)
+            new Intl.NumberFormat(intlLocaleTag(locale)).format(visible.length)
           )
           .replace(
             "{total}",
-            new Intl.NumberFormat(locale).format(units.length)
+            new Intl.NumberFormat(intlLocaleTag(locale)).format(units.length)
           )}
       </p>
 
@@ -289,7 +290,7 @@ export function AzuraUnitExplorer({
                         gap fact. `0 m²` would be a claim. */}
                     {unit.interiorM2 === null
                       ? "—"
-                      : `${new Intl.NumberFormat(locale).format(unit.interiorM2)} m²`}
+                      : `${new Intl.NumberFormat(intlLocaleTag(locale)).format(unit.interiorM2)} m²`}
                   </TableCell>
                   <TableCell>
                     <DataQualityMark

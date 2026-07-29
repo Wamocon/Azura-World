@@ -1,5 +1,6 @@
 import { cn } from "@/lib/cn"
 import type { HotelRoomBreakdown } from "@/lib/hotel-repository"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * The room breakdown, and the gap where it is not published. Owner: W3-G
@@ -59,7 +60,7 @@ export function RoomBreakdown({
   className?: string
 }) {
   const number = (value: number | null): string =>
-    value === null ? "—" : new Intl.NumberFormat(locale).format(value)
+    value === null ? "—" : new Intl.NumberFormat(intlLocaleTag(locale)).format(value)
 
   const mismatch =
     breakdown.publishedRoomTotal !== null &&

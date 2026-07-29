@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { formatMoney } from "@/components/evidence/format"
 import { cn } from "@/lib/cn"
 import type { Money } from "@/lib/contracts"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * A money total, per currency, never summed across them.  Owner: W3-C / N1
@@ -84,7 +85,7 @@ export function CurrencyTotals({
                   // rendered with its raw ISO code rather than dropped: a figure
                   // this component cannot pretty-print is still a figure, and
                   // silently omitting a currency would understate a total.
-                  `${new Intl.NumberFormat(locale).format(amount)} ${currency}`
+                  `${new Intl.NumberFormat(intlLocaleTag(locale)).format(amount)} ${currency}`
                 : formatMoney({ amount, currency: known }, locale)}
             </span>
           )
