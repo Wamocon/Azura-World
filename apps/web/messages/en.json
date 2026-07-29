@@ -289,6 +289,16 @@
       "reducedMotionNotice": "Motion is reduced. The view stays static.",
       "noWebglNotice": "The 3D view is unavailable on this device. A still image is shown."
     },
+    "cinema": {
+      "title": "A walk through the site",
+      "acts": {
+        "location": "The location",
+        "buildings": "The buildings",
+        "grounds": "The grounds",
+        "hotel": "The hotel",
+        "apartments": "The apartments"
+      }
+    },
     "amenities": {
       "title": "The grounds",
       "lead": "Pools, aquapark and gardens on the site.",
@@ -429,6 +439,11 @@
           "detail": "Users, roles, settings and an audit trail you can export."
         }
       }
+    },
+    "mediaKind": {
+      "render": "Developer visualisation",
+      "floorplan": "Floor plan",
+      "siteplan": "Site plan"
     }
   },
   "dashboard": {
@@ -2251,7 +2266,7 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "lead": "Access to the full dataset.",
+      "lead": "Sign in with your access details.",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
@@ -2260,7 +2275,9 @@
       "requestAccess": "Request access",
       "invalid": "Email or password is incorrect.",
       "sessionExpired": "Your session expired. Your input has been kept.",
-      "submitting": "Signing in …"
+      "submitting": "Signing in …",
+      "plateTitle": "Your complex, in one place.",
+      "plateLead": "656 apartments, 7 blocks and a hotel with 188 rooms. Inventory, maintenance, accounting and documents in one system."
     },
     "signup": {
       "title": "Request access",
@@ -2285,7 +2302,9 @@
       "retryAfter": "Please wait {seconds} seconds.",
       "invalidTitle": "Please check your entries",
       "errorTitle": "Sending failed",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "plateTitle": "Türkler, Alanya.",
+      "plateLead": "Seven blocks on 76,000 square metres, 300 metres from the sea. Access is granted by management."
     },
     "forbidden": {
       "title": "No access",

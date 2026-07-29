@@ -289,6 +289,16 @@
       "reducedMotionNotice": "Bewegung ist reduziert. Die Darstellung bleibt statisch.",
       "noWebglNotice": "Die 3D-Ansicht ist auf diesem Gerät nicht verfügbar. Es wird ein Standbild gezeigt."
     },
+    "cinema": {
+      "title": "Ein Rundgang über die Anlage",
+      "acts": {
+        "location": "Die Lage",
+        "buildings": "Die Gebäude",
+        "grounds": "Die Außenanlagen",
+        "hotel": "Das Hotel",
+        "apartments": "Die Wohnungen"
+      }
+    },
     "amenities": {
       "title": "Die Außenanlagen",
       "lead": "Pools, Aquapark und Gartenanlagen der Anlage.",
@@ -429,6 +439,11 @@
           "detail": "Benutzer, Rollen, Einstellungen und ein Protokoll zum Export."
         }
       }
+    },
+    "mediaKind": {
+      "render": "Visualisierung des Bauträgers",
+      "floorplan": "Grundriss",
+      "siteplan": "Lageplan"
     }
   },
   "dashboard": {
@@ -2251,7 +2266,7 @@
   "auth": {
     "login": {
       "title": "Anmelden",
-      "lead": "Zugang zum vollen Datenbestand.",
+      "lead": "Melden Sie sich mit Ihren Zugangsdaten an.",
       "email": "E-Mail",
       "password": "Passwort",
       "submit": "Anmelden",
@@ -2260,7 +2275,9 @@
       "requestAccess": "Zugang anfragen",
       "invalid": "E-Mail oder Passwort ist falsch.",
       "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten.",
-      "submitting": "Wird angemeldet …"
+      "submitting": "Wird angemeldet …",
+      "plateTitle": "Ihre Anlage, an einem Ort.",
+      "plateLead": "656 Wohnungen, 7 Blöcke und ein Hotel mit 188 Zimmern. Bestand, Technik, Buchhaltung und Dokumente in einem System."
     },
     "signup": {
       "title": "Zugang anfragen",
@@ -2285,7 +2302,9 @@
       "retryAfter": "Bitte {seconds} Sekunden warten.",
       "invalidTitle": "Bitte Eingaben prüfen",
       "errorTitle": "Nicht gesendet",
-      "signIn": "Anmelden"
+      "signIn": "Anmelden",
+      "plateTitle": "Türkler, Alanya.",
+      "plateLead": "Sieben Blöcke auf 76.000 Quadratmetern, 300 Meter vom Meer. Zugänge vergibt die Verwaltung."
     },
     "forbidden": {
       "title": "Kein Zugriff",

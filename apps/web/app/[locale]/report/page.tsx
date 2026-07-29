@@ -93,7 +93,13 @@ export default async function ReportPage({
           conflictTitle: t("conflictTitle"),
           invalidTitle: t("invalidTitle"),
           errorTitle: t("errorTitle"),
-          retryAfter: t("retryAfter"),
+          // `t.raw` and not `t`: the client does its own {seconds} substitution
+          // once the throttle response actually names a number, so the
+          // placeholder has to survive the server render. `t()` validates ICU
+          // arguments and throws FORMATTING_ERROR when it finds one unfilled,
+          // which took down every render of this page rather than just the
+          // throttled one.
+          retryAfter: t.raw("retryAfter"),
           trackCta: t("trackCta"),
         }}
       />

@@ -289,6 +289,16 @@
       "reducedMotionNotice": "Hareket azaltıldı. Görünüm sabit kalır.",
       "noWebglNotice": "3B görünüm bu cihazda kullanılamıyor. Sabit görsel gösteriliyor."
     },
+    "cinema": {
+      "title": "Sitede bir tur",
+      "acts": {
+        "location": "Konum",
+        "buildings": "Binalar",
+        "grounds": "Dış alanlar",
+        "hotel": "Otel",
+        "apartments": "Daireler"
+      }
+    },
     "amenities": {
       "title": "Dış alanlar",
       "lead": "Havuzlar, aquapark ve bahçeler.",
@@ -429,6 +439,11 @@
           "detail": "Kullanıcılar, roller, ayarlar ve dışa aktarılabilir kayıt izi."
         }
       }
+    },
+    "mediaKind": {
+      "render": "Müteahhit görselleştirmesi",
+      "floorplan": "Kat planı",
+      "siteplan": "Vaziyet planı"
     }
   },
   "dashboard": {
@@ -2251,7 +2266,7 @@
   "auth": {
     "login": {
       "title": "Giriş yap",
-      "lead": "Verinin tamamına erişim.",
+      "lead": "Erişim bilgilerinizle giriş yapın.",
       "email": "E-posta",
       "password": "Parola",
       "submit": "Giriş yap",
@@ -2260,7 +2275,9 @@
       "requestAccess": "Erişim iste",
       "invalid": "E-posta veya parola hatalı.",
       "sessionExpired": "Oturum sona erdi. Girdileriniz korundu.",
-      "submitting": "Giriş yapılıyor …"
+      "submitting": "Giriş yapılıyor …",
+      "plateTitle": "Siteniz, tek bir yerde.",
+      "plateLead": "656 daire, 7 blok ve 188 odalı bir otel. Envanter, teknik, muhasebe ve belgeler tek sistemde."
     },
     "signup": {
       "title": "Erişim talebi",
@@ -2285,7 +2302,9 @@
       "retryAfter": "Lütfen {seconds} saniye bekleyin.",
       "invalidTitle": "Lütfen girdileri kontrol edin",
       "errorTitle": "Gönderilemedi",
-      "signIn": "Giriş yap"
+      "signIn": "Giriş yap",
+      "plateTitle": "Türkler, Alanya.",
+      "plateLead": "76.000 metrekare üzerinde yedi blok, denize 300 metre. Erişimi yönetim verir."
     },
     "forbidden": {
       "title": "Erişim yok",

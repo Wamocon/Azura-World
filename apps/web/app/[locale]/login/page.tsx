@@ -9,6 +9,7 @@ import { locales } from "@/lib/contracts"
 import { AccessProfilePicker } from "./access-profile-picker"
 import { LoginForm } from "./login-form"
 import { safeNextPath } from "./next-path"
+import { AuthSplit } from "@/components/auth/auth-split"
 
 /**
  * `/[locale]/login`.                                          Owner: W3-H
@@ -86,12 +87,14 @@ export default async function LoginPage({
   const qaModeAvailable = isAccessProfileEnabled()
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col justify-center gap-8 px-5 py-16 sm:py-24">
+    <AuthSplit act="room" plateTitle={t("plateTitle")} plateLead={t("plateLead")}>
       <header className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl tracking-[-0.01em] text-foreground">
+        <h1 className="font-display text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground">
           {t("title")}
         </h1>
-        <p className="text-sm text-muted-foreground">{t("lead")}</p>
+        <p className="text-[0.9375rem] leading-[1.6] text-muted-foreground">
+          {t("lead")}
+        </p>
       </header>
 
       <LoginForm
@@ -105,7 +108,7 @@ export default async function LoginPage({
         }}
       />
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-[0.875rem] text-muted-foreground">
         {t("noAccount")}{" "}
         <Link
           href="/signup"
@@ -127,6 +130,6 @@ export default async function LoginPage({
           }}
         />
       ) : null}
-    </main>
+    </AuthSplit>
   )
 }

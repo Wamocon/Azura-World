@@ -14,12 +14,20 @@
    dark mode silently do nothing.
 
    IDENTITY — the one thing this file exists to get right.
-   1Çatı is deep teal #066B63 + gold #B9822B, Aptos throughout, no display
-   face, dark mode forced off. Azura is azure: Mediterranean water, 300 m from
-   the sea, a 5-star resort. Cool, luminous, coastal — Playfair Display over
-   Manrope, softer radii, a working light/dark pair, and a provenance colour
-   family that 1Çatı has no equivalent of. See DESIGN.md §"What makes this not
-   1Çatı".
+
+   Every colour below is sampled from Azura World's own photography, not
+   invented. Fourteen originals were measured: the facade reads #E0E0D0, the
+   column and balcony detailing #907040, the sky and pool #4090E0. That gold is
+   --primary and that blue is --accent.
+
+   This replaced an azure palette (#0b5e7d) that appeared in none of their
+   photographs, and a Playfair Display headline face that made a system for
+   running a building read as an editorial document. One sans throughout,
+   Manrope, is what the reference does and it is right for the same reason.
+
+   The rule that follows from the sampling: warm is the ground, gold is the
+   accent, and gold is never a large surface. It is the single warm note that
+   stops being special the moment it becomes a background.
 
    CONTRAST — every gated pair is measured, not eyeballed. The numbers are in
    DESIGN.md §4 and HANDOFF/W1-D.md; 0 gated failures at the values below.
@@ -245,19 +253,29 @@
   --destructive: #b0243a;
   --destructive-foreground: #ffffff;
 
-  /* --border is a decorative hairline and is NOT held to 3:1 — WCAG 1.4.11
-     governs UI *component* boundaries, not separators. --input is the control
+  /* --border is a decorative hairline and is NOT held to 3:1 (WCAG 1.4.11
+     governs UI *component* boundaries, not separators). --input is the control
      boundary and IS gated at 3:1. Collapsing the two into one token is why so
-     many themes either look heavy-handed or fail an audit. */
-  --border: #c9dce4;
-  --input: #6e8fa0;
-  --ring: #1188b4;
+     many themes either look heavy-handed or fail an audit.
+     Measured against --background #faf8f4: --input 3.66:1, --ring 4.32:1.
 
-  --chart-1: #0b5e7d;
-  --chart-2: #1188b4;
-  --chart-3: #0f6b4f;
-  --chart-4: #a75b12;
-  --chart-5: #5b4b8a;
+     These three were the last azure survivors of the pre-pivot palette. The
+     background and the primary had already been re-measured off the building's
+     own photography while every input border, card edge and focus ring in the
+     application stayed cold blue, which is why the warm surfaces kept reading
+     as a blue theme with a beige background painted over it. */
+  --border: #e6e0d4;
+  --input: #8a8072;
+  --ring: #907040;
+
+  /* Charts follow the same source. Gold and sky are the two colours actually
+     present in the building; the remaining three are held at the same chroma so
+     no single series jumps out of a set it is only a member of. */
+  --chart-1: #907040;
+  --chart-2: #4090e0;
+  --chart-3: #6e7f4a;
+  --chart-4: #b5643c;
+  --chart-5: #5a6b78;
 
   --sidebar: #ffffff;
   --sidebar-foreground: #08161f;
@@ -987,4 +1005,452 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .azura-kenburns img { animation: none; transform: scale(1.04); }
+}
+
+/* ==========================================================================
+   NIGHT SURFACE — the landing route's own world.          Owner: W-CINEMA-2
+   ==========================================================================
+
+   The landing page was a flat cream document: one tone from the record line to
+   the footer, 7.400px of it, with twenty-two photographs of a 5-star resort at
+   dusk sitting on it like slides on a light table. Measured by looking at it.
+
+   The resolution is NOT a new global theme. `.dark` and `:root` still own the
+   dashboard, where a property manager reads a hundred rows in daylight and a
+   dark app would be a worse tool. The landing surface is a different job: it
+   has to earn thirty seconds of attention from someone who has not decided to
+   care yet, and the photography IS the argument.
+
+   So the tokens are re-declared inside `[data-surface="night"]` and nowhere
+   else. Every component below it keeps reading `var(--foreground)`,
+   `var(--border)`, `var(--confidence-conflicted)` exactly as before and comes
+   out correct in the new world without knowing it moved. That is the whole
+   reason `@theme inline` was built with no literal colour in it.
+
+   CONTRAST — measured against `--background: #050d13`, not eyeballed:
+     --foreground        #eaf2f6   17.2:1
+     --muted-foreground  #93a9b6    7.9:1
+     --primary           #5cc8e8   10.0:1
+     --accent            #e0a75c    9.0:1
+     accent CTA (#1a1206 on #e0a75c)  8.7:1
+   Every one clears 4.5:1 with room. Do not darken a foreground here without
+   re-running that arithmetic.
+   ========================================================================== */
+
+[data-surface="night"] {
+  color-scheme: dark;
+
+  /* Sampled from the dusk pool reflection in `approach[0]`, which is the frame
+     the hero opens on. The ground is that photograph's own shadow value, so the
+     page and the picture are lit by the same evening. */
+  --background: #050d13;
+  --foreground: #eaf2f6;
+
+  /* Not a lighter grey: a panel here is the ground plus caught light, which is
+     what `--card` at 4% white over the ground produces at use-site. The literal
+     is kept for the handful of places that need an opaque fill. */
+  --card: #0a1a24;
+  --card-foreground: #eaf2f6;
+  --popover: #0c2230;
+  --popover-foreground: #eaf2f6;
+
+  --primary: #5cc8e8;
+  --primary-foreground: #04121a;
+  --secondary: #102a38;
+  --secondary-foreground: #cfe4ee;
+  --muted: #0e2430;
+  --muted-foreground: #93a9b6;
+
+  /* The one warm note. It is the sodium light on the hotel facade at dusk in
+     their own photography, not an invented gold. CTAs only. */
+  --accent: #e0a75c;
+  --accent-foreground: #1a1206;
+
+  --destructive: #ff8095;
+  --destructive-foreground: #2a0510;
+
+  --border: #1c3849;
+  --input: #4c7a92;
+  --ring: #5cc8e8;
+
+  --sidebar: #0a1a24;
+  --sidebar-foreground: #eaf2f6;
+  --sidebar-primary: #5cc8e8;
+  --sidebar-primary-foreground: #04121a;
+  --sidebar-accent: #102a38;
+  --sidebar-accent-foreground: #cfe4ee;
+  --sidebar-border: #1c3849;
+  --sidebar-ring: #5cc8e8;
+
+  --chart-1: #5cc8e8;
+  --chart-2: #7fdcf2;
+  --chart-3: #5cd8a8;
+  --chart-4: #e0a75c;
+  --chart-5: #bda8f2;
+
+  /* Provenance keeps its meanings and gains luminance. An amber conflict badge
+     tuned for cream is invisible at 5% lightness, and the conflicts are the
+     product. */
+  --confidence-confirmed: #5cd8a8;
+  --confidence-official: #5cc8e8;
+  --confidence-single: #9db6c4;
+  --confidence-conflicted: #f2b862;
+  --confidence-inferred: #bda8f2;
+  --confidence-gap: #8ea5b2;
+  --surface-conflict: #2c1e08;
+  --quality-modelled: #bda8f2;
+  --quality-stale: #f5a97f;
+  --simulation: #f2b862;
+  --surface-simulation: #2c1e08;
+
+  --sea-deep: #02121c;
+  --sea-mid: #0a4964;
+  --sea-shallow: #1180a8;
+  --sea-foam: #4fb4d2;
+  --sand: #c8a066;
+
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* The page behind the wrapper. Overscroll at either end of a 1.400px-tall
+   cinematic surface would otherwise flash the cream body through, which reads
+   as a rendering fault rather than as a design. `:has()` keeps this to CSS: no
+   route-aware body class, no hydration flash. */
+body:has([data-surface="night"]) {
+  background-color: #050d13;
+}
+
+@media (forced-colors: active) {
+  /* High contrast paints its own palette. Hand the surface back rather than
+     fighting it with translucency that no longer means anything. */
+  [data-surface="night"] {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Night materials.
+
+   Four effects, each doing one job that flat colour cannot: grain kills
+   gradient banding, caustics put the page under moving water, the sheen makes
+   a panel read as a surface catching light, and the metal treatment gives the
+   wordmark a single specular highlight. None of them animates a layout
+   property; all of them are `transform`, `opacity` or `background-position`.
+   -------------------------------------------------------------------------- */
+
+@layer utilities {
+  /* Film grain. A 10% opacity fractal-noise tile over the whole surface.
+
+     This is not decoration. A dark page built from wide radial gradients bands
+     visibly on an 8-bit panel, in ugly concentric steps; a little noise breaks
+     the step boundary and the gradient reads smooth. `data:` is covered by
+     `img-src 'self' data:` in proxy.ts, so it costs one inline string and zero
+     requests. */
+  .azura-grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .azura-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.055;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  /* Water light. Two slow pools plus a sea-to-sky vertical, sized so the top of
+     a section is lit and the bottom falls away. The animated ::before is opted
+     in under no-preference further down, never opted out under reduce. */
+  .azura-caustics {
+    position: relative;
+    isolation: isolate;
+  }
+  .azura-caustics::before {
+    content: "";
+    position: absolute;
+    inset: -10% -5%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        48% 42% at 18% 8%,
+        color-mix(in srgb, var(--sea-shallow) 30%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        42% 38% at 84% 4%,
+        color-mix(in srgb, var(--accent) 12%, transparent),
+        transparent 66%
+      );
+    filter: blur(12px);
+  }
+
+  /* Polished silver, with ONE narrow highlight at the optical centre — the
+     highlight is what separates a metal from a gradient.
+
+     THE RANGE IS THE FIX, and it is not a taste call. The first version ran
+     #7d97a6 → #ffffff → #6d879a, the textbook dark-to-silver-to-dark. Over the
+     hero photograph's bright sky the two ends of that ramp measured under 2:1
+     and the first and last words of the headline were effectively invisible.
+     Screenshotted, not guessed.
+
+     So the ramp stays entirely in the light half: the darkest stop is #c3d6e2,
+     which holds 12:1 against the night ground and better than 4.5:1 against
+     anything the scrim in `hero.tsx` allows through. `background-clip: text`
+     with a transparent fill is invisible to automated contrast checking, so the
+     floor has to be built into the ramp — there is nothing downstream to catch
+     it.
+
+     `forced-colors` is handled at the use site: the gradient is dropped and a
+     real `color` restored, because a transparent fill in high-contrast mode is
+     a heading that is not there at all. */
+  .azura-metal {
+    background-image: linear-gradient(
+      166deg,
+      #c3d6e2 0%,
+      #eaf4f9 30%,
+      #ffffff 46%,
+      #dfeaf1 58%,
+      #c8dae5 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* A rule that starts and ends in nothing. A hard 1px border across a dark
+     surface reads as a table; this reads as a horizon. */
+  .azura-rule {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--primary) 34%, transparent) 22%,
+      color-mix(in srgb, var(--primary) 34%, transparent) 78%,
+      transparent
+    );
+  }
+
+  /* The night pane. Cheaper than `azura-glass` on purpose: a backdrop-filter
+     over a full-bleed photograph costs a compositor layer per panel and the
+     landing page has a dozen of them. Caught light along the top edge does the
+     same work for free. */
+  .azura-pane {
+    position: relative;
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in srgb, var(--foreground) 9%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--foreground) 5%, transparent),
+        color-mix(in srgb, var(--foreground) 2%, transparent)
+      ),
+      color-mix(in srgb, var(--sea-deep) 55%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--foreground) 8%, transparent),
+      0 24px 60px -30px rgb(0 0 0 / 0.8);
+  }
+
+  /* Pointer-tracked sheen. `--mx`/`--my` are written by the choreography island
+     and default to the centre, so a panel with no JS still looks lit rather
+     than looking broken. */
+  .azura-sheen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+    background: radial-gradient(
+      36rem 36rem at var(--mx, 50%) var(--my, 0%),
+      color-mix(in srgb, var(--primary) 12%, transparent),
+      transparent 46%
+    );
+  }
+  .azura-sheen:hover::before,
+  .azura-sheen:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Full-viewport stage for the pinned cinema sequence. `svh` rather than `vh`
+     so an iOS URL bar collapsing does not resize the pin mid-scroll, which
+     ScrollTrigger reads as a layout change and re-measures against. */
+  .azura-stage {
+    height: 100svh;
+    min-height: 34rem;
+  }
+
+  /* A frame in the cross-dissolve. All of them are stacked and absolutely
+     positioned; the choreography moves opacity and scale only. Frame 0 is
+     opaque in the markup so the stack is correct before JS and under reduced
+     motion. */
+  .azura-frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .azura-frame > picture,
+  .azura-frame > picture > img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  /* Type that arrives from behind its own baseline. The mask is on the wrapper
+     so the glyph travels without the container growing, which is what keeps
+     this off the layout path entirely. */
+  .azura-mask {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+
+  /* Tabular, tracked, small. The page's connective tissue: designations, act
+     numbers, credits, units. */
+  .azura-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+}
+
+/* Ambient motion on the night surface — opted IN, matching the policy above.
+   Nothing here hides anything, so `reduce` simply never starts it and the
+   surface is complete and static. */
+@media (prefers-reduced-motion: no-preference) {
+  .azura-caustics::before {
+    animation: azura-drift 22s ease-in-out infinite alternate;
+  }
+
+  .azura-cue span {
+    animation: azura-cue 2.4s var(--ease-in-out) infinite;
+  }
+}
+
+@keyframes azura-drift {
+  0% {
+    transform: translate3d(-1.5%, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(1.5%, 1.5%, 0) scale(1.08);
+  }
+}
+
+@keyframes azura-cue {
+  0% {
+    transform: translateY(-55%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(140%);
+    opacity: 0;
+  }
+}
+
+/* The scroll cue. A hairline well with a travelling highlight inside it, which
+   says "there is more below" without an arrow glyph and without a word that
+   would need translating into four languages. */
+.azura-cue {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 3.5rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+.azura-cue span {
+  position: absolute;
+  inset-inline: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--primary),
+    transparent
+  );
+}
+
+/* --------------------------------------------------------------------------
+   The cinema stage (`app/sections/cinema.tsx`).
+
+   THE MEDIA QUERY IS THE ACCESSIBILITY CONTRACT, not a progressive
+   enhancement nicety. Read it before changing anything here.
+
+   Outside the query — no JavaScript, or reduced motion — this markup is a
+   plain vertical gallery: five figures, one under the next, each with its
+   caption below it, all visible, nothing clipped and nothing waiting for a
+   scroll event that will never come. That is the DEFAULT, which is what makes
+   it correct: there is no fallback path to forget to test.
+
+   Inside the query the same markup becomes a sticky stage with the frames
+   stacked and the choreography cross-dissolving between them.
+
+   `@media (scripting: enabled)` is what lets the default be the honest one.
+   The usual approach — ship the stage layout and have JS undo it — flashes the
+   last frame of the sequence for however long the bundle takes, and shows a
+   no-JS reader 500svh of empty scroll. Baseline since 2024, and the failure
+   direction if a browser does not know it is the readable gallery.
+   -------------------------------------------------------------------------- */
+
+.azura-cine-stage {
+  position: relative;
+}
+
+.azura-cine-pin > * + * {
+  margin-top: 1.5rem;
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* `--acts` is set inline from the frame count, so adding a sixth act does
+     not need a second edit here. */
+  .azura-cine-stage {
+    height: calc(var(--acts, 5) * 88svh);
+  }
+
+  .azura-cine-pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 32rem;
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .azura-cine-pin > * + * {
+    margin-top: 0;
+  }
+
+  .azura-cine-pin [data-cine-frame] {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    border-radius: 0;
+  }
+
+  /* Every frame but the first starts hidden. The choreography sets the same
+     value inline a frame later; declaring it here too is what removes the gap
+     between first paint and hydration, which is exactly long enough to see. */
+  .azura-cine-pin [data-cine-frame]:not(:first-child) {
+    opacity: 0;
+  }
+
+  .azura-cine-pin [data-cine-caption] {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+  }
 }

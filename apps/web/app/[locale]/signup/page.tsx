@@ -4,6 +4,7 @@ import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/app/navigation"
+import { AuthSplit } from "@/components/auth/auth-split"
 import { PublicAccessRequest } from "@/components/public-access-request"
 import { locales } from "@/lib/contracts"
 
@@ -52,13 +53,21 @@ export default async function SignupPage({
   const t = await getTranslations({ locale, namespace: "auth.signup" })
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col gap-8 px-5 py-16 sm:py-24">
+    <AuthSplit
+      act="complex"
+      plateTitle={t("plateTitle")}
+      plateLead={t("plateLead")}
+    >
       <header className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl tracking-[-0.01em] text-foreground">
+        <h1 className="font-display text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground">
           {t("title")}
         </h1>
-        <p className="text-sm text-muted-foreground">{t("lead")}</p>
-        <p className="text-sm text-muted-foreground">{t("roleNotice")}</p>
+        <p className="text-[0.9375rem] leading-[1.6] text-muted-foreground">
+          {t("lead")}
+        </p>
+        <p className="text-[0.9375rem] leading-[1.6] text-muted-foreground">
+          {t("roleNotice")}
+        </p>
       </header>
 
       <PublicAccessRequest
@@ -78,13 +87,19 @@ export default async function SignupPage({
           unavailableTitle: t("unavailableTitle"),
           unavailableBody: t("unavailableBody"),
           throttledTitle: t("throttledTitle"),
-          retryAfter: t("retryAfter"),
+          // `t.raw` and not `t`: the client does its own {seconds} substitution
+          // once the throttle response actually names a number, so the
+          // placeholder has to survive the server render. `t()` validates ICU
+          // arguments and throws FORMATTING_ERROR when it finds one unfilled,
+          // which took down every render of this page rather than just the
+          // throttled one.
+          retryAfter: t.raw("retryAfter"),
           invalidTitle: t("invalidTitle"),
           errorTitle: t("errorTitle"),
         }}
       />
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-[0.875rem] text-muted-foreground">
         {t("hasAccount")}{" "}
         <Link
           href="/login"
@@ -93,6 +108,6 @@ export default async function SignupPage({
           {t("signIn")}
         </Link>
       </p>
-    </main>
+    </AuthSplit>
   )
 }
