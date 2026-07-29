@@ -43,6 +43,7 @@ import {
 import {
   ANONYMOUS_PROFILE,
   buildAccessProfileFor,
+  PROFILE_SELECT,
   resolveSupabaseProfile,
   type AuthenticatedProfile,
   type ProfileRow,
@@ -148,9 +149,7 @@ export async function getUserProfile(): Promise<UserProfile> {
 
     const { data, error: profileError } = await supabase
       .from("profiles")
-      .select(
-        "id, email, full_name, role, roles, is_active, anonymized_at, company_id, phone, locale, avatar_url"
-      )
+      .select(PROFILE_SELECT)
       .eq("id", user.id)
       .maybeSingle()
 

@@ -56,7 +56,7 @@ build you would put in front of them it cannot be opened.
 | `/kitchen-sink` ships publicly (SEC-019) | **FIXED** — 404 in the production build |
 | `?next=` open redirect | **DEFENDED** — 4/4 hostile values collapse to `/dashboard` |
 | `profiles.roles` / `anonymized_at` exist (SEC-002) | **CONFIRMED OPEN** — live DB returns `42703` |
-| Evidence cockpit leaks to unprivileged roles (SEC-003) | **CONFIRMED OPEN** — content in the RSC payload |
+| Evidence cockpit leaks to unprivileged roles (SEC-003) | **NOT REPRODUCIBLE** — retracted by F1; see M-006 |
 | F-002's `2.1x` is a cross-currency division (SEC-007) | **CONFIRMED OPEN** — and rendered to users |
 | Modelled units distinguishable at a glance | **VERIFIED** — badge, recession, greyed price |
 | Mixed-currency totals stay separate | **VERIFIED** — per-currency subtotals, never blended |
@@ -238,30 +238,49 @@ whole class permanently.
 
 ---
 
-### M-006 — SEC-003 is live: evidence content ships to roles that are shown a 403
+### ~~M-006 — SEC-003 is live: evidence content ships to roles that are shown a 403~~ — **WITHDRAWN, this was my false positive**
 
-**Severity:** Major · **Pass:** 10 · **Roles:** tenant, guest, child_guest, service_provider
-**Owner:** W3-C + W3-B · **Evidence:** `quality/manual/pass3-8-12/p10-evidence-*.png`
+**Status:** **NOT REPRODUCIBLE. Retracted 29 July by F1**, which re-measured it properly before
+fixing it and found nothing to fix. Recorded rather than deleted, because the way it was wrong is
+the point.
 
-**Actual.**
+**What I originally reported.** That `/dashboard/evidence` returned the 403 panel to four
+unprivileged roles while carrying `F-002` and Haspo pricing in the RSC payload.
+
+**Why that was wrong.** My probe counted `/F-002|F-013|Haspo|Widersprüch|competingValues/i` in the
+whole document. **`F-002` appears in the shipped `evidence` message namespace**, and `getTranslations({ namespace: "evidence" })` is called by finance, wallet, vendor-invoices and
+several other pages. So the token appears in the payload of dashboard pages that read no evidence
+data at all — which is precisely what F1 measured: exactly 3 occurrences of `F-002` on
+`/dashboard/finance`, `/dashboard/wallet` and `/dashboard/vendor-invoices` as well as on
+`/dashboard/evidence`. A translated string, not a row.
+
+**What a correct measurement shows.** Splitting visible DOM from payload and counting markers that
+only a repository row can produce (`Housearch`, `hasporealty.com`, `238.967`, `snapshotHash`):
 
 ```
-evidence as tenant            HTTP 200 · visible=false · IN-PAYLOAD=true · 403 panel shown
-evidence as guest             HTTP 200 · visible=false · IN-PAYLOAD=true · 403 panel shown
-evidence as child_guest       HTTP 200 · visible=false · IN-PAYLOAD=true · 403 panel shown
-evidence as service_provider  HTTP 200 · visible=false · IN-PAYLOAD=true · 403 panel shown
+/dashboard/evidence   role               HTTP  visible  payload  refusal
+                      tenant             200   0        1        yes
+                      guest              200   0        1        yes
+                      child_guest        200   0        1        yes
+                      service_provider   200   0        1        yes
+                      owner/staff/accountant 200 0      1        yes
 ```
 
-The refusal panel renders correctly, and `F-002`, `Haspo` and the competing-price data are present
-in the RSC payload of the same response. View-source is enough. Two harnesses already reported this
-(W4-A §4.4, W4-C); it reproduces by hand.
+Zero row content visible, and the single payload hit is likewise catalogue text, not data. The page
+**already returns before any repository read** — `evidence/page.tsx` computes `mayView` and returns
+the refusal at line 117, and the `Promise.all` of `getFinding`/`getPortalListings`/`getSources`
+starts at line 137. Its own comment says so: *"Nothing is fetched for a caller who may not see
+it."* All twenty module pages guard server-side.
 
-**Fix.** Assert `evidence:view` in the Server Component **before** the repository read, as W4-A
-request 4 says. A guard that renders a panel after fetching has already lost the data.
+**The lesson, which is the same one W4-B recorded about a cached URL containing the word
+`dashboard`:** a substring search over a whole response is not a leak test. The marker has to be
+something only the data can produce. My W5 finding was the exact failure mode I quoted W4-B for in
+that same report.
 
-**Automated coverage.** *Partially caught, assertion too weak.* Existing tests check the panel
-renders. **New test for W4-A:** for every role lacking a route's permission, assert the **response
-body** contains no row content, not merely that the viewport does.
+**Automated coverage.** The replacement test is still worth having, and its assertion is now
+specified correctly: for every role lacking a route's permission, assert the **response body**
+contains no marker that only a repository row can produce — never a token that also exists in a
+message catalogue.
 
 ---
 
@@ -443,7 +462,7 @@ each closes a class, not an instance.
 | 3 | No `AzuraFinding.message` may state a ratio/multiple/percentage derived from `competingValues` spanning more than one currency | M-003 |
 | 4 | No `sale`-kind price may imply €/m² below a floor without an explicit rent tag | M-004 |
 | 5 | On every route × locale, no visible text may match `/^(common\|dashboard\|auth\|landing)\.[a-z]/` | M-005, M-009 |
-| 6 | For every role lacking a route's permission, the **response body** must contain no row content | M-006 |
+| 6 | For every role lacking a route's permission, the **response body** must contain no marker that only a repository row can produce (never a token that also exists in a message catalogue) | M-006 |
 | 7 | `<html lang>` must equal the requested locale — promote W4-B's rule to a gate | M-007 |
 | 8 | `pending === true` if and only if that route has no `page.tsx` | M-008, M-009 |
 | 9 | A publisher count stated in a message must equal the distinct count in its `competingValues` | M-010 |
@@ -482,8 +501,9 @@ leaks in it, not the absence of it.
 
 1. Put the full `.env.local` at `apps/web/.env.local` (whole file, per W2-D's warning), and record
    a seed password. → M-001
-2. Remove `roles` and `anonymized_at` from `lib/auth.ts`'s select list, or add the columns. One
-   change, not two. → M-002
+2. ~~Remove `roles` and `anonymized_at` from `lib/auth.ts`'s select list.~~ **DONE by F1 on
+   29 July** — `PROFILE_COLUMNS` in `lib/auth-resolution.ts`; all 11 roles proven to resolve to
+   themselves against the live database. → M-002
 3. Restate F-002's spread per currency. → M-003
 4. Tag or drop the two rent-contaminated prices. → M-004
 5. Add `common.notAvailable` and `common.dataSource.localSeedHint`. → M-005
