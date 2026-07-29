@@ -135,7 +135,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "evidence:view",
     group: "intelligence",
     resource: "evidence",
-    pending: true,
   },
   {
     href: "/dashboard/reports",
@@ -154,7 +153,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "units:view",
     group: "inventory",
     resource: "units",
-    pending: true,
   },
   {
     href: "/dashboard/listings",
@@ -171,7 +169,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "hotel:view",
     group: "inventory",
     resource: "hotel",
-    pending: true,
   },
   {
     href: "/dashboard/reviews",
@@ -180,7 +177,6 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     permission: "reviews:view",
     group: "inventory",
     resource: "reviews",
-    pending: true,
   },
 
   // commercial
@@ -200,15 +196,27 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     group: "commercial",
     resource: "buyer_pipeline",
   },
-  {
-    href: "/dashboard/deals",
-    labelKey: "dashboard.deals.title",
-    icon: "Handshake",
-    permission: "deals:view",
-    group: "commercial",
-    resource: "deals",
-    pending: true,
-  },
+  // M-009 — `/dashboard/deals` REMOVED from the navigation.
+  //
+  // It had no `page.tsx`, no `dashboard.deals.title` in any of the four
+  // catalogues, and no repository behind it. The sidebar's `t.has()` fallback
+  // degraded the missing label to the route slug, so every role with
+  // `deals:view` saw the lowercase English word "deals" sitting among German
+  // labels, leading to a 404.
+  //
+  // **Removed rather than built.** Building it would mean inventing a deals
+  // dataset: `lib/lead-repository.ts` computes `dealTotalsByCurrency` INSIDE
+  // the buyer-pipeline summary, so what a "deal" is here is already a property
+  // of a pipeline entry and is already on `/dashboard/buyer-pipeline`. A second
+  // screen would have had to fabricate rows to fill itself, which
+  // SYSTEM-PROMPT §2.3 forbids outright. An entry that leads nowhere is a
+  // smaller defect than a screen of invented money.
+  //
+  // **`deals` stays a resource.** `lib/contracts.ts` and `lib/rbac.ts` are
+  // untouched: the six `deals:*` permissions remain valid and five roles still
+  // hold them. Only the nav offer is withdrawn. Re-adding this is one record in
+  // this array plus a `dashboard.deals.title` in four files, and the module
+  // window that builds it does exactly what every other module window did.
 
   // finance
   // The three finance routes shipped in W3-D. Per W3-B's module contract the

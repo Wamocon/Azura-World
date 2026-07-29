@@ -111,7 +111,11 @@
       "no": "Nein"
     },
     "required": "Pflichtfeld",
-    "optional": "Optional"
+    "optional": "Optional",
+    "notAvailable": "Keine Angabe",
+    "dataSource": {
+      "localSeedHint": "Diese Seite zeigt Beispieldaten aus dem lokalen Datensatz, keine Live-Daten."
+    }
   },
   "nav": {
     "brand": "Azura World Residence & Hotel",
