@@ -33,7 +33,8 @@ export interface JourneyImage {
 export interface JourneyVideo {
   slug: string
   act: JourneyAct
-  src: string
+  /** Always null: the film is referenced at its publisher, never rehosted. */
+  src: null
   poster: string | null
 }
 
@@ -289,7 +290,7 @@ export const journeyVideos: JourneyVideo[] = [
   {
     "slug": "film",
     "act": "complex",
-    "src": "/media/azura-film.mp4",
+    "src": null,
     "poster": "/media/azura-film-poster.webp"
   }
 ]

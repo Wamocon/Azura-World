@@ -130,9 +130,14 @@ check(
 
 // ---- 5. video --------------------------------------------------------------
 for (const v of videos) {
+  // `src` is null by contract: the film is referenced at its publisher, never
+  // rehosted (MEDIA-LICENSE 4, and the pre-commit hook enforces it). What we
+  // publish is the poster frame, and that must exist.
+  check(`video ${v.slug}: not rehosted`, v.src === null)
   check(
-    `video ${v.slug}: file present`,
-    existsSync(join(APP, "public", v.src.replace(/^\//, "")))
+    `video ${v.slug}: poster published`,
+    typeof v.poster === "string" &&
+      existsSync(join(APP, "public", v.poster.replace(/^\//, "")))
   )
 }
 

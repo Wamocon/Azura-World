@@ -373,10 +373,20 @@ for (const v of VIDEO_FILES) {
     console.log(`  video MISSING, skipped: ${v.file}`)
     continue
   }
-  const to = join(PUBLIC_MEDIA, `azura-${v.slug}.mp4`)
-  copyFileSync(from, to)
-  videoBytes += readFileSync(to).length
-  // The poster frame yt-dlp saved beside it, if present.
+  // THE FILE IS NOT COPIED, and that is the contract rather than a size dodge.
+  //
+  // `MediaVideoRef` in the manifest already says `rehosted: false` -
+  // "Referenced, never rehosted - see MEDIA-LICENSE.md 4" - and the
+  // repository's pre-commit hook enforces the same rule from the other side:
+  // it rejected the 17 MB mp4 with "Evidence and media belong under git-ignored
+  // sources/". Both were right and the first version of this script was wrong.
+  //
+  // So the POSTER is published (70 KB, ours to serve because it is a frame we
+  // extracted) and the film itself stays where it was harvested. The page shows
+  // the poster with a visible credit and links out to the publisher's own copy,
+  // which is what "poster frame plus a click to play" means when you are not
+  // the rights holder.
+  videoBytes += 0
   const posterFrom = from.replace(/\.mp4$/, ".webp")
   let poster = null
   if (existsSync(posterFrom)) {
@@ -384,7 +394,7 @@ for (const v of VIDEO_FILES) {
     copyFileSync(posterFrom, posterTo)
     poster = `/media/azura-${v.slug}-poster.webp`
   }
-  videos.push({ slug: v.slug, act: v.act, src: `/media/azura-${v.slug}.mp4`, poster, file: v.file })
+  videos.push({ slug: v.slug, act: v.act, src: null, poster, file: v.file })
 }
 
 console.log(`\ncopied ${copied} image files (${(copiedBytes / 1024 / 1024).toFixed(1)} MB)`)
@@ -463,7 +473,8 @@ export interface JourneyImage {
 export interface JourneyVideo {
   slug: string
   act: JourneyAct
-  src: string
+  /** Always null: the film is referenced at its publisher, never rehosted. */
+  src: null
   poster: string | null
 }
 
