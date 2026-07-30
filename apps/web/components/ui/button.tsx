@@ -85,12 +85,37 @@ function Button({
   variant,
   size,
   block,
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  /**
+   * `nativeButton` defaults to FALSE whenever a `render` prop is present.
+   *
+   * Base UI defaults it to true and then warns, at runtime, on every render:
+   *
+   *   Base UI: A component that acts as a button expected a native <button>
+   *   because the `nativeButton` prop is true. Rendering a non-<button>
+   *   removes native button semantics, which can impact forms and
+   *   accessibility.
+   *
+   * Every `render` usage in this codebase renders a `<Link>`, which is an
+   * `<a>`. `/dashboard/reports` and `/dashboard/settings` logged that warning
+   * on every load. Found by the role sweep, not by reading the files.
+   *
+   * Defaulting here rather than at five call sites means the next person who
+   * writes `<Button render={<Link/>}>` does not reintroduce it. An explicit
+   * `nativeButton` still wins, for the case where someone renders a real
+   * `<button>` through `render`.
+   */
+  const resolvedNativeButton = nativeButton ?? render === undefined
+
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, block, className }))}
+      nativeButton={resolvedNativeButton}
+      {...(render === undefined ? {} : { render })}
       {...props}
     />
   )

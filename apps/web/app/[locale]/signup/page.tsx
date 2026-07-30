@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/app/navigation"
 import { AuthSplit } from "@/components/auth/auth-split"
+import { cast } from "@/components/journey/cast"
 import { PublicAccessRequest } from "@/components/public-access-request"
 import { locales } from "@/lib/contracts"
 
@@ -54,9 +55,10 @@ export default async function SignupPage({
 
   return (
     <AuthSplit
-      act="complex"
+      plate={cast.signUp}
       plateTitle={t("plateTitle")}
       plateLead={t("plateLead")}
+      backToHome={t("backToHome")}
     >
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground">

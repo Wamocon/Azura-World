@@ -64,6 +64,17 @@ export const ease = {
   inOut: "power2.inOut",
   /** Constant motion: marquees, progress, scrub-linked scroll. */
   linear: "none",
+  /**
+   * The house curve, for large elements arriving: a headline, a photograph, a
+   * panel. Long tail, so the last 20% of the travel takes half the duration and
+   * the thing settles rather than stopping.
+   *
+   * `expo.out` is GSAP's name for what `cubic.coastal` ([0.16, 1, 0.3, 1]) and
+   * `--ease-coastal` in globals.css describe — the three were meant to be one
+   * curve in three notations and this entry was the one missing, so GSAP
+   * callers had to reach for `out` and quietly got a shorter tail.
+   */
+  coastal: "expo.out",
 } as const
 
 /**

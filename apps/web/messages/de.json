@@ -281,7 +281,8 @@
         "under_construction": "Im Bau",
         "planned": "Geplant"
       },
-      "antalyaAirportLabel": "Entfernung Flughafen Antalya"
+      "antalyaAirportLabel": "Entfernung Flughafen Antalya",
+      "locationHeading": "Lage"
     },
     "immersion": {
       "title": "Ein Tag vor Ort",
@@ -406,7 +407,7 @@
       "blockNote": "Wie sich die Wohnungen auf die Blöcke verteilen, gibt keine Quelle an. Die Aufteilung ist hier gleichmäßig angenommen."
     },
     "system": {
-      "title": "Was das System kann",
+      "title": "Ein Datensatz, viele Abläufe",
       "lead": "Bewohner, Verwaltung und Buchhaltung arbeiten im selben System. Jede Rolle sieht genau das, was sie braucht.",
       "demoNote": "Bestand, Blöcke und Hotelzimmer entsprechen Ihrer Anlage. Die Vorgänge darin sind Beispieldaten: Meldungen, Buchungen und Dokumente wurden für die Vorführung angelegt und sind im System als Beispieldaten gekennzeichnet.",
       "groups": {
@@ -440,6 +441,14 @@
           "body": "Personen anlegen, Rollen ändern, Zugänge entziehen. Alles ohne Entwickler, und jede Änderung steht mit Name und Zeitpunkt im Protokoll.",
           "detail": "Benutzer, Rollen, Einstellungen und ein Protokoll zum Export."
         }
+      },
+      "core": {
+        "eyebrow": "Projekt-Kern",
+        "title": "Geteilte Akte",
+        "subtitle": "Azura World",
+        "units": "Wohnungen",
+        "blocks": "Blöcke",
+        "rooms": "Hotelzimmer"
       }
     },
     "mediaKind": {
@@ -447,6 +456,125 @@
       "floorplan": "Grundriss",
       "siteplan": "Lageplan",
       "allRenders": "Alle Aufnahmen in diesem Abschnitt sind Visualisierungen des Bauträgers, keine Fotos der fertigen Anlage."
+    },
+    "surface": {
+      "toLight": "Zum hellen Design wechseln",
+      "toDark": "Zum dunklen Design wechseln"
+    },
+    "flow": {
+      "designation": "Der Betrieb",
+      "title": "Ein System, das den ganzen Tag mitläuft",
+      "lead": "Bestand, Vorgänge und Belege in einem Modell. Die Zahlen unten sind der Umfang, den das System heute hält.",
+      "stats": {
+        "units": "Wohnungen im Bestand",
+        "listings": "beobachtete Portal-Inserate",
+        "sources": "geprüfte Quellen",
+        "findings": "dokumentierte Befunde",
+        "roles": "Rollen mit eigenem Zugang",
+        "languages": "Sprachen"
+      },
+      "flowTitle": "So läuft ein Vorgang",
+      "flowLead": "Vom Schaden bis zur Abrechnung in einer Spur. Jeder Schritt ist protokolliert und nachher noch lesbar.",
+      "steps": {
+        "report": {
+          "title": "Meldung",
+          "body": "Ein Bewohner meldet in zwei Schritten, ohne Anruf und ohne Papier."
+        },
+        "assign": {
+          "title": "Zuweisung",
+          "body": "Der technische Dienst wird zugewiesen, mit Frist nach Dringlichkeit."
+        },
+        "work": {
+          "title": "Bearbeitung",
+          "body": "Der Vorgang läuft mit Rückmeldung an den Melder und Fotonachweis."
+        },
+        "review": {
+          "title": "Abnahme",
+          "body": "Erledigt, geprüft und mit Namen und Zeitpunkt abgenommen."
+        },
+        "settle": {
+          "title": "Abrechnung",
+          "body": "Kosten landen je Währung getrennt im Hauptbuch, mit Freigabe."
+        }
+      },
+      "charts": {
+        "chartsTitle": "Der Bestand, gemessen",
+        "originTitle": "Bestand nach Herkunft",
+        "originBasis": "Reales Portal-Inserat gegenüber modelliertem Bestand. Quelle: Datensatz.",
+        "originReal": "Reales Inserat",
+        "originModelled": "Modelliert",
+        "unitsTotal": "Wohnungen",
+        "confidenceTitle": "Belege nach Sicherheit",
+        "confidenceBasis": "Projektfakten nach Beleglage im Datensatz.",
+        "confConfirmed": "Bestätigt",
+        "confConflicted": "Widersprüchlich",
+        "confSingle": "Eine Quelle",
+        "factsTotal": "Fakten",
+        "tableCategory": "Kategorie",
+        "tableCount": "Anzahl",
+        "empty": "Keine Daten."
+      }
+    },
+    "gallery": {
+      "render": "Visualisierung des Bauträgers",
+      "floorplan": "Grundriss",
+      "siteplan": "Lageplan",
+      "credit": "Aufnahme",
+      "stale": "aus einem veralteten Inserat",
+      "close": "Schließen",
+      "prev": "Vorheriges Bild",
+      "next": "Nächstes Bild",
+      "counter": "{index} von {total}",
+      "open": "Bild {index} öffnen",
+      "alt": "Ansicht der Anlage Azura World"
+    },
+    "residences": {
+      "designation": "Die Residenzen",
+      "title": "Fünf Grundrisse, 656 Wohnungen",
+      "lead": "Vom kompakten 1+1 bis zur 5+1-Residenz. Verteilung und typische Innenfläche aus dem Datensatz.",
+      "unitsLabel": "Wohnungen",
+      "areaPrefix": "ca.",
+      "note": "Typische Innenfläche je Grundriss. Die meisten Einheiten sind modelliert."
+    },
+    "workspace": {
+      "title": "Azura World · Arbeitsplatz",
+      "caption": "Ein Arbeitsplatz, den jede Rolle anders sieht. Die Vorgänge sind Beispieldaten.",
+      "nav": {
+        "overview": "Übersicht",
+        "units": "Einheiten",
+        "tickets": "Meldungen",
+        "finance": "Finanzen",
+        "documents": "Dokumente"
+      },
+      "panelTitle": "Offene Meldungen",
+      "cols": {
+        "block": "Block",
+        "task": "Vorgang",
+        "status": "Status",
+        "due": "Frist"
+      },
+      "rows": [
+        {
+          "task": "Aufzug prüfen",
+          "status": "In Arbeit",
+          "due": "heute"
+        },
+        {
+          "task": "Wasserschaden",
+          "status": "Offen",
+          "due": "morgen"
+        },
+        {
+          "task": "Poolpflege",
+          "status": "Erledigt",
+          "due": "—"
+        },
+        {
+          "task": "Übergabe",
+          "status": "Geplant",
+          "due": "Fr"
+        }
+      ]
     }
   },
   "dashboard": {
@@ -490,7 +618,8 @@
       "groupUnits": "Wohnungen",
       "groupTickets": "Tickets",
       "groupDocuments": "Dokumente",
-      "groupPeople": "Personen"
+      "groupPeople": "Personen",
+      "groupSite": "Anlage"
     },
     "evidence": {
       "title": "Quellen und Nachweise",
@@ -624,6 +753,17 @@
         "heading": "Herkunft des Bestands",
         "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert: sie füllen den Bestand auf und bilden kein reales Angebot ab.",
         "rowNote": "Modelliert: kein reales Inserat"
+      },
+      "matrix": {
+        "legend": "Verfügbarkeit",
+        "notStated": "Keine Angabe",
+        "close": "Schließen",
+        "floor": "Etage",
+        "outdoor": "Außenfläche",
+        "availableCount": "{available} verfügbar",
+        "detailLead": "Wohnungsdetail",
+        "blockLabel": "Block",
+        "hint": "Zelle anklicken für Details."
       }
     },
     "listings": {
@@ -849,7 +989,11 @@
         "cameFrom": "aus {stage}",
         "firstStage": "erste Stufe",
         "blocker": "Blockiert durch",
-        "missingLead": "Anfrage nicht gefunden"
+        "missingLead": "Anfrage nicht gefunden",
+        "probabilityLabel": "Abschlusschance",
+        "stageLabel": "Phase",
+        "previousStage": "Vorherige Phase",
+        "detailLead": "Pipeline-Eintrag"
       },
       "stage": {
         "enquiry": "Anfrage",
@@ -861,7 +1005,8 @@
         "title_deed": "Grundbuch",
         "handover": "Übergabe",
         "closed": "Abgeschlossen"
-      }
+      },
+      "close": "Schließen"
     },
     "finance": {
       "title": "Finanzen",
@@ -2032,6 +2177,21 @@
         "open": "Rezension beim Portal öffnen",
         "none": "Keine bewerteten Rezensionen."
       }
+    },
+    "charts": {
+      "title": "Auf einen Blick",
+      "ticketsTitle": "Vorgänge nach Status",
+      "ticketsBasis": "Nach Status, aktueller Bestand",
+      "qualityTitle": "Bestand nach Herkunft",
+      "qualityBasis": "Reales Inserat gegenüber modelliert",
+      "empty": "Noch keine Daten.",
+      "tableCategory": "Kategorie",
+      "tableCount": "Anzahl",
+      "qualityReal": "Reales Inserat",
+      "qualityModelled": "Modelliert",
+      "qualityOfficial": "Offiziell",
+      "qualityGap": "Ohne Quelle",
+      "ticketsTotal": "Vorgänge"
     }
   },
   "hotel": {
@@ -2280,7 +2440,27 @@
       "sessionExpired": "Die Sitzung ist abgelaufen. Ihre Eingaben bleiben erhalten.",
       "submitting": "Wird angemeldet …",
       "plateTitle": "Ihre Anlage, an einem Ort.",
-      "plateLead": "656 Wohnungen, 7 Blöcke und ein Hotel mit 188 Zimmern. Bestand, Technik, Buchhaltung und Dokumente in einem System."
+      "plateLead": "656 Wohnungen, 7 Blöcke und ein Hotel mit 188 Zimmern. Bestand, Technik, Buchhaltung und Dokumente in einem System.",
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort verbergen",
+      "methodEmail": "E-Mail",
+      "methodPhone": "Telefon",
+      "orContinue": "oder",
+      "google": "Mit Google anmelden",
+      "phoneNumber": "Telefonnummer",
+      "phonePlaceholder": "+90 …",
+      "sendCode": "Code senden",
+      "sendingCode": "Code wird gesendet …",
+      "code": "Bestätigungscode",
+      "codePlaceholder": "6-stelliger Code",
+      "verifyCode": "Anmelden",
+      "verifying": "Wird geprüft …",
+      "codeSent": "Wir haben Ihnen einen Code per SMS geschickt.",
+      "changeNumber": "Nummer ändern",
+      "googlePending": "Die Google-Anmeldung wird in Kürze aktiviert. Bitte melden Sie sich so lange mit E-Mail an.",
+      "phonePending": "Die Anmeldung per Telefon wird in Kürze aktiviert. Bitte melden Sie sich so lange mit E-Mail an.",
+      "socialFailed": "Anmeldung nicht möglich. Bitte versuchen Sie es erneut.",
+      "backToHome": "Zurück zur Startseite"
     },
     "signup": {
       "title": "Zugang anfragen",
@@ -2307,7 +2487,8 @@
       "errorTitle": "Nicht gesendet",
       "signIn": "Anmelden",
       "plateTitle": "Türkler, Alanya.",
-      "plateLead": "Sieben Blöcke auf 76.000 Quadratmetern, 300 Meter vom Meer. Zugänge vergibt die Verwaltung."
+      "plateLead": "Sieben Blöcke auf 76.000 Quadratmetern, 300 Meter vom Meer. Zugänge vergibt die Verwaltung.",
+      "backToHome": "Zurück zur Startseite"
     },
     "forbidden": {
       "title": "Kein Zugriff",
@@ -2389,5 +2570,28 @@
       "unit_handover": "Wohnung übergeben"
     },
     "bannerShort": "BEISPIEL"
+  },
+  "dataNote": {
+    "label": "Hinweis zur Angabe",
+    "originalLabel": "Interner Wortlaut",
+    "originalHint": "Der ursprüngliche Vermerk aus der Datenerhebung, unverändert.",
+    "modelled": "Modellierter Datensatz, kein echtes Inserat. Keine Quelle veröffentlicht eine Liste der einzelnen Wohnungen, daher ist diese Zeile aus der belegten Gesamtzahl abgeleitet.",
+    "noAvailability": "Keine Quelle nennt, ob diese Wohnung verfügbar ist.",
+    "liveListing": "Die Wohnung ist aktuell inseriert. Den Verkaufsstatus nennt keine Quelle.",
+    "conflicted": "Die Quellen nennen unterschiedliche Werte. Angezeigt wird der Wert der verlässlichsten Quelle, die übrigen stehen daneben.",
+    "blockSplit": "Wie sich die Wohnungen auf die Blöcke verteilen, gibt keine Quelle an. Die Aufteilung ist hier gleichmäßig angenommen.",
+    "groupEntryPrice": "Einstiegspreis für diesen Wohnungstyp, nicht für diese einzelne Wohnung.",
+    "cardFromPrice": "Ab-Preis aus der Projektübersicht, nicht für eine einzelne Wohnung.",
+    "portalPriceFrom": "Ab-Preis aus der Portalübersicht. Das Portal ordnet ihn keinem Grundriss zu.",
+    "asPublished": "Preis und Fläche so, wie das Portal sie veröffentlicht hat.",
+    "wrongDistrict": "Das Inserat nennt einen anderen Stadtteil als Türkler. Der Wert steht unverändert hier, damit die Abweichung sichtbar bleibt.",
+    "rentNotSale": "Das Inserat ist eine Vermietung, kein Verkauf. Der Betrag zählt nicht zu den Verkaufspreisen.",
+    "monthlyRent": "Monatsmiete für eine möblierte Wohnung.",
+    "implausibleArea": "Die angegebene Fläche ist für diesen Grundriss unplausibel. Sie steht so in der Quelle und wurde nicht korrigiert.",
+    "layoutUnspecific": "Die Quelle nennt den Grundriss nur ungenau.",
+    "noFloor": "Die Quelle nennt kein Geschoss.",
+    "villaFloor": "Im Feld für das Geschoss steht eine Bauform, kein Geschoss.",
+    "noChain": "Derzeit ist keine Hotelkette benannt. Die einzige Quelle dazu ist ein Pressebericht von 2023.",
+    "noRanking": "Keine Quelle nennt eine Platzierung."
   }
 }

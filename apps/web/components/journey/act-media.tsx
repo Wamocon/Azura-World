@@ -96,6 +96,73 @@ export function ActMedia({
 }
 
 /**
+ * What the frame IS, when it is not a photograph.               Owner: W-NIGHT
+ *
+ * Six of the twenty-two published assets are the developer's marketing renders
+ * and three are floor plans. The page used to show all twenty-two identically,
+ * so a computer visualisation of the finished complex sat in the same frame,
+ * with the same grade and the same credit, as a photograph taken on the site.
+ *
+ * That is a claim about the building, not a design decision, and it is the same
+ * class of error as showing a modelled unit as a real listing. This is the
+ * control: a visible chip on the frame itself, never a hover, never a footnote,
+ * and never on a photograph — labelling all twenty-two would make the label
+ * furniture and the six that matter would stop being read.
+ */
+/**
+ * The `landing.mediaKind.*` key for an asset, or `null` when it needs no label.
+ *
+ * Exists so a caller writes `const key = mediaKindKey(image)` instead of a
+ * three-arm ternary over `category` at every call site — five copies of which
+ * is five chances for one of them to forget `floorplan`.
+ *
+ * Resolving the key here and the STRING at the call site is deliberate:
+ * `getTranslations` is per-locale and per-request, and this file is imported by
+ * both Server Components and the client bundle.
+ */
+export function mediaKindKey(
+  image: JourneyImage
+): "render" | "floorplan" | "siteplan" | null {
+  switch (image.category) {
+    case "render":
+      return "render"
+    case "floorplan":
+      return "floorplan"
+    case "siteplan":
+      return "siteplan"
+    default:
+      // `photo` needs no chip. `logo`, `document` and `video` never reach the
+      // journey projection — `admissible()` in the generator rejects them.
+      return null
+  }
+}
+
+export function MediaKind({
+  image,
+  label,
+  className,
+}: {
+  image: JourneyImage
+  /** Resolved by the caller from `landing.mediaKind.*`. */
+  label: string | null
+  className?: string
+}): ReactNode {
+  if (image.category === "photo" || label === null) return null
+
+  return (
+    <span
+      data-slot="media-kind"
+      className={cn(
+        "azura-label inline-flex max-w-full items-center rounded-full border border-white/25 bg-black/55 px-2.5 py-1 text-white/90 backdrop-blur-sm",
+        className
+      )}
+    >
+      {label}
+    </span>
+  )
+}
+
+/**
  * The credit line. One per act, not one per frame.
  *
  * MEDIA-LICENSE.md: every displayed asset carries a visible source. Visible,

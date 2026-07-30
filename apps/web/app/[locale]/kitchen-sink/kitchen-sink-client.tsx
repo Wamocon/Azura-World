@@ -39,6 +39,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useTableScrollRef } from "@/components/ui/table"
@@ -269,6 +270,11 @@ export function KitchenSinkClient(): ReactNode {
               </DialogContent>
             </Dialog>
 
+            {/* The provider lives here rather than in the root layout.
+                It is a shared delay timer for grouped tooltips, and it
+                pulled 26 KB gzipped of Base UI onto every route in the
+                app for a component only this showcase renders. */}
+            <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
                 render={<Button variant="ghost">Tooltip (nur Hinweise)</Button>}
@@ -277,6 +283,7 @@ export function KitchenSinkClient(): ReactNode {
                 Tooltips tragen niemals Provenienz — auf Touch nicht erreichbar.
               </TooltipContent>
             </Tooltip>
+            </TooltipProvider>
           </TabsPanel>
 
           <TabsPanel value="stagger" className="pt-2">

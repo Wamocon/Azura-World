@@ -2,6 +2,10 @@ import { ExternalLink } from "lucide-react"
 import type { ReactNode } from "react"
 
 import { formatMoney } from "@/components/evidence/format"
+import {
+  DataNote,
+  type DataNoteLabels,
+} from "@/components/evidence/data-note"
 import { cn } from "@/lib/cn"
 
 import type { PublisherGroup } from "./listing-analysis"
@@ -67,6 +71,12 @@ export interface ListingGroupLabels {
   staleReason: string
   /** Screen-reader prefix for a verbatim harvest note. */
   note: string
+  /**
+   * Plain-language rendering of the internal analyst note. The raw dataset
+   * `note` is English prose written for an analyst; `DataNote` classifies and
+   * translates it and keeps the original behind a disclosure.
+   */
+  dataNote: DataNoteLabels
   /** e.g. "Inserat öffnen" */
   openListing: string
   /** Template with `{publisher}`, for the table caption. */
@@ -209,12 +219,7 @@ export function PublisherListingGroup({
                         />
                       ) : null}
                     </span>
-                    {listing.note !== null && listing.note.length > 0 ? (
-                      <span className="mt-1 block max-w-[26rem] text-xs leading-relaxed text-muted-foreground">
-                        <span className="sr-only">{labels.note}: </span>
-                        {listing.note}
-                      </span>
-                    ) : null}
+                    <DataNote note={listing.note} labels={labels.dataNote} />
                   </td>
                   <td className="py-2.5 pr-4 text-muted-foreground">
                     {listing.layout ?? labels.layoutUnstated}

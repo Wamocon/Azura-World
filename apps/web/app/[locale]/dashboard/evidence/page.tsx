@@ -1,5 +1,7 @@
 import { Download } from "lucide-react"
 import { getTranslations } from "next-intl/server"
+
+import { dataNoteLabels } from "@/components/evidence/data-note"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
@@ -86,6 +88,9 @@ export default async function EvidencePage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard.evidence" })
   const tEvidence = await getTranslations({ locale, namespace: "evidence" })
+  // Root namespace: `dataNote.*` is shared by every surface that renders a
+  // dataset note, so it is not nested under this page.
+  const tRoot = await getTranslations({ locale })
 
   /**
    * The permission is re-checked HERE, before a single repository call.
@@ -232,6 +237,10 @@ export default async function EvidencePage({
       evidence: t("table.evidence"),
       stale: t("table.stale"),
       note: t("table.note"),
+      // `dataNote.*` lives in its own top-level namespace, not under this
+      // page's, because the same eighteen sentences are needed anywhere a
+      // dataset note is rendered. `tRoot` reads it.
+      dataNote: dataNoteLabels(tRoot),
       layoutUnstated: t("table.layoutUnstated"),
       areaUnstated: t("table.areaUnstated"),
       source: {

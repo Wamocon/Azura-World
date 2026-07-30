@@ -281,7 +281,8 @@
         "under_construction": "İnşa hâlinde",
         "planned": "Planlandı"
       },
-      "antalyaAirportLabel": "Antalya havalimanına uzaklık"
+      "antalyaAirportLabel": "Antalya havalimanına uzaklık",
+      "locationHeading": "Konum"
     },
     "immersion": {
       "title": "Sitede bir gün",
@@ -406,7 +407,7 @@
       "blockNote": "Dairelerin bloklara nasıl dağıldığını hiçbir kaynak belirtmiyor. Buradaki dağılım eşit varsayılmıştır."
     },
     "system": {
-      "title": "Sistem ne yapar",
+      "title": "Tek kayıt, birçok akış",
       "lead": "Sakinler, yönetim ve muhasebe aynı sistemde çalışır. Her rol tam olarak ihtiyacı olanı görür.",
       "demoNote": "Daireler, bloklar ve otel odaları sizin tesisinize aittir. İçindeki işlemler örnek veridir: bildirimler, kayıtlar ve belgeler bu sunum için oluşturuldu ve sistemde örnek veri olarak işaretlidir.",
       "groups": {
@@ -440,6 +441,14 @@
           "body": "Kişi ekleyin, rol değiştirin, erişim kaldırın. Hepsi geliştirici olmadan ve her değişiklik ad ve zamanla kayda geçer.",
           "detail": "Kullanıcılar, roller, ayarlar ve dışa aktarılabilir kayıt izi."
         }
+      },
+      "core": {
+        "eyebrow": "Proje çekirdeği",
+        "title": "Ortak kayıt",
+        "subtitle": "Azura World",
+        "units": "daire",
+        "blocks": "blok",
+        "rooms": "otel odası"
       }
     },
     "mediaKind": {
@@ -447,6 +456,125 @@
       "floorplan": "Kat planı",
       "siteplan": "Vaziyet planı",
       "allRenders": "Bu bölümdeki tüm görseller müteahhit görselleştirmesidir, tamamlanmış tesisin fotoğrafı değildir."
+    },
+    "surface": {
+      "toLight": "Açık temaya geç",
+      "toDark": "Koyu temaya geç"
+    },
+    "flow": {
+      "designation": "İşletme",
+      "title": "Gün boyu yanınızda çalışan bir sistem",
+      "lead": "Envanter, kayıtlar ve belgeler tek modelde. Aşağıdaki sayılar sistemin bugün tuttuğu kapsamdır.",
+      "stats": {
+        "units": "envanterdeki daire",
+        "listings": "izlenen portal ilanı",
+        "sources": "doğrulanmış kaynak",
+        "findings": "belgelenen bulgu",
+        "roles": "kendi erişimi olan rol",
+        "languages": "dil"
+      },
+      "flowTitle": "Bir kayıt nasıl ilerler",
+      "flowLead": "Arızadan faturaya tek bir izde. Her adım kaydedilir ve sonradan da net okunur.",
+      "steps": {
+        "report": {
+          "title": "Bildirim",
+          "body": "Sakin iki adımda bildirir, telefon ve kâğıt olmadan."
+        },
+        "assign": {
+          "title": "Atama",
+          "body": "Teknik ekip atanır, aciliyete göre süre verilir."
+        },
+        "work": {
+          "title": "İşlemde",
+          "body": "Kayıt, bildirene geri dönüş ve foto kanıtla ilerler."
+        },
+        "review": {
+          "title": "Onay",
+          "body": "Çözüldü, kontrol edildi, ad ve zamanla onaylandı."
+        },
+        "settle": {
+          "title": "Mahsuplaşma",
+          "body": "Maliyetler para birimine göre ayrı, onayla deftere işlenir."
+        }
+      },
+      "charts": {
+        "chartsTitle": "Envanter, ölçülmüş",
+        "originTitle": "Kaynağına göre envanter",
+        "originBasis": "Gerçek portal ilanı ile modellenmiş envanter. Kaynak: veri kümesi.",
+        "originReal": "Gerçek ilan",
+        "originModelled": "Modellenmiş",
+        "unitsTotal": "daire",
+        "confidenceTitle": "Güvene göre belgeler",
+        "confidenceBasis": "Veri kümesindeki proje bilgileri belge durumuna göre.",
+        "confConfirmed": "Doğrulandı",
+        "confConflicted": "Çelişkili",
+        "confSingle": "Tek kaynak",
+        "factsTotal": "bilgi",
+        "tableCategory": "Kategori",
+        "tableCount": "Adet",
+        "empty": "Veri yok."
+      }
+    },
+    "gallery": {
+      "render": "Geliştirici görselleştirmesi",
+      "floorplan": "Kat planı",
+      "siteplan": "Vaziyet planı",
+      "credit": "Görsel",
+      "stale": "eski bir ilandan",
+      "close": "Kapat",
+      "prev": "Önceki görsel",
+      "next": "Sonraki görsel",
+      "counter": "{index} / {total}",
+      "open": "{index}. görseli aç",
+      "alt": "Azura World görünümü"
+    },
+    "residences": {
+      "designation": "Konutlar",
+      "title": "Beş plan tipi, 656 daire",
+      "lead": "Kompakt 1+1 planlardan 5+1 rezidansa. Dağılım ve tipik iç alan veri kümesinden.",
+      "unitsLabel": "daire",
+      "areaPrefix": "yaklaşık",
+      "note": "Plan tipine göre tipik iç alan. Dairelerin çoğu modellenmiştir."
+    },
+    "workspace": {
+      "title": "Azura World · Çalışma alanı",
+      "caption": "Her rolün farklı gördüğü tek çalışma alanı. Kayıtlar örnek verilerdir.",
+      "nav": {
+        "overview": "Genel bakış",
+        "units": "Daireler",
+        "tickets": "Bildirimler",
+        "finance": "Finans",
+        "documents": "Belgeler"
+      },
+      "panelTitle": "Açık bildirimler",
+      "cols": {
+        "block": "Blok",
+        "task": "İşlem",
+        "status": "Durum",
+        "due": "Süre"
+      },
+      "rows": [
+        {
+          "task": "Asansör kontrolü",
+          "status": "İşlemde",
+          "due": "bugün"
+        },
+        {
+          "task": "Su hasarı",
+          "status": "Açık",
+          "due": "yarın"
+        },
+        {
+          "task": "Havuz bakımı",
+          "status": "Tamam",
+          "due": "—"
+        },
+        {
+          "task": "Teslim",
+          "status": "Planlı",
+          "due": "Cu"
+        }
+      ]
     }
   },
   "dashboard": {
@@ -490,7 +618,8 @@
       "groupUnits": "Daireler",
       "groupTickets": "Talep kayıtları",
       "groupDocuments": "Belgeler",
-      "groupPeople": "Kişiler"
+      "groupPeople": "Kişiler",
+      "groupSite": "Tesis"
     },
     "evidence": {
       "title": "Kaynaklar ve belgeler",
@@ -624,6 +753,17 @@
         "heading": "Envanterin kaynağı",
         "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir: envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
         "rowNote": "Modellenmiş: gerçek ilan değil"
+      },
+      "matrix": {
+        "legend": "Uygunluk",
+        "notStated": "Belirtilmemiş",
+        "close": "Kapat",
+        "floor": "Kat",
+        "outdoor": "Dış alan",
+        "availableCount": "{available} uygun",
+        "detailLead": "Daire detayı",
+        "blockLabel": "Blok",
+        "hint": "Ayrıntı için bir hücreye tıklayın."
       }
     },
     "listings": {
@@ -849,7 +989,11 @@
         "cameFrom": "{stage} aşamasından",
         "firstStage": "ilk aşama",
         "blocker": "Engel",
-        "missingLead": "Talep bulunamadı"
+        "missingLead": "Talep bulunamadı",
+        "probabilityLabel": "Kapanış şansı",
+        "stageLabel": "Aşama",
+        "previousStage": "Önceki aşama",
+        "detailLead": "Pipeline kaydı"
       },
       "stage": {
         "enquiry": "Talep",
@@ -861,7 +1005,8 @@
         "title_deed": "Tapu",
         "handover": "Teslim",
         "closed": "Kapandı"
-      }
+      },
+      "close": "Kapat"
     },
     "finance": {
       "title": "Finans",
@@ -2032,6 +2177,21 @@
         "open": "Değerlendirmeyi platformda aç",
         "none": "Puanlanmış değerlendirme bulunmuyor."
       }
+    },
+    "charts": {
+      "title": "Bir bakışta",
+      "ticketsTitle": "Duruma göre kayıtlar",
+      "ticketsBasis": "Duruma göre, güncel küme",
+      "qualityTitle": "Kaynağına göre envanter",
+      "qualityBasis": "Gerçek ilan ile modellenmiş karşılaştırması",
+      "empty": "Henüz veri yok.",
+      "tableCategory": "Kategori",
+      "tableCount": "Adet",
+      "qualityReal": "Gerçek ilan",
+      "qualityModelled": "Modellenmiş",
+      "qualityOfficial": "Resmi",
+      "qualityGap": "Kaynak yok",
+      "ticketsTotal": "kayıt"
     }
   },
   "hotel": {
@@ -2280,7 +2440,27 @@
       "sessionExpired": "Oturum sona erdi. Girdileriniz korundu.",
       "submitting": "Giriş yapılıyor …",
       "plateTitle": "Siteniz, tek bir yerde.",
-      "plateLead": "656 daire, 7 blok ve 188 odalı bir otel. Envanter, teknik, muhasebe ve belgeler tek sistemde."
+      "plateLead": "656 daire, 7 blok ve 188 odalı bir otel. Envanter, teknik, muhasebe ve belgeler tek sistemde.",
+      "showPassword": "Şifreyi göster",
+      "hidePassword": "Şifreyi gizle",
+      "methodEmail": "E-posta",
+      "methodPhone": "Telefon",
+      "orContinue": "veya",
+      "google": "Google ile giriş yap",
+      "phoneNumber": "Telefon numarası",
+      "phonePlaceholder": "+90 …",
+      "sendCode": "Kod gönder",
+      "sendingCode": "Kod gönderiliyor …",
+      "code": "Doğrulama kodu",
+      "codePlaceholder": "6 haneli kod",
+      "verifyCode": "Giriş yap",
+      "verifying": "Kontrol ediliyor …",
+      "codeSent": "Size SMS ile bir kod gönderdik.",
+      "changeNumber": "Numarayı değiştir",
+      "googlePending": "Google ile giriş kısa süre içinde etkinleştirilecek. Bu arada lütfen e-posta ile giriş yapın.",
+      "phonePending": "Telefon ile giriş kısa süre içinde etkinleştirilecek. Bu arada lütfen e-posta ile giriş yapın.",
+      "socialFailed": "Giriş yapılamadı. Lütfen tekrar deneyin.",
+      "backToHome": "Ana sayfaya dön"
     },
     "signup": {
       "title": "Erişim talebi",
@@ -2307,7 +2487,8 @@
       "errorTitle": "Gönderilemedi",
       "signIn": "Giriş yap",
       "plateTitle": "Türkler, Alanya.",
-      "plateLead": "76.000 metrekare üzerinde yedi blok, denize 300 metre. Erişimi yönetim verir."
+      "plateLead": "76.000 metrekare üzerinde yedi blok, denize 300 metre. Erişimi yönetim verir.",
+      "backToHome": "Ana sayfaya dön"
     },
     "forbidden": {
       "title": "Erişim yok",
@@ -2389,5 +2570,28 @@
       "unit_handover": "Bir daire teslim edildi"
     },
     "bannerShort": "ÖRNEK"
+  },
+  "dataNote": {
+    "label": "Bu veri hakkında",
+    "originalLabel": "Dahili ifade",
+    "originalHint": "Veri toplamadan gelen özgün not, değiştirilmemiş.",
+    "modelled": "Modellenmiş kayıt, gerçek bir ilan değil. Hiçbir kaynak daire daire liste yayınlamıyor, bu satır doğrulanmış toplamdan türetilmiştir.",
+    "noAvailability": "Bu dairenin müsait olup olmadığını hiçbir kaynak belirtmiyor.",
+    "liveListing": "Daire şu anda ilanda. Satış durumunu hiçbir kaynak belirtmiyor.",
+    "conflicted": "Kaynaklar farklı değerler veriyor. Gösterilen değer en güvenilir kaynaktan; diğerleri yanında duruyor.",
+    "blockSplit": "Dairelerin bloklara nasıl dağıldığını hiçbir kaynak belirtmiyor. Buradaki dağılım eşit varsayılmıştır.",
+    "groupEntryPrice": "Bu daire tipi için giriş fiyatı, bu daireye özel değil.",
+    "cardFromPrice": "Proje özetinden başlangıç fiyatı, tek bir daire için değil.",
+    "portalPriceFrom": "Portal özetinden başlangıç fiyatı. Portal bunu bir plana bağlamıyor.",
+    "asPublished": "Fiyat ve alan, portalın yayınladığı biçimde.",
+    "wrongDistrict": "İlan Türkler dışında bir mahalle belirtiyor. Fark görünür kalsın diye değer değiştirilmedi.",
+    "rentNotSale": "Bu ilan kiralamadır, satış değildir. Tutar satış fiyatlarına dahil edilmez.",
+    "monthlyRent": "Mobilyalı bir daire için aylık kira.",
+    "implausibleArea": "Belirtilen alan bu plan için inandırıcı değil. Kaynakta böyle geçiyor ve düzeltilmedi.",
+    "layoutUnspecific": "Kaynak planı yalnızca belirsiz biçimde veriyor.",
+    "noFloor": "Kaynak kat belirtmiyor.",
+    "villaFloor": "Kat alanında kat değil, yapı tipi yazıyor.",
+    "noChain": "Şu anda bir otel zinciri belirtilmiyor. Tek kaynak 2023 tarihli bir basın haberi.",
+    "noRanking": "Hiçbir kaynak sıralama belirtmiyor."
   }
 }

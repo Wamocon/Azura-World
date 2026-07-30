@@ -36,15 +36,15 @@
 import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
-import { Masterplan } from "@/components/azura/masterplan"
-import type { MasterplanLabels } from "@/components/azura/masterplan"
-import { Container, FactRow, Panel, Section } from "@/components/azura/section"
+import { Container, FactRow, Section } from "@/components/azura/section"
 import { InventoryValue } from "@/components/azura/inventory-value"
 import { ActCredit, mediaKindKey } from "@/components/journey/act-media"
 import { cast } from "@/components/journey/cast"
+import { getGalleryLabels } from "@/components/journey/gallery-labels"
+import { PhotoGallery } from "@/components/journey/photo-gallery"
 import { Plate } from "@/components/journey/plate"
 import type { JourneyImage } from "@/lib/journey-media"
-import { blocks, hotel, project } from "@/components/azura/landing-data"
+import { hotel, project } from "@/components/azura/landing-data"
 
 type SectionProps = { locale: string }
 
@@ -75,7 +75,14 @@ export async function WhySection({ locale }: SectionProps): Promise<ReactNode> {
 
   const value = (
     fact: Parameters<typeof InventoryValue>[0]["fact"],
-    format: "number" | "area" | "text" | "date" | "percent"
+    format:
+      | "number"
+      | "area"
+      | "text"
+      | "date"
+      | "percent"
+      | "metres"
+      | "kilometres"
   ): ReactNode => (
     <InventoryValue
       fact={fact}
@@ -185,125 +192,36 @@ export async function WhySection({ locale }: SectionProps): Promise<ReactNode> {
             </figure>
           ) : null}
         </div>
-      </Container>
-    </Section>
-  )
-}
 
-// ---------------------------------------------------------------------------
-// Search — the site
-// ---------------------------------------------------------------------------
-
-export async function SiteSection({
-  locale,
-  initialBlock,
-}: SectionProps & { initialBlock: string | null }): Promise<ReactNode> {
-  const t = await getTranslations({ locale, namespace: "landing" })
-  const gapLabel = t("provenance.gap")
-
-  const masterplanLabels: MasterplanLabels = {
-    blockLabel: t("masterplan.blockLabel"),
-    unitsLabel: t("masterplan.unitsLabel"),
-    hotelLabel: t("masterplan.hotelLabel"),
-    seaLabel: t("masterplan.seaLabel"),
-    selectedLabel: t("masterplan.selectedLabel"),
-    schematicNote: t("masterplan.schematicNote"),
-  }
-
-  return (
-    <Section
-      id="site"
-      designation={t("designation.search")}
-      title={t("masterplan.title")}
-      lead={t("immersion.lead")}
-    >
-      <Container className="px-0 sm:px-0">
-        <div className="grid min-w-0 items-start gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-12">
-          <Panel className="min-w-0 self-start p-4 sm:p-6" sheen={false}>
-            <Masterplan
-              blocks={blocks}
-              locale={locale}
-              labels={masterplanLabels}
-              initialBlock={initialBlock}
-              hotelRooms={
-                <InventoryValue
-                  fact={hotel.roomCount}
-                  format="number"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
-            />
-          </Panel>
-
-          {/* The distances sit next to the plan because that is where a reader
-              looks for them: how far to the sea, the beach, Alanya, the
-              airport.
-
-              No `Panel` around them. `FactRow` carries its own edge now, and a
-              bordered panel full of bordered tiles is a box in a box — the
-              nesting that makes a dark UI read as cluttered rather than
-              layered. The masterplan keeps its panel because it is one object;
-              these are five. */}
-          <div className="flex flex-col gap-3">
+        {/* Location. These used to be the right column of a separate "site
+            plan" section whose left column was a flat block grid — a second
+            masterplan that duplicated the 3D drawing two sections down. The
+            grid is gone; the location figures belong here with the rest of
+            "what it is", under their own label so distance reads as distance. */}
+        <div className="mt-10 flex flex-col gap-4">
+          <h3 className="azura-label text-primary">
+            {t("why.locationHeading")}
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <FactRow
               label={t("why.seaLabel")}
-              value={
-                <InventoryValue
-                  fact={project.distanceToSeaM}
-                  format="metres"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
+              value={value(project.distanceToSeaM, "metres")}
             />
             <FactRow
               label={t("desire.beachLabel")}
-              value={
-                <InventoryValue
-                  fact={hotel.distanceToBeachM}
-                  format="metres"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
+              value={value(hotel.distanceToBeachM, "metres")}
             />
             <FactRow
               label={t("why.centreLabel")}
-              value={
-                <InventoryValue
-                  fact={project.distanceToAlanyaCentreKm}
-                  format="kilometres"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
+              value={value(project.distanceToAlanyaCentreKm, "kilometres")}
             />
             <FactRow
               label={t("why.airportLabel")}
-              value={
-                <InventoryValue
-                  fact={project.distanceToGazipasaAirportKm}
-                  format="kilometres"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
+              value={value(project.distanceToGazipasaAirportKm, "kilometres")}
             />
-            {/* This row read `Standort · 100 km` — `why.locationLabel` is the
-                word "Standort", and the value under it is the distance to
-                Antalya airport. A label that does not describe its own value is
-                worse than a missing row, so the string is now its own key. */}
             <FactRow
               label={t("why.antalyaAirportLabel")}
-              value={
-                <InventoryValue
-                  fact={project.distanceToAntalyaAirportKm}
-                  format="kilometres"
-                  locale={locale}
-                  gapLabel={gapLabel}
-                />
-              }
+              value={value(project.distanceToAntalyaAirportKm, "kilometres")}
             />
           </div>
         </div>
@@ -343,18 +261,13 @@ export async function AmenitiesSection({
   const grounds = cast.grounds
   if (grounds.length === 0) return null
 
-  const [lead, ...rest] = grounds
+  const galleryLabels = await getGalleryLabels(locale)
 
   /**
    * Every frame here is one of the developer's visualisations, so the label is
-   * said ONCE under the lead instead of as a chip on each of the four.
-   *
-   * The first build put a chip on all four and it was exactly the failure the
-   * chip's own comment warns about: "VISUALISIERUNG DES BAUTRÄGERS" four times
-   * in one viewport is furniture, and furniture stops being read. One sentence
-   * in the reading flow is both quieter and clearer. The moment a photograph
-   * joins this set the group is mixed, this collapses to `false`, and the chips
-   * come back per frame — which is the case they are for.
+   * said ONCE under the lead. The gallery suppresses the per-thumbnail chip when
+   * the whole set is one kind (exactly this case), and restores it in the
+   * lightbox caption where a single frame is in focus.
    */
   const allRenders = grounds.every((image) => image.category === "render")
 
@@ -375,34 +288,7 @@ export async function AmenitiesSection({
       }
     >
       <Container className="px-0 sm:px-0">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          {lead !== undefined ? (
-            <Plate
-              image={lead}
-              alt={t("amenities.imageAlt")}
-              className="min-h-[18rem] lg:min-h-[32rem]"
-              strength={5}
-              kindLabel={allRenders ? null : kindLabel(t, lead)}
-            />
-          ) : null}
-
-          {/* The remainder, stacked. Two at 320px so the column never becomes a
-              single tall strip of thumbnails on a phone. */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
-            {rest.slice(0, 4).map((image, index) => (
-              <Plate
-                key={image.id}
-                image={image}
-                alt={t("amenities.imageAlt")}
-                className="min-h-[8rem] lg:min-h-[9.5rem]"
-                // Alternating strengths so the stack does not move as one
-                // block, which would read as a single image cut into pieces.
-                strength={index % 2 === 0 ? 4 : 7}
-                kindLabel={allRenders ? null : kindLabel(t, image)}
-              />
-            ))}
-          </div>
-        </div>
+        <PhotoGallery images={grounds} labels={galleryLabels} />
 
         <ActCredit
           images={grounds}
@@ -424,11 +310,11 @@ export async function DesireSection({
 }: SectionProps): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
   const gapLabel = t("provenance.gap")
+  const galleryLabels = await getGalleryLabels(locale)
 
-  // The hotel's OWN rooms — its bar, its restaurant, its function room, from
-  // azuraworldhotel.com and ENS Pride. This section used to render
-  // `imagesForAct("room")`, which is six apartment interiors published by the
-  // developer: a residence, not a hotel room, under a heading about the hotel.
+  // The hotel's OWN spaces — bar, restaurant, pool terrace, from
+  // azuraworldhotel.com. Photographs, not renders, so no visualisation chip;
+  // shown as a browsable gallery with the credit on every lightbox frame.
   const interiors = cast.hotel
 
   const value = (
@@ -451,70 +337,59 @@ export async function DesireSection({
       lead={t("desire.lead")}
     >
       <Container className="flex flex-col gap-8 px-0 sm:px-0">
-        <Panel className="p-6 sm:p-9">
-          <div className="grid gap-3 sm:grid-cols-2">
-              <FactRow
-                label={t("desire.starsLabel")}
-                value={value(hotel.stars, "stars")}
-              />
-              <FactRow
-                label={t("desire.roomsLabel")}
-                value={value(hotel.roomCount, "number")}
-              />
-              <FactRow
-                label={t("desire.boardLabel")}
-                value={value(hotel.board, "text")}
-              />
-              <FactRow
-                label={t("desire.aquaparkLabel")}
-                value={value(hotel.aquaparkSlides, "number")}
-              />
-              <FactRow
-                label={t("desire.floorsLabel")}
-                value={value(hotel.floors, "number")}
-              />
-              <FactRow
-                label={t("desire.openedLabel")}
-                value={value(hotel.openedYear, "year")}
-              />
-              <FactRow
-                label={t("desire.formerLabel")}
-                value={value(hotel.formerName, "text")}
-              />
-              {/* `brandAffiliation` is a `gap`: the value is null and it renders
-                  as "Keine Angabe". A 5-star hotel that used to be a Wyndham and
-                  no longer states a chain is exactly the kind of absence this
-                  page shows rather than tidies away. */}
-              <FactRow
-                label={t("desire.brandLabel")}
-                value={value(hotel.brandAffiliation, "text")}
-              />
-          </div>
-        </Panel>
+        {/* A bare tile grid, NOT tiles inside a Panel. `FactRow` already carries
+            its own edge, so wrapping the grid in a filled Panel was the exact
+            box-in-box this file bans elsewhere (and the flat-blue block the
+            light theme exposed). This now matches WhySection's grammar. */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FactRow
+            label={t("desire.starsLabel")}
+            value={value(hotel.stars, "stars")}
+          />
+          <FactRow
+            label={t("desire.roomsLabel")}
+            value={value(hotel.roomCount, "number")}
+          />
+          <FactRow
+            label={t("desire.boardLabel")}
+            value={value(hotel.board, "text")}
+          />
+          <FactRow
+            label={t("desire.aquaparkLabel")}
+            value={value(hotel.aquaparkSlides, "number")}
+          />
+          <FactRow
+            label={t("desire.floorsLabel")}
+            value={value(hotel.floors, "number")}
+          />
+          <FactRow
+            label={t("desire.openedLabel")}
+            value={value(hotel.openedYear, "year")}
+          />
+          <FactRow
+            label={t("desire.formerLabel")}
+            value={value(hotel.formerName, "text")}
+          />
+          {/* `brandAffiliation` is a `gap`: the value is null and it renders
+              as "Keine Angabe". A 5-star hotel that used to be a Wyndham and
+              no longer states a chain is exactly the kind of absence this
+              page shows rather than tidies away. */}
+          <FactRow
+            label={t("desire.brandLabel")}
+            value={value(hotel.brandAffiliation, "text")}
+          />
+        </div>
 
         {interiors.length > 0 ? (
-          <figure className="m-0 flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {interiors.map((image, index) => (
-                <Plate
-                  key={image.id}
-                  image={image}
-                  alt={t("desire.title")}
-                  className="min-h-[11rem] sm:min-h-[15rem]"
-                  strength={index === 1 ? 7 : 4}
-                  kindLabel={kindLabel(t, image)}
-                />
-              ))}
-            </div>
-            <figcaption>
-              <ActCredit
-                images={interiors}
-                label={t("hero.creditLabel")}
-                staleLabel={t("hero.creditStale")}
-                className="text-muted-foreground"
-              />
-            </figcaption>
-          </figure>
+          <div className="flex flex-col gap-3">
+            <PhotoGallery images={interiors} labels={galleryLabels} />
+            <ActCredit
+              images={interiors}
+              label={t("hero.creditLabel")}
+              staleLabel={t("hero.creditStale")}
+              className="text-muted-foreground"
+            />
+          </div>
         ) : null}
       </Container>
     </Section>

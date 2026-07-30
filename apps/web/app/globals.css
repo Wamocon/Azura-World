@@ -99,36 +99,57 @@
     U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 
+/* Unbounded — the display face for headings only (`--font-display`). A wide,
+   geometric variable sans that carries the big titles with more character than
+   Manrope, which stays the text face for everything else. Same subset split as
+   Manrope, so `ru` still pays only for Cyrillic when it needs it, and `tr`'s
+   ı İ ş ğ come from latin-ext. Verified against Google Fonts' own unicode-range. */
 @font-face {
-  font-family: "Playfair Display";
+  font-family: "Unbounded";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 200 900;
   font-display: swap;
-  src: url("/fonts/playfair-var-latin.woff2") format("woff2");
+  src: url("/fonts/unbounded-var-latin.woff2") format("woff2");
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Playfair Display";
+  font-family: "Unbounded";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 200 900;
   font-display: swap;
-  src: url("/fonts/playfair-var-latin-ext.woff2") format("woff2");
+  src: url("/fonts/unbounded-var-latin-ext.woff2") format("woff2");
   unicode-range:
     U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
     U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
     U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Playfair Display";
+  font-family: "Unbounded";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 200 900;
   font-display: swap;
-  src: url("/fonts/playfair-var-cyrillic.woff2") format("woff2");
+  src: url("/fonts/unbounded-var-cyrillic.woff2") format("woff2");
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
+@font-face {
+  font-family: "Unbounded";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("/fonts/unbounded-var-cyrillic-ext.woff2") format("woff2");
+  unicode-range:
+    U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* Playfair Display was removed here. The identity pivoted to Manrope-only
+   (`--font-display` is Manrope, globals.css §identity), so these three
+   @font-face blocks loaded a variable serif that NO token referenced — dead
+   payload on a page where the whole point of self-hosting is that every font
+   byte is deliberate. The `public/fonts/playfair-var-*.woff2` files are deleted
+   with it. No visual change: nothing read the family. */
 
 /* --------------------------------------------------------------------------
    Tailwind token surface. Indirection only — values live in :root / .dark.
@@ -216,12 +237,12 @@
 
 :root {
   --font-sans: "Manrope", "Segoe UI", system-ui, sans-serif;
-  /* One typeface for everything, headings included — the way 1Çatı does it
-     (`--font-heading: var(--font-sans)`). A serif headline reads editorial;
-     a sans headline reads product. This is a management system, so it is the
-     sans. Every `font-display` usage in the tree reads this variable, so the
-     whole site follows from this one line. */
-  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  /* Two faces, one hierarchy. Body, labels and UI stay Manrope — legible, tuned,
+     the text workhorse. The big titles take Unbounded: a wide geometric display
+     that gives the showcase the modern, premium character a management-only sans
+     could not. It falls back to Manrope, so a failed subset never leaves a title
+     unstyled. Every `font-display` consumer reads this one variable. */
+  --font-display: "Unbounded", "Manrope", "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
 
   /* 0.625rem, matching 1Çatı. Tighter corners read as software; the softer
@@ -400,22 +421,41 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Tracking is size-specific. A single letter-spacing value is wrong
-     somewhere: large text reads too loose as it grows and wants negative
-     tracking; small text wants a little positive. */
+  /* Display type: BOLD and TIGHT, which is what reads as premium in 2026.
+     ---------------------------------------------------------------------
+     The reference (1Çatı) sets its headings to a heavy weight with tight
+     tracking — that boldness is most of why its landing feels expensive, more
+     than the typeface itself (it falls back to a system sans). Azura's headings
+     were weight 600, which read soft and dated beside it. Manrope is variable to
+     800, so the big headings now go there.
+
+     Weight is stepped by size, not flat: a hero at 800 is confident, but a card
+     title (h3, ~1rem) at 800 is shouting. So h1/h2 are heavy, h3 is 700.
+     Tracking tightens as size grows (large text reads loose as it scales), which
+     is why h1 pulls to -0.035em. */
   h1,
   h2,
   h3,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  h1,
+  h2 {
+    font-weight: 800;
   }
 
   h1 {
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+
+  h2 {
     letter-spacing: -0.03em;
-    line-height: 1.04;
+    line-height: 1.05;
   }
 
   /* Never remove a focus ring without replacing it. Both themes verified at
@@ -1113,12 +1153,123 @@
   color: var(--foreground);
 }
 
+/* ==========================================================================
+   DAY SURFACE — the landing's premium light theme.        Owner: W-NIGHT
+   ==========================================================================
+
+   The night surface is the default and stays the flagship look. This is the
+   alternative the toggle offers, and it also skins the signed-out pages so the
+   move from a dark landing to the login no longer lands on flat office cream.
+
+   It is NOT a value-flip of the night tokens. A light theme with the night's
+   saturated cyan primary would glow and fail contrast; the primary drops to the
+   gold sampled from the building's own columns (the `:root` identity), the
+   provenance family uses its light-tuned values, and the sea/sand tokens are the
+   daylight versions so the caustics wash reads as Mediterranean noon rather than
+   a dark smear on white.
+
+   CONTRAST — measured against `--background: #f6f3ec`:
+     --foreground        #1a1712   15.8:1
+     --muted-foreground  #6b6152    5.0:1
+     --primary           #7a5a28    5.6:1   (darkened from the :root gold so it
+                                             clears 4.5:1 as link text on light)
+   The tinted gradient wash is pale on purpose so text over it keeps these.
+   ========================================================================== */
+
+[data-surface="day"] {
+  color-scheme: light;
+
+  --background: #f6f3ec;
+  --foreground: #1a1712;
+  --card: #ffffff;
+  --card-foreground: #1a1712;
+  --popover: #ffffff;
+  --popover-foreground: #1a1712;
+
+  /* Gold, darkened from the #907040 :root value so it holds 4.5:1 as link and
+     small text on the light ground. CTAs still read as the one warm note. */
+  --primary: #7a5a28;
+  --primary-foreground: #ffffff;
+  --secondary: #efe9dd;
+  --secondary-foreground: #3a352c;
+  --muted: #efe9dd;
+  --muted-foreground: #6b6152;
+
+  /* The cool accent, kept for links and focus so day and night share one hue
+     family. Darkened for contrast on light. */
+  --accent: #1f6f9e;
+  --accent-foreground: #ffffff;
+
+  --destructive: #b0243a;
+  --destructive-foreground: #ffffff;
+
+  --border: #d8cfbe;
+  --input: #6e6455;
+  --ring: #1f6f9e;
+
+  --chart-1: #7a5a28;
+  --chart-2: #1f6f9e;
+  --chart-3: #4a6b2f;
+  --chart-4: #a7521f;
+  --chart-5: #5a4b7a;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1712;
+  --sidebar-primary: #7a5a28;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #efe9dd;
+  --sidebar-accent-foreground: #3a352c;
+  --sidebar-border: #d8cfbe;
+  --sidebar-ring: #1f6f9e;
+
+  --confidence-confirmed: #2f6b47;
+  --confidence-official: #1f6f9e;
+  --confidence-single: #5a6472;
+  --confidence-conflicted: #8a5200;
+  --confidence-inferred: #5a4b8a;
+  --confidence-gap: #6b6152;
+  --surface-conflict: #fbf1e0;
+  --quality-modelled: #5a4b8a;
+  --quality-stale: #9a3412;
+  --simulation: #8a5200;
+  --surface-simulation: #fbf1e0;
+
+  /* Daylight over water: warm sand near, cool shallows far. Used by the
+     caustics/aurora washes, which on light read as a faint tint rather than a
+     glow. */
+  --sea-deep: #1f6f9e;
+  --sea-mid: #4a9ac4;
+  --sea-shallow: #a9d4e6;
+  --sea-foam: #d8ecf4;
+  --sand: #e2d2b2;
+
+  background-color: var(--background);
+  color: var(--foreground);
+  /* The premium tint: a warm top-left and a cool top-right wash over the ground,
+     pale enough that every foreground pair above stays measured. */
+  background-image:
+    radial-gradient(
+      60% 45% at 12% 0%,
+      color-mix(in srgb, var(--sand) 40%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      55% 40% at 92% 4%,
+      color-mix(in srgb, var(--sea-shallow) 45%, transparent),
+      transparent 66%
+    );
+  background-attachment: fixed;
+}
+
 /* The page behind the wrapper. Overscroll at either end of a 1.400px-tall
    cinematic surface would otherwise flash the cream body through, which reads
    as a rendering fault rather than as a design. `:has()` keeps this to CSS: no
    route-aware body class, no hydration flash. */
 body:has([data-surface="night"]) {
   background-color: #050d13;
+}
+body:has([data-surface="day"]) {
+  background-color: #f6f3ec;
 }
 
 @media (forced-colors: active) {
@@ -1258,16 +1409,31 @@ body:has([data-surface="night"]) {
     position: relative;
     border-radius: var(--radius-xl);
     border: 1px solid color-mix(in srgb, var(--foreground) 9%, transparent);
+    /* THE BASE FILL IS `--card`, NOT `--sea-deep`.
+       ---------------------------------------------------------------------
+       It used to be `color-mix(--sea-deep 55%, transparent)`. On the night
+       surface `--sea-deep` is near-black (#02121c), so that read as a subtle
+       raised dark panel. On the DAY surface `--sea-deep` is a saturated blue
+       (#1f6f9e), so the same rule painted every panel as a solid steel-blue
+       block — the hotel facts and the system cards became flat blue rectangles.
+       Screenshotted.
+
+       `--card` is dark on night and white on day, so a card fill plus a faint
+       foreground tint on top gives a correctly raised surface in BOTH themes:
+       a touch lighter than a dark ground, a touch off-white on a light one. */
     background:
       linear-gradient(
         180deg,
-        color-mix(in srgb, var(--foreground) 5%, transparent),
-        color-mix(in srgb, var(--foreground) 2%, transparent)
+        color-mix(in srgb, var(--foreground) 4%, transparent),
+        transparent
       ),
-      color-mix(in srgb, var(--sea-deep) 55%, transparent);
+      var(--card);
+    /* The drop shadow was pure black at 0.8 — right on near-black, far too heavy
+       on a light ground. Tinting it with the deep-water token keeps it soft and
+       theme-appropriate in both. */
     box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--foreground) 8%, transparent),
-      0 24px 60px -30px rgb(0 0 0 / 0.8);
+      inset 0 1px 0 color-mix(in srgb, var(--foreground) 7%, transparent),
+      0 20px 50px -34px color-mix(in srgb, var(--sea-deep) 55%, transparent);
   }
 
   /* Pointer-tracked sheen. `--mx`/`--my` are written by the choreography island
@@ -1344,11 +1510,53 @@ body:has([data-surface="night"]) {
     margin-bottom: -0.12em;
   }
 
+  /* Gradient display heading — the premium sheen, kept honest.
+     ---------------------------------------------------------------------
+     A cool foam-to-primary wash across a heading. On the night surface BOTH
+     stops are light on a near-black ground (--foreground #eaf2f6 is 17:1,
+     --primary #5cc8e8 is 10:1), so the gradient never drops a glyph below the
+     large-text floor — the contrast survives because the range is chosen to,
+     not by luck.
+
+     `color: transparent` defeats an automated contrast checker and disappears
+     entirely under forced-colors, so BOTH are handled: the checker reads the
+     real `color` set first (the fallback), and `forced-colors` restores it.
+     Only the painted pixels use the clip, and only where the range is safe. */
+  .azura-heading-gradient {
+    color: var(--foreground);
+    background-image: linear-gradient(
+      104deg,
+      var(--foreground) 0%,
+      var(--foreground) 42%,
+      color-mix(in srgb, var(--primary) 78%, var(--foreground)) 78%,
+      var(--primary) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  @supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+    /* No clip support: keep the solid, fully-readable colour. */
+    .azura-heading-gradient {
+      -webkit-text-fill-color: currentcolor;
+    }
+  }
+  @media (forced-colors: active) {
+    .azura-heading-gradient {
+      background-image: none;
+      -webkit-text-fill-color: CanvasText;
+      color: CanvasText;
+    }
+  }
+
   /* Tabular, tracked, small. The page's connective tissue: designations, act
      numbers, credits, units. */
   .azura-label {
     font-size: 0.6875rem;
-    font-weight: 600;
+    /* 700, not 600: the headings are 800 and the eyebrow at 600 read soft
+       beside them. 1Çatı sets every eyebrow heavy; this matches at the one
+       place that styles every designation, act number, credit and unit label. */
+    font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1.4;
@@ -1388,6 +1596,18 @@ body:has([data-surface="night"]) {
   100% {
     transform: translateY(140%);
     opacity: 0;
+  }
+}
+
+/* The lightbox backdrop fade. Under 200ms per the motion budget; gated behind
+   motion-safe at the call site, so a reduced-motion viewer gets the dialog with
+   no transition rather than a slower one. */
+@keyframes azura-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
 import { Building2, Home, KeyRound, ShieldCheck, type LucideIcon } from "lucide-react"
-import { ActMedia } from "@/components/journey/act-media"
+import { ActMedia, MediaKind, mediaKindKey } from "@/components/journey/act-media"
 import { imagesForAct, type JourneyAct, type JourneyImage } from "@/lib/journey-media"
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
@@ -36,6 +36,15 @@ type Copy = {
   intro: string
   plate: string
   unitRecord: string
+  /**
+   * "This frame is a visualisation, not a photograph."
+   *
+   * This is a `"use client"` component with its own hardcoded `COPY` table
+   * rather than `messages/*`, so the string has to live here to stay beside the
+   * three it is used with. Filed as a request in the handoff: the whole table
+   * belongs in `messages/*` like every other user-visible string on the route.
+   */
+  renderKind: string
   steps: ReadonlyArray<{ label: string; title: string; text: string; statLabel: string }>
   chips: readonly string[]
 }
@@ -48,6 +57,7 @@ const COPY: Record<Locale, Copy> = {
       "Anlage, Block, Wohnung und Verwaltung liegen in einem Modell. Jeder Punkt steht für einen echten Vorgang: eine Meldung, eine Buchung, ein Dokument, eine Freigabe.",
     plate: "Anlage Türkler",
     unitRecord: "Wohnungsakte",
+    renderKind: "Visualisierung des Bauträgers",
     steps: [
       {
         label: "Gelände",
@@ -83,6 +93,7 @@ const COPY: Record<Locale, Copy> = {
       "The complex, the block, the apartment and the back office share one model. Every point is a real piece of work: a report, a posting, a document, an approval.",
     plate: "Türkler site",
     unitRecord: "unit record",
+    renderKind: "Developer visualisation",
     steps: [
       {
         label: "The site",
@@ -118,6 +129,7 @@ const COPY: Record<Locale, Copy> = {
       "Site, blok, daire ve yönetim tek modelde birleşir. Her nokta gerçek bir işi temsil eder: bir bildirim, bir kayıt, bir belge, bir onay.",
     plate: "Türkler sitesi",
     unitRecord: "daire kaydı",
+    renderKind: "Müteahhit görselleştirmesi",
     steps: [
       {
         label: "Arazi",
@@ -153,6 +165,7 @@ const COPY: Record<Locale, Copy> = {
       "Комплекс, блок, квартира и управление находятся в одной модели. Каждая точка — это реальная работа: заявка, проводка, документ, согласование.",
     plate: "Участок Тюрклер",
     unitRecord: "карточка квартиры",
+    renderKind: "Визуализация застройщика",
     steps: [
       {
         label: "Участок",
@@ -363,7 +376,17 @@ export function OperatingMap({ locale }: { locale: string }) {
                       image={image}
                       alt={copy.steps[index]?.title ?? copy.title}
                       layout="tile"
-                      priority={index === 0}
+                    />
+                    {/* Half of these four frames are the developer's
+                        visualisations and they were rendering unlabelled, in
+                        the one section of the page that is about what the
+                        SYSTEM holds. */}
+                    <MediaKind
+                      image={image}
+                      label={
+                        mediaKindKey(image) === null ? null : copy.renderKind
+                      }
+                      className="absolute top-3 left-3"
                     />
                   </div>
                 ),

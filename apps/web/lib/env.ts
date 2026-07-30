@@ -174,6 +174,24 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z
     .url("must be an absolute URL, e.g. http://127.0.0.1:3200")
     .default("http://127.0.0.1:3200"),
+  /**
+   * Whether Google / phone sign-in are actually enabled in the Supabase project.
+   *
+   * These are NOT cosmetic. supabase-js `signInWithOAuth` redirects the browser
+   * to `/auth/v1/authorize` BEFORE it can tell you the provider is off, so a
+   * user clicking a Google button on a project where Google is disabled lands
+   * on a raw `400 provider is not enabled` JSON page. The login form uses these
+   * flags to refuse to start that navigation and show an honest "wird
+   * aktiviert" notice instead. Set to "1" ONLY once the provider is enabled in
+   * the Supabase dashboard (Google also needs a Google Cloud OAuth client;
+   * phone needs an SMS provider). Default off, which is the current reality.
+   */
+  NEXT_PUBLIC_AUTH_GOOGLE: z
+    .enum(["0", "1"])
+    .default("0"),
+  NEXT_PUBLIC_AUTH_PHONE: z
+    .enum(["0", "1"])
+    .default("0"),
 })
 
 /**
@@ -195,6 +213,10 @@ const rawPublicEnv = {
     process.env.NEXT_PUBLIC_FX_RATE_DATE
   ),
   NEXT_PUBLIC_APP_URL: blankToUndefined(process.env.NEXT_PUBLIC_APP_URL),
+  NEXT_PUBLIC_AUTH_GOOGLE: blankToUndefined(
+    process.env.NEXT_PUBLIC_AUTH_GOOGLE
+  ),
+  NEXT_PUBLIC_AUTH_PHONE: blankToUndefined(process.env.NEXT_PUBLIC_AUTH_PHONE),
 }
 
 // ---------------------------------------------------------------------------

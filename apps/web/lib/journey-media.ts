@@ -15,9 +15,30 @@
 
 export type JourneyAct = "approach" | "complex" | "grounds" | "cut" | "room"
 
+/**
+ * What the asset actually IS, straight from the manifest.
+ *
+ * The landing page labels anything that is not a `photo`. Six of the
+ * published assets are developer marketing renders and three are floor plans;
+ * showing a render of a completed building without saying so is a claim about
+ * the building, not a design choice. `logo` and `document` never reach this
+ * projection - `admissible()` rejects them upstream - but the union is the
+ * manifest's, not a subset, so a future category cannot arrive here unlabelled.
+ */
+export type JourneyCategory =
+  | "render"
+  | "photo"
+  | "floorplan"
+  | "siteplan"
+  | "logo"
+  | "video"
+  | "document"
+
 export interface JourneyImage {
   id: string
   act: JourneyAct
+  /** Labelled in the UI whenever it is not `"photo"`. */
+  category: JourneyCategory
   width: number
   height: number
   aspectRatio: number
@@ -45,6 +66,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-azuraworldhotel-com-69be5fa4ca5b",
     "act": "approach",
+    "category": "photo",
     "width": 1920,
     "height": 1278,
     "aspectRatio": 1.5023,
@@ -56,6 +78,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-hasporealty-com-7c4bb03ab1c2",
     "act": "approach",
+    "category": "photo",
     "width": 2048,
     "height": 1152,
     "aspectRatio": 1.7778,
@@ -67,6 +90,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-housearch-com-989bab955ff8",
     "act": "approach",
+    "category": "render",
     "width": 2400,
     "height": 1350,
     "aspectRatio": 1.7778,
@@ -78,6 +102,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-housearch-com-a5d50353394d",
     "act": "complex",
+    "category": "render",
     "width": 2400,
     "height": 1350,
     "aspectRatio": 1.7778,
@@ -89,6 +114,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-housearch-com-87a086f5e3b1",
     "act": "complex",
+    "category": "render",
     "width": 2400,
     "height": 1350,
     "aspectRatio": 1.7778,
@@ -98,19 +124,9 @@ export const journeyImages: JourneyImage[] = [
     "fromStaleListing": false
   },
   {
-    "id": "azw-hasporealty-com-0ac45f9403ae",
-    "act": "complex",
-    "width": 2048,
-    "height": 1152,
-    "aspectRatio": 1.7778,
-    "lqip": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAwCdASoUAAsAPxF0tFEsJqUisAgBgCIJZACdAB6qEFzEKU/BYQAA/d2wrmK+RB18VgYWKu4kNc9UtC5UzWSTgKNdjXro4dFo5XQA",
-    "publisher": "Haspo Realty",
-    "sourceUrl": "https://hasporealty.com/de/complex/azura-world/",
-    "fromStaleListing": true
-  },
-  {
     "id": "azw-housearch-com-f2903b62f3aa",
     "act": "complex",
+    "category": "render",
     "width": 2400,
     "height": 1350,
     "aspectRatio": 1.7778,
@@ -122,6 +138,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-azuraworldhotel-com-19d34904ddb7",
     "act": "grounds",
+    "category": "photo",
     "width": 2400,
     "height": 1969,
     "aspectRatio": 1.2189,
@@ -133,6 +150,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-azuraworldhotel-com-4d29956b9d38",
     "act": "grounds",
+    "category": "photo",
     "width": 2400,
     "height": 1602,
     "aspectRatio": 1.4981,
@@ -144,6 +162,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-azuraworldhotel-com-507b55eb1bc5",
     "act": "grounds",
+    "category": "photo",
     "width": 2400,
     "height": 1602,
     "aspectRatio": 1.4981,
@@ -155,6 +174,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-azuraworldhotel-com-fce38d965709",
     "act": "grounds",
+    "category": "photo",
     "width": 2400,
     "height": 1602,
     "aspectRatio": 1.4981,
@@ -166,6 +186,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-enspride-com-f5e0ff7153a0",
     "act": "grounds",
+    "category": "render",
     "width": 1755,
     "height": 972,
     "aspectRatio": 1.8056,
@@ -177,6 +198,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-housearch-com-9c459f37049c",
     "act": "grounds",
+    "category": "render",
     "width": 2400,
     "height": 1350,
     "aspectRatio": 1.7778,
@@ -188,6 +210,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-terrarealestate-com-9fb4b52d19e4",
     "act": "cut",
+    "category": "floorplan",
     "width": 1600,
     "height": 900,
     "aspectRatio": 1.7778,
@@ -199,6 +222,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-terrarealestate-com-29ef854ddb91",
     "act": "cut",
+    "category": "floorplan",
     "width": 1600,
     "height": 900,
     "aspectRatio": 1.7778,
@@ -210,6 +234,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-terrarealestate-com-817f7411bbb2",
     "act": "cut",
+    "category": "floorplan",
     "width": 1600,
     "height": 900,
     "aspectRatio": 1.7778,
@@ -221,6 +246,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-9ee92ba4404e",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1153,
     "aspectRatio": 1.7762,
@@ -232,6 +258,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-8cb59c7f90fa",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1152,
     "aspectRatio": 1.7778,
@@ -243,6 +270,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-f8f351f7f676",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1153,
     "aspectRatio": 1.7762,
@@ -254,6 +282,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-38f672f2d306",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1153,
     "aspectRatio": 1.7762,
@@ -265,6 +294,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-8bd9150c82bb",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1153,
     "aspectRatio": 1.7762,
@@ -276,6 +306,7 @@ export const journeyImages: JourneyImage[] = [
   {
     "id": "azw-cebecigroup-com-1d8d94bffade",
     "act": "room",
+    "category": "photo",
     "width": 2048,
     "height": 1153,
     "aspectRatio": 1.7762,

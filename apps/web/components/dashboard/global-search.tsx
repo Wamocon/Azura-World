@@ -32,20 +32,111 @@ import { Skeleton } from "@/components/ui/skeleton"
  * an empty result would read as "no such unit exists".
  */
 
-/** One hit. Mirrors W2-A's `SearchHit`, which the endpoint will return. */
+/** The group a hit is shown under. */
+export type HitEntity = "units" | "tickets" | "documents" | "people" | "site"
+
+/** One hit, in the shape THIS component renders. */
 export interface GlobalSearchHit {
   id: string
-  /** Group heading. `units` · `tickets` · `documents` · `people`. */
-  entity: "units" | "tickets" | "documents" | "people"
+  entity: HitEntity
   title: string
   subtitle?: string
   /** Locale-less path. The locale prefix is added by `Link`. */
   href: string
 }
 
+/**
+ * One hit as the ENDPOINT actually returns it.
+ *
+ * This is the field-name contract that the component was silently getting wrong.
+ * The header comment said it "mirrors W2-A's SearchHit, which the endpoint will
+ * return" — but `search_operational_records()` returns `entity_table`,
+ * `entity_id`, `summary` and `metadata`, and NO `href` at all, and the API maps
+ * them to camelCase as `entityTable`/`entityId`/`summary`/`metadata`. The old
+ * code read `hit.entity` (always undefined) and grouped by it, so every real
+ * match was filtered out and the palette showed "no results" for every query
+ * even though the API returned 200 with hits. Confirmed live before fixing.
+ */
+interface RawSearchHit {
+  entityTable: string
+  entityId: string
+  title: string
+  summary?: string
+  metadata?: Record<string, unknown> | null
+}
+
 interface SearchResponse {
   ok: boolean
-  data?: { hits?: GlobalSearchHit[] }
+  data?: { hits?: RawSearchHit[] }
+}
+
+/**
+ * Map the source table to a display group, or `null` to drop a hit whose table
+ * has no sensible destination. Only `units` and `sites` are indexed today; the
+ * operational tables (tickets, documents, leads, residents) are listed so that
+ * indexing them later needs no change here.
+ */
+function entityOf(table: string): HitEntity | null {
+  switch (table) {
+    case "units":
+      return "units"
+    case "service_tickets":
+    case "tickets":
+      return "tickets"
+    case "documents":
+      return "documents"
+    case "leads":
+    case "residents":
+    case "profiles":
+      return "people"
+    case "sites":
+      return "site"
+    default:
+      return null
+  }
+}
+
+/**
+ * The deep link for a hit.
+ *
+ * Units have no per-record detail route, so a unit hit lands on the inventory
+ * where units live rather than a 404 — an honest destination, not a fake anchor.
+ * Tickets do have a detail route and link straight to it.
+ */
+function hrefOf(table: string, id: string): string {
+  switch (table) {
+    case "service_tickets":
+    case "tickets":
+      return `/dashboard/tickets/${id}`
+    case "documents":
+      return "/dashboard/documents"
+    case "leads":
+      return "/dashboard/leads"
+    case "residents":
+    case "profiles":
+      return "/dashboard/users"
+    case "sites":
+      return "/dashboard"
+    case "units":
+    default:
+      return "/dashboard/units"
+  }
+}
+
+/** Raw endpoint hit to the render shape, or `null` for an unmappable table. */
+function toClientHit(raw: RawSearchHit): GlobalSearchHit | null {
+  const entity = entityOf(raw.entityTable)
+  if (entity === null) return null
+  return {
+    // Prefixed with the table so ids stay unique across entity types.
+    id: `${raw.entityTable}-${raw.entityId}`,
+    entity,
+    title: raw.title,
+    ...(raw.summary !== undefined && raw.summary.length > 0
+      ? { subtitle: raw.summary }
+      : {}),
+    href: hrefOf(raw.entityTable, raw.entityId),
+  }
 }
 
 const DEBOUNCE_MS = 200
@@ -143,7 +234,13 @@ export function GlobalSearch({
             return
           }
           const payload = (await response.json()) as SearchResponse
-          setHits(payload.data?.hits ?? [])
+          // Map the endpoint's shape to the render shape and drop unmappable
+          // tables. This is the line whose absence made search look broken.
+          setHits(
+            (payload.data?.hits ?? [])
+              .map(toClientHit)
+              .filter((hit): hit is GlobalSearchHit => hit !== null)
+          )
           setActiveIndex(0)
           setState("ready")
         } catch (error) {
@@ -216,6 +313,8 @@ export function GlobalSearch({
         return t("groupDocuments")
       case "people":
         return t("groupPeople")
+      case "site":
+        return t("groupSite")
     }
   }
 
@@ -347,6 +446,7 @@ const ENTITY_ORDER: ReadonlyArray<GlobalSearchHit["entity"]> = [
   "tickets",
   "documents",
   "people",
+  "site",
 ]
 
 function groupHits(hits: readonly GlobalSearchHit[]): ReadonlyArray<{

@@ -74,8 +74,13 @@ export function Section({
 
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
             <div className="min-w-0 flex-1">
+              {/* The gradient is applied ONLY to these large landing headings,
+                  never to metrics or KPI numbers — a gradient on every figure is
+                  the AI-slop tell. On the night surface both gradient stops
+                  clear the large-text contrast floor (see .azura-heading-gradient
+                  in globals.css). Requested explicitly. */}
               <h2 className="azura-mask font-display text-[clamp(1.9rem,4.6vw,3.25rem)] leading-[1.06] tracking-[-0.03em] text-balance">
-                <span data-rise className="block">
+                <span data-rise className="azura-heading-gradient block">
                   {title}
                 </span>
               </h2>

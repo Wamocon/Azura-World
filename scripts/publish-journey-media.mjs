@@ -200,14 +200,30 @@ function pick(n, predicate) {
  * run: an id here that fails `admissible()` is dropped and reported, never
  * force-included.
  *
- * Two ids are deliberately excluded and named, because "not selected" and
- * "rejected" are different facts:
+ * Ids deliberately excluded and named, because "not selected" and "rejected"
+ * are different facts:
  *
  *   azw-housearch-com-57d8327fd415  the kids' area, and the DC/Marvel character
  *   azw-housearch-com-2ac9840be073  statues in it are third-party IP. The same
  *                                   statues are why three of the four Azura
  *                                   videos are rejected (MEDIA-LICENSE.md).
  *   azw-housearch-com-403c29fe1269  a path with two figures; no subject.
+ *
+ *   azw-hasporealty-com-0ac45f9403ae
+ *                                   THE SAME STATUES, and it shipped. It was
+ *                                   cast into ACT II as "aerial over the whole
+ *                                   site" and published, because at contact-
+ *                                   sheet size the kids' area is forty pixels
+ *                                   wide and the figures in it are four. At
+ *                                   full width Batman, Captain America, Spider-
+ *                                   Man and Iron Man are all unmistakable.
+ *
+ *                                   Two lessons, both worth keeping: a review
+ *                                   pass at thumbnail size cannot clear an
+ *                                   asset for third-party IP, and this one is
+ *                                   also recorded `category: "photo"` in the
+ *                                   manifest while being plainly a render — so
+ *                                   the category field is evidence, not proof.
  */
 const CAST = {
   // ACT I — the approach. There is no aerial photography of the coast in this
@@ -223,7 +239,6 @@ const CAST = {
   complex: [
     "azw-housearch-com-a5d50353394d", // pool, beach, building
     "azw-housearch-com-87a086f5e3b1", // the water axis to the sea
-    "azw-hasporealty-com-0ac45f9403ae", // aerial over the whole site
     "azw-housearch-com-f2903b62f3aa", // facade, corner
   ],
   // ACT III — the grounds. The best material in the harvest, and the only act
@@ -429,6 +444,13 @@ console.log(`promoted ${promoted} manifest entries to attributed_display / publi
 const entry = (a) => ({
   id: a.id,
   act: a.act,
+  // The manifest has always carried this and the projection has always dropped
+  // it, which meant the landing page rendered six developer RENDERS and three
+  // FLOOR PLANS with exactly the same treatment as the eleven photographs. A
+  // computer render of a finished building presented as a photograph of that
+  // building is the same class of claim as a modelled unit presented as a real
+  // listing, and this product's whole argument is that it does not do that.
+  category: a.category,
   width: a.width,
   height: a.height,
   aspectRatio: a.aspectRatio,
@@ -455,9 +477,30 @@ const emitted = `/**
 
 export type JourneyAct = "approach" | "complex" | "grounds" | "cut" | "room"
 
+/**
+ * What the asset actually IS, straight from the manifest.
+ *
+ * The landing page labels anything that is not a \`photo\`. Six of the
+ * published assets are developer marketing renders and three are floor plans;
+ * showing a render of a completed building without saying so is a claim about
+ * the building, not a design choice. \`logo\` and \`document\` never reach this
+ * projection - \`admissible()\` rejects them upstream - but the union is the
+ * manifest's, not a subset, so a future category cannot arrive here unlabelled.
+ */
+export type JourneyCategory =
+  | "render"
+  | "photo"
+  | "floorplan"
+  | "siteplan"
+  | "logo"
+  | "video"
+  | "document"
+
 export interface JourneyImage {
   id: string
   act: JourneyAct
+  /** Labelled in the UI whenever it is not \`"photo"\`. */
+  category: JourneyCategory
   width: number
   height: number
   aspectRatio: number

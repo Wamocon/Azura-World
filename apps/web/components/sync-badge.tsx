@@ -19,7 +19,7 @@
  */
 
 import { Circle, CloudOff, Database, RefreshCw } from "lucide-react"
-import { relativeAge, type LiveMode } from "@/lib/realtime"
+import type { LiveMode } from "@/lib/realtime"
 import type { Locale } from "@/lib/contracts"
 
 export interface SyncBadgeProps {
@@ -49,25 +49,6 @@ const LABEL: Record<LiveMode, Phrase> = {
   offline: { de: "Offline", en: "Offline", tr: "Çevrimdışı", ru: "Не в сети" },
 }
 
-const AGO: Phrase = { de: "vor", en: "", tr: "önce", ru: "" }
-
-function ago(locale: Locale, age: string): string {
-  // German and Turkish put the marker on opposite sides of the value; English
-  // and Russian use a trailing word. Four short branches beat a message
-  // catalogue this component would otherwise have to depend on (W1-C owns those,
-  // and this must render before they exist).
-  switch (locale) {
-    case "de":
-      return `${AGO.de} ${age}`
-    case "tr":
-      return `${age} ${AGO.tr}`
-    case "ru":
-      return `${age} назад`
-    default:
-      return `${age} ago`
-  }
-}
-
 /**
  * Tailwind classes rather than design tokens, so this renders identically
  * whether or not W1-D's `globals.css` is loaded.
@@ -78,32 +59,34 @@ const TONE: Record<LiveMode, string> = {
   polling: "border-sky-600/30 bg-sky-500/10 text-sky-800 dark:text-sky-300",
   static:
     "border-amber-600/60 bg-amber-500/20 font-semibold text-amber-900 dark:text-amber-200",
-  offline: "border-zinc-600/30 bg-zinc-500/10 text-zinc-700 dark:text-zinc-300",
+  offline: "border-zinc-600/30 bg-zinc-500/10 text-zinc-800 dark:text-zinc-200",
 }
 
 export function SyncBadge({
   mode,
-  lastUpdated,
   locale = "de",
   pollIntervalMs = 30_000,
   className = "",
 }: SyncBadgeProps) {
-  const age = relativeAge(lastUpdated)
   const seconds = Math.round(pollIntervalMs / 1000)
 
+  // No "· 1 s ago" age counter: a precise last-updated stamp reads as debug
+  // output to the property manager this is for. The mode word is the honest
+  // signal (live / auto-updating / demo / offline); the Refresh control beside
+  // it is how someone forces a fresh read.
   let text: string
   switch (mode) {
     case "realtime":
       text = LABEL.realtime[locale]
       break
     case "polling":
-      text = `${LABEL.polling[locale]} ${seconds} s${age === null ? "" : ` · ${ago(locale, age)}`}`
+      text = `${LABEL.polling[locale]} ${seconds} s`
       break
     case "static":
       text = LABEL.static[locale]
       break
     case "offline":
-      text = `${LABEL.offline[locale]}${age === null ? "" : ` · ${ago(locale, age)}`}`
+      text = LABEL.offline[locale]
       break
   }
 

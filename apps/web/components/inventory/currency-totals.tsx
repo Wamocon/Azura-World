@@ -93,6 +93,25 @@ export function CurrencyTotals({
       )}
       {missing > 0 ? (
         <span className="text-xs text-muted-foreground tabular-nums">
+          {/* Accepts EITHER an already-formatted string or a raw ICU template.
+           *
+           * The original contract was template-only, and it made three pages
+           * throw `FORMATTING_ERROR: The intl string context variable "count"
+           * was not provided` on every render — because a caller reaching for
+           * the template has to write `t("summary.withoutBudget")`, and
+           * next-intl refuses to return a message with an uninterpolated
+           * variable in it.
+           *
+           * Both forms are needed. The page summaries know their count and can
+           * format properly through next-intl, which is what handles Russian's
+           * three plural forms. The per-stage board cannot: it receives one
+           * `labels` object shared across every stage while the count differs
+           * per stage, and a formatter function cannot cross the server/client
+           * boundary. So that one caller passes the template and this
+           * `replace` fills it.
+           *
+           * When there is no placeholder left, the replace is a no-op, which is
+           * exactly what the formatted case wants. */}
           {missingLabel.replace("{count}", String(missing))}
         </span>
       ) : null}

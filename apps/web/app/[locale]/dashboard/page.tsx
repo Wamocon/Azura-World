@@ -9,6 +9,7 @@ import type { DashboardSnapshot } from "@/lib/dashboard-data"
 import { fill, shellCopy } from "@/lib/dashboard-home-copy"
 import { navGroupsForRole } from "@/lib/dashboard-routing"
 
+import { DashboardCharts } from "@/components/dashboard/dashboard-charts"
 import { DashboardHomeLive } from "@/components/dashboard/home-live"
 import {
   KpiCard,
@@ -182,6 +183,32 @@ export default async function DashboardHomePage({
               ))}
             </DashboardKpiGrid>
           </DashboardSection>
+
+          {/* Charts from the SAME snapshot the KPIs read. Each renders only when
+              the role may see its panel (the snapshot nulls the rest), so a
+              tenant never sees the tickets chart. First real consumer of the
+              chart library. */}
+          <DashboardCharts
+            snapshot={snapshot}
+            locale={locale as Locale}
+            labels={{
+              title: t("charts.title"),
+              ticketsTitle: t("charts.ticketsTitle"),
+              ticketsBasis: t("charts.ticketsBasis"),
+              ticketsTotal: t("charts.ticketsTotal"),
+              qualityTitle: t("charts.qualityTitle"),
+              qualityBasis: t("charts.qualityBasis"),
+              empty: t("charts.empty"),
+              tableCategory: t("charts.tableCategory"),
+              tableCount: t("charts.tableCount"),
+              qualityReal: t("charts.qualityReal"),
+              qualityModelled: t("charts.qualityModelled"),
+              qualityOfficial: t("charts.qualityOfficial"),
+              qualityGap: t("charts.qualityGap"),
+              statusLabel: (status: string) =>
+                t(`tickets.status.${status}`),
+            }}
+          />
         </div>
       )}
     </>

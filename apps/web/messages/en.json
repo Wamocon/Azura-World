@@ -281,7 +281,8 @@
         "under_construction": "Under construction",
         "planned": "Planned"
       },
-      "antalyaAirportLabel": "Distance to Antalya airport"
+      "antalyaAirportLabel": "Distance to Antalya airport",
+      "locationHeading": "Location"
     },
     "immersion": {
       "title": "A day on site",
@@ -406,7 +407,7 @@
       "blockNote": "No source states how the apartments are split across the blocks. The split shown here is assumed to be even."
     },
     "system": {
-      "title": "What the system does",
+      "title": "One record, many workflows",
       "lead": "Residents, management and accounting work in one system. Each role sees exactly what it needs.",
       "demoNote": "The units, blocks and hotel rooms are your own. The activity inside them is sample data: reports, entries and documents were created for this demonstration and are marked as sample data throughout the system.",
       "groups": {
@@ -440,6 +441,14 @@
           "body": "Add people, change roles, withdraw access. All of it without a developer, and every change is recorded with a name and a time.",
           "detail": "Users, roles, settings and an audit trail you can export."
         }
+      },
+      "core": {
+        "eyebrow": "Project core",
+        "title": "Shared record",
+        "subtitle": "Azura World",
+        "units": "units",
+        "blocks": "blocks",
+        "rooms": "hotel rooms"
       }
     },
     "mediaKind": {
@@ -447,6 +456,125 @@
       "floorplan": "Floor plan",
       "siteplan": "Site plan",
       "allRenders": "Every frame in this section is a developer visualisation, not a photograph of the finished site."
+    },
+    "surface": {
+      "toLight": "Switch to light theme",
+      "toDark": "Switch to dark theme"
+    },
+    "flow": {
+      "designation": "Operations",
+      "title": "A system that runs alongside the whole day",
+      "lead": "Inventory, cases and records in one model. The numbers below are the scope the system holds today.",
+      "stats": {
+        "units": "apartments in the inventory",
+        "listings": "portal listings watched",
+        "sources": "sources verified",
+        "findings": "findings documented",
+        "roles": "roles with their own access",
+        "languages": "languages"
+      },
+      "flowTitle": "How a case flows",
+      "flowLead": "From the fault to the invoice in one track. Every step is logged and still reads clearly later.",
+      "steps": {
+        "report": {
+          "title": "Report",
+          "body": "A resident reports in two steps, with no phone call and no paper."
+        },
+        "assign": {
+          "title": "Assignment",
+          "body": "The technical team is assigned, with a deadline set by urgency."
+        },
+        "work": {
+          "title": "In progress",
+          "body": "The case runs with a reply to the reporter and photo evidence."
+        },
+        "review": {
+          "title": "Sign-off",
+          "body": "Resolved, checked and signed off with a name and a time."
+        },
+        "settle": {
+          "title": "Settlement",
+          "body": "Costs land in the ledger, separated by currency, with approval."
+        }
+      },
+      "charts": {
+        "chartsTitle": "The inventory, measured",
+        "originTitle": "Inventory by origin",
+        "originBasis": "Real portal listing against modelled inventory. Source: dataset.",
+        "originReal": "Real listing",
+        "originModelled": "Modelled",
+        "unitsTotal": "apartments",
+        "confidenceTitle": "Facts by confidence",
+        "confidenceBasis": "Project facts by evidence status in the dataset.",
+        "confConfirmed": "Confirmed",
+        "confConflicted": "Conflicted",
+        "confSingle": "Single source",
+        "factsTotal": "facts",
+        "tableCategory": "Category",
+        "tableCount": "Count",
+        "empty": "No data."
+      }
+    },
+    "gallery": {
+      "render": "Developer visualisation",
+      "floorplan": "Floor plan",
+      "siteplan": "Site plan",
+      "credit": "Photography",
+      "stale": "from an outdated listing",
+      "close": "Close",
+      "prev": "Previous image",
+      "next": "Next image",
+      "counter": "{index} of {total}",
+      "open": "Open image {index}",
+      "alt": "View of Azura World"
+    },
+    "residences": {
+      "designation": "The residences",
+      "title": "Five layouts, 656 apartments",
+      "lead": "From a compact 1+1 to a 5+1 residence. Distribution and typical interior area from the dataset.",
+      "unitsLabel": "apartments",
+      "areaPrefix": "approx.",
+      "note": "Typical interior area per layout. Most units are modelled."
+    },
+    "workspace": {
+      "title": "Azura World · Workspace",
+      "caption": "One workspace each role sees differently. The cases are sample data.",
+      "nav": {
+        "overview": "Overview",
+        "units": "Units",
+        "tickets": "Reports",
+        "finance": "Finance",
+        "documents": "Documents"
+      },
+      "panelTitle": "Open reports",
+      "cols": {
+        "block": "Block",
+        "task": "Task",
+        "status": "Status",
+        "due": "Due"
+      },
+      "rows": [
+        {
+          "task": "Check lift",
+          "status": "In progress",
+          "due": "today"
+        },
+        {
+          "task": "Water damage",
+          "status": "Open",
+          "due": "tomorrow"
+        },
+        {
+          "task": "Pool service",
+          "status": "Done",
+          "due": "—"
+        },
+        {
+          "task": "Handover",
+          "status": "Planned",
+          "due": "Fri"
+        }
+      ]
     }
   },
   "dashboard": {
@@ -490,7 +618,8 @@
       "groupUnits": "Units",
       "groupTickets": "Tickets",
       "groupDocuments": "Documents",
-      "groupPeople": "People"
+      "groupPeople": "People",
+      "groupSite": "Site"
     },
     "evidence": {
       "title": "Sources and evidence",
@@ -624,6 +753,17 @@
         "heading": "Where this inventory comes from",
         "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled: they fill out the inventory and represent no real offer.",
         "rowNote": "Modelled: not a real listing"
+      },
+      "matrix": {
+        "legend": "Availability",
+        "notStated": "Not stated",
+        "close": "Close",
+        "floor": "Floor",
+        "outdoor": "Outdoor area",
+        "availableCount": "{available} available",
+        "detailLead": "Unit detail",
+        "blockLabel": "Block",
+        "hint": "Click a cell for details."
       }
     },
     "listings": {
@@ -849,7 +989,11 @@
         "cameFrom": "from {stage}",
         "firstStage": "first stage",
         "blocker": "Blocked by",
-        "missingLead": "Enquiry not found"
+        "missingLead": "Enquiry not found",
+        "probabilityLabel": "Closing chance",
+        "stageLabel": "Stage",
+        "previousStage": "Previous stage",
+        "detailLead": "Pipeline entry"
       },
       "stage": {
         "enquiry": "Enquiry",
@@ -861,7 +1005,8 @@
         "title_deed": "Title deed",
         "handover": "Handover",
         "closed": "Closed"
-      }
+      },
+      "close": "Close"
     },
     "finance": {
       "title": "Finance",
@@ -2032,6 +2177,21 @@
         "open": "Open the review on the platform",
         "none": "There are no rated reviews."
       }
+    },
+    "charts": {
+      "title": "At a glance",
+      "ticketsTitle": "Tickets by status",
+      "ticketsBasis": "By status, current set",
+      "qualityTitle": "Inventory by origin",
+      "qualityBasis": "Real listing versus modelled",
+      "empty": "No data yet.",
+      "tableCategory": "Category",
+      "tableCount": "Count",
+      "qualityReal": "Real listing",
+      "qualityModelled": "Modelled",
+      "qualityOfficial": "Official",
+      "qualityGap": "No source",
+      "ticketsTotal": "tickets"
     }
   },
   "hotel": {
@@ -2280,7 +2440,27 @@
       "sessionExpired": "Your session expired. Your input has been kept.",
       "submitting": "Signing in …",
       "plateTitle": "Your complex, in one place.",
-      "plateLead": "656 apartments, 7 blocks and a hotel with 188 rooms. Inventory, maintenance, accounting and documents in one system."
+      "plateLead": "656 apartments, 7 blocks and a hotel with 188 rooms. Inventory, maintenance, accounting and documents in one system.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "methodEmail": "Email",
+      "methodPhone": "Phone",
+      "orContinue": "or",
+      "google": "Sign in with Google",
+      "phoneNumber": "Phone number",
+      "phonePlaceholder": "+90 …",
+      "sendCode": "Send code",
+      "sendingCode": "Sending code …",
+      "code": "Verification code",
+      "codePlaceholder": "6-digit code",
+      "verifyCode": "Sign in",
+      "verifying": "Checking …",
+      "codeSent": "We have sent you a code by SMS.",
+      "changeNumber": "Change number",
+      "googlePending": "Google sign-in will be activated shortly. Please sign in with email in the meantime.",
+      "phonePending": "Phone sign-in will be activated shortly. Please sign in with email in the meantime.",
+      "socialFailed": "Sign-in failed. Please try again.",
+      "backToHome": "Back to home"
     },
     "signup": {
       "title": "Request access",
@@ -2307,7 +2487,8 @@
       "errorTitle": "Sending failed",
       "signIn": "Sign in",
       "plateTitle": "Türkler, Alanya.",
-      "plateLead": "Seven blocks on 76,000 square metres, 300 metres from the sea. Access is granted by management."
+      "plateLead": "Seven blocks on 76,000 square metres, 300 metres from the sea. Access is granted by management.",
+      "backToHome": "Back to home"
     },
     "forbidden": {
       "title": "No access",
@@ -2389,5 +2570,28 @@
       "unit_handover": "An apartment was handed over"
     },
     "bannerShort": "SAMPLE"
+  },
+  "dataNote": {
+    "label": "About this figure",
+    "originalLabel": "Internal wording",
+    "originalHint": "The original note from data collection, unchanged.",
+    "modelled": "Modelled record, not a real listing. No source publishes a unit-by-unit list, so this row is derived from the corroborated total.",
+    "noAvailability": "No source states whether this apartment is available.",
+    "liveListing": "The apartment is currently listed. No source states its sale status.",
+    "conflicted": "Sources state different values. The value shown comes from the most reliable source; the others are kept beside it.",
+    "blockSplit": "No source states how the apartments are split across the blocks. The split shown here is assumed to be even.",
+    "groupEntryPrice": "Entry price for this apartment type, not for this specific apartment.",
+    "cardFromPrice": "A from-price from the project overview, not for a single apartment.",
+    "portalPriceFrom": "A from-price from the portal overview. The portal does not attach it to a layout.",
+    "asPublished": "Price and size exactly as the portal published them.",
+    "wrongDistrict": "The listing names a district other than Türkler. The value is kept unchanged so the discrepancy stays visible.",
+    "rentNotSale": "This listing is a rental, not a sale. The amount is not counted in sale prices.",
+    "monthlyRent": "Monthly rent for one furnished apartment.",
+    "implausibleArea": "The stated area is implausible for this layout. It appears this way in the source and was not corrected.",
+    "layoutUnspecific": "The source states the layout only imprecisely.",
+    "noFloor": "The source states no floor.",
+    "villaFloor": "The floor field contains a building type, not a floor.",
+    "noChain": "No hotel chain is currently named. The only source is a 2023 press report.",
+    "noRanking": "No source states a ranking."
   }
 }

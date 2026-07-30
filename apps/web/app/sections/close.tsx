@@ -1,23 +1,38 @@
 /**
- * The close: Action → Like/Loyalty → Share → Love.                   Owner: W3-A
+ * The close: Action.                                                 Owner: W3-A
  *
- * Four short sections, one file. They share a register — this is the part of
- * the page that talks about the analysis rather than the property — and keeping
- * them together is what stops each of them growing into a full section it does
- * not have the content to fill.
+ * ## Why this file lost three of its four sections
  *
- * No figure appears here that is not already sourced above. A closing section
- * that introduces a new number is a closing section that introduces an
- * unsourced number.
+ * It exported `ActionSection`, `AfterSection`, `ShareSection` and
+ * `LoveSection`. Only the first has been imported since PIVOT.md reframed the
+ * page, and the other three read `after.*`, `share.*`, `love.*` and
+ * `designation.loyalty|share|love` out of `messages/*` — namespaces that the
+ * same pivot deleted. They did not merely go unused: rendering any one of them
+ * would have thrown `MISSING_MESSAGE` at request time. Dead code that cannot
+ * run is a trap for whoever imports it next expecting it to work, so it is
+ * gone rather than left compiling.
+ *
+ * ## The close is a viewport, not a paragraph
+ *
+ * What stood here was a heading, a lead, and two links on the page ground —
+ * the same shape as the six sections above it, so the page simply stopped
+ * rather than arriving anywhere. The ask on this page is a request for access,
+ * which is the single thing it exists to collect, and it was rendering as the
+ * least emphatic block on the route.
+ *
+ * It is now a full-bleed frame with the type over it: the same photographic
+ * register the hero opens on, so the page closes where it started. The
+ * secondary link stays a link. Two buttons of equal weight is two decisions,
+ * and the reader has already been asked to make one.
  */
 
 import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { Link } from "@/app/navigation"
-import { Reveal } from "@/components/anim/reveal"
-import { Container, Section } from "@/components/azura/section"
-import { ShareLink } from "@/components/azura/share-link"
+import { Container } from "@/components/azura/section"
+import { ActCredit, ActMedia, MediaKind, mediaKindKey } from "@/components/journey/act-media"
+import { cast } from "@/components/journey/cast"
 
 export async function ActionSection({
   locale,
@@ -25,125 +40,90 @@ export async function ActionSection({
   locale: string
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
+
+  // A balcony over the sea. The page opens on water and closes on it, without
+  // repeating a single frame.
+  const closing = cast.close
+  const closingKind = closing === null ? null : mediaKindKey(closing)
+
   return (
-    <Section
+    <section
       id="access"
-      designation={t("designation.action")}
-      title={t("action.title")}
-      lead={t("action.lead")}
+      // Always night: the closing frame is a dark-scrimmed photograph with the
+      // access CTA over it, light text in both themes.
+      data-surface="night"
+      className="azura-grain relative isolate scroll-mt-28 overflow-hidden"
     >
-      <Container className="px-0 sm:px-0">
-        <Reveal className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <Link
-            href="/login"
-            className="azura-tap inline-flex items-center rounded-full bg-accent px-6 text-[0.9375rem] font-semibold text-accent-foreground transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.97]"
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        {closing !== null ? (
+          <div
+            data-parallax
+            data-parallax-strength="6"
+            className="absolute inset-[-14%] will-change-transform"
           >
-            {t("action.cta")}
-          </Link>
-          <Link
-            href="/#evidence"
-            className="azura-tap inline-flex items-center text-[0.9375rem] font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
-          >
-            {t("action.secondary")}
-          </Link>
-        </Reveal>
-      </Container>
-    </Section>
-  )
-}
+            <ActMedia
+              image={closing}
+              alt=""
+              layout="bleed"
+              className="h-full [&_img]:h-full [&_img]:object-cover [&_img]:contrast-[1.06] [&_img]:saturate-[1.08] [&_img]:brightness-[0.72]"
+            />
+          </div>
+        ) : (
+          <div className="h-full w-full bg-[linear-gradient(180deg,#02121c,#050d13)]" />
+        )}
+        {/* Heavier than the hero's scrim on purpose. The hero carries four
+            short figures over its frame; this carries a paragraph and a
+            button, and a button that is hard to find is a button that is not
+            pressed. */}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(5,13,19,0.94)_0%,rgba(5,13,19,0.82)_45%,rgba(5,13,19,0.5)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[linear-gradient(to_bottom,#050d13,transparent)]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(to_top,#050d13,transparent)]" />
+      </div>
 
-/**
- * What the system does after the sale — named as three things it actually
- * carries, not three adjectives. A section that restates its own lead in
- * different words adds length, not substance; this one had exactly that
- * problem in the first build and the fix was content, not spacing.
- *
- * A definition list rather than three cards: cards are the lazy container, and
- * these are term-and-description pairs, which is what a `<dl>` is for.
- */
-export async function AfterSection({
-  locale,
-}: {
-  locale: string
-}): Promise<ReactNode> {
-  const t = await getTranslations({ locale, namespace: "landing" })
-  const items = ["1", "2", "3"] as const
-
-  return (
-    <Section
-      id="after"
-      designation={t("designation.loyalty")}
-      title={t("after.title")}
-      lead={t("after.lead")}
-    >
-      <Container className="px-0 sm:px-0">
-        <Reveal>
-          <dl className="grid gap-x-12 gap-y-8 sm:grid-cols-3">
-            {items.map((key) => (
-              <div key={key} className="flex min-w-0 flex-col gap-2">
-                <dt className="border-t border-foreground/20 pt-3 font-display text-[1.0625rem] leading-[1.25] tracking-[-0.01em]">
-                  {t(`after.items.${key}.title`)}
-                </dt>
-                <dd className="text-[0.9375rem] leading-[1.6] text-muted-foreground">
-                  {t(`after.items.${key}.body`)}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
-      </Container>
-    </Section>
-  )
-}
-
-export async function ShareSection({
-  locale,
-}: {
-  locale: string
-}): Promise<ReactNode> {
-  const t = await getTranslations({ locale, namespace: "landing" })
-  return (
-    <Section
-      id="share"
-      designation={t("designation.share")}
-      title={t("share.title")}
-      lead={t("share.lead")}
-    >
-      <Container className="px-0 sm:px-0">
-        <Reveal>
-          <ShareLink
-            copyLabel={t("share.copyLink")}
-            copiedLabel={t("share.linkCopied")}
-          />
-        </Reveal>
-      </Container>
-    </Section>
-  )
-}
-
-/**
- * Love, in this register, is not a photograph of a sunset. It is the sentence
- * that explains why the page is built the way it is — which for this audience
- * is the thing that earns the return visit.
- */
-export async function LoveSection({
-  locale,
-}: {
-  locale: string
-}): Promise<ReactNode> {
-  const t = await getTranslations({ locale, namespace: "landing" })
-  return (
-    <Section id="why-built" designation={t("designation.love")}>
-      <Container className="px-0 sm:px-0">
-        <Reveal>
-          <p className="max-w-[30ch] font-display text-[clamp(1.75rem,5vw,3rem)] leading-[1.12] tracking-[-0.03em] text-balance">
-            {t("love.title")}
+      <Container className="flex flex-col gap-8 py-24 sm:py-36">
+        <div className="flex max-w-[34rem] flex-col gap-6">
+          <span className="azura-label text-primary">
+            {t("designation.action")}
+          </span>
+          <h2 className="azura-mask font-display text-[clamp(2rem,5.4vw,3.75rem)] leading-[1.04] tracking-[-0.035em] text-balance">
+            <span data-rise className="block">
+              {t("action.title")}
+            </span>
+          </h2>
+          <p className="max-w-[46ch] text-[1.0625rem] leading-[1.65] text-muted-foreground">
+            {t("action.lead")}
           </p>
-          <p className="mt-6 max-w-[62ch] text-[1.0625rem] leading-[1.65] text-muted-foreground">
-            {t("love.lead")}
-          </p>
-        </Reveal>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-2">
+            <Link
+              href="/login"
+              className="azura-tap inline-flex items-center rounded-full bg-accent px-7 text-[0.9375rem] font-semibold text-accent-foreground transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.97]"
+            >
+              {t("action.cta")}
+            </Link>
+            <Link
+              href="/#system"
+              className="azura-tap inline-flex items-center text-[0.9375rem] font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+            >
+              {t("action.secondary")}
+            </Link>
+          </div>
+        </div>
+
+        {closing !== null ? (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <ActCredit
+              images={[closing]}
+              label={t("hero.creditLabel")}
+              staleLabel={t("hero.creditStale")}
+            />
+            <MediaKind
+              image={closing}
+              label={closingKind === null ? null : t(`mediaKind.${closingKind}`)}
+            />
+          </div>
+        ) : null}
       </Container>
-    </Section>
+    </section>
   )
 }

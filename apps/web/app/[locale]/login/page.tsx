@@ -5,11 +5,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/app/navigation"
 import { isAccessProfileEnabled } from "@/lib/auth"
+import { publicEnv } from "@/lib/env"
 import { locales } from "@/lib/contracts"
 import { AccessProfilePicker } from "./access-profile-picker"
 import { LoginForm } from "./login-form"
 import { safeNextPath } from "./next-path"
 import { AuthSplit } from "@/components/auth/auth-split"
+import { cast } from "@/components/journey/cast"
 
 /**
  * `/[locale]/login`.                                          Owner: W3-H
@@ -87,7 +89,12 @@ export default async function LoginPage({
   const qaModeAvailable = isAccessProfileEnabled()
 
   return (
-    <AuthSplit act="room" plateTitle={t("plateTitle")} plateLead={t("plateLead")}>
+    <AuthSplit
+      plate={cast.signIn}
+      plateTitle={t("plateTitle")}
+      plateLead={t("plateLead")}
+      backToHome={t("backToHome")}
+    >
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground">
           {t("title")}
@@ -100,11 +107,33 @@ export default async function LoginPage({
       <LoginForm
         locale={locale}
         next={next}
+        googleLive={publicEnv.NEXT_PUBLIC_AUTH_GOOGLE === "1"}
+        phoneLive={publicEnv.NEXT_PUBLIC_AUTH_PHONE === "1"}
         labels={{
           email: t("email"),
           password: t("password"),
           submit: t("submit"),
           submitting: t("submitting"),
+          showPassword: t("showPassword"),
+          hidePassword: t("hidePassword"),
+          forgot: t("forgot"),
+          methodEmail: t("methodEmail"),
+          methodPhone: t("methodPhone"),
+          orContinue: t("orContinue"),
+          google: t("google"),
+          phoneNumber: t("phoneNumber"),
+          phonePlaceholder: t("phonePlaceholder"),
+          sendCode: t("sendCode"),
+          sendingCode: t("sendingCode"),
+          code: t("code"),
+          codePlaceholder: t("codePlaceholder"),
+          verifyCode: t("verifyCode"),
+          verifying: t("verifying"),
+          codeSent: t("codeSent"),
+          changeNumber: t("changeNumber"),
+          googlePending: t("googlePending"),
+          phonePending: t("phonePending"),
+          socialFailed: t("socialFailed"),
         }}
       />
 

@@ -21,35 +21,52 @@
  * and a screen reader announcing a bedroom before the email field is noise.
  */
 
+import { ChevronLeft } from "lucide-react"
 import type { ReactNode } from "react"
 
 import { Link } from "@/app/navigation"
 import { ActMedia } from "@/components/journey/act-media"
-import { imagesForAct } from "@/lib/journey-media"
-import type { JourneyAct } from "@/lib/journey-media"
+import type { JourneyImage } from "@/lib/journey-media"
 
 export function AuthSplit({
-  act,
+  plate,
   plateTitle,
   plateLead,
+  backToHome,
   children,
 }: {
-  /** Which act supplies the plate. `room` reads as "you are inside", `complex`
-   *  as "you are arriving" — match it to what the page is actually asking. */
-  act: JourneyAct
+  /**
+   * The frame, passed in rather than looked up.
+   *
+   * This took an `act` and rendered `imagesForAct(act)[0]`. The acts are
+   * harvest buckets, not an edit: `room` is six apartment interiors, so
+   * `/login` opened on a tight shot of one bed and a reader could not tell what
+   * building they were signing in to. Callers now name the frame through
+   * `components/journey/cast.ts`, where the whole page's photography is
+   * decided in one place and each slot says what it depicts.
+   */
+  plate: JourneyImage | null
   plateTitle: string
   plateLead: string
+  /** Accessible name for the logo link back to the landing page. */
+  backToHome: string
   children: ReactNode
 }): ReactNode {
-  const [plate] = imagesForAct(act)
 
   return (
-    <main className="grid min-h-[100svh] lg:grid-cols-[1.05fr_minmax(0,1fr)]">
+    // `data-surface="day"` gives the signed-out pages the SAME premium light
+    // tokens and tinted wash the landing's light theme uses, so moving from the
+    // landing to the login no longer lands on flat office cream. The two pages
+    // now read as one product.
+    <main
+      data-surface="day"
+      className="grid min-h-[100svh] lg:grid-cols-[1.05fr_minmax(0,1fr)]"
+    >
       <div
         aria-hidden
         className="relative isolate hidden overflow-hidden bg-[#0a1216] lg:block"
       >
-        {plate !== undefined ? (
+        {plate !== null ? (
           <ActMedia
             image={plate}
             priority
@@ -76,21 +93,30 @@ export function AuthSplit({
 
       <div className="flex flex-col justify-center px-6 py-14 sm:px-12 lg:px-16">
         <div className="mx-auto flex w-full max-w-[26rem] flex-col gap-8">
+          {/* The logo IS the way back to the landing. It links there, and it
+              now reads as clickable: the whole lockup lifts and the wordmark
+              brightens on hover, and a back-chevron slides in so the intent is
+              unmistakable rather than relying on the user guessing the logo is a
+              link. `group` drives all three from the one anchor. */}
           <Link
             href="/"
-            className="inline-flex items-center gap-3 self-start focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ring)]"
+            aria-label={backToHome}
+            title={backToHome}
+            className="group inline-flex items-center gap-3 self-start rounded-md transition-transform duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ring)]"
           >
-            {/* One asset, not a dark/light pair: the theme is light-only, so a
-                second <img> would be a request for a file that never renders. */}
+            <ChevronLeft
+              aria-hidden="true"
+              className="size-4 -mr-1 text-muted-foreground opacity-0 -translate-x-1 transition-all duration-[var(--duration-fast)] group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0"
+            />
             <img
               src="/brand/azura-world-wordmark-dark.svg"
               alt="Azura World"
               width={875}
               height={263}
-              className="h-7 w-auto"
+              className="h-7 w-auto opacity-90 transition-opacity duration-[var(--duration-fast)] group-hover:opacity-100"
             />
             <span aria-hidden className="h-5 w-px bg-border" />
-            <span className="font-display text-[0.9375rem] leading-none tracking-[0.06em] text-muted-foreground">
+            <span className="font-display text-[0.9375rem] leading-none tracking-[0.06em] text-muted-foreground transition-colors duration-[var(--duration-fast)] group-hover:text-foreground">
               CATI
             </span>
           </Link>

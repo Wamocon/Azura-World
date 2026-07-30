@@ -1,4 +1,6 @@
 import { getTranslations } from "next-intl/server"
+
+import { dataNoteLabels } from "@/components/evidence/data-note"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
@@ -115,6 +117,8 @@ export default async function ListingsPage({
 
   const t = await getTranslations({ locale, namespace: "dashboard.listings" })
   const tCommon = await getTranslations({ locale, namespace: "common" })
+  // Root namespace: `dataNote.*` is shared, not page-scoped.
+  const tRoot = await getTranslations({ locale })
 
   const profile = await getUserProfile()
 
@@ -287,6 +291,9 @@ export default async function ListingsPage({
   }
 
   const groupLabels = {
+    // Raw dataset notes are English analyst prose. `DataNote` classifies and
+    // translates them; the original stays behind a disclosure.
+    dataNote: dataNoteLabels(tRoot),
     price: t("columns.price"),
     layout: t("columns.layout"),
     area: t("columns.area"),

@@ -51,7 +51,7 @@
  */
 
 import type { Metadata } from "next"
-import { headers } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
@@ -62,11 +62,12 @@ import { Footer, Navbar } from "@/app/sections/chrome"
 import {
   AmenitiesSection,
   DesireSection,
-  SiteSection,
   WhySection,
 } from "@/app/sections/body"
 import { CinemaSection } from "@/app/sections/cinema"
 import { SystemSection } from "@/app/sections/system"
+import { SystemFlowSection } from "@/app/sections/system-flow"
+import { ResidencesSection } from "@/app/sections/residences-section"
 import { SiteModelSection } from "@/components/azura/site-model-section"
 import { ConciergeDock } from "@/components/azura/concierge-dock"
 import { ActionSection } from "@/app/sections/close"
@@ -93,9 +94,6 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
-  // `locale` is a route param and therefore a string. The concierge takes the
-  // narrowed union, so it is validated here rather than cast at the call site.
-  const conciergeLocale = hasLocale(locales, locale) ? locale : defaultLocale
 
   const t = await getTranslations({ locale, namespace: "landing" })
 
@@ -129,24 +127,22 @@ export async function generateMetadata({
 
 export default async function LandingPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>
-  // Next 16: both are Promises (CONVENTIONS §1).
-  searchParams: Promise<Record<string, string | string[] | undefined>>
 }): Promise<ReactNode> {
   const { locale } = await params
   setRequestLocale(locale)
-
-  // The masterplan deep link, resolved server-side so `?block=B03` renders
-  // selected in the HTML and works with JavaScript disabled.
-  const blockParam = (await searchParams)["block"]
-  const initialBlock = typeof blockParam === "string" ? blockParam : null
 
   // `locale` arrives as a route param and is therefore a plain string. The
   // concierge takes the narrowed union, so it is validated here rather than
   // cast away at the call site.
   const conciergeLocale = hasLocale(locales, locale) ? locale : defaultLocale
+
+  // The light/dark surface preference, read server-side so the first paint
+  // already matches the user's last choice and there is no theme flash. The
+  // toggle (`SurfaceToggle`) writes this cookie; night is the default.
+  const surface =
+    (await cookies()).get("azura-surface")?.value === "day" ? "day" : "night"
 
   const t = await getTranslations({ locale, namespace: "landing" })
 
@@ -223,7 +219,11 @@ export default async function LandingPage({
           single GSAP context for the whole route.
           ═══════════════════════════════════════════════════════════════ */}
       <LenisProvider>
-        <div data-surface="night" className="relative min-h-dvh">
+        <div
+          id="landing-surface"
+          data-surface={surface}
+          className="relative min-h-dvh"
+        >
           {/* Reading progress. Fixed, hairline, and `aria-hidden`: it is a
               second rendering of the scrollbar, which every assistive
               technology already exposes. Sits behind the chrome's z-40. */}
@@ -237,7 +237,7 @@ export default async function LandingPage({
             />
           </div>
 
-          <Navbar locale={locale} />
+          <Navbar locale={locale} surface={surface} />
 
           <main id="main">
             {/* Hero and walk-through are full-bleed and own their own width.
@@ -247,8 +247,16 @@ export default async function LandingPage({
 
             <div className="mx-auto w-full max-w-[72rem] px-5 sm:px-8">
               <WhySection locale={locale} />
-              <SiteSection locale={locale} initialBlock={initialBlock} />
-              <SiteModelSection locale={locale} selectedBlock={initialBlock} />
+              {/* The site plan is shown once, alive: the 3D drawing with a day
+                  of operations running across it. The old flat block grid that
+                  sat here was a weaker second masterplan; its location facts now
+                  live in WhySection, where the figures belong. */}
+              <SiteModelSection locale={locale} />
+              {/* The offer by shape: five layouts, how many of each, the typical
+                  home in each, and a gallery of the residence interiors. The
+                  searchable 656-row table that sat here moved off the sales
+                  landing to the dashboard, where a manager actually works. */}
+              <ResidencesSection locale={locale} />
               <AmenitiesSection locale={locale} />
               <DesireSection locale={locale} />
               {/* The complex, then the system that runs it, then the way in.
@@ -256,6 +264,9 @@ export default async function LandingPage({
                   evidence band, and the three closers that framed the page as a
                   research report. */}
               <SystemSection locale={locale} />
+              {/* The system shown working: counted figures, then the ticket
+                  lifecycle as one track. The 1Çatı-style operating showcase. */}
+              <SystemFlowSection locale={locale} />
             </div>
 
             {/* The close is full-bleed for the same reason the hero is: the

@@ -6,6 +6,9 @@
   "scripts": {
     "build": "turbo run build",
     "dataset": "python scripts/build-azura-dataset.py",
+    "demo:passwords": "node scripts/set-demo-passwords.mjs",
+    "orchestrate": "node scripts/orchestrate.mjs",
+    "seed:demo": "node scripts/seed-demo-operations.mjs",
     "db:test": "npx supabase test db",
     "dev": "turbo run dev",
     "gate:finance": "node --experimental-strip-types --import ./scripts/register-ts-resolve.mjs scripts/finance-gate-parity.mts",

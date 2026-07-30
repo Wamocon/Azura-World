@@ -45,6 +45,21 @@ export interface MasterplanLabels {
   /** Shown under the plan when a block is selected. */
   selectedLabel: string
   schematicNote: string
+  /**
+   * Why the per-block figure is a model rather than a published number.
+   *
+   * This used to render `block.note` straight out of `lib/azura-world-data.ts`,
+   * and that file is a GENERATED dataset whose notes are written in English for
+   * an internal analyst. The German page showed "Block composition is not
+   * published by any source; the split is even across the corroborated total of
+   * 656." to a German-speaking property manager. Caught by clicking a block.
+   *
+   * The dataset note stays where it belongs — the evidence and dashboard
+   * surfaces, whose audience is the analyst it was written for. A public
+   * surface gets a translated sentence from `messages/*` like every other
+   * user-visible string on the route.
+   */
+  blockNote: string
 }
 
 export function Masterplan({
@@ -78,9 +93,30 @@ export function Masterplan({
       : null
   )
 
-  const select = useCallback((code: string) => {
-    setSelected((current) => {
-      const next = current === code ? null : code
+  /**
+   * THE URL WRITE IS A SIDE EFFECT AND MUST NOT LIVE IN THE UPDATER.
+   *
+   * It did, and it logged on every click:
+   *
+   *   Cannot update a component (`Router`) while rendering a different
+   *   component (`Masterplan`)
+   *
+   * A `setState` updater is called by React *during render* and is required to
+   * be pure. `window.history.replaceState` is neither pure nor invisible to
+   * Next: the App Router listens for history changes, so writing the URL from
+   * inside the updater told the Router to update in the middle of rendering
+   * this component. React also re-invokes updaters (Strict Mode, and any
+   * re-entrant render), so the write ran more than once per click.
+   *
+   * An event handler is exactly the right place for it. `selected` is read
+   * straight from state rather than from an updater argument, which is safe
+   * because a click is not a batched sequence of toggles on the same block.
+   */
+  const select = useCallback(
+    (code: string) => {
+      const next = selected === code ? null : code
+      setSelected(next)
+
       const url = new URL(window.location.href)
       if (next === null) url.searchParams.delete("block")
       else url.searchParams.set("block", next)
@@ -88,9 +124,9 @@ export function Masterplan({
       // a navigation, and filling the back stack with seven entries makes the
       // browser Back button useless for leaving the page.
       window.history.replaceState(null, "", url)
-      return next
-    })
-  }, [])
+    },
+    [selected]
+  )
 
   const active = blocks.find((b) => b.code === selected) ?? null
 
@@ -146,9 +182,17 @@ export function Masterplan({
                           "modelled" is a note about our dataset, not about their
                           building. The flag is still on the data. */}
                     </span>
+                    {/* `hyphens-none`: `globals.css` sets `hyphens: auto` on
+                        every `span` so a German compound can break rather than
+                        overflow, which is right in body copy and wrong in a
+                        90px tile. At 1024px the masterplan column is narrow
+                        enough that this rendered "94 Woh-nungen" in all seven
+                        blocks. Without hyphenation it wraps at the space, to
+                        "94" over "Wohnungen", which is what it should have
+                        been doing. Caught at 1024px, not at 1440 or 360. */}
                     <span
                       data-numeric
-                      className="text-[0.75rem] tracking-[0.01em] text-muted-foreground"
+                      className="text-[0.75rem] tracking-[0.01em] text-muted-foreground hyphens-none"
                     >
                       {new Intl.NumberFormat(intlLocaleTag(locale)).format(
                         block.unitCount
@@ -199,7 +243,7 @@ export function Masterplan({
               {labels.unitsLabel}
             </p>
             <p className="mt-1 text-[0.75rem] leading-[1.5] text-muted-foreground">
-              {active.note}
+              {labels.blockNote}
             </p>
           </div>
         ) : (

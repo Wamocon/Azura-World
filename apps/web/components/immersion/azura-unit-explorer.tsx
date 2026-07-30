@@ -90,12 +90,20 @@ export function AzuraUnitExplorer({
   locale,
   /** Whether the backing surface has a realtime channel. Supplied by W2-D. */
   realtime = false,
+  /**
+   * The connection chip states whether the data is updating. On a static
+   * showcase page nothing is, so the caller hides it — a "polling every 30s"
+   * badge over frozen data is exactly the false-liveness claim this product
+   * exists to refuse. Defaults on, so live dashboards keep it.
+   */
+  showConnection = true,
   className,
 }: {
   units: readonly ExplorerUnit[]
   labels: UnitExplorerLabels
   locale: string
   realtime?: boolean
+  showConnection?: boolean
   className?: string
 }): ReactNode {
   const [query, setQuery] = useState("")
@@ -160,18 +168,21 @@ export function AzuraUnitExplorer({
         >
           {labels.heading}
         </h3>
-        {/* Connection state. Separate from the per-row provenance marker. */}
-        <Badge
-          variant={realtime ? "confirmed" : "muted"}
-          data-testid="explorer-connection"
-        >
-          {realtime ? (
-            <Wifi aria-hidden="true" />
-          ) : (
-            <WifiOff aria-hidden="true" />
-          )}
-          {realtime ? labels.connection.live : labels.connection.polling}
-        </Badge>
+        {/* Connection state. Separate from the per-row provenance marker.
+            Hidden on static surfaces, where "updating" is not a true claim. */}
+        {showConnection ? (
+          <Badge
+            variant={realtime ? "confirmed" : "muted"}
+            data-testid="explorer-connection"
+          >
+            {realtime ? (
+              <Wifi aria-hidden="true" />
+            ) : (
+              <WifiOff aria-hidden="true" />
+            )}
+            {realtime ? labels.connection.live : labels.connection.polling}
+          </Badge>
+        ) : null}
       </header>
 
       <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">

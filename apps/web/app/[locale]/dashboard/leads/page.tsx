@@ -280,7 +280,7 @@ export default async function LeadsPage({
                 totals={budgetTotals}
                 locale={locale}
                 missing={withoutBudget}
-                missingLabel={t("summary.withoutBudget")}
+                missingLabel={t("summary.withoutBudget", { count: withoutBudget })}
                 emptyLabel={t("summary.noBudgets")}
               />
             </dd>

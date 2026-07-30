@@ -22,8 +22,9 @@ import type { ReactNode } from "react"
 //   ThemeProvider    next-themes, `attribute="class"`, which is what
 //                    globals.css's `@custom-variant dark` matches on. It must
 //                    be outermost so the class lands on <html> before paint.
-//   TooltipProvider  one shared delay timer for the whole app, which is what
-//                    makes the second tooltip in a toolbar open instantly.
+//
+// It was two. `TooltipProvider` was removed on 2026-07-29 — see the comment at
+// the call site below for the measurement and the reasoning.
 //
 // NOT mounted here, deliberately:
 //
@@ -65,7 +66,7 @@ import type { ReactNode } from "react"
 // ---------------------------------------------------------------------------
 
 import { ThemeProvider } from "@/components/providers/theme-provider"
-import { TooltipProvider } from "@/components/ui/tooltip"
+
 
 /**
  * Azura World Residence & Hotel — Türkler, Alanya, Antalya, Türkiye.
@@ -135,8 +136,24 @@ export default async function RootLayout({
         {/* Conditional spread rather than `nonce={nonce ?? undefined}`:
             `exactOptionalPropertyTypes` is on, so `nonce?: string` does not
             accept an explicit `undefined`. */}
+        {/* `TooltipProvider` used to wrap `children` here, and it cost every
+            route in the app 26 KB gzipped of `@base-ui/react` — more than GSAP
+            and Lenis together on the landing page, which renders no tooltip at
+            all.
+
+            It bought one thing: a shared delay timer, so the second tooltip in
+            a toolbar opens instantly. Base UI's `Tooltip.Root` works without
+            the provider; the provider is a grouping optimisation, not a
+            requirement. And the only file in the tree that renders a `Tooltip`
+            is `kitchen-sink-client.tsx`, the component showcase, which now
+            provides it locally.
+
+            Measured on the landing route under `next start`: 250.8 -> 214.8 KB
+            gzipped of JavaScript. If a production surface ever adds a tooltip
+            it works immediately, and it can add the provider at its own layout
+            if it wants grouped delays. */}
         <ThemeProvider {...(nonce === null ? {} : { nonce })}>
-          <TooltipProvider>{children}</TooltipProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

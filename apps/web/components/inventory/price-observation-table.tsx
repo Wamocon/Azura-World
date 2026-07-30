@@ -1,6 +1,10 @@
 import { ExternalLink } from "lucide-react"
 import type { ReactNode } from "react"
 
+import {
+  DataNote,
+  type DataNoteLabels,
+} from "@/components/evidence/data-note"
 import { cn } from "@/lib/cn"
 import { formatMoney } from "@/components/evidence/format"
 import {
@@ -72,6 +76,16 @@ export interface ObservationTableLabels {
   stale: string
   /** Marks a "from" price rather than a specific unit's price. */
   note: string
+  /**
+   * Plain-language rendering of the internal analyst note.
+   *
+   * This table used to print `observation.note` verbatim, and those notes are
+   * written in English for an analyst about our own pipeline — "outside the
+   * frozen UnitLayout union" was reaching a German-speaking property manager.
+   * `DataNote` classifies and translates it, keeping the original behind a
+   * disclosure. See `lib/data-note.ts`.
+   */
+  dataNote: DataNoteLabels
   /** Column value when the publisher stated no layout. */
   layoutUnstated: string
   areaUnstated: string
@@ -212,13 +226,11 @@ export function PriceObservationTable({
                         </span>
                       ) : null}
                     </span>
-                    {observation.note !== null &&
-                    observation.note.length > 0 ? (
-                      <span className="mt-1 block max-w-[24rem] text-xs leading-relaxed text-muted-foreground">
-                        <span className="sr-only">{labels.note}: </span>
-                        {observation.note}
-                      </span>
-                    ) : null}
+                    <DataNote
+                      note={observation.note}
+                      labels={labels.dataNote}
+                      className="max-w-[24rem]"
+                    />
                   </td>
                   <td className="py-2.5 pr-4 text-muted-foreground">
                     {observation.layout ?? labels.layoutUnstated}
