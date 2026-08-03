@@ -245,6 +245,54 @@ function mapMessage(row: unknown): MessageRecord {
   }
 }
 
+/**
+ * Strip a locale segment a stored link should never have carried.
+ *
+ * Migration 19 repaired all 37 seeded rows and added
+ * `notifications_link_has_no_locale`, so in Supabase mode this can no longer
+ * fire. It stays for two reasons: a link is rendered through a locale-aware
+ * `Link` that prepends the reader's locale, so a prefix that slips through
+ * becomes `/en/de/dashboard/...` — a route that does not exist and that Next
+ * will prefetch on hover — and the cost of being wrong is a dead link in a
+ * notification, which is the one surface where a dead link means somebody
+ * misses something they were being told about.
+ */
+function localeFreeLink(link: string | null): string | null {
+  if (link === null) return null
+  const bare = /^\/(tr|en|ru|de)$/.exec(link)
+  if (bare !== null) return "/dashboard"
+  return link.replace(/^\/(tr|en|ru|de)\//, "/")
+}
+
+/**
+ * The system event a notification reports, or `null` for prose a person wrote.
+ *
+ * Validated against a closed list rather than passed through. `payload` is
+ * `jsonb` that other code paths also write, so an arbitrary string from it must
+ * never become a translation key — an unrecognised value would resolve to a
+ * missing message and render as the key path on the page, which is the exact
+ * class of bug `check-i18n` rule 7 exists to prevent at build time. Anything not
+ * on this list falls back to the stored title and body.
+ */
+const NOTIFICATION_TEMPLATES = new Set([
+  "compliance.checkOverdue",
+  "service.slaBreached",
+  "service.ticketAssigned",
+  "document.approved",
+  "message.residentReplied",
+  "finance.itemOverdue",
+  "finance.walletLow",
+  "lead.received",
+])
+
+function notificationTemplateKey(
+  payload: Record<string, unknown>
+): string | null {
+  const template = payload["template"]
+  if (typeof template !== "string") return null
+  return NOTIFICATION_TEMPLATES.has(template) ? template : null
+}
+
 function mapNotification(row: unknown): NotificationRecord {
   const record = asRecord(row)
   return {
@@ -256,7 +304,8 @@ function mapNotification(row: unknown): NotificationRecord {
     title: asString(record["title"]),
     body: asNullableString(record["body"]),
     payload: asRecord(record["payload"]),
-    link: asNullableString(record["link"]),
+    templateKey: notificationTemplateKey(asRecord(record["payload"])),
+    link: localeFreeLink(asNullableString(record["link"])),
     locale: oneOf<Locale>(record["locale"], locales, "de"),
     isRead: asBoolean(record["is_read"], false),
     readAt: asNullableString(record["read_at"]),
@@ -900,5 +949,122 @@ export async function getUnreadNotificationCount(
         return notificationIsLive(notification, asOf, includeExpired)
       }).length,
     "communications.unreadCount"
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Marking notifications read
+// ---------------------------------------------------------------------------
+
+export interface MarkNotificationsReadInput {
+  /** The caller, personally — `auth.uid()`. */
+  profileId: string
+  /**
+   * Which ones. Omit or pass an empty array to mean "every unread notification
+   * addressed to me". Never "every notification I can see" — see below.
+   */
+  notificationIds?: readonly string[]
+}
+
+export interface MarkNotificationsReadResult {
+  /** How many rows the database actually changed. Not how many were asked for. */
+  marked: number
+  /**
+   * True when the caller asked for specific ids and fewer came back than were
+   * requested. The usual cause is a `child_*` account trying to clear a
+   * notification that belongs to its guardian: `notifications_select_own`
+   * shows it, `notifications_update_own` does not let it be cleared, and the
+   * UPDATE quietly matches no row. Surfaced so the UI can say so rather than
+   * appearing to have worked.
+   */
+  partial: boolean
+}
+
+/**
+ * Mark notifications read.
+ *
+ * The one write in this product that needed no migration: migration 09 already
+ * shipped both halves — `grant update (is_read, read_at) on public.notifications
+ * to authenticated` and `notifications_update_own` — and then nothing ever
+ * called them. The effect was an unread badge that could only ever go up.
+ *
+ * ## Two different "own"s, and the gap between them is deliberate
+ *
+ * ```
+ * notifications_select_own   using  profile_id = auth.uid()
+ *                                OR profile_id = current_user_scope_profile_id()
+ * notifications_update_own   using  profile_id = auth.uid()
+ *                            check  profile_id = auth.uid()
+ * ```
+ *
+ * A `child_*` profile reads its guardian's notifications and cannot clear them.
+ * That is the right asymmetry — a minor should not be able to make a
+ * notification disappear from a guardian's view — and this function does not
+ * try to route around it. It filters on `profile_id = caller` itself so the
+ * intent is visible in the query, and then reports how many rows the database
+ * actually touched, which is the number that is true.
+ *
+ * ## The payload is exactly two columns
+ *
+ * The GRANT is column-scoped. Adding a third column to this update — even
+ * `updated_at` — turns every call into a 42501. That is a feature: the two
+ * columns a recipient may change are enumerated in the schema rather than
+ * trusted to this function.
+ */
+export async function markNotificationsRead(
+  input: MarkNotificationsReadInput
+): Promise<RepositoryResult<MarkNotificationsReadResult>> {
+  const requested = input.notificationIds ?? []
+  const readAt = nowIso()
+
+  for (const id of requested) {
+    if (!isSafeFilterToken(id)) {
+      throw new RepositoryError({
+        code: "validation_failed",
+        message: "That notification could not be identified.",
+        retryable: false,
+      })
+    }
+  }
+
+  return withRepository(
+    async (client) => {
+      let query = client
+        .from("notifications")
+        // Exactly the two granted columns. See the doc comment.
+        .update({ is_read: true, read_at: readAt })
+        // Restated here as well as in the policy. The policy is the boundary;
+        // this makes the query say what it means without reading migration 09.
+        .eq("profile_id", input.profileId)
+        // Idempotent: re-marking an already-read notification would rewrite
+        // `read_at` and move the time the person first saw it.
+        .eq("is_read", false)
+
+      if (requested.length > 0) query = query.in("id", requested)
+
+      const rows = unwrap<unknown[]>(await query.select("id"), [])
+      return {
+        marked: rows.length,
+        partial: requested.length > 0 && rows.length < requested.length,
+      }
+    },
+    () => {
+      // Seed mode SIMULATES, as every other write in this module does: the
+      // count is what WOULD have changed, and nothing is stored, because the
+      // seed builders are pure and must stay deterministic across runs.
+      const mine = seedNotifications().filter(
+        (notification) =>
+          notification.profileId === input.profileId && !notification.isRead
+      )
+      const matched =
+        requested.length === 0
+          ? mine
+          : mine.filter((notification) => requested.includes(notification.id))
+      return {
+        marked: matched.length,
+        partial: requested.length > 0 && matched.length < requested.length,
+      }
+    },
+    "communications.markNotificationsRead"
   )
 }

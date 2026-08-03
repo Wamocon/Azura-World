@@ -1,0 +1,135 @@
+-- 00000000000021_restore_write_grants.sql
+--
+-- Turn the write layer back on.
+--
+-- ## The one defect behind ten "unimplemented" features
+--
+-- This repository's API manifest declares ten write gaps, each explained as "no
+-- repository write path exists". That explanation is incomplete in the same way
+-- for all of them. Underneath every one is a **complete and careful set of RLS
+-- policies admitting exactly the right caller** — and a table GRANT that was
+-- revoked, so Postgres raises 42501 before any policy is evaluated.
+--
+-- Measured on the live database rather than read off the migrations. Every one of
+-- these tables held `SELECT` and nothing else for `authenticated`:
+--
+--   activities  buyer_pipeline_entries  compliance_checks  documents
+--   finance_ledger_entries  findings  leads  payment_transactions
+--   profiles  units  vendor_invoices  wallets
+--
+-- and every one of them already had a write policy:
+--
+--   profiles                profiles_admin_write            is_admin()
+--   leads                   leads_staff_write               admin OR level>=70 in company
+--   buyer_pipeline_entries  buyer_pipeline_staff_write      admin OR level>=70 in company
+--   activities              activities_manager_write        admin OR level>=70 in company
+--   vendor_invoices         vendor_invoices_insert/update_finance   can_write_company_finance()
+--   finance_ledger_entries  finance_ledger_entries_insert/update_finance
+--   payment_transactions    payment_transactions_insert/update_finance
+--
+-- Migration 16 diagnosed this for tickets and migration 17 for participant
+-- writes. This is the same fix for the rest of the product. **Nothing here
+-- widens who may do what.** Not one policy is created, altered or dropped. The
+-- policies are the boundary and they are untouched; this restores only the
+-- table-level privilege that lets Postgres reach them.
+--
+-- ## What it looked like from the outside
+--
+-- Two of these were not "unimplemented" — they were shipped, documented, and
+-- broken. Measured by signing in as `admin@azura.local` with the anon key and
+-- the real password, so RLS applied exactly as it does for a browser:
+--
+--   update profiles set role = 'accountant'   -> 42501 permission denied
+--   update profiles set is_active = false     -> 42501 permission denied
+--   update vendor_invoices set status='paid'  -> 42501 permission denied
+--
+-- The first two are the role picker and the deactivate control on
+-- `/dashboard/users`, which an administrator can see and press. The third is
+-- `vendorInvoice.settle`, which `api-routes.ts` describes to the world, in
+-- `docs/api/openapi.yaml`, as one of the commands on "the one write endpoint
+-- backed by real repository mutations".
+--
+-- ## Why granting UPDATE on profiles is not a privilege-escalation hole
+--
+-- It looks like one. `profiles_update_own` is `using (auth.uid() = id)`, so with
+-- a bare UPDATE grant any signed-in user can update their own row — including,
+-- apparently, their own `role` column.
+--
+-- They cannot, and the reason is already on the table:
+--
+--   prevent_profile_privilege_escalation  BEFORE UPDATE, FOR EACH ROW
+--     if (new.role is distinct from old.role
+--         or new.company_id is distinct from old.company_id
+--         or new.is_active is distinct from old.is_active)
+--        and not public.is_admin()
+--     then raise exception ... using errcode = '42501';
+--
+-- So the three columns that carry authority are administrator-only regardless of
+-- which policy admitted the row, and `profiles_update_own` is left covering what
+-- it was written to cover: a person editing their own name, phone, locale and
+-- avatar. A column-scoped grant was considered and rejected — it would have to
+-- enumerate the safe columns in a second place, and the two lists would drift.
+--
+-- DELETE is granted nowhere. Nothing in this product deletes a profile, a lead,
+-- an invoice or a ledger entry; the correction for a posted ledger entry is a
+-- reversal (`prevent_posted_ledger_mutation` enforces it), and for everything
+-- else it is a status change that keeps the history.
+
+-- ---------------------------------------------------------------------------
+-- 1. profiles — the administrator's user management
+-- ---------------------------------------------------------------------------
+-- Row scope: `profiles_admin_write` (any row, admin only) and
+-- `profiles_update_own` (your own row). Column authority: the trigger above.
+grant update on public.profiles to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 2. leads and the buyer pipeline — the sales desk
+-- ---------------------------------------------------------------------------
+-- Row scope: `leads_staff_write` / `buyer_pipeline_staff_write`, both
+-- admin-or-manager-within-their-own-company. That is exactly the set `rbac.ts`
+-- grants `leads:create` and `buyer_pipeline:manage` to, so there is no
+-- RBAC/RLS mismatch to reconcile here.
+grant insert, update on public.leads to authenticated;
+
+-- UPDATE only. A pipeline entry is created alongside its lead by the sales flow;
+-- moving one through the funnel is an UPDATE of `stage`, and
+-- `track_pipeline_stage_change` maintains `previous_stage` and
+-- `entered_stage_at` from it, so the board's "days in stage" cannot drift out of
+-- step with the move.
+grant update on public.buyer_pipeline_entries to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 3. activities — scheduling work on the site
+-- ---------------------------------------------------------------------------
+-- INSERT only, and note the deliberate asymmetry with RBAC:
+-- `activities_manager_write` requires level >= 70 (manager, admin), while
+-- `rbac.ts` also grants `activities:create` to `service_provider`,
+-- `child_owner` and `child_tenant`. Those three are NOT admitted by the policy
+-- and this migration does not widen it — letting a contractor or a supervised
+-- minor schedule a site-wide activity is an authority change, not a plumbing
+-- fix, and it belongs to whoever owns that decision. The application narrows
+-- its own control to the intersection instead, so nobody is offered a button
+-- the database will refuse.
+grant insert on public.activities to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 4. finance — invoices, the ledger, and payments
+-- ---------------------------------------------------------------------------
+-- Row scope on all three: `can_write_company_finance(company_id)`.
+--
+-- The ledger's own integrity does not depend on these grants and is not
+-- weakened by them. Two triggers hold it:
+--
+--   assert_ledger_group_balanced   CONSTRAINT TRIGGER, DEFERRABLE INITIALLY
+--                                  DEFERRED — double entry, checked per
+--                                  currency per transaction_group_id, at COMMIT
+--   prevent_posted_ledger_mutation BEFORE UPDATE OR DELETE — a posted entry is
+--                                  immutable in both directions
+--
+-- Deferred is the load-bearing word: the balance check runs at commit, not per
+-- row, so a multi-leg insert sent as one request succeeds and a single
+-- unbalanced leg cannot. An application that tries to post half a transaction
+-- gets 23514, not a corrupted ledger.
+grant insert, update on public.vendor_invoices to authenticated;
+grant insert, update on public.finance_ledger_entries to authenticated;
+grant insert, update on public.payment_transactions to authenticated;

@@ -8,6 +8,10 @@ import {
   appendTicketEvent,
   updateTicketStatus,
 } from "@/lib/operations-repository"
+import {
+  markNotificationsRead,
+  type MarkNotificationsReadResult,
+} from "@/lib/communications-repository"
 import type { Permission } from "@/lib/contracts"
 import { hasPermission } from "@/lib/rbac"
 import type {
@@ -26,7 +30,11 @@ export const dynamic = "force-dynamic"
 
 /** Every shape a command can return. Stated, not inferred from the first branch. */
 type CommandResult =
-  TicketEvent | UpdateTicketStatusResult | LedgerReversalResult | VendorInvoice
+  | TicketEvent
+  | UpdateTicketStatusResult
+  | LedgerReversalResult
+  | VendorInvoice
+  | MarkNotificationsReadResult
 
 /**
  * The audited command endpoint.
@@ -119,6 +127,21 @@ export const POST = createManifestHandler("executeCommand", {
           // one this endpoint wanted.
           paidAmount: body.paidAmountMinor / 100,
           ...(body.status === undefined ? {} : { status: body.status }),
+        })
+        return { data: result.data, source: result.source }
+      }
+      case "notification.markRead": {
+        // The recipient is the session and cannot be anything else — the schema
+        // has no profileId field. An anonymous caller has no notifications by
+        // definition, so there is nothing to mark and nothing to report.
+        if (profile.id === null) {
+          throw new RepositoryError(forbidden("You do not have access to this."))
+        }
+        const result = await markNotificationsRead({
+          profileId: profile.id,
+          ...(body.notificationIds === undefined
+            ? {}
+            : { notificationIds: body.notificationIds }),
         })
         return { data: result.data, source: result.source }
       }

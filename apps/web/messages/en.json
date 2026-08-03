@@ -1740,6 +1740,34 @@
         "unavailable": "The storage service is not responding right now. Your message was not sent — try again shortly.",
         "scopeNote": "This message is stored in the portal and read here. It is not emailed, texted or sent by WhatsApp.",
         "readOnly": "You can read this conversation, but this account cannot reply to it."
+      },
+      "notifications": {
+        "heading": "Notifications",
+        "lead": "{count, plural, =0 {Nothing is waiting for you.} one {# unread notification.} other {# unread notifications.}}",
+        "empty": "No unread notifications.",
+        "markRead": "Mark as read",
+        "markAllRead": "Mark all as read",
+        "busy": "Working…",
+        "genericError": "The notifications could not be updated. Please try again.",
+        "unavailable": "The storage service is not responding right now. Nothing changed — try again shortly.",
+        "partial": "Some were left as they were: they belong to the person who manages this account, and only they can clear them.",
+        "guardianOnly": "Belongs to the account holder",
+        "open": "Open",
+        "severity": {
+          "info": "Info",
+          "success": "Done",
+          "warning": "Attention",
+          "critical": "Urgent"
+        },
+        "category": {
+          "system": "System",
+          "finance": "Finance",
+          "service": "Service",
+          "compliance": "Compliance",
+          "document": "Document",
+          "message": "Message",
+          "announcement": "Announcement"
+        }
       }
     },
     "documents": {

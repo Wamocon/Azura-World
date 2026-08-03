@@ -1740,6 +1740,34 @@
         "unavailable": "Der Speicherdienst antwortet gerade nicht. Ihre Nachricht wurde nicht gesendet — bitte gleich noch einmal versuchen.",
         "scopeNote": "Diese Nachricht wird im Portal gespeichert und hier gelesen. Sie geht nicht per E-Mail, SMS oder WhatsApp hinaus.",
         "readOnly": "Sie können dieses Gespräch lesen, mit diesem Konto aber nicht antworten."
+      },
+      "notifications": {
+        "heading": "Benachrichtigungen",
+        "lead": "{count, plural, =0 {Nichts wartet auf Sie.} one {# ungelesene Benachrichtigung.} other {# ungelesene Benachrichtigungen.}}",
+        "empty": "Nichts Ungelesenes.",
+        "markRead": "Gelesen",
+        "markAllRead": "Alle gelesen",
+        "busy": "Wird ausgeführt …",
+        "genericError": "Aktualisierung fehlgeschlagen. Bitte erneut versuchen.",
+        "unavailable": "Der Speicherdienst antwortet gerade nicht. Nichts wurde geändert — bitte gleich erneut versuchen.",
+        "partial": "Einige blieben unverändert: Sie gehören der Person, die dieses Konto führt, und nur sie kann sie löschen.",
+        "guardianOnly": "Gehört der kontoführenden Person",
+        "open": "Öffnen",
+        "severity": {
+          "info": "Info",
+          "success": "Erledigt",
+          "warning": "Achtung",
+          "critical": "Dringend"
+        },
+        "category": {
+          "system": "System",
+          "finance": "Finanzen",
+          "service": "Service",
+          "compliance": "Compliance",
+          "document": "Dokument",
+          "message": "Nachricht",
+          "announcement": "Ankündigung"
+        }
       }
     },
     "documents": {

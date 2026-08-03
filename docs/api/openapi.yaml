@@ -342,7 +342,7 @@ paths:
         - Commands
       operationId: executeCommand
       summary: Execute a domain command.
-      description: "The one write endpoint backed by real repository mutations. The body is a discriminated union on `command`, and each command declares its own permission, which is checked in addition to the endpoint's. Supported: `ticket.appendEvent`, `ticket.updateStatus`, `ledger.reverseEntry`, `vendorInvoice.settle`. Commands carrying `expectedVersion` are optimistically concurrent: a mismatch is 409, never a silent overwrite. Every outcome writes an audit row."
+      description: "The one write endpoint backed by real repository mutations. The body is a discriminated union on `command`, and each command declares its own permission, which is checked in addition to the endpoint's. Supported: `ticket.appendEvent`, `ticket.updateStatus`, `ledger.reverseEntry`, `vendorInvoice.settle`, `notification.markRead`. Commands carrying `expectedVersion` are optimistically concurrent: a mismatch is 409, never a silent overwrite. Every outcome writes an audit row."
       x-azura-permission: dashboard:view
       x-azura-rate-limit:
         requests: 20
@@ -534,7 +534,7 @@ paths:
         - Sales
       operationId: updateBuyerPipelineEntry
       summary: Move a pipeline entry to another stage.
-      description: "Not implemented: no repository write path exists for the pipeline. Authorised and validated, then 503."
+      description: "Moves one entry to another stage. `expectedVersion` is not optional: a move without it is a last-writer-wins overwrite, and on a shared funnel that means two people move the same deal for different reasons and one reason vanishes. A mismatch is 409. `previous_stage` and `entered_stage_at` are maintained by the `track_pipeline_stage_change` trigger, not by the request, so the board's \"days in stage\" cannot disagree with the move that caused it."
       x-azura-permission: buyer_pipeline:update
       x-azura-rate-limit:
         requests: 20
@@ -542,9 +542,6 @@ paths:
       x-azura-audit:
         action: pipeline_entry.stage_changed
         entity: buyer_pipeline_entries
-      x-azura-write-gap:
-        reason: "Moving a pipeline entry is not implemented: no repository write path exists yet."
-        owner: W2-A (repository mutations)
       requestBody:
         required: true
         description: Validated by `updatePipelineSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
@@ -553,12 +550,18 @@ paths:
             schema:
               "$ref": "#/components/schemas/JsonObject"
       responses:
+        "200":
+          "$ref": "#/components/responses/Success"
         "400":
           "$ref": "#/components/responses/ValidationFailed"
         "401":
           "$ref": "#/components/responses/Unauthorized"
         "403":
           "$ref": "#/components/responses/Forbidden"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+        "409":
+          "$ref": "#/components/responses/Conflict"
         "429":
           "$ref": "#/components/responses/RateLimited"
         "503":
@@ -976,7 +979,7 @@ paths:
         - Evidence
       operationId: updateEvidenceFinding
       summary: Change a finding's status.
-      description: "Records a human judgement on a finding. Not implemented: the evidence repository is read-only in this wave, so the route validates and authorises the command and then reports 503 rather than accepting a change it cannot store."
+      description: "Not implemented, and not implementable as described: `public.findings` has no status column. It holds id, severity, area, field_path, message, resolution, resolved_to and the two timestamps — so there is no field for the open/acknowledged/resolved/dismissed value this operation accepts, and nothing to write it to. This is a schema gap, not a missing repository function; closing it needs a migration that decides what a finding's lifecycle actually is. Until then the route validates, authorises, and reports 503 rather than accepting a judgement it would silently discard."
       x-azura-permission: evidence:manage
       x-azura-rate-limit:
         requests: 20
@@ -1453,7 +1456,7 @@ paths:
         - Sales
       operationId: createLead
       summary: Create a lead.
-      description: "Not implemented: no repository write path exists for leads. The route authorises and validates the payload, then reports 503 rather than returning a lead id for a record that was never stored."
+      description: Records an enquiry. A lead arrives unassigned and `new`; the payload carries no `status`, `assignedTo` or `score`, so a caller cannot route a lead to themselves or file one as already won. Row scope is `leads_staff_write` — administrator, or manager within their own company.
       x-azura-permission: leads:create
       x-azura-rate-limit:
         requests: 20
@@ -1462,9 +1465,6 @@ paths:
         action: lead.created
         entity: leads
       x-azura-idempotent: true
-      x-azura-write-gap:
-        reason: "Creating a lead is not implemented: no repository write path exists yet."
-        owner: W2-A (repository mutations)
       requestBody:
         required: true
         description: Validated by `createLeadSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
@@ -1473,6 +1473,8 @@ paths:
             schema:
               "$ref": "#/components/schemas/JsonObject"
       responses:
+        "200":
+          "$ref": "#/components/responses/Success"
         "400":
           "$ref": "#/components/responses/ValidationFailed"
         "401":

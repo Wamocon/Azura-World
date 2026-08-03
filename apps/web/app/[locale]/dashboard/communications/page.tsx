@@ -2,16 +2,23 @@ import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
+import { NotificationList } from "@/components/communications/notification-list"
 import { DeliveryNotice } from "@/components/operations/delivery-notice"
 import { Badge } from "@/components/ui/badge"
 import { getUserProfile } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 import {
+  getNotifications,
   getThreads,
   getUnreadNotificationCount,
   type ThreadRecord,
 } from "@/lib/communications-repository"
-import { threadStatuses, type ThreadStatus } from "@/lib/communications-data"
+import {
+  notificationCategories,
+  notificationSeverities,
+  threadStatuses,
+  type ThreadStatus,
+} from "@/lib/communications-data"
 import type { Locale } from "@/lib/contracts"
 import { formatDateTime } from "@/lib/format"
 import { hasPermission } from "@/lib/rbac"
@@ -58,6 +65,13 @@ export async function generateMetadata({
 }
 
 const PAGE_SIZE = 50
+
+/**
+ * How many unread notifications to render at once. A badge, not a bulk tool —
+ * and "mark all read" clears every unread row regardless of what is listed, so
+ * this cap never traps anyone behind a page control that does not exist.
+ */
+const NOTIFICATION_LIMIT = 20
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value
@@ -107,7 +121,7 @@ export default async function CommunicationsPage({
     ...(profile.id === null ? {} : { profileId: profile.id }),
   }
 
-  const [threadsResult, unreadCount] = await Promise.all([
+  const [threadsResult, unreadCount, notificationsResult] = await Promise.all([
     getThreads({
       ...scope,
       limit: PAGE_SIZE,
@@ -121,6 +135,15 @@ export default async function CommunicationsPage({
       : getUnreadNotificationCount(profile.id, { role: profile.role }).then(
           (result) => result.data
         ),
+    // The list itself, which did not exist: the page reported a number and gave
+    // no way to see what it counted or to clear it.
+    profile.id === null
+      ? Promise.resolve(null)
+      : getNotifications(profile.id, {
+          role: profile.role,
+          unreadOnly: true,
+          limit: NOTIFICATION_LIMIT,
+        }),
   ])
 
   const threads = threadsResult.data
@@ -129,6 +152,22 @@ export default async function CommunicationsPage({
   // empty list with a reason is a different thing from an empty inbox.
   const scopeUnknown =
     threads.length === 0 && threadsResult.degradedReason !== undefined
+
+  // Enum -> label, built once. `fromEnum` in components/operations/labels.ts
+  // does this for the operations enums; notifications had no label set at all
+  // because nothing had ever rendered one.
+  const notificationSeverityLabels = Object.fromEntries(
+    notificationSeverities.map((severity) => [
+      severity,
+      t(`notifications.severity.${severity}` as "notifications.severity.info"),
+    ])
+  )
+  const notificationCategoryLabels = Object.fromEntries(
+    notificationCategories.map((category) => [
+      category,
+      t(`notifications.category.${category}` as "notifications.category.system"),
+    ])
+  )
 
   const hrefFor = (status: ThreadStatus | null) => {
     const sp = new URLSearchParams()
@@ -160,11 +199,43 @@ export default async function CommunicationsPage({
         </p>
       ) : null}
 
-      {unreadCount > 0 ? (
-        <p className="text-sm text-foreground">
-          {t("unread", { count: unreadCount })}
-        </p>
-      ) : null}
+      {/* The inbox. Rendered whenever the caller is identified, including when
+          it is empty — "nothing needs your attention" is information, and a
+          section that vanishes when clear makes people wonder where it went. */}
+      {notificationsResult === null ? null : (
+        <NotificationList
+          notifications={notificationsResult.data.map((notification) => ({
+            id: notification.id,
+            title: notification.title,
+            body: notification.body,
+            category: notification.category,
+            severity: notification.severity,
+            link: notification.link,
+            createdAt: notification.createdAt,
+            createdAtLabel: formatDateTime(notification.createdAt, locale),
+            // `notifications_update_own` is narrower than the SELECT policy: a
+            // child_* profile sees its guardian's notifications and may not
+            // clear them. Decided here rather than discovered as a write that
+            // silently changes nothing.
+            clearable: notification.profileId === profile.id,
+          }))}
+          labels={{
+            heading: t("notifications.heading"),
+            lead: t("notifications.lead", { count: unreadCount }),
+            empty: t("notifications.empty"),
+            markRead: t("notifications.markRead"),
+            markAllRead: t("notifications.markAllRead"),
+            busy: t("notifications.busy"),
+            genericError: t("notifications.genericError"),
+            unavailable: t("notifications.unavailable"),
+            partial: t("notifications.partial"),
+            guardianOnly: t("notifications.guardianOnly"),
+            open: t("notifications.open"),
+            severity: notificationSeverityLabels,
+            category: notificationCategoryLabels,
+          }}
+        />
+      )}
 
       <nav
         aria-label={t("filterLabel")}

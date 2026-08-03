@@ -163,6 +163,17 @@ export interface NotificationRecord {
   title: string
   body: string | null
   payload: Record<string, unknown>
+  /**
+   * The system event this notification reports, when it reports one —
+   * `"service.slaBreached"`, `"finance.walletLow"`, and six others
+   * (migration 20). Read out of `payload.template`.
+   *
+   * Present means the app renders the event from `messages/*.json` in the
+   * READER'S language and ignores `title`/`body`. Null means the stored prose
+   * is shown verbatim, which is the right answer for anything a person actually
+   * wrote — translating that would misrepresent what they said.
+   */
+  templateKey: string | null
   /** Site-relative path only — `^/` and never `//` (open-redirect CHECK). */
   link: string | null
   locale: Locale
@@ -459,7 +470,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "Neue Nachricht zu Ihrem Serviceticket",
       body: "Der Sanitärdienst wurde beauftragt. Termin: morgen 09:00–11:00 Uhr.",
       payload: { threadId: SEED_THREAD_IDS.waterDamage },
-      link: "/de/dashboard/communications",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/communications",
       locale: "de",
       isRead: false,
       readAt: null,
@@ -475,7 +489,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "İskan-Dokument abgelaufen — Blok B03",
       body: "Die Occupancy-Genehmigung für Blok B03 ist seit 30 Tagen abgelaufen.",
       payload: { documentId: SEED_DOCUMENT_IDS.occupancyPermit },
-      link: "/de/dashboard/compliance",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/compliance",
       locale: "de",
       isRead: false,
       readAt: null,
@@ -491,7 +508,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "DASK-Police läuft in 14 Tagen ab",
       body: "Die Gebäudeversicherung muss vor Ablauf verlängert werden.",
       payload: { documentId: SEED_DOCUMENT_IDS.buildingInsurance },
-      link: "/de/dashboard/documents",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/documents",
       locale: "de",
       isRead: false,
       readAt: null,
@@ -507,7 +527,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "Ticket SRV-2026-0418 zugewiesen",
       body: null,
       payload: { ticketReference: "SRV-2026-0418" },
-      link: "/de/dashboard/tickets",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/tickets",
       locale: "de",
       isRead: true,
       readAt: seedIso(-5, 10),
@@ -523,7 +546,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "Zahlung eingegangen",
       body: "Ihre Betriebskostenzahlung für Q2 2026 wurde verbucht.",
       payload: { period: "2026-Q2" },
-      link: "/de/dashboard/finance",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/finance",
       locale: "de",
       isRead: true,
       readAt: seedIso(-20, 12),
@@ -540,7 +566,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "Poolwartung 12.–14. Juli",
       body: "Der Hauptpool bleibt während der Wartung geschlossen.",
       payload: {},
-      link: "/de/dashboard",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard",
       locale: "de",
       isRead: false,
       readAt: null,
@@ -556,7 +585,10 @@ export function seedNotifications(): NotificationRecord[] {
       title: "Anahtar teslim randevusu onaylandı",
       body: "Cuma 15:00, resepsiyon.",
       payload: { threadId: SEED_THREAD_IDS.keyHandover },
-      link: "/tr/dashboard/communications",
+      // Bespoke prose, not one of the eight system events (migration 20): rendered
+      // verbatim in the language it was written, which is the honest outcome.
+      templateKey: null,
+      link: "/dashboard/communications",
       locale: "tr",
       isRead: true,
       readAt: seedIso(-11, 10),

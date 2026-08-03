@@ -1740,6 +1740,34 @@
         "unavailable": "Kayıt servisi şu anda yanıt vermiyor. Mesajınız gönderilmedi; birazdan tekrar deneyin.",
         "scopeNote": "Bu mesaj portalda saklanır ve burada okunur. E-posta, SMS veya WhatsApp ile gönderilmez.",
         "readOnly": "Bu görüşmeyi okuyabilirsiniz, ancak bu hesapla yanıt yazamazsınız."
+      },
+      "notifications": {
+        "heading": "Bildirimler",
+        "lead": "{count, plural, =0 {Beklemede bir şey yok.} one {Okunmamış # bildiriminiz var.} other {Okunmamış # bildiriminiz var.}}",
+        "empty": "Okunmamış bildirim yok.",
+        "markRead": "Okundu işaretle",
+        "markAllRead": "Tümünü okundu işaretle",
+        "busy": "İşleniyor…",
+        "genericError": "Bildirimler güncellenemedi. Lütfen tekrar deneyin.",
+        "unavailable": "Kayıt servisi şu anda yanıt vermiyor. Hiçbir şey değişmedi; birazdan tekrar deneyin.",
+        "partial": "Bazı bildirimler işaretlenmedi: bunlar hesabı yöneten kişiye ait ve yalnızca o kişi temizleyebilir.",
+        "guardianOnly": "Hesabı yöneten kişiye ait",
+        "open": "Görüntüle",
+        "severity": {
+          "info": "Bilgi",
+          "success": "Tamam",
+          "warning": "Dikkat",
+          "critical": "Acil"
+        },
+        "category": {
+          "system": "Sistem",
+          "finance": "Finans",
+          "service": "Hizmet",
+          "compliance": "Uygunluk",
+          "document": "Belge",
+          "message": "Mesaj",
+          "announcement": "Duyuru"
+        }
       }
     },
     "documents": {

@@ -339,6 +339,24 @@ export const commandSchema = z.discriminatedUnion("command", [
     paidAmountMinor: minorUnits,
     status: z.enum(vendorInvoiceStatuses).optional(),
   }),
+  /**
+   * Clear your own notifications.
+   *
+   * No `profileId`: the recipient is the session. Accepting one would let any
+   * signed-in caller clear somebody else's badge, and while
+   * `notifications_update_own` would refuse the write, an endpoint that accepts
+   * the field at all invites the next person to trust it.
+   *
+   * An absent or empty `notificationIds` means "everything unread addressed to
+   * me". Capped at 200 because this is a badge, not a bulk tool.
+   */
+  z.strictObject({
+    command: z.literal("notification.markRead"),
+    notificationIds: z
+      .array(identifier)
+      .max(200, "At most 200 notifications at a time.")
+      .optional(),
+  }),
 ])
 
 export type Command = z.infer<typeof commandSchema>
@@ -355,6 +373,11 @@ export const commandPermissions = {
   "ticket.updateStatus": "tickets:update",
   "ledger.reverseEntry": "finance:manage",
   "vendorInvoice.settle": "vendor_invoices:approve",
+  // The weakest authority in this table, deliberately. A notification is
+  // addressed to one person, and the row policy pins the write to
+  // `auth.uid()` — so "may reach the messages module" is the whole of the
+  // permission question, and every role that holds it can clear its own badge.
+  "notification.markRead": "communications:view",
 } as const satisfies Record<Command["command"], Permission>
 
 /**
