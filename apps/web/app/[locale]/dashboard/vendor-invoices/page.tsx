@@ -7,7 +7,6 @@ import { Link } from "@/app/navigation"
 import { AccessRefused } from "@/components/finance/access-refused"
 import {
   CurrencyTotalCard,
-  MoneyCell,
   type CurrencyTotalLabels,
 } from "@/components/finance/currency-total-list"
 import { anyRefused, readFinance } from "@/components/finance/finance-read"
@@ -20,24 +19,17 @@ import {
 } from "@/components/finance/ledger-analysis"
 import { toMinor, totalRows } from "@/components/finance/money"
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableScrollArea,
-} from "@/components/ui/table"
+  VendorInvoiceTable,
+  type VendorInvoiceRow,
+  type VendorInvoiceTableLabels,
+} from "@/components/finance/vendor-invoice-detail"
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
-import { formatDate } from "@/lib/format"
 import { vendorInvoiceStatuses } from "@/lib/finance-data"
 import {
   currencyCodes,
   getVendorInvoices,
   type CurrencyCode,
-  type VendorInvoice,
   type VendorInvoiceStatus,
 } from "@/lib/finance-repository"
 
@@ -75,6 +67,22 @@ import {
  * `result.fetchedAt` from the repository, not a browser clock. A device an hour
  * out would otherwise move an invoice across a month boundary into a different
  * ageing bucket with nothing on screen to explain the change.
+ *
+ * ## Nine columns on screen, the whole record one click away
+ *
+ * The table is `components/finance/vendor-invoice-detail.tsx`, a client island,
+ * because a row has to be clickable and a Server Component cannot hold the
+ * selection. This page keeps the shape the pattern requires of it: it flattens
+ * each `VendorInvoice` into a slim serialisable row, converts every decimal to
+ * `Minor` **here, once**, and resolves every string — including the two that
+ * carry placeholders, `overdue.days` and `detail.open` — before anything crosses
+ * the boundary. No rich domain object and no function prop goes over.
+ *
+ * The nine columns are unchanged; the popup is where `taxAmount`, `notes`,
+ * `siteId`, `vendorProfileId`, `ledgerEntryId`, `documentPath`, `version` and
+ * the two timestamps become readable for the first time. Widening the table
+ * instead was the alternative and it is worse: at nine columns this list already
+ * scrolls sideways on a phone.
  */
 
 /**
@@ -273,6 +281,87 @@ export default async function VendorInvoicesPage({
     void: t("status.void"),
   }
 
+  // The decimal → integer boundary, crossed once for the whole page, exactly
+  // where `components/finance/money.ts` says it belongs. Nothing downstream of
+  // this map sees a `number` that is money.
+  const rows: VendorInvoiceRow[] = invoices.map((invoice) => {
+    const days = daysOverdue(invoice.dueOn, asOf)
+    const overdue = isOpenInvoice(invoice) && days !== null && days > 0
+    return {
+      id: invoice.id,
+      vendorName: invoice.vendorName,
+      invoiceNo: invoice.invoiceNo,
+      statusLabel: statusLabels[invoice.status],
+      issuedOn: invoice.issuedOn,
+      dueOn: invoice.dueOn,
+      totalMinor: toMinor(invoice.totalAmount),
+      taxMinor: toMinor(invoice.taxAmount),
+      paidMinor: toMinor(invoice.paidAmount),
+      outstandingMinor: toMinor(invoice.outstandingAmount),
+      currency: invoice.currency,
+      notes: invoice.notes,
+      documentPath: invoice.documentPath,
+      ledgerEntryId: invoice.ledgerEntryId,
+      siteId: invoice.siteId,
+      vendorProfileId: invoice.vendorProfileId,
+      version: invoice.version,
+      createdAt: invoice.createdAt,
+      updatedAt: invoice.updatedAt,
+      isDuplicate: duplicateIds.has(invoice.id),
+      isOverdue: overdue,
+      // Resolved here rather than in the island: `overdue.days` carries a
+      // `{days}` placeholder, the island has no `useTranslations`, and a
+      // formatter function cannot cross the server/client boundary.
+      dueStatusLabel:
+        invoice.dueOn === null
+          ? t("overdue.noDueDate")
+          : overdue && days !== null
+            ? t("overdue.days", { days })
+            : t("overdue.notDue"),
+      openLabel: t("detail.open", {
+        vendor: invoice.vendorName,
+        invoiceNo: invoice.invoiceNo,
+      }),
+    }
+  })
+
+  const tableLabels: VendorInvoiceTableLabels = {
+    caption: tCommon("pagination.showing", {
+      from: 1,
+      to: invoices.length,
+      total: allInvoices.length,
+    }),
+    columns: {
+      vendor: t("columns.vendor"),
+      invoiceNo: t("columns.invoiceNo"),
+      status: t("columns.status"),
+      issued: t("columns.issued"),
+      due: t("columns.due"),
+      total: t("columns.total"),
+      tax: t("columns.tax"),
+      paid: t("columns.paid"),
+      outstanding: t("columns.outstanding"),
+      currency: t("columns.currency"),
+    },
+    fields: {
+      site: t("detail.site"),
+      vendorProfile: t("detail.vendorProfile"),
+      ledgerEntry: t("detail.ledgerEntry"),
+      document: t("detail.document"),
+      version: t("detail.version"),
+      created: t("detail.created"),
+      updated: t("detail.updated"),
+      notes: t("detail.notes"),
+    },
+    notStated: gapLabel,
+    notLinked: t("detail.notLinked"),
+    noDocument: t("detail.noDocument"),
+    noNotes: t("detail.noNotes"),
+    duplicate: t("duplicates.heading"),
+    detailLead: t("detail.lead"),
+    close: tCommon("actions.close"),
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
@@ -416,55 +505,17 @@ export default async function VendorInvoicesPage({
             </p>
           </div>
         ) : (
-          <TableScrollArea height={520}>
-            <Table>
-              <TableCaption>
-                {tCommon("pagination.showing", {
-                  from: 1,
-                  to: invoices.length,
-                  total: allInvoices.length,
-                })}
-              </TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("columns.vendor")}</TableHead>
-                  <TableHead>{t("columns.invoiceNo")}</TableHead>
-                  <TableHead>{t("columns.status")}</TableHead>
-                  <TableHead>{t("columns.issued")}</TableHead>
-                  <TableHead>{t("columns.due")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("columns.total")}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t("columns.paid")}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t("columns.outstanding")}
-                  </TableHead>
-                  <TableHead>{t("columns.currency")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => (
-                  <InvoiceRow
-                    key={invoice.id}
-                    invoice={invoice}
-                    locale={locale}
-                    asOf={asOf}
-                    gapLabel={gapLabel}
-                    isDuplicate={duplicateIds.has(invoice.id)}
-                    statusLabel={statusLabels[invoice.status]}
-                    labels={{
-                      overdueDays: (days) => t("overdue.days", { days }),
-                      notDue: t("overdue.notDue"),
-                      noDueDate: t("overdue.noDueDate"),
-                      duplicate: t("duplicates.heading"),
-                    }}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </TableScrollArea>
+          <>
+            <VendorInvoiceTable
+              rows={rows}
+              labels={tableLabels}
+              locale={locale}
+            />
+            {/* The affordance has to be said, not implied. A dotted underline
+                that only appears on hover is invisible to anyone who has not
+                already found it, and to every touch user. */}
+            <p className="text-xs text-muted-foreground">{t("detail.hint")}</p>
+          </>
         )}
         {mayExport ? (
           <p className="text-xs text-muted-foreground">{t("export.hint")}</p>
@@ -492,117 +543,6 @@ export default async function VendorInvoicesPage({
         </p>
       </section>
     </div>
-  )
-}
-
-interface InvoiceRowLabels {
-  overdueDays: (days: number) => string
-  notDue: string
-  noDueDate: string
-  duplicate: string
-}
-
-function InvoiceRow({
-  invoice,
-  locale,
-  asOf,
-  gapLabel,
-  isDuplicate,
-  statusLabel,
-  labels,
-}: {
-  invoice: VendorInvoice
-  locale: Locale
-  asOf: string
-  gapLabel: string
-  isDuplicate: boolean
-  statusLabel: string
-  labels: InvoiceRowLabels
-}): ReactNode {
-  const days = daysOverdue(invoice.dueOn, asOf)
-  const overdue = isOpenInvoice(invoice) && days !== null && days > 0
-
-  return (
-    <TableRow
-      data-duplicate={isDuplicate ? "" : undefined}
-      className={cn(
-        "border-l-2",
-        isDuplicate
-          ? "border-l-confidence-conflicted bg-confidence-conflicted/5"
-          : overdue
-            ? "border-l-confidence-inferred"
-            : "border-l-transparent"
-      )}
-    >
-      <TableCell className="max-w-[14rem] truncate font-medium">
-        {invoice.vendorName}
-        {isDuplicate ? (
-          // Visible marker, not colour alone. The row tint is the fast signal
-          // while scanning; this is the one that survives a screenshot in
-          // greyscale and reaches a screen reader.
-          <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-confidence-conflicted/50 px-2 py-0.5 text-[0.6875rem] text-confidence-conflicted">
-            <AlertTriangle className="size-3" aria-hidden="true" />
-            {labels.duplicate}
-          </span>
-        ) : null}
-      </TableCell>
-      <TableCell className="font-mono text-xs whitespace-nowrap">
-        {invoice.invoiceNo}
-      </TableCell>
-      <TableCell className="whitespace-nowrap">{statusLabel}</TableCell>
-      <TableCell className="whitespace-nowrap tabular-nums">
-        {formatDate(invoice.issuedOn, locale)}
-      </TableCell>
-      <TableCell className="whitespace-nowrap tabular-nums">
-        {invoice.dueOn === null ? (
-          <span className="text-muted-foreground">{labels.noDueDate}</span>
-        ) : (
-          <>
-            {formatDate(invoice.dueOn, locale)}
-            <span
-              className={cn(
-                "mt-0.5 block text-xs",
-                overdue ? "text-confidence-conflicted" : "text-muted-foreground"
-              )}
-            >
-              {overdue && days !== null
-                ? labels.overdueDays(days)
-                : labels.notDue}
-            </span>
-          </>
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <MoneyCell
-          minor={toMinor(invoice.totalAmount)}
-          currency={invoice.currency}
-          locale={locale}
-          gapLabel={gapLabel}
-        />
-      </TableCell>
-      <TableCell className="text-right">
-        <MoneyCell
-          minor={toMinor(invoice.paidAmount)}
-          currency={invoice.currency}
-          locale={locale}
-          gapLabel={gapLabel}
-        />
-      </TableCell>
-      <TableCell className="text-right">
-        <MoneyCell
-          minor={toMinor(invoice.outstandingAmount)}
-          currency={invoice.currency}
-          locale={locale}
-          gapLabel={gapLabel}
-          className="font-semibold"
-        />
-      </TableCell>
-      <TableCell className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase">
-        {invoice.currency ?? (
-          <span className="text-confidence-gap">{gapLabel}</span>
-        )}
-      </TableCell>
-    </TableRow>
   )
 }
 

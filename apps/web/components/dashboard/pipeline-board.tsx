@@ -1,15 +1,17 @@
 "use client"
 
 import { CalendarClock, Clock, Home, TriangleAlert } from "lucide-react"
-import { useMemo, useState, type ReactNode } from "react"
+import { useCallback, useMemo, useState, useTransition, type ReactNode } from "react"
+import { useRouter } from "next/navigation"
 
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/cn"
-import type { Locale, Money } from "@/lib/contracts"
+import type { ApiResponse, Locale, Money } from "@/lib/contracts"
 import { formatMoney } from "@/components/evidence/format"
 import { intlLocaleTag } from "@/lib/format"
 
@@ -23,7 +25,31 @@ import { intlLocaleTag } from "@/lib/format"
  * is kept here — a missing lead is named, a `null` probability is "no estimate"
  * and never 0%, deals stay in their own currency, and the empty stages are still
  * shown, because the shape of the funnel is the information.
+ *
+ * ## The board is no longer read-only
+ *
+ * `PATCH /api/site-management/buyer-pipeline` used to answer 503, so the page
+ * said so in words instead of shipping a control that could not work. Migration
+ * 21 restored the UPDATE grant, so the popup now carries a stage-change control
+ * — inside the existing dialog rather than in a second one, because a deal is
+ * moved while looking at it, not from a separate screen.
+ *
+ * The control is **absent** rather than disabled for a reader who may not move
+ * entries: `move` is undefined and nothing renders. A disabled button advertises
+ * an operation and refuses it in the same breath.
+ *
+ * After a successful move nothing here is patched locally. `router.refresh()`
+ * re-runs the Server Component and the new stage, "days at this stage" and
+ * "previous stage" come back from the row the `track_pipeline_stage_change`
+ * trigger wrote. Patching state here would show a client-computed day count that
+ * the database never agreed to.
  */
+
+const PIPELINE_ENDPOINT = "/api/site-management/buyer-pipeline"
+
+/** `updatePipelineSchema` requires a substantive reason, not a keystroke. */
+const REASON_MIN = 8
+const REASON_MAX = 500
 
 export type PipelineStage = string
 
@@ -40,6 +66,33 @@ export interface BoardEntry {
   enteredStageAt: string
   previousStage: PipelineStage | null
   blocker: string | null
+  /** Optimistic concurrency. Travels with the move; a mismatch is a 409. */
+  version: number
+}
+
+/**
+ * The stage-change control's strings. Supplied only when the reader holds
+ * `buyer_pipeline:update` — its absence is what hides the control.
+ */
+export interface PipelineMoveLabels {
+  heading: string
+  stageLabel: string
+  stagePlaceholder: string
+  reasonLabel: string
+  reasonPlaceholder: string
+  reasonRequired: string
+  /**
+   * The honest note about where the reason goes. `buyer_pipeline_entries` has no
+   * column for it, so it is checked and then discarded; asking for a sentence
+   * and silently binning it without saying so would be the kind of quiet lie
+   * this product exists not to tell.
+   */
+  reasonNotStored: string
+  submit: string
+  busy: string
+  conflict: string
+  genericError: string
+  unavailable: string
 }
 
 export interface BoardStage {
@@ -140,16 +193,115 @@ export function PipelineBoard({
   stages,
   labels,
   locale,
+  move,
 }: {
   stages: readonly BoardStage[]
   labels: PipelineBoardLabels
   locale: Locale
+  /** Present only for a reader who may move entries. Absent hides the control. */
+  move?: PipelineMoveLabels
 }): ReactNode {
-  const [selected, setSelected] = useState<BoardEntry | null>(null)
+  const router = useRouter()
+  /**
+   * The OPEN CARD'S ID, never a snapshot of the card.
+   *
+   * This held a `BoardEntry` object captured at click time, and that made the
+   * move control fail permanently the first time it lost a race. On a 409 the
+   * handler calls `router.refresh()`, which re-renders `stages` with the
+   * winner's version — but the captured object still carried the stale
+   * `version`, so every retry sent the same losing `expectedVersion` and got
+   * the same 409, under a message telling the operator to try again.
+   *
+   * Deriving the entry from `stages` instead means a refresh updates the open
+   * popup too: the version is current, and so are `previous_stage` and
+   * `entered_stage_at`, which the database trigger has just rewritten.
+   */
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const selected = useMemo(
+    () =>
+      selectedId === null
+        ? null
+        : (stages
+            .flatMap((stage) => stage.entries)
+            .find((entry) => entry.id === selectedId) ?? null),
+    [stages, selectedId]
+  )
+  const [pending, startTransition] = useTransition()
+  const [busy, setBusy] = useState(false)
+  const [target, setTarget] = useState("")
+  const [reason, setReason] = useState("")
+  const [moveError, setMoveError] = useState<string | null>(null)
   const maxCount = useMemo(
     () => Math.max(1, ...stages.map((s) => s.count)),
     [stages]
   )
+
+  /**
+   * Opening a different card must not inherit the last card's half-typed reason
+   * — that is how a note about one deal ends up submitted against another.
+   */
+  const open = useCallback((entry: BoardEntry) => {
+    setSelectedId(entry.id)
+    setTarget("")
+    setReason("")
+    setMoveError(null)
+  }, [])
+
+  const submitMove = useCallback(
+    async (entry: BoardEntry, stage: string, why: string) => {
+      if (move === undefined) return
+      setBusy(true)
+      setMoveError(null)
+      try {
+        const response = await fetch(PIPELINE_ENDPOINT, {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            entryId: entry.id,
+            expectedVersion: entry.version,
+            stage,
+            reason: why,
+          }),
+        })
+        const payload = (await response.json()) as ApiResponse<unknown>
+
+        if (response.ok && payload.ok) {
+          setSelectedId(null)
+          setTarget("")
+          setReason("")
+          // Re-read rather than patch: the trigger owns `previous_stage` and
+          // `entered_stage_at`, and a locally-computed "days at this stage"
+          // would be a number the database never wrote.
+          startTransition(() => router.refresh())
+          return
+        }
+
+        const code = payload.ok ? null : payload.error.code
+        if (response.status === 409 || code === "conflict") {
+          // Somebody else moved this deal first. Say so and re-render against
+          // the truth; retrying silently would apply this operator's intent to
+          // an entry that is no longer the one they read.
+          setMoveError(move.conflict)
+          startTransition(() => router.refresh())
+          return
+        }
+        if (code === "persistence_unavailable") {
+          // 503. The move did NOT happen, and the popup stays open saying so
+          // rather than closing as though it had.
+          setMoveError(move.unavailable)
+          return
+        }
+        setMoveError(payload.ok ? move.genericError : payload.error.message)
+      } catch {
+        setMoveError(move.genericError)
+      } finally {
+        setBusy(false)
+      }
+    },
+    [move, router]
+  )
+
+  const working = busy || pending
 
   const daysText = (days: number | null, enteredAt: string): string =>
     days === null
@@ -225,7 +377,7 @@ export function PipelineBoard({
                   <li key={entry.id} className="min-w-0">
                     <button
                       type="button"
-                      onClick={() => setSelected(entry)}
+                      onClick={() => open(entry)}
                       className="flex h-full w-full flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all duration-200 outline-none hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_32px_-24px_rgb(0_0_0/0.5)] focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       <div className="flex items-start gap-3">
@@ -304,8 +456,11 @@ export function PipelineBoard({
       {/* Full-record popup. */}
       <Dialog
         open={selected !== null}
-        onOpenChange={(open) => {
-          if (!open) setSelected(null)
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setSelectedId(null)
+            setMoveError(null)
+          }
         }}
       >
         {selected !== null ? (
@@ -392,6 +547,24 @@ export function PipelineBoard({
                 </span>
               </p>
             ) : null}
+
+            {move === undefined ? null : (
+              <MoveForm
+                entry={selected}
+                stages={stages}
+                labels={move}
+                working={working}
+                error={moveError}
+                target={target}
+                reason={reason}
+                onTargetChange={setTarget}
+                onReasonChange={setReason}
+                onInvalid={setMoveError}
+                onSubmit={(entry, stage, why) => {
+                  void submitMove(entry, stage, why)
+                }}
+              />
+            )}
           </DialogContent>
         ) : null}
       </Dialog>
@@ -404,6 +577,136 @@ function stageLabelOf(
   stage: PipelineStage
 ): string {
   return stages.find((s) => s.stage === stage)?.label ?? stage
+}
+
+/**
+ * The stage-change control, inside the record it changes.
+ *
+ * Every stage but the one the entry is already in is offered. The current stage
+ * is omitted rather than disabled because "move it to where it already is" is
+ * not an operation — the repository refuses it, and an option that exists only
+ * to be rejected is noise in a nine-item list.
+ *
+ * The reason is required by `updatePipelineSchema` at eight characters, and the
+ * button is disabled until it is met so the operator learns the rule before the
+ * round trip rather than from a 422. Where that sentence ends up is stated under
+ * the field: nowhere. The entry has no column for it.
+ *
+ * Presentational and controlled — the board owns the state, so closing the
+ * popup discards a half-typed reason instead of carrying it to the next deal.
+ */
+function MoveForm({
+  entry,
+  stages,
+  labels,
+  working,
+  error,
+  target,
+  reason,
+  onTargetChange,
+  onReasonChange,
+  onInvalid,
+  onSubmit,
+}: {
+  entry: BoardEntry
+  stages: readonly BoardStage[]
+  labels: PipelineMoveLabels
+  working: boolean
+  error: string | null
+  target: string
+  reason: string
+  onTargetChange: (value: string) => void
+  onReasonChange: (value: string) => void
+  onInvalid: (message: string) => void
+  onSubmit: (entry: BoardEntry, stage: string, reason: string) => void
+}): ReactNode {
+  const trimmedReason = reason.trim()
+  const ready = target !== "" && trimmedReason.length >= REASON_MIN
+
+  return (
+    <form
+      className="flex flex-col gap-3 rounded-lg border border-border bg-muted/30 p-3"
+      onSubmit={(event) => {
+        event.preventDefault()
+        if (trimmedReason.length < REASON_MIN) {
+          onInvalid(labels.reasonRequired)
+          return
+        }
+        onSubmit(entry, target, trimmedReason)
+      }}
+    >
+      <h3 className="text-sm font-medium text-foreground">{labels.heading}</h3>
+
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor={`move-stage-${entry.id}`}
+          className="text-sm font-medium text-foreground"
+        >
+          {labels.stageLabel}
+        </label>
+        <select
+          id={`move-stage-${entry.id}`}
+          required
+          value={target}
+          disabled={working}
+          onChange={(event) => onTargetChange(event.target.value)}
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-60"
+        >
+          <option value="">{labels.stagePlaceholder}</option>
+          {stages
+            .filter((stage) => stage.stage !== entry.stage)
+            .map((stage) => (
+              <option key={stage.stage} value={stage.stage}>
+                {stage.label}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor={`move-reason-${entry.id}`}
+          className="text-sm font-medium text-foreground"
+        >
+          {labels.reasonLabel}
+        </label>
+        <textarea
+          id={`move-reason-${entry.id}`}
+          required
+          rows={3}
+          minLength={REASON_MIN}
+          maxLength={REASON_MAX}
+          value={reason}
+          disabled={working}
+          placeholder={labels.reasonPlaceholder}
+          aria-describedby={`move-reason-note-${entry.id}`}
+          onChange={(event) => onReasonChange(event.target.value)}
+          className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-60"
+        />
+        <p
+          id={`move-reason-note-${entry.id}`}
+          className="text-xs text-muted-foreground"
+        >
+          {labels.reasonNotStored}
+        </p>
+      </div>
+
+      {error === null ? null : (
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-foreground"
+        >
+          {error}
+        </p>
+      )}
+
+      <div>
+        <Button type="submit" size="sm" disabled={working || !ready}>
+          {working ? labels.busy : labels.submit}
+        </Button>
+      </div>
+    </form>
+  )
 }
 
 function Chip({

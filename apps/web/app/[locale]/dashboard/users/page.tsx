@@ -26,13 +26,14 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { GovernanceTableFrame } from "@/components/governance/governance-table"
+import { UserActivationPanel } from "@/components/governance/user-activation-panel"
 import { getUserProfile } from "@/lib/auth"
 import { roles, type Locale, type Role } from "@/lib/contracts"
 import { formatDate } from "@/lib/format"
 import { getProfiles } from "@/lib/governance-repository"
 import { hasPermission } from "@/lib/rbac"
 
-import { assignRole } from "./actions"
+import { assignRole, setActivation } from "./actions"
 
 /**
  * /[locale]/dashboard/users — the people directory.             Owner: W3-F
@@ -279,23 +280,55 @@ export default async function UsersPage({
       </DashboardSection>
 
       {mayManage ? (
-        <DashboardSection title={t("assign")} description={t("assignLead")}>
-          <RoleAssignmentPanel
-            action={assignRole}
-            locale={locale}
-            candidates={candidates}
-            roleOptions={roleOptions}
-            labels={{
-              person: t("person"),
-              role: t("columns.role"),
-              submit: t("submit"),
-              submitting: t("submitting"),
-              noCandidates: t("noCandidates"),
-              elevationWarning: t("elevationWarning"),
-              statusHeading: t("statusHeading"),
-            }}
-          />
-        </DashboardSection>
+        <>
+          <DashboardSection title={t("assign")} description={t("assignLead")}>
+            <RoleAssignmentPanel
+              action={assignRole}
+              locale={locale}
+              candidates={candidates}
+              roleOptions={roleOptions}
+              labels={{
+                person: t("person"),
+                role: t("columns.role"),
+                submit: t("submit"),
+                submitting: t("submitting"),
+                noCandidates: t("noCandidates"),
+                elevationWarning: t("elevationWarning"),
+                statusHeading: t("statusHeading"),
+              }}
+            />
+          </DashboardSection>
+
+          {/* The second authority control. `setActivation` was written by W3-F
+              and had no caller until now, so the "deactivate control on
+              /dashboard/users" that migration 21 describes as shipped-and-broken
+              was in fact absent. Same candidate list as the role panel — self
+              deactivation is refused by `decideActivationChange` under the same
+              separation-of-duties rule, so offering it would be offering a
+              guaranteed failure. */}
+          <DashboardSection
+            title={t("activation")}
+            description={t("activationLead")}
+          >
+            <UserActivationPanel
+              action={setActivation}
+              locale={locale}
+              candidates={candidates}
+              labels={{
+                person: t("person"),
+                currentStatus: t("currentStatus"),
+                active: t("active"),
+                inactive: t("inactive"),
+                block: t("blockSubmit"),
+                unblock: t("unblockSubmit"),
+                submitting: t("submitting"),
+                noCandidates: t("noCandidates"),
+                note: t("activationNote"),
+                statusHeading: t("statusHeading"),
+              }}
+            />
+          </DashboardSection>
+        </>
       ) : (
         <GovernanceNotice tone="info">{t("readOnlyNotice")}</GovernanceNotice>
       )}

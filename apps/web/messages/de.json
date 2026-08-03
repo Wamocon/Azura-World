@@ -960,7 +960,6 @@
       "count": "{count, plural, one {# Anfrage} other {# Anfragen}}",
       "empty": "Keine Anfragen.",
       "seedNotice": "Demodaten: Es wird ein Ausschnitt der erfassten Anfragen gezeigt, keine Live-Daten.",
-      "readOnlyNotice": "Diese Seite zeigt Anfragen nur an. Neue Anfragen lassen sich noch nicht speichern, weil der Schreibweg zur Datenbank fehlt.",
       "columns": {
         "name": "Name",
         "channel": "Kanal",
@@ -1030,6 +1029,32 @@
         "exhibition": "Messe",
         "partner_agent": "Partnermakler",
         "unknown": "Unbekannt"
+      },
+      "new": {
+        "trigger": "Neue Anfrage",
+        "heading": "Anfrage erfassen",
+        "lead": "Wer sich gemeldet hat, über welchen Kanal, und wonach gefragt wurde.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Vor- und Nachname",
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "name@example.com",
+        "phoneLabel": "Telefon (optional)",
+        "phonePlaceholder": "+90 532 000 00 00",
+        "sourceLabel": "Kanal",
+        "unitLabel": "Wohnung (optional)",
+        "unitPlaceholder": "AZW-B03-0412",
+        "unitHint": "Der Wohnungscode, falls die Anfrage eine bestimmte betrifft.",
+        "messageLabel": "Was gesagt wurde",
+        "messagePlaceholder": "Budget, gewünschter Grundriss, Besichtigungstermin.",
+        "afterNote": "Die Anfrage wird als neu und ohne Zuständigen gespeichert. Es wird niemand automatisch benachrichtigt.",
+        "submit": "Speichern",
+        "busy": "Wird gespeichert…",
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "nameRequired": "Nennen Sie den Namen der Person, die sich gemeldet hat.",
+        "emailRequired": "Eine E-Mail-Adresse ist erforderlich.",
+        "genericError": "Die Anfrage wurde nicht gespeichert. Nichts wurde geschrieben.",
+        "unavailable": "Die Datenbank nahm den Schreibvorgang nicht an; die Anfrage wurde nicht gespeichert."
       }
     },
     "pipeline": {
@@ -1037,7 +1062,6 @@
       "lead": "Vom Erstkontakt bis zur Schlüsselübergabe.",
       "empty": "Keine Vorgänge in der Pipeline.",
       "seedNotice": "Demodaten: Es wird ein Ausschnitt der erfassten Vorgänge gezeigt, keine Live-Daten.",
-      "readOnlyNotice": "Diese Seite zeigt die Pipeline nur an. Ein Vorgang lässt sich noch nicht in die nächste Stufe verschieben, weil der Schreibweg zur Datenbank fehlt.",
       "truncatedNotice": "Die Zahlen unten sind aus {summarised} von {total} Vorgängen berechnet. Alles darüber ist nicht enthalten.",
       "summary": {
         "heading": "Überblick",
@@ -1084,7 +1108,21 @@
         "handover": "Übergabe",
         "closed": "Abgeschlossen"
       },
-      "close": "Schließen"
+      "close": "Schließen",
+      "move": {
+        "heading": "In andere Stufe verschieben",
+        "stageLabel": "Neue Stufe",
+        "stagePlaceholder": "Stufe wählen",
+        "reasonLabel": "Grund",
+        "reasonPlaceholder": "Warum der Vorgang sich bewegt, in einem Satz.",
+        "reasonRequired": "Nennen Sie einen Grund mit mindestens 8 Zeichen.",
+        "reasonNotStored": "Die Bewegung wird mit Ihrem Namen und der Zeit erfasst. Der Grund wird geprüft, aber nicht behalten: der Vorgang hat kein Feld dafür.",
+        "submit": "Verschieben",
+        "busy": "Wird verschoben…",
+        "conflict": "Jemand anderes hat den Vorgang zuerst verschoben. Die Tafel wurde neu geladen.",
+        "genericError": "Der Vorgang wurde nicht verschoben. Nichts wurde geändert.",
+        "unavailable": "Die Datenbank nahm den Schreibvorgang nicht an; der Vorgang blieb, wo er war."
+      }
     },
     "finance": {
       "title": "Finanzen",
@@ -1424,6 +1462,22 @@
       "export": {
         "csv": "Als CSV herunterladen",
         "hint": "Die Datei enthält genau den aktuellen Filter, und der Dateiname nennt ihn."
+      },
+      "detail": {
+        "lead": "Rechnungssatz",
+        "open": "Details zu Rechnung {invoiceNo} von {vendor}",
+        "hint": "Lieferantennamen wählen, um den Rechnungssatz zu öffnen.",
+        "site": "Standort",
+        "vendorProfile": "Lieferantensatz",
+        "ledgerEntry": "Buchungssatz",
+        "notLinked": "Kein Buchungssatz verknüpft",
+        "document": "Dokument",
+        "noDocument": "Kein Dokument hinterlegt",
+        "notes": "Notiz",
+        "noNotes": "Keine Notiz erfasst",
+        "version": "Satzversion",
+        "created": "Erstellt",
+        "updated": "Geändert"
       }
     },
     "tickets": {
@@ -1594,7 +1648,9 @@
         "genericError": "Die Anfrage konnte nicht gesendet werden. Ihre Eingaben stehen noch da — bitte erneut versuchen.",
         "unavailable": "Der Speicherdienst antwortet gerade nicht. Ihre Anfrage wurde nicht gespeichert — bitte gleich noch einmal versuchen.",
         "afterNote": "Die Anfrage wird als „offen“ gespeichert und bleibt ohne Zuständige:n, bis jemand aus dem Team sie übernimmt. Sie können sie hier verfolgen und kommentieren."
-      }
+      },
+      "openTicket": "Ticket {ticketNo} öffnen: {title}",
+      "severityLabel": "Schweregrad"
     },
     "activities": {
       "title": "Aktivitäten",
@@ -1842,6 +1898,52 @@
       "failed": {
         "object": "Die Datei konnte nicht abgelegt werden.",
         "row": "Die Datei liegt in der Ablage, der Eintrag dazu fehlt."
+      },
+      "detail": {
+        "hint": "Für den vollständigen Datensatz den Belegnamen wählen.",
+        "rowAction": "Vollständigen Datensatz zu {title} öffnen",
+        "lead": "Beleg",
+        "notStated": "K. A.",
+        "noReviewer": "Noch nicht geprüft",
+        "fileSection": "Datei",
+        "fields": {
+          "documentId": "Beleg-ID",
+          "mimeType": "Dateityp",
+          "checksum": "Prüfsumme (SHA-256)",
+          "storagePath": "Ablageschlüssel",
+          "bucket": "Bucket",
+          "uploadedBy": "Hochgeladen von",
+          "reviewedBy": "Geprüft von",
+          "reviewedAt": "Geprüft am",
+          "retention": "Aufbewahrungsklasse",
+          "unit": "Einheit",
+          "site": "Standort"
+        },
+        "visibility": {
+          "private": "Privat",
+          "company": "Firmenweit",
+          "unit": "Einheit"
+        },
+        "retention": {
+          "identity": "Identität",
+          "legal": "Recht",
+          "finance": "Finanzen",
+          "service": "Service",
+          "guest": "Gast",
+          "general": "Allgemein"
+        },
+        "download": {
+          "hint": "Die Datei liegt im privaten Speicher. Dies fordert einen befristeten Link an — vorher wird nichts heruntergeladen.",
+          "request": "Download-Link anfordern",
+          "requesting": "Läuft …",
+          "ready": "Link erstellt.",
+          "expires": "Gültig bis {time}.",
+          "expired": "Der Link ist abgelaufen. Bitte einen neuen anfordern.",
+          "forbidden": "Ihre Rolle darf diese Datei nicht abrufen.",
+          "invalid": "Dieser Eintrag hat keine gültige Kennung; es kann kein Link angefordert werden.",
+          "failed": "Es wurde kein Link erstellt und nichts heruntergeladen. Die Dateiablage hat nicht geantwortet.",
+          "seed": "Dieser Eintrag stammt aus dem Demo-Satz. Es gibt keine Datei, also keinen Link."
+        }
       }
     },
     "compliance": {
@@ -1924,6 +2026,44 @@
         "title": "Kein Zugriff auf die Compliance",
         "message": "Ihre Rolle darf diese Prüfungen nicht sehen. Die Adresse bleibt gültig.",
         "permissionLabel": "Benötigtes Recht:"
+      },
+      "detail": {
+        "hint": "Auf den Namen einer Prüfung klicken zeigt den ganzen Datensatz.",
+        "lead": "Compliance-Prüfung",
+        "readOnly": "Diese Ansicht liest nur. Entscheidungen fallen nicht hier; gezeigt wird, was der Datensatz enthält.",
+        "statesNote": "Links was der Datensatz sagt, rechts was der Nachweis zeigt. Getrennt gehalten, weil der Unterschied der eigentliche Befund ist.",
+        "overclaimed": "Der Datensatz sagt bestanden, der Nachweis zeigt es nicht.",
+        "explainState": "Was bedeutet „{term}“?",
+        "openRow": "Details der Prüfung {check} öffnen",
+        "subjectType": "Objektart",
+        "subjectId": "Objektdatensatz",
+        "riskLevel": "Risikostufe",
+        "risk": {
+          "low": "Gering",
+          "medium": "Mittel",
+          "high": "Hoch",
+          "critical": "Kritisch"
+        },
+        "rationale": "Begründung",
+        "noRationale": "Keine Begründung erfasst.",
+        "decidedBy": "Von",
+        "decidedAt": "Entschieden am",
+        "notDecided": "Offen",
+        "humanDecision": "Mensch entscheidet",
+        "humanRequired": "Prüfung",
+        "humanNotRequired": "Nicht nötig",
+        "evidenceHeading": "Nachweisdokument",
+        "evidenceId": "Dokumentdatensatz",
+        "evidenceUnreadable": "Ein Dokument ist verknüpft, sein Datensatz war nicht lesbar.",
+        "checkId": "Prüfdatensatz",
+        "company": "Firma",
+        "site": "Standort",
+        "noSite": "Kein Standort",
+        "version": "Version",
+        "createdAt": "Erstellt",
+        "updatedAt": "Aktualisiert",
+        "metadata": "Zusatzdaten",
+        "noMetadata": "Keine Zusatzdaten."
       }
     },
     "reports": {
@@ -2160,7 +2300,18 @@
         "title": "Einladungen",
         "lead": "Einmalige, befristete Zugänge für neue Personen.",
         "unavailable": "Einladungen sind noch nicht möglich. Wir zeigen kein Formular, das nirgends speichern würde."
-      }
+      },
+      "privilegeFault": "Die Datenbank hat die Anweisung abgelehnt. Ihre Rechte sind nicht das Problem — das Schreibrecht auf der Benutzertabelle fehlt, oder die Datenbank sieht diese Sitzung nicht als Administrator. Es wurde nichts geändert. Das muss ein Operator beheben.",
+      "staleWrite": "Jemand anderes hat dieses Konto geändert, während diese Seite offen war. Es wurde nichts geändert. Die Liste unten zeigt jetzt die gespeicherten Werte — prüfen Sie sie und wiederholen Sie Ihre Änderung.",
+      "writeRejected": "Die Datenbank hat diese Werte abgelehnt. Es wurde nichts geändert.",
+      "subjectMissing": "Dieses Konto ist nicht mehr in Ihrer Ansicht. Es wurde nichts geändert.",
+      "directoryUnreadable": "Die Kontoliste konnte nicht gelesen werden, deshalb wurde diese Änderung nicht versucht. Es wurde nichts geändert.",
+      "activation": "Konto sperren oder entsperren",
+      "activationLead": "Nur Administratoren. Eine Sperre beendet den Zugang sofort. Nichts wird gelöscht.",
+      "activationNote": "Niemand darf das eigene Konto sperren, und der letzte aktive Administrator kann nicht gesperrt werden.",
+      "blockSubmit": "Konto sperren",
+      "unblockSubmit": "Konto entsperren",
+      "currentStatus": "Aktueller Status"
     },
     "admin": {
       "title": "Administration",

@@ -1772,6 +1772,348 @@ export async function settleVendorInvoice(
 }
 
 // ---------------------------------------------------------------------------
+// Registering a vendor invoice
+// ---------------------------------------------------------------------------
+
+export interface CreateVendorInvoiceInput extends FinanceAccess {
+  companyId: string
+  vendorProfileId: string
+  siteId?: string
+  /** Major units. */
+  totalAmount: number
+  currency: CurrencyCode
+  issuedOn: string
+  dueOn: string
+  /** The vendor's own invoice number. Stored as `invoice_no`. */
+  reference: string
+  description?: string
+}
+
+/**
+ * Register a supplier invoice, unpaid.
+ *
+ * ## What it fixes
+ *
+ * `POST /api/site-management/vendor-invoices` was a declared gap. As with every
+ * other one in this repository the policy was already correct
+ * (`vendor_invoices_insert_finance`, `can_write_company_finance()`) and the
+ * table GRANT had been revoked; migration 21 restored it.
+ *
+ * ## The invoice starts owing its whole value
+ *
+ * `paid_amount` is left at its column default of 0 and is never accepted as
+ * input. An invoice that could be registered as already part-paid would let the
+ * money trail begin halfway through, with no payment row anywhere to account for
+ * the difference. Settling is `settleVendorInvoice()`, which is optimistically
+ * concurrent and writes an auditable change.
+ *
+ * `status` is likewise not an input: the column default is `draft`.
+ *
+ * ## vendor_name is denormalised on purpose, and this fills it
+ *
+ * The column is NOT NULL while the schema only carries `vendorProfileId`, so the
+ * name is read from the profile at registration time and stored beside the id.
+ * That is deliberate in the schema, not an oversight to route around: an invoice
+ * must still say who issued it years later, after the supplier's profile has
+ * been renamed or deactivated. The lookup runs on the caller's client, so a
+ * vendor id the caller cannot read resolves to nothing and is refused as
+ * `not_found` rather than confirming that the id exists.
+ */
+export async function createVendorInvoice(
+  input: CreateVendorInvoiceInput
+): Promise<RepositoryResult<VendorInvoice>> {
+  if (!(input.totalAmount > 0)) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "An invoice must be greater than zero.",
+      retryable: false,
+    })
+  }
+  if (Date.parse(input.dueOn) < Date.parse(input.issuedOn)) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "An invoice cannot fall due before it was issued.",
+      retryable: false,
+    })
+  }
+
+  return withRepository(
+    async (client) => {
+      const vendorRow = unwrap<unknown>(
+        await client
+          .from("profiles")
+          .select("id, full_name, email")
+          .eq("id", input.vendorProfileId)
+          .maybeSingle(),
+        null
+      )
+      if (vendorRow === null) {
+        throw new RepositoryError({
+          code: "not_found",
+          message: "That supplier was not found.",
+          retryable: false,
+        })
+      }
+      const vendor = asRecord(vendorRow)
+      const vendorName =
+        asNullableString(vendor["full_name"]) ??
+        asNullableString(vendor["email"]) ??
+        input.vendorProfileId
+
+      const response = await client
+        .from(T_VENDOR_INVOICES)
+        .insert({
+          company_id: input.companyId,
+          vendor_profile_id: input.vendorProfileId,
+          vendor_name: vendorName,
+          invoice_no: input.reference,
+          total_amount: input.totalAmount,
+          currency: input.currency,
+          issued_on: input.issuedOn,
+          due_on: input.dueOn,
+          // Left to the column defaults, and not accepted as input. See above.
+          //   status       -> 'draft'
+          //   paid_amount  -> 0
+          //   tax_amount   -> 0
+          ...(input.siteId === undefined ? {} : { site_id: input.siteId }),
+          ...(input.description === undefined ||
+          input.description.trim() === ""
+            ? {}
+            : { notes: input.description.trim() }),
+        })
+        .select(VENDOR_INVOICE_COLUMNS)
+        .maybeSingle()
+
+      const error: { code?: unknown } | null = response.error ?? null
+      if (error !== null && error.code === "23505") {
+        throw new RepositoryError({
+          code: "conflict",
+          message: "That invoice number is already registered.",
+          retryable: false,
+        })
+      }
+
+      const row = unwrap<unknown>(response, null)
+      if (row === null) {
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The invoice could not be saved.",
+          retryable: true,
+        })
+      }
+      return mapVendorInvoice(row)
+    },
+    () => {
+      // Seed mode SIMULATES: returned, stored nowhere, because the seed
+      // builders are pure and must stay deterministic across runs.
+      const invoice: VendorInvoice = {
+        id: `f2ffffff-0000-4000-8000-${input.reference.slice(-12).padStart(12, "0")}`,
+        companyId: input.companyId,
+        siteId: input.siteId ?? null,
+        vendorProfileId: input.vendorProfileId,
+        vendorName: input.vendorProfileId,
+        invoiceNo: input.reference,
+        status: "draft",
+        totalAmount: input.totalAmount,
+        taxAmount: 0,
+        paidAmount: 0,
+        outstandingAmount: input.totalAmount,
+        currency: input.currency,
+        issuedOn: input.issuedOn,
+        dueOn: input.dueOn,
+        ledgerEntryId: null,
+        documentPath: null,
+        notes: input.description ?? null,
+        version: 1,
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
+      }
+      return invoice
+    },
+    "finance.createVendorInvoice"
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Recording a payment
+// ---------------------------------------------------------------------------
+
+export interface CreatePaymentInput extends FinanceAccess {
+  companyId: string
+  /** Major units. The caller parses the operator's own locale before this. */
+  amount: number
+  currency: CurrencyCode
+  direction: PaymentDirection
+  /** How the money arrived — `bank_transfer`, `cash`, … Stored as `provider`. */
+  method: string
+  /** The operator's own reference. Unique per provider where present. */
+  reference: string
+  /** When the money was actually received, not when this row was written. */
+  receivedAt: string
+  vendorInvoiceId?: string
+  unitId?: string
+  residentId?: string
+  walletId?: string
+  /** Replay guard, unique per company. A repeat is a `duplicate`, not a second payment. */
+  idempotencyKey?: string
+  createdBy?: string | null
+  note?: string
+}
+
+/**
+ * Record one payment.
+ *
+ * ## The branch this replaces
+ *
+ * `dashboard/finance/actions.ts → recordPayment()` did every hard part already —
+ * authorisation, parsing the amount in the writer's own locale, the per-currency
+ * approval threshold, allocation against an invoice the caller can actually
+ * read, and the over-payment check — and then stopped at step 7 with a comment
+ * naming exactly what was missing:
+ *
+ *     Supabase IS configured and `authenticated` still holds no INSERT on
+ *     `payment_transactions` (migration 07 revokes it) … Reporting success here
+ *     would be the fake write the honesty audit grades HIGH, so it stays a 503
+ *     until the RPC lands. When it does, this branch calls it and maps 23505 to
+ *     `{ status: "duplicate" }` — the unique index, not this function, is what
+ *     makes that true.
+ *
+ * Migration 21 restored that INSERT. This is the function that comment was
+ * waiting for, and it keeps the contract the comment specified: 23505 is
+ * reported as a duplicate and is not retried.
+ *
+ * ## What it does NOT do, deliberately
+ *
+ * It does not post to the ledger. `payment_transactions.ledger_entry_id` is
+ * nullable precisely so a receipt can be recorded before it is journalled, and
+ * journalling is a different operation with a different rule —
+ * `assert_ledger_group_balanced` requires balanced legs per currency within one
+ * `transaction_group_id`, so a payment cannot become a single ledger row. A
+ * function that quietly wrote one unbalanced leg would either fail at COMMIT or,
+ * worse, teach the next reader that it is allowed.
+ *
+ * It also does not touch a wallet balance or an invoice's `paid_amount`.
+ * Settling an invoice is `settleVendorInvoice()`, which is optimistically
+ * concurrent; doing it as a side effect here would bypass that guard.
+ *
+ * So the honest claim on success is "the payment is recorded", and the caller
+ * must not render it as "allocated" or "posted".
+ *
+ * ## Status
+ *
+ * `captured`, with `paid_at` set to when the money actually arrived. The row is
+ * a record of something that already happened at a bank, not a request to a
+ * gateway — `pending` would describe a capture this product never performs, and
+ * `payment_transactions_captured_has_time` requires the timestamp, which is why
+ * `receivedAt` is not optional.
+ */
+export async function createPayment(
+  input: CreatePaymentInput
+): Promise<RepositoryResult<PaymentTransaction>> {
+  if (!(input.amount > 0)) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "A payment must be greater than zero.",
+      retryable: false,
+    })
+  }
+
+  const payload: Record<string, unknown> = {
+    company_id: input.companyId,
+    provider: input.method,
+    provider_reference: input.reference,
+    direction: input.direction,
+    status: "captured",
+    amount: input.amount,
+    currency: input.currency,
+    paid_at: input.receivedAt,
+    // Never set from here. See the doc comment.
+    ledger_entry_id: null,
+    ...(input.vendorInvoiceId === undefined
+      ? {}
+      : { vendor_invoice_id: input.vendorInvoiceId }),
+    ...(input.unitId === undefined ? {} : { unit_id: input.unitId }),
+    ...(input.residentId === undefined
+      ? {}
+      : { resident_id: input.residentId }),
+    ...(input.walletId === undefined ? {} : { wallet_id: input.walletId }),
+    ...(input.idempotencyKey === undefined
+      ? {}
+      : { idempotency_key: input.idempotencyKey }),
+    ...(input.createdBy === undefined || input.createdBy === null
+      ? {}
+      : { created_by: input.createdBy }),
+    ...(input.note === undefined || input.note.trim() === ""
+      ? {}
+      : { provider_payload: { note: input.note.trim() } }),
+  }
+
+  return withRepository(
+    async (client) => {
+      const response = await client
+        .from(T_PAYMENTS)
+        .insert(payload)
+        .select(PAYMENT_COLUMNS)
+        .maybeSingle()
+
+      // Two unique indexes can raise 23505 here — `ux_payment_transactions_
+      // idempotency` on (company_id, idempotency_key) and `ux_payment_
+      // transactions_provider_reference` on (provider, provider_reference).
+      // Both mean the same thing to an operator: this money has already been
+      // entered. Reporting it as a duplicate rather than an error is what stops
+      // a double-click from becoming two receipts.
+      const error: { code?: unknown; message?: unknown } | null =
+        response.error ?? null
+      if (error !== null && error.code === "23505") {
+        throw new RepositoryError({
+          code: "conflict",
+          message: "That payment has already been recorded.",
+          retryable: false,
+        })
+      }
+
+      const row = unwrap<unknown>(response, null)
+      if (row === null) {
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The payment could not be recorded.",
+          retryable: true,
+        })
+      }
+      return mapPaymentTransaction(row)
+    },
+    () => {
+      // Seed mode SIMULATES: returned so the console can be exercised, stored
+      // nowhere, because the seed builders are pure and must stay deterministic.
+      const payment: PaymentTransaction = {
+        id: `f1ffffff-0000-4000-8000-${input.reference.slice(-12).padStart(12, "0")}`,
+        companyId: input.companyId,
+        ledgerEntryId: null,
+        vendorInvoiceId: input.vendorInvoiceId ?? null,
+        walletId: input.walletId ?? null,
+        unitId: input.unitId ?? null,
+        residentId: input.residentId ?? null,
+        provider: input.method,
+        providerReference: input.reference,
+        direction: input.direction,
+        status: "captured",
+        amount: input.amount,
+        currency: input.currency,
+        paidAt: input.receivedAt,
+        failureReason: null,
+        idempotencyKey: input.idempotencyKey ?? null,
+        providerPayload: input.note === undefined ? {} : { note: input.note },
+        createdBy: input.createdBy ?? null,
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
+      }
+      return payment
+    },
+    "finance.createPayment"
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Re-exports used by callers that need the currency list or a Money value
 // ---------------------------------------------------------------------------
 

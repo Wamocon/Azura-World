@@ -3,6 +3,10 @@ import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
 import { CurrencyTotals } from "@/components/inventory/currency-totals"
+import {
+  NewLeadForm,
+  type NewLeadLabels,
+} from "@/components/leads/new-lead-form"
 import { formatMoney } from "@/components/evidence/format"
 import { getUserProfile } from "@/lib/auth"
 import { cn } from "@/lib/cn"
@@ -28,13 +32,19 @@ import { intlLocaleTag } from "@/lib/format"
  * It is the read side of the CRM: who asked, through which channel, what they
  * said they could spend, who is looking after them, and what happens next.
  *
- * It is **not** a capture form. `POST /api/site-management/leads` is a declared
- * write gap — it authenticates, authorises and validates, then answers 503
- * naming W2-A, because no repository write path exists. A "Neue Anfrage"
- * button here would either fake a success or dead-end every time it was
- * pressed. OVERNIGHT-2 §4.6 is explicit that a write with no data plane returns
- * 503 and never a fake success; the honest UI equivalent is to say so once, in
- * words, rather than to ship a control that cannot work.
+ * **It is now also the capture point.** `POST /api/site-management/leads` was a
+ * declared write gap — it authenticated, authorised and validated, then answered
+ * 503 because no repository write path existed — so this page carried a sentence
+ * saying that in words rather than a button that could not work. Migration 21
+ * restored the INSERT grant and `createLead()` exists, so the sentence was
+ * removed and `NewLeadForm` took its place. The notice is gone because it is no
+ * longer true, which is the only reason to remove such a notice.
+ *
+ * The button is gated on `leads:create`, which `lib/rbac.ts` grants to `admin`
+ * and `manager` alone — the same two roles `leads_staff_write` admits
+ * (`is_admin() or (has_role_level(70) and own company)`). RBAC and RLS coincide
+ * exactly here, unlike the read path below, so no narrowing is needed: there is
+ * no role that would be offered the control and then refused by Postgres.
  *
  * ## Budgets are never added up across currencies
  *
@@ -218,6 +228,44 @@ export default async function LeadsPage({
     return `/dashboard/leads${s ? `?${s}` : ""}`
   }
 
+  // The capture control. `leads:create` is the UX gate; `leads_staff_write` is
+  // the real one, and both admit exactly `admin` and `manager`.
+  const canCreate = hasPermission(profile.role, "leads:create")
+
+  // Every string resolved here, server-side, and handed over as one object: the
+  // form is a client island and must never call `useTranslations` itself.
+  const newLeadLabels: NewLeadLabels = {
+    trigger: t("new.trigger"),
+    heading: t("new.heading"),
+    lead: t("new.lead"),
+    nameLabel: t("new.nameLabel"),
+    namePlaceholder: t("new.namePlaceholder"),
+    emailLabel: t("new.emailLabel"),
+    emailPlaceholder: t("new.emailPlaceholder"),
+    phoneLabel: t("new.phoneLabel"),
+    phonePlaceholder: t("new.phonePlaceholder"),
+    sourceLabel: t("new.sourceLabel"),
+    unitLabel: t("new.unitLabel"),
+    unitPlaceholder: t("new.unitPlaceholder"),
+    unitHint: t("new.unitHint"),
+    messageLabel: t("new.messageLabel"),
+    messagePlaceholder: t("new.messagePlaceholder"),
+    afterNote: t("new.afterNote"),
+    submit: t("new.submit"),
+    busy: t("new.busy"),
+    cancel: t("new.cancel"),
+    close: t("new.close"),
+    nameRequired: t("new.nameRequired"),
+    emailRequired: t("new.emailRequired"),
+    genericError: t("new.genericError"),
+    unavailable: t("new.unavailable"),
+    // The same channel names the cards use, so the select and the list cannot
+    // disagree about what "Portal" is called.
+    sources: Object.fromEntries(
+      leadSources.map((value) => [value, sourceLabel(value)])
+    ),
+  }
+
   // Which single filter emptied the list, when exactly one did. "No results" on
   // its own leaves a reader unable to tell a working filter from a broken page.
   const blamed =
@@ -233,11 +281,20 @@ export default async function LeadsPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-1.5">
-        <h1 className="font-display text-2xl font-semibold tracking-[-0.018em] text-foreground">
-          {t("title")}
-        </h1>
-        <p className="max-w-prose text-sm text-muted-foreground">{t("lead")}</p>
+      <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <h1 className="font-display text-2xl font-semibold tracking-[-0.018em] text-foreground">
+            {t("title")}
+          </h1>
+          <p className="max-w-prose text-sm text-muted-foreground">
+            {t("lead")}
+          </p>
+        </div>
+        {/* Server-side gate. The API re-checks `leads:create` regardless — this
+            only decides what is offered, and RLS decides what lands. */}
+        {canCreate ? (
+          <NewLeadForm sources={leadSources} labels={newLeadLabels} />
+        ) : null}
       </header>
 
       {degraded ? (
@@ -248,14 +305,6 @@ export default async function LeadsPage({
           {t("seedNotice")}
         </p>
       ) : null}
-
-      {/* The write gap, stated once. Never a button that cannot work. */}
-      <p
-        role="status"
-        className="max-w-prose rounded-lg border border-confidence-gap/30 bg-background/50 px-3 py-2 text-sm text-muted-foreground"
-      >
-        {t("readOnlyNotice")}
-      </p>
 
       {/* ---- totals ------------------------------------------------------ */}
       <section aria-labelledby="leads-summary" className="flex flex-col gap-3">

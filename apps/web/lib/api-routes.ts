@@ -140,7 +140,6 @@ export const AUTHENTICATED_RESPONSES: readonly number[] = [401, 403]
 
 /** The owners named in every write-gap message. Kept together so they stay honest. */
 const W2A = "W2-A (repository mutations)"
-const W1A = "W1-A (migrations and RPCs)"
 
 function gap(what: string, owner: string): { reason: string; owner: string } {
   return {
@@ -665,7 +664,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "createPayment",
         summary: "Record a payment.",
         description:
-          "Not implemented: recording money movement requires the posting RPC that W1-A's migrations have not created. A payments endpoint that appeared to succeed without writing would be the most damaging fake success in this API, so it reports 503.",
+          "Records one received payment as `captured`. Idempotent on `(company_id, idempotency_key)`: a repeat is reported as a duplicate by the unique index, not by application state, so a double-click cannot become two receipts. **It records, it does not journal.** `ledger_entry_id` is left null — posting to the ledger requires balanced legs per currency within one transaction group (`assert_ledger_group_balanced`), so a payment cannot become a single ledger row — and the invoice's `paid_amount` is untouched, because settling is `vendorInvoice.settle`, which is optimistically concurrent and must not be bypassed as a side effect.",
         tag: "Finance",
         permission: "finance:create",
         rateLimit: WRITE_LIMIT,
@@ -673,8 +672,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         requiresPersistence: true,
         idempotent: true,
         requestSchema: "createPaymentSchema",
-        writeGap: gap("Recording a payment", W1A),
-        responses: [503],
+        responses: [200, 403, 409, 503],
       },
     ],
   },
@@ -748,7 +746,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "createVendorInvoice",
         summary: "Create a vendor invoice.",
         description:
-          "Not implemented: no repository write path exists for invoice creation. Settling an existing invoice is available as a command on `/api/site-management/actions`.",
+          "Registers a supplier invoice owing its full value. `status` and `paidAmount` are not accepted as input — an invoice that could be registered as already part-paid would begin its money trail halfway through with no payment row to account for the difference. Settling it afterwards is `vendorInvoice.settle` on `/api/site-management/actions`, which is optimistically concurrent. `vendor_name` is denormalised from the supplier's profile at registration time, so the invoice still says who issued it after that profile is renamed.",
         tag: "Finance",
         permission: "vendor_invoices:create",
         rateLimit: WRITE_LIMIT,
@@ -756,8 +754,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         requiresPersistence: true,
         idempotent: true,
         requestSchema: "createVendorInvoiceSchema",
-        writeGap: gap("Creating a vendor invoice", W2A),
-        responses: [503],
+        responses: [200, 403, 404, 409, 503],
       },
     ],
   },
@@ -876,7 +873,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "createActivity",
         summary: "Schedule an activity.",
         description:
-          "Not implemented: no repository write path exists for activities.",
+          "Schedules an activity as a **draft**. `status` is not accepted as input: an activity that could be created already published would reach every resident's calendar the moment somebody mistyped a date, with no review in between. Note a deliberate RBAC/RLS asymmetry — `activities:create` is also held by `service_provider`, `child_owner` and `child_tenant`, whom `activities_manager_write` does not admit; those three are refused by the database and are not offered the control in the interface.",
         tag: "Operations",
         permission: "activities:create",
         rateLimit: WRITE_LIMIT,
@@ -884,8 +881,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         requiresPersistence: true,
         idempotent: true,
         requestSchema: "createActivitySchema",
-        writeGap: gap("Scheduling an activity", W2A),
-        responses: [503],
+        responses: [200, 403, 422, 503],
       },
     ],
   },

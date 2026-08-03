@@ -13,9 +13,15 @@ import {
 } from "@/components/finance/approval-threshold"
 import { invoiceRemainingAfter } from "@/components/finance/ledger-analysis"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
+import { getUserProfile } from "@/lib/auth"
 import type { Locale } from "@/lib/contracts"
 import { isSupabaseConfigured } from "@/lib/env"
-import { getVendorInvoice, type CurrencyCode } from "@/lib/finance-repository"
+import {
+  createPayment,
+  getVendorInvoice,
+  type CurrencyCode,
+} from "@/lib/finance-repository"
+import { RepositoryError } from "@/lib/repository-base"
 
 /**
  * Posting a payment, and refusing to pretend.                  Owner: W3-D
@@ -28,16 +34,33 @@ import { getVendorInvoice, type CurrencyCode } from "@/lib/finance-repository"
  * an `accountant` reaches the write path and a `manager` is refused before the
  * repository is consulted at all.
  *
- * **Not real:** the write. `authenticated` holds SELECT only on all four
- * finance tables — migration 07 revokes INSERT, UPDATE and DELETE, because the
- * tables expect service-role RPCs that W1-A has not written
- * (`HANDOFF/W2-A.md`). So this returns **503 `persistence_unavailable`** and
- * says nothing was booked. It does not return success, and it does not keep the
- * payment in memory where a reviewer would believe it had been saved.
- *
- * `tasks/W2-B` states the rule: *"503 must be honest. When Supabase is
- * unconfigured and the route writes, return 503 — do not pretend success
+ * **Also real, since migration 21: the write.** For most of this project's life
+ * it was not. `authenticated` held SELECT only on all four finance tables —
+ * migration 07 revoked INSERT, UPDATE and DELETE — so this function did every
+ * hard part and then returned 503 `persistence_unavailable`, saying plainly
+ * that nothing had been booked. That was the correct behaviour at the time:
+ * `tasks/W2-B` states the rule as *"503 must be honest … do not pretend success
  * against seed data. Reads may serve seed; writes may not."*
+ *
+ * Migration 21 restored the INSERT — the policies
+ * (`payment_transactions_insert_finance`, `can_write_company_finance()`) had
+ * been correct all along — and `createPayment()` in `lib/finance-repository.ts`
+ * is the function the old comment here was waiting for.
+ *
+ * ## What `posted` claims, and what it must never be read as claiming
+ *
+ * That the payment is **recorded**. Not that it has been journalled to the
+ * ledger, and not that it has been applied to an invoice's `paid_amount`.
+ * `payment_transactions.ledger_entry_id` is nullable precisely so a receipt can
+ * exist before it is journalled, and journalling is a different operation under
+ * a different rule: `assert_ledger_group_balanced` requires balanced legs per
+ * currency within one `transaction_group_id`, so a payment cannot become one
+ * ledger row. Settling an invoice is `settleVendorInvoice()`, which is
+ * optimistically concurrent and would be bypassed by doing it as a side effect
+ * here.
+ *
+ * The copy behind `dashboard.payments.result.posted` must therefore say
+ * "recorded", never "booked" or "allocated".
  *
  * ## Idempotency is a database constraint, not a Map in this process
  *
@@ -226,18 +249,74 @@ export async function recordPayment(
     }
   }
 
-  // Supabase IS configured and `authenticated` still holds no INSERT on
-  // `payment_transactions` (migration 07 revokes it; the service-role RPC is
-  // W1-A's and does not exist). Reporting success here would be the fake write
-  // the honesty audit grades HIGH, so it stays a 503 until the RPC lands. When
-  // it does, this branch calls it and maps 23505 to `{ status: "duplicate" }` —
-  // the unique index, not this function, is what makes that true.
-  return {
-    status: "unavailable",
-    reason: "no_write_path",
-    amountMinor: amount.minor,
-    currency,
+  // The write, at last. Everything above decided; this is the only line that
+  // changes anything.
+  //
+  // This branch used to return `no_write_path` with a comment explaining that
+  // `authenticated` held no INSERT on `payment_transactions` (migration 07
+  // revoked it). Migration 21 restored it, and the mapping below is the one that
+  // comment specified: 23505 is a duplicate, and it is the unique index — not
+  // this function — that makes that true.
+  const profile = await getUserProfile()
+  if (profile.companyId === null || profile.id === null) {
+    // Authorised above but with no company on the profile, so there is no
+    // tenant to file the payment under. Not a permission answer and not a
+    // success; the operator needs their profile fixed.
+    return {
+      status: "unavailable",
+      reason: "no_write_path",
+      amountMinor: amount.minor,
+      currency,
+    }
   }
+
+  try {
+    await createPayment({
+      ...scope.access,
+      companyId: profile.companyId,
+      // The repository takes major units; `amount.minor` is the parsed integer.
+      amount: amount.minor / 100,
+      currency,
+      // The console records money that has arrived. An outbound payment is a
+      // different form this surface does not offer.
+      direction: "inbound",
+      method: input.method,
+      reference: input.reference,
+      receivedAt: new Date().toISOString(),
+      idempotencyKey: input.idempotencyKey,
+      createdBy: profile.id,
+      ...(allocation.kind === "invoice"
+        ? { vendorInvoiceId: allocation.id }
+        : { unitId: allocation.id }),
+    })
+  } catch (error) {
+    if (error instanceof RepositoryError) {
+      // `conflict` from this path is only ever a unique-index collision — a
+      // double-clicked button or a re-posted form arriving with the same
+      // idempotency key. That is a duplicate, not a lost update, and the
+      // console has a message that says so.
+      if (error.apiError.code === "conflict") {
+        return { status: "duplicate", amountMinor: amount.minor, currency }
+      }
+      if (error.apiError.code === "forbidden") {
+        return { status: "forbidden" }
+      }
+      return {
+        status: "unavailable",
+        reason: "no_write_path",
+        amountMinor: amount.minor,
+        currency,
+      }
+    }
+    throw error
+  }
+
+  // `posted` is the console's success state. Note what it does NOT claim: the
+  // payment is recorded, and it has not been journalled to the ledger or
+  // applied to an invoice's `paid_amount`. Both are separate operations with
+  // their own rules — see `createPayment`'s doc comment — and the copy this
+  // state renders must not imply either.
+  return { status: "posted", amountMinor: amount.minor, currency }
 }
 
 interface Allocation {

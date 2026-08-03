@@ -960,7 +960,6 @@
       "count": "{count, plural, other {# talep}}",
       "empty": "Talep yok.",
       "seedNotice": "Demo veri: Toplanan taleplerin bir bölümü gösterilir, canlı veri değil.",
-      "readOnlyNotice": "Bu sayfa talepleri yalnızca gösterir. Yeni talep henüz kaydedilemiyor, çünkü veritabanına yazma yolu yok.",
       "columns": {
         "name": "Ad",
         "channel": "Kanal",
@@ -1030,6 +1029,32 @@
         "exhibition": "Fuar",
         "partner_agent": "İş ortağı danışman",
         "unknown": "Bilinmiyor"
+      },
+      "new": {
+        "trigger": "Yeni talep",
+        "heading": "Talep kaydet",
+        "lead": "Kim iletişime geçti, hangi kanaldan ve ne sordu.",
+        "nameLabel": "Ad",
+        "namePlaceholder": "Ad ve soyad",
+        "emailLabel": "E-posta",
+        "emailPlaceholder": "ad@ornek.com",
+        "phoneLabel": "Telefon (isteğe bağlı)",
+        "phonePlaceholder": "+90 532 000 00 00",
+        "sourceLabel": "Kanal",
+        "unitLabel": "Daire (isteğe bağlı)",
+        "unitPlaceholder": "AZW-B03-0412",
+        "unitHint": "Talep belirli bir daireyle ilgiliyse daire kodu.",
+        "messageLabel": "Ne söylendi",
+        "messagePlaceholder": "Bütçe, istenen plan, görme zamanı.",
+        "afterNote": "Talep yeni ve atanmamış olarak kaydedilir. Kimseye otomatik bildirim gitmez.",
+        "submit": "Talebi kaydet",
+        "busy": "Kaydediliyor…",
+        "cancel": "Vazgeç",
+        "close": "Kapat",
+        "nameRequired": "İletişime geçen kişinin adını yazın.",
+        "emailRequired": "E-posta adresi gerekli.",
+        "genericError": "Talep kaydedilemedi. Hiçbir şey yazılmadı.",
+        "unavailable": "Veritabanı yazmayı kabul etmedi, talep kaydedilmedi."
       }
     },
     "pipeline": {
@@ -1037,7 +1062,6 @@
       "lead": "İlk temastan anahtar teslimine kadar.",
       "empty": "Hatta kayıt yok.",
       "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
-      "readOnlyNotice": "Bu sayfa hattı yalnızca gösterir. Bir kayıt henüz sonraki aşamaya taşınamıyor, çünkü veritabanına yazma yolu yok.",
       "truncatedNotice": "Aşağıdaki sayılar {total} kaydın {summarised} tanesinden hesaplandı. Ötesi dahil değil.",
       "summary": {
         "heading": "Genel bakış",
@@ -1084,7 +1108,21 @@
         "handover": "Teslim",
         "closed": "Kapandı"
       },
-      "close": "Kapat"
+      "close": "Kapat",
+      "move": {
+        "heading": "Başka aşamaya taşı",
+        "stageLabel": "Yeni aşama",
+        "stagePlaceholder": "Aşama seçin",
+        "reasonLabel": "Gerekçe",
+        "reasonPlaceholder": "Kaydın neden taşındığı, tek cümleyle.",
+        "reasonRequired": "En az 8 karakterlik bir gerekçe yazın.",
+        "reasonNotStored": "Taşıma, adınız ve saatiyle kaydedilir. Gerekçe denetlenir ama saklanmaz: kaydın bunun için alanı yok.",
+        "submit": "Taşı",
+        "busy": "Taşınıyor…",
+        "conflict": "Bu kaydı önce başkası taşıdı. Pano yeniden yüklendi.",
+        "genericError": "Kayıt taşınamadı. Hiçbir şey değişmedi.",
+        "unavailable": "Veritabanı yazmayı kabul etmedi, kayıt taşınmadı."
+      }
     },
     "finance": {
       "title": "Finans",
@@ -1424,6 +1462,22 @@
       "export": {
         "csv": "CSV olarak indir",
         "hint": "Dosya tam olarak geçerli filtreyi içerir ve dosya adı bunu belirtir."
+      },
+      "detail": {
+        "lead": "Fatura kaydı",
+        "open": "{vendor} — {invoiceNo} faturasının ayrıntısı",
+        "hint": "Faturanın tüm kaydı için tedarikçi adına tıklayın.",
+        "site": "Saha",
+        "vendorProfile": "Tedarikçi kaydı",
+        "ledgerEntry": "Muhasebe kaydı",
+        "notLinked": "Muhasebe kaydına bağlı değil",
+        "document": "Belge",
+        "noDocument": "Belge eklenmemiş",
+        "notes": "Not",
+        "noNotes": "Not girilmemiş",
+        "version": "Kayıt sürümü",
+        "created": "Oluşturuldu",
+        "updated": "Güncellendi"
       }
     },
     "tickets": {
@@ -1594,7 +1648,9 @@
         "genericError": "Talep gönderilemedi. Yazdıklarınız duruyor; lütfen tekrar deneyin.",
         "unavailable": "Kayıt servisi şu anda yanıt vermiyor. Talebiniz kaydedilmedi; birazdan tekrar deneyin.",
         "afterNote": "Talep «açık» olarak kaydedilir ve ekip üstlenene kadar kimseye atanmaz. Buradan takip edebilir, yorum ekleyebilirsiniz."
-      }
+      },
+      "openTicket": "{ticketNo} numaralı talebi aç: {title}",
+      "severityLabel": "Önem"
     },
     "activities": {
       "title": "Etkinlikler",
@@ -1842,6 +1898,52 @@
       "failed": {
         "object": "Dosya saklanamadı.",
         "row": "Dosya arşivde, arşiv kaydı eksik."
+      },
+      "detail": {
+        "hint": "Tüm kaydı görmek için belge adını seçin.",
+        "rowAction": "{title} için tam kaydı aç",
+        "lead": "Belge",
+        "notStated": "Belirtilmemiş",
+        "noReviewer": "Henüz incelenmedi",
+        "fileSection": "Dosya",
+        "fields": {
+          "documentId": "Belge kimliği",
+          "mimeType": "Dosya türü",
+          "checksum": "Sağlama (SHA-256)",
+          "storagePath": "Depolama anahtarı",
+          "bucket": "Depolama kovası",
+          "uploadedBy": "Yükleyen",
+          "reviewedBy": "İnceleyen",
+          "reviewedAt": "İnceleme tarihi",
+          "retention": "Saklama sınıfı",
+          "unit": "Daire",
+          "site": "Site"
+        },
+        "visibility": {
+          "private": "Özel",
+          "company": "Şirket geneli",
+          "unit": "Daire"
+        },
+        "retention": {
+          "identity": "Kimlik",
+          "legal": "Hukuk",
+          "finance": "Finans",
+          "service": "Servis",
+          "guest": "Misafir",
+          "general": "Genel"
+        },
+        "download": {
+          "hint": "Dosya özel depolamada kalır. Bu, süreli bir bağlantı ister — bağlantı verilmeden hiçbir şey indirilmez.",
+          "request": "İndirme bağlantısı iste",
+          "requesting": "İsteniyor …",
+          "ready": "Bağlantı verildi.",
+          "expires": "{time} saatine kadar geçerli.",
+          "expired": "Bağlantının süresi doldu. Yenisini isteyin.",
+          "forbidden": "Rolünüz bu dosyayı alamaz.",
+          "invalid": "Bu kaydın geçerli bir kimliği yok, bu yüzden bağlantı istenemez.",
+          "failed": "Hiçbir bağlantı verilmedi ve hiçbir şey indirilmedi. Dosya deposu yanıt vermedi.",
+          "seed": "Bu kayıt demo kümesinden geliyor. Saklanan dosya yok, bu yüzden bağlantı verilemez."
+        }
       }
     },
     "compliance": {
@@ -1924,6 +2026,44 @@
         "title": "Uyuma erişim yok",
         "message": "Rolünüz bu denetimleri göremez. Adres geçerli kalır.",
         "permissionLabel": "Gereken yetki:"
+      },
+      "detail": {
+        "hint": "Tam kaydı görmek için bir denetimin adına tıklayın.",
+        "lead": "Uyum denetimi",
+        "readOnly": "Bu ekran yalnızca okur. Uyum kararları burada verilmez, kayıtta ne varsa o gösterilir.",
+        "statesNote": "Solda kayıtta ne yazdığı, sağda kanıtın ne gösterdiği. İkisi ayrı tutulur, çünkü aradaki fark bulgunun kendisidir.",
+        "overclaimed": "Kayıt geçti diyor, kanıt bunu göstermiyor.",
+        "explainState": "«{term}» ne demek?",
+        "openRow": "{check} denetiminin ayrıntısını aç",
+        "subjectType": "Konu türü",
+        "subjectId": "Konu kaydı",
+        "riskLevel": "Risk düzeyi",
+        "risk": {
+          "low": "Düşük",
+          "medium": "Orta",
+          "high": "Yüksek",
+          "critical": "Kritik"
+        },
+        "rationale": "Gerekçe",
+        "noRationale": "Gerekçe kaydedilmemiş.",
+        "decidedBy": "Kararı veren",
+        "decidedAt": "Karar zamanı",
+        "notDecided": "Karar verilmemiş",
+        "humanDecision": "İnsan kararı",
+        "humanRequired": "Zorunlu",
+        "humanNotRequired": "Zorunlu değil",
+        "evidenceHeading": "Kanıt belgesi",
+        "evidenceId": "Belge kaydı",
+        "evidenceUnreadable": "Bir belge bağlı, ancak kaydı okunamadı.",
+        "checkId": "Denetim kaydı",
+        "company": "Şirket",
+        "site": "Saha",
+        "noSite": "Saha belirtilmemiş",
+        "version": "Sürüm",
+        "createdAt": "Oluşturma",
+        "updatedAt": "Son güncelleme",
+        "metadata": "Ek kayıt",
+        "noMetadata": "Ek kayıt yok."
       }
     },
     "reports": {
@@ -2160,7 +2300,18 @@
         "title": "Davetler",
         "lead": "Yeni kişiler için tek kullanımlık, süreli erişim.",
         "unavailable": "Davetler henüz mümkün değil. Hiçbir yere kaydetmeyecek bir formu göstermiyoruz."
-      }
+      },
+      "privilegeFault": "Veritabanı bu işlemi reddetti. Sorun sizin yetkiniz değil: kullanıcı tablosundaki yazma izni eksik ya da veritabanı bu oturumu yönetici olarak görmüyor. Hiçbir şey değişmedi. Bunu bir operatör düzeltmeli.",
+      "staleWrite": "Bu sayfa açıkken bu hesabı başka biri değiştirdi. Hiçbir şey değişmedi. Aşağıdaki liste artık kayıtlı değerleri gösteriyor; kontrol edip değişikliğinizi tekrarlayın.",
+      "writeRejected": "Veritabanı bu değerleri kabul etmedi. Hiçbir şey değişmedi.",
+      "subjectMissing": "Bu hesap artık görüş alanınızda değil. Hiçbir şey değişmedi.",
+      "directoryUnreadable": "Hesap listesi okunamadı, bu yüzden bu değişiklik denenmedi. Hiçbir şey değişmedi.",
+      "activation": "Hesabı engelle veya aç",
+      "activationLead": "Yalnızca yöneticiler. Engelleme erişimi anında sonlandırır. Hiçbir şey silinmez.",
+      "activationNote": "Kimse kendi hesabını engelleyemez ve son etkin yönetici engellenemez.",
+      "blockSubmit": "Hesabı engelle",
+      "unblockSubmit": "Hesabı aç",
+      "currentStatus": "Mevcut durum"
     },
     "admin": {
       "title": "Yönetim",

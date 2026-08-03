@@ -11,8 +11,10 @@ import {
   slaLabels,
   ticketCategoryLabels,
   ticketPriorityLabels,
+  ticketSeverityLabels,
   ticketStatusLabels,
 } from "@/components/operations/labels"
+import { Badge } from "@/components/ui/badge"
 import {
   Table,
   TableBody,
@@ -39,6 +41,7 @@ import {
   ticketCategories,
   ticketPriorities,
   ticketStatuses,
+  type TicketSeverity,
   type TicketStatus,
 } from "@/lib/operations-data"
 import { hasPermission } from "@/lib/rbac"
@@ -52,6 +55,20 @@ import { assessSla, closedOutStatuses } from "@/lib/ticket-workflow"
  * blocked and cannot be broken by the CSP class of failure that cost a night
  * earlier in this project. The one client island in this module is the
  * transition bar on the detail page, where interactivity is unavoidable.
+ *
+ * **The whole row opens the ticket, and it is still one anchor.** The queue is
+ * read by someone scanning for what to act on next; making them hit a six-
+ * character reference number to get there is a Fitts's-law tax paid once per
+ * row. The row is therefore covered by the reference link's `::after` (see
+ * `TicketRow`) rather than by a click handler on the `<tr>` — a click handler
+ * would need this file to become a client component, and the zero-JavaScript
+ * property above is worth more than the convenience. It also stays exactly one
+ * tab stop and one announced link per row, which a per-cell link would not.
+ *
+ * **No modal here.** The detail route owns the only write path in the module
+ * (status transitions and comments, with the version-conflict handling those
+ * need); a dialog that duplicated part of it would be a second place for those
+ * rules to drift.
  *
  * **`service_provider` scoping is the repository's, not this page's.**
  * `getTickets({ role, profileId })` mirrors the SELECT policies of migration 06;
@@ -157,6 +174,7 @@ export default async function TicketsPage({
 
   const statusLabels = ticketStatusLabels(t)
   const priorityLabels = ticketPriorityLabels(t)
+  const severityLabels = ticketSeverityLabels(t)
   const categoryLabels = ticketCategoryLabels(t)
   const sla = slaLabels(t)
 
@@ -342,6 +360,7 @@ export default async function TicketsPage({
                 <TableHead>{t("columns.category")}</TableHead>
                 <TableHead>{t("columns.unit")}</TableHead>
                 <TableHead>{t("columns.priority")}</TableHead>
+                <TableHead>{t("severityLabel")}</TableHead>
                 <TableHead>{t("columns.status")}</TableHead>
                 <TableHead>{t("columns.sla")}</TableHead>
                 <TableHead>{t("columns.reportedAt")}</TableHead>
@@ -356,9 +375,14 @@ export default async function TicketsPage({
                   asOf={asOf}
                   statusLabels={statusLabels}
                   priorityLabels={priorityLabels}
+                  severityLabels={severityLabels}
+                  severityFieldLabel={t("severityLabel")}
                   categoryLabels={categoryLabels}
                   slaLabelSet={sla}
                   noValue={t("noValue")}
+                  openLabel={(ticketNo, title) =>
+                    t("openTicket", { ticketNo, title })
+                  }
                   ageLabel={(age) => t("age", { age })}
                   hourUnit={t("hourUnit")}
                   dayUnit={t("dayUnit")}
@@ -395,15 +419,39 @@ export default async function TicketsPage({
 
 // ---------------------------------------------------------------------------
 
+/**
+ * How loudly a severity is allowed to speak.
+ *
+ * Deliberately quieter than `TicketPriorityBadge`, and never `destructive`. A
+ * row can already be shouting twice — `priority: "urgent"` is a red badge and a
+ * breached SLA is a red badge plus a red left border — and a third red on the
+ * same line means the reader has to decode which red is the one that decides
+ * what they do next. `minor` and `moderate` share `muted` for the same reason:
+ * the distinction between them changes nothing about the next action, so it is
+ * carried by the word, which is always present, rather than by a colour.
+ *
+ * `critical` gets `stale` (the rust family) — visibly elevated, still not the
+ * alarm colour.
+ */
+const severityVariant: Record<TicketSeverity, "muted" | "outline" | "stale"> = {
+  minor: "muted",
+  moderate: "muted",
+  major: "outline",
+  critical: "stale",
+}
+
 function TicketRow({
   ticket,
   locale,
   asOf,
   statusLabels,
   priorityLabels,
+  severityLabels,
+  severityFieldLabel,
   categoryLabels,
   slaLabelSet,
   noValue,
+  openLabel,
   ageLabel,
   hourUnit,
   dayUnit,
@@ -413,9 +461,14 @@ function TicketRow({
   asOf: string
   statusLabels: Record<TicketStatus, string>
   priorityLabels: Parameters<typeof TicketPriorityBadge>[0]["labels"]
+  severityLabels: Record<TicketSeverity, string>
+  /** Names the second badge in the priority cell, for screen readers only. */
+  severityFieldLabel: string
   categoryLabels: Record<string, string>
   slaLabelSet: Parameters<typeof SlaIndicator>[0]["labels"]
   noValue: string
+  /** Accessible name of the row link, e.g. "Open ticket TCK-1042: …". */
+  openLabel: (ticketNo: string, title: string) => string
   ageLabel: (age: string) => string
   hourUnit: string
   dayUnit: string
@@ -423,10 +476,24 @@ function TicketRow({
   const assessment = assessSla(ticket, asOf)
   const settled = closedOutStatuses.includes(ticket.status)
 
+  // An empty description is not a description. The repository types the column
+  // `string | null`, but a form that submitted whitespace would still satisfy
+  // that, and a second line of nothing under the title is worse than no second
+  // line: it moves every row below it for no information.
+  const description =
+    ticket.description !== null && ticket.description.trim() !== ""
+      ? ticket.description
+      : null
+
   return (
     <TableRow
       className={cn(
-        "border-l-2",
+        // LOAD-BEARING. `relative` makes this row the containing block for the
+        // overlay on the reference link below, which is what turns the whole row
+        // into one click target. Remove it and the overlay resolves against the
+        // next positioned ancestor — `TableScrollArea`, which is `relative` —
+        // and one row's link would cover the entire table.
+        "relative border-l-2",
         assessment.state === "breached"
           ? "border-l-destructive"
           : settled
@@ -435,15 +502,51 @@ function TicketRow({
       )}
     >
       <TableCell className="font-medium tabular-nums">
+        {/*
+          The row-wide link. Its `::after` is stretched across the row, so a
+          click anywhere on the row opens the ticket while the DOM still holds
+          exactly ONE anchor: one tab stop, one entry in a screen reader's link
+          list, and no JavaScript. Verified before adopting it that no other cell
+          in this row contains an interactive element — badges, the SLA indicator
+          and the timestamp are all spans — because the overlay would swallow
+          anything that did, and the fix in that case is to raise that control
+          above the overlay, not to keep it and hope.
+
+          Two consequences, both accepted: the row's text can no longer be
+          selected with the mouse (the reference and the title are both repeated
+          on the detail page, which is where anyone copying them is headed), and
+          the reference underlines on hover anywhere in the row — which is the
+          affordance, not a bug: `:hover` on a pseudo-element is `:hover` on its
+          originating element.
+
+          The focus ring is drawn on the overlay rather than on the anchor, so
+          the visible ring frames the whole row the keyboard has landed on
+          instead of six characters of it. `-outline-offset-2` pulls it inside
+          the row so the scroll container cannot clip it.
+        */}
         <Link
           href={`/dashboard/tickets/${ticket.id}`}
-          className="rounded text-primary hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          aria-label={openLabel(ticket.ticketNo, ticket.title)}
+          className={cn(
+            "text-primary hover:underline",
+            "after:absolute after:inset-0 after:content-['']",
+            "focus-visible:outline-none",
+            "focus-visible:after:rounded-sm focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-ring"
+          )}
         >
           {ticket.ticketNo}
         </Link>
       </TableCell>
       <TableCell className="max-w-72">
         <span className="block truncate">{ticket.title}</span>
+        {/* The description is what tells a dispatcher whether "Leak" is a tap
+            or a ceiling. One line only — the queue is for triage, and the whole
+            text is one click away now that the row is the link. */}
+        {description === null ? null : (
+          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+            {description}
+          </span>
+        )}
       </TableCell>
       <TableCell>
         {categoryLabels[ticket.category] ?? ticket.category}
@@ -460,6 +563,23 @@ function TicketRow({
           priority={ticket.priority}
           labels={priorityLabels}
         />
+      </TableCell>
+      {/* Severity gets its own headed column rather than sharing the priority
+          cell behind an `sr-only` field name. In three of the four locales the
+          two vocabularies collide, and in two they are the same word:
+
+            tr   priority Düşük / Yüksek    severity Düşük / Yüksek
+            de   priority Hoch              severity Hoch
+            ru   priority Высокий           severity Высокая
+
+          so a Turkish reader saw "Düşük Düşük" in one cell and had nothing
+          visible to tell them which word meant what. A hidden label answers
+          that for a screen reader and for nobody else. */}
+      <TableCell>
+        <Badge variant={severityVariant[ticket.severity]}>
+          <span className="sr-only">{`${severityFieldLabel}: `}</span>
+          {severityLabels[ticket.severity]}
+        </Badge>
       </TableCell>
       <TableCell>
         <TicketStatusBadge status={ticket.status} labels={statusLabels} />

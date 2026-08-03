@@ -2,8 +2,12 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import { AccessRefusal } from "@/components/governance/access-refusal"
+import {
+  ComplianceChecksTable,
+  type ComplianceDetailLabels,
+  type ComplianceRow,
+} from "@/components/governance/compliance-detail"
 import { GovernanceNotice } from "@/components/governance/governance-notice"
-import { GovernanceTableFrame } from "@/components/governance/governance-table"
 import {
   DashboardKpiGrid,
   DashboardPageHeader,
@@ -12,20 +16,20 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { getUserProfile } from "@/lib/auth"
 import type { Locale } from "@/lib/contracts"
 import { getDocuments } from "@/lib/document-repository"
-import { formatDate, formatPercent } from "@/lib/format"
-import { getComplianceChecks } from "@/lib/governance-repository"
+import {
+  formatDate,
+  formatDateTime,
+  formatNumber,
+  formatPercent,
+} from "@/lib/format"
+import { getGlossary } from "@/lib/glossary"
+import {
+  getComplianceChecks,
+  getProfiles,
+} from "@/lib/governance-repository"
 import { hasPermission } from "@/lib/rbac"
 
 import {
@@ -48,6 +52,13 @@ import {
  *
  * See `./compliance-model.ts` for why `not_evidenced` is derived rather than
  * stored, and why that is the stronger design.
+ *
+ * The table shows six columns; the repository reads eighteen. Clicking a row
+ * opens the rest in a popup — `components/governance/compliance-detail.tsx` —
+ * and the field that most needed rescuing is `rationale`, the recorded human
+ * justification the schema makes mandatory the moment a check leaves `pending`.
+ * It is read-only there and must stay so: `compliance_checks` grants
+ * `authenticated` SELECT only.
  */
 
 /**
@@ -79,6 +90,57 @@ const STATE_ORDER: readonly EvidenceState[] = [
   "proven",
 ]
 
+/**
+ * `compliance_checks.risk_level` → badge treatment, escalating.
+ *
+ * Read through `?? "muted"`: the column is CHECK-constrained to four values, but
+ * a value this map does not know must degrade to the quietest badge rather than
+ * crash a page, and the label beside it still says whatever the database said.
+ */
+const RISK_VARIANT: Readonly<
+  Record<string, "muted" | "single" | "stale" | "destructive">
+> = Object.freeze({
+  low: "muted",
+  medium: "single",
+  high: "stale",
+  critical: "destructive",
+})
+
+/**
+ * `metadata` jsonb → printable pairs.
+ *
+ * Values are stringified rather than interpreted. This column holds whatever the
+ * writer put in it, and a renderer that guessed at a shape would either hide
+ * keys it did not recognise or invent a presentation for them. `JSON.stringify`
+ * returns `undefined` for a function or an `undefined` value, which is why the
+ * fallback exists — an empty cell would read as "recorded and blank".
+ */
+/**
+ * Bookkeeping the seed writes into every row, which is not "extra data" about
+ * the compliance check and must not be shown as if it were.
+ *
+ * Every seeded row carries `{"demo": true, "demo_seed": "W-DEMO"}`, so the
+ * popup's "Extra data" section rendered `demo true` / `demo_seed W-DEMO` to a
+ * compliance officer on every single check — internal provenance for the
+ * fixture, presented under a heading that promises information about the
+ * building. Filtered here rather than in the component: the component's job is
+ * to render whatever it is handed, and deciding what belongs to the reader is
+ * the page's.
+ */
+const INTERNAL_METADATA_KEYS = new Set(["demo", "demo_seed"])
+
+function metadataEntries(
+  metadata: Record<string, unknown>
+): { key: string; value: string }[] {
+  return Object.entries(metadata)
+    .filter(([key]) => !INTERNAL_METADATA_KEYS.has(key))
+    .map(([key, value]) => ({
+      key,
+      value:
+        typeof value === "string" ? value : (JSON.stringify(value) ?? "null"),
+    }))
+}
+
 export default async function CompliancePage({
   params,
 }: {
@@ -86,6 +148,7 @@ export default async function CompliancePage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard.compliance" })
+  const tCommon = await getTranslations({ locale, namespace: "common" })
   const profile = await getUserProfile()
 
   const mayView =
@@ -128,6 +191,149 @@ export default async function CompliancePage({
   const ordered = [...evaluated].sort(
     (a, b) => STATE_ORDER.indexOf(a.state) - STATE_ORDER.indexOf(b.state)
   )
+
+  // Who signed off each check, by name. Read once for the whole page rather
+  // than per row, and only when the reader may see the directory at all —
+  // `getProfiles` refuses anyone who may not, and an id that does not resolve
+  // renders as the stated "not recorded" rather than falling back to a uuid.
+  const directory = hasPermission(profile.role, "users:view")
+    ? await getProfiles({ role: profile.role, isActive: true, limit: 200 })
+    : null
+  const deciderNames = new Map(
+    (directory?.data ?? []).map((entry) => [
+      entry.id,
+      entry.fullName ?? entry.email ?? entry.id,
+    ])
+  )
+
+  // The evidence document's own vocabulary belongs to the documents module and
+  // is already translated there. Re-cutting "approved" and "permit" under a
+  // compliance namespace would give the same word two spellings that could
+  // drift apart, and a reader who meets the document in both places would be
+  // reading two different products.
+  const tDoc = await getTranslations({
+    locale,
+    namespace: "dashboard.documents",
+  })
+  const glossary = await getGlossary(locale)
+
+  const labels: ComplianceDetailLabels = {
+    close: tCommon("actions.close"),
+    caption: t("checksCaption"),
+    hint: t("detail.hint"),
+    detailLead: t("detail.lead"),
+    readOnly: t("detail.readOnly"),
+    columns: {
+      check: t("columns.check"),
+      subject: t("columns.subject"),
+      state: t("columns.state"),
+      recorded: t("columns.recorded"),
+      evidence: t("columns.evidence"),
+      due: t("columns.due"),
+    },
+    statesNote: t("detail.statesNote"),
+    overclaimed: t("detail.overclaimed"),
+    overdue: t("overdue"),
+    subjectType: t("detail.subjectType"),
+    subjectId: t("detail.subjectId"),
+    riskLevel: t("detail.riskLevel"),
+    rationale: t("detail.rationale"),
+    noRationale: t("detail.noRationale"),
+    decidedBy: t("detail.decidedBy"),
+    decidedAt: t("detail.decidedAt"),
+    notDecided: t("detail.notDecided"),
+    humanDecision: t("detail.humanDecision"),
+    humanRequired: t("detail.humanRequired"),
+    humanNotRequired: t("detail.humanNotRequired"),
+    evidenceHeading: t("detail.evidenceHeading"),
+    evidenceTitle: tDoc("columns.name"),
+    evidenceCategory: tDoc("columns.category"),
+    evidenceReview: tDoc("columns.review"),
+    evidenceExpires: tDoc("columns.expires"),
+    noExpiry: tDoc("noExpiry"),
+    evidenceId: t("detail.evidenceId"),
+    evidenceUnreadable: t("detail.evidenceUnreadable"),
+    noEvidence: t("noEvidence"),
+    noDueDate: t("noDueDate"),
+    checkId: t("detail.checkId"),
+    company: t("detail.company"),
+    site: t("detail.site"),
+    noSite: t("detail.noSite"),
+    version: t("detail.version"),
+    createdAt: t("detail.createdAt"),
+    updatedAt: t("detail.updatedAt"),
+    metadata: t("detail.metadata"),
+    noMetadata: t("detail.noMetadata"),
+    // "Due" is the one word in this table that means something specific and
+    // unstated: a promised time, not a wish. The glossary already says so.
+    explainDue: glossary.sla,
+  }
+
+  const rows: ComplianceRow[] = ordered.map((row): ComplianceRow => {
+    const checkType = t(`checkTypes.${row.check.checkType}`)
+    const stateLabel = t(`states.${row.state}`)
+
+    return {
+      id: row.check.id,
+      state: row.state,
+      checkType,
+      subjectType: row.check.subjectType,
+      subjectId: row.check.subjectId,
+      stateLabel,
+      stateVariant: STATE_VARIANT[row.state],
+      // The legend under the table already explains every state in plain
+      // language. The popup carries the same sentence rather than a second
+      // wording of it — one explanation, two places it can be read.
+      stateExplain: {
+        term: stateLabel,
+        body: t(`stateExplained.${row.state}`),
+        ariaLabel: t("detail.explainState", { term: stateLabel }),
+      },
+      recordedLabel: t(`recorded.${row.check.status}`),
+      overclaimed: row.overclaimed,
+      riskLabel: t(`detail.risk.${row.check.riskLevel}`),
+      riskVariant: RISK_VARIANT[row.check.riskLevel] ?? "muted",
+      rationale: row.check.rationale,
+      // A person, so a person's name. This rendered `decided_by` verbatim and
+      // put "b0000000-0000-4000-8000-000000000001" under the heading "Decided
+      // by" — unreadable, and on a compliance record the one field whose whole
+      // purpose is accountability. `getProfiles` refuses a caller who cannot
+      // read the directory, so an unresolvable id falls back to the stated
+      // "not recorded" rather than to the uuid.
+      decidedBy:
+        row.check.decidedBy === null
+          ? null
+          : (deciderNames.get(row.check.decidedBy) ?? null),
+      decidedAt:
+        row.check.decidedAt === null
+          ? null
+          : formatDateTime(row.check.decidedAt, locale),
+      humanDecisionRequired: row.check.humanDecisionRequired,
+      dueAt:
+        row.check.dueAt === null ? null : formatDate(row.check.dueAt, locale),
+      overdue: row.daysUntilDue !== null && row.daysUntilDue < 0,
+      evidenceDocumentId: row.check.evidenceDocumentId,
+      evidence:
+        row.evidence === null
+          ? null
+          : {
+              title: row.evidence.title,
+              category: tDoc(`categories.${row.evidence.category}`),
+              review: tDoc(`review.${row.evidence.reviewStatus}`),
+              expiresAt:
+                row.evidence.expiresAt === null
+                  ? null
+                  : formatDate(row.evidence.expiresAt, locale),
+            },
+      companyId: row.check.companyId,
+      siteId: row.check.siteId,
+      version: formatNumber(row.check.version, locale),
+      createdAt: formatDateTime(row.check.createdAt, locale),
+      updatedAt: formatDateTime(row.check.updatedAt, locale),
+      metadata: metadataEntries(row.check.metadata),
+      openLabel: t("detail.openRow", { check: checkType }),
+    }
+  })
 
   return (
     <div className="flex min-w-0 flex-col gap-8">
@@ -174,77 +380,13 @@ export default async function CompliancePage({
       </DashboardKpiGrid>
 
       <DashboardSection title={t("checks")} description={t("checksLead")}>
-        {ordered.length === 0 ? (
+        {rows.length === 0 ? (
           <EmptyState title={t("empty")} description={t("emptyLead")} />
         ) : (
-          <GovernanceTableFrame>
-            <Table>
-              <TableCaption>{t("checksCaption")}</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("columns.check")}</TableHead>
-                  <TableHead>{t("columns.subject")}</TableHead>
-                  <TableHead>{t("columns.state")}</TableHead>
-                  <TableHead>{t("columns.recorded")}</TableHead>
-                  <TableHead>{t("columns.evidence")}</TableHead>
-                  <TableHead>{t("columns.due")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ordered.map((row) => (
-                  <TableRow key={row.check.id} data-state={row.state}>
-                    <TableCell className="font-medium">
-                      {t(`checkTypes.${row.check.checkType}`)}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {row.check.subjectType}
-                      {" · "}
-                      {row.check.subjectId}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={STATE_VARIANT[row.state]}>
-                        {t(`states.${row.state}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {/* What the DATABASE says, beside what we can prove. Both
-                          are shown because the disagreement between them is the
-                          finding, and hiding either would resolve it silently. */}
-                      <Badge variant="outline">
-                        {t(`recorded.${row.check.status}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {row.evidence === null ? (
-                        <span className="text-confidence-gap">
-                          {t("noEvidence")}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {row.evidence.title}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground tabular-nums">
-                      {row.check.dueAt === null ? (
-                        t("noDueDate")
-                      ) : (
-                        <span
-                          className={
-                            row.daysUntilDue !== null && row.daysUntilDue < 0
-                              ? "text-confidence-conflicted"
-                              : undefined
-                          }
-                        >
-                          {formatDate(row.check.dueAt, locale)}
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </GovernanceTableFrame>
+          // The table itself is a client island now, because a row opens the
+          // full record in a popup. Every string it renders was resolved above;
+          // nothing but flat, already-translated data crosses the boundary.
+          <ComplianceChecksTable rows={rows} labels={labels} />
         )}
       </DashboardSection>
 

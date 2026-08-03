@@ -960,7 +960,6 @@
       "count": "{count, plural, one {# enquiry} other {# enquiries}}",
       "empty": "No enquiries.",
       "seedNotice": "Demo data: a section of the collected enquiries is shown, not live data.",
-      "readOnlyNotice": "This page only shows enquiries. New ones cannot be saved yet, because the write path to the database is missing.",
       "columns": {
         "name": "Name",
         "channel": "Channel",
@@ -1030,6 +1029,32 @@
         "exhibition": "Trade fair",
         "partner_agent": "Partner agent",
         "unknown": "Unknown"
+      },
+      "new": {
+        "trigger": "New enquiry",
+        "heading": "Log an enquiry",
+        "lead": "Who got in touch, through which channel, and what they asked for.",
+        "nameLabel": "Name",
+        "namePlaceholder": "First and last name",
+        "emailLabel": "Email",
+        "emailPlaceholder": "name@example.com",
+        "phoneLabel": "Telephone (optional)",
+        "phonePlaceholder": "+90 532 000 00 00",
+        "sourceLabel": "Channel",
+        "unitLabel": "Apartment (optional)",
+        "unitPlaceholder": "AZW-B03-0412",
+        "unitHint": "The apartment code, if the enquiry is about one in particular.",
+        "messageLabel": "What they said",
+        "messagePlaceholder": "Budget, layout wanted, when they want to view.",
+        "afterNote": "The enquiry is saved as new and unassigned. Nobody is notified automatically.",
+        "submit": "Save enquiry",
+        "busy": "Saving…",
+        "cancel": "Cancel",
+        "close": "Close",
+        "nameRequired": "Give the name of the person who got in touch.",
+        "emailRequired": "An email address is required.",
+        "genericError": "The enquiry could not be saved. Nothing was written.",
+        "unavailable": "The database did not accept the write, so the enquiry was not saved."
       }
     },
     "pipeline": {
@@ -1037,7 +1062,6 @@
       "lead": "From first contact to handover of the keys.",
       "empty": "Nothing in the pipeline.",
       "seedNotice": "Demo data: a section of the collected entries is shown, not live data.",
-      "readOnlyNotice": "This page only shows the pipeline. An entry cannot be moved to the next stage yet, because the write path to the database is missing.",
       "truncatedNotice": "The figures below are computed from {summarised} of {total} entries. Anything beyond that is not included.",
       "summary": {
         "heading": "Overview",
@@ -1084,7 +1108,21 @@
         "handover": "Handover",
         "closed": "Closed"
       },
-      "close": "Close"
+      "close": "Close",
+      "move": {
+        "heading": "Move to another stage",
+        "stageLabel": "New stage",
+        "stagePlaceholder": "Choose a stage",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why the deal moves, in one sentence.",
+        "reasonRequired": "Give a reason of at least 8 characters.",
+        "reasonNotStored": "The move itself is recorded with your name and the time. The reason is checked but not kept: the entry has no field for it.",
+        "submit": "Move",
+        "busy": "Moving…",
+        "conflict": "Somebody else moved this entry first. The board has been reloaded.",
+        "genericError": "The entry could not be moved. Nothing was changed.",
+        "unavailable": "The database did not accept the write, so the entry did not move."
+      }
     },
     "finance": {
       "title": "Finance",
@@ -1424,6 +1462,22 @@
       "export": {
         "csv": "Download as CSV",
         "hint": "The file holds exactly the current filter, and the file name says so."
+      },
+      "detail": {
+        "lead": "Invoice record",
+        "open": "Details for invoice {invoiceNo} from {vendor}",
+        "hint": "Select a vendor name to open the full invoice record.",
+        "site": "Project site",
+        "vendorProfile": "Vendor record",
+        "ledgerEntry": "Ledger entry",
+        "notLinked": "Not linked to a ledger entry",
+        "document": "Document",
+        "noDocument": "No document attached",
+        "notes": "Note",
+        "noNotes": "No note recorded",
+        "version": "Record version",
+        "created": "Created",
+        "updated": "Updated"
       }
     },
     "tickets": {
@@ -1594,7 +1648,9 @@
         "genericError": "The request could not be sent. What you wrote is still here — please try again.",
         "unavailable": "The storage service is not responding right now. Your request was not saved — try again shortly.",
         "afterNote": "The request is filed as “open” and stays unassigned until someone on the team picks it up. You can follow it here and add comments."
-      }
+      },
+      "openTicket": "Open ticket {ticketNo}: {title}",
+      "severityLabel": "Severity"
     },
     "activities": {
       "title": "Activities",
@@ -1842,6 +1898,52 @@
       "failed": {
         "object": "The file could not be stored.",
         "row": "The file is in storage, its register entry is missing."
+      },
+      "detail": {
+        "hint": "Select a document name for the full record.",
+        "rowAction": "Open the full record for {title}",
+        "lead": "Document",
+        "notStated": "Not stated",
+        "noReviewer": "Not reviewed yet",
+        "fileSection": "File",
+        "fields": {
+          "documentId": "Document ID",
+          "mimeType": "File type",
+          "checksum": "Checksum (SHA-256)",
+          "storagePath": "Storage key",
+          "bucket": "Bucket",
+          "uploadedBy": "Uploaded by",
+          "reviewedBy": "Reviewed by",
+          "reviewedAt": "Reviewed on",
+          "retention": "Retention class",
+          "unit": "Unit",
+          "site": "Site"
+        },
+        "visibility": {
+          "private": "Private",
+          "company": "Company-wide",
+          "unit": "Unit"
+        },
+        "retention": {
+          "identity": "Identity",
+          "legal": "Legal",
+          "finance": "Finance",
+          "service": "Service",
+          "guest": "Guest",
+          "general": "General"
+        },
+        "download": {
+          "hint": "The bytes stay in private storage. This asks for a time-limited link — nothing is downloaded until one is issued.",
+          "request": "Request download link",
+          "requesting": "Requesting …",
+          "ready": "Link issued.",
+          "expires": "Valid until {time}.",
+          "expired": "The link has expired. Ask for a new one.",
+          "forbidden": "Your role may not fetch this file.",
+          "invalid": "This entry has no valid identifier, so no link can be requested.",
+          "failed": "No link was issued and nothing was downloaded. The file store did not answer.",
+          "seed": "This entry comes from the demo set. There is no stored file, so no link can be issued."
+        }
       }
     },
     "compliance": {
@@ -1924,6 +2026,44 @@
         "title": "No access to compliance",
         "message": "Your role may not see these checks. The address stays valid.",
         "permissionLabel": "Permission needed:"
+      },
+      "detail": {
+        "hint": "Click the name of a check to see the full record.",
+        "lead": "Compliance check",
+        "readOnly": "This view only reads. Compliance decisions are not made here; it shows what the record holds.",
+        "statesNote": "On the left what the record says, on the right what the evidence shows. They are kept apart because the gap between them is the finding.",
+        "overclaimed": "The record says passed; the evidence does not show it.",
+        "explainState": "What does “{term}” mean?",
+        "openRow": "Open the details of the {check} check",
+        "subjectType": "Subject type",
+        "subjectId": "Subject record",
+        "riskLevel": "Risk level",
+        "risk": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "critical": "Critical"
+        },
+        "rationale": "Rationale",
+        "noRationale": "No rationale recorded.",
+        "decidedBy": "Decided by",
+        "decidedAt": "Decided at",
+        "notDecided": "Not decided",
+        "humanDecision": "Human decision",
+        "humanRequired": "Required",
+        "humanNotRequired": "Not required",
+        "evidenceHeading": "Evidence document",
+        "evidenceId": "Document record",
+        "evidenceUnreadable": "A document is linked, but its record could not be read.",
+        "checkId": "Check record",
+        "company": "Company",
+        "site": "Site",
+        "noSite": "No site stated",
+        "version": "Version",
+        "createdAt": "Created",
+        "updatedAt": "Last updated",
+        "metadata": "Extra data",
+        "noMetadata": "No extra data recorded."
       }
     },
     "reports": {
@@ -2160,7 +2300,18 @@
         "title": "Invitations",
         "lead": "Single-use, expiring access for new people.",
         "unavailable": "Invitations are not possible yet. We do not show a form that would save nowhere."
-      }
+      },
+      "privilegeFault": "The database refused the statement. Your rights are not the problem — the write privilege on the user table is missing, or the database does not see this session as an administrator. Nothing was changed. An operator has to fix this.",
+      "staleWrite": "Somebody else changed this account while this page was open. Nothing was changed. The list below now shows the stored values — check them and repeat your change.",
+      "writeRejected": "The database rejected these values. Nothing was changed.",
+      "subjectMissing": "This account is no longer in your view. Nothing was changed.",
+      "directoryUnreadable": "The account list could not be read, so this change was not attempted. Nothing was changed.",
+      "activation": "Block or unblock an account",
+      "activationLead": "Administrators only. Blocking ends access immediately. Nothing is deleted.",
+      "activationNote": "Nobody may block their own account, and the last active administrator cannot be blocked.",
+      "blockSubmit": "Block account",
+      "unblockSubmit": "Unblock account",
+      "currentStatus": "Current status"
     },
     "admin": {
       "title": "Administration",

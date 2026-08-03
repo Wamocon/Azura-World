@@ -1653,6 +1653,138 @@ export async function updateTicketStatus(
 }
 
 // ---------------------------------------------------------------------------
+// Scheduling an activity
+// ---------------------------------------------------------------------------
+
+export interface CreateActivityInput extends OperationsAccess {
+  companyId: string
+  siteId: string
+  title: string
+  description?: string
+  category: ActivityCategory
+  startsAt: string
+  endsAt: string
+  organiserProfileId?: string | null
+}
+
+/**
+ * Put something on the site calendar.
+ *
+ * ## Who can, and the mismatch this does not paper over
+ *
+ * `activities_manager_write` admits admin, or level >= 70 (manager) within the
+ * caller's own company. `rbac.ts` is WIDER: it also grants `activities:create`
+ * to `service_provider`, `child_owner` and `child_tenant`.
+ *
+ * That gap is real and this function does not close it in either direction. It
+ * does not widen the policy — letting a contractor or a supervised minor put a
+ * site-wide event on every resident's calendar is an authority decision, not a
+ * plumbing fix. And it does not silently narrow RBAC, because a permission
+ * matrix quietly contradicted by a repository is worse than one that is wrong
+ * out loud. The page gates its control on the intersection so nobody is offered
+ * a button the database will refuse; the mismatch itself is recorded here, and
+ * belongs to whoever owns the matrix.
+ *
+ * ## Drafts, not announcements
+ *
+ * `status` is not an input; the column default is `draft`. Publishing is a
+ * separate decision, and an activity that could be created already `published`
+ * would appear on every resident's calendar the instant somebody mistyped a
+ * date, with no review step in between.
+ */
+export async function createActivity(
+  input: CreateActivityInput
+): Promise<RepositoryResult<Activity>> {
+  const title = input.title.trim()
+  if (title.length === 0) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "Give the activity a short title.",
+      retryable: false,
+    })
+  }
+  if (Date.parse(input.endsAt) <= Date.parse(input.startsAt)) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "An activity must end after it starts.",
+      retryable: false,
+    })
+  }
+
+  return withRepository(
+    async (client) => {
+      const scope = await scopeFor(client, input)
+      if (scope.denied) {
+        throw new RepositoryError({
+          code: "forbidden",
+          message: "You do not have access to this data.",
+          retryable: false,
+        })
+      }
+
+      const row = unwrap<unknown>(
+        await client
+          .from(T_ACTIVITIES)
+          .insert({
+            company_id: input.companyId,
+            site_id: input.siteId,
+            title,
+            category: input.category,
+            starts_at: input.startsAt,
+            ends_at: input.endsAt,
+            // `status` deliberately omitted — the column default is 'draft'.
+            ...(input.description === undefined ||
+            input.description.trim() === ""
+              ? {}
+              : { description: input.description.trim() }),
+            ...(input.organiserProfileId === undefined ||
+            input.organiserProfileId === null
+              ? {}
+              : { organiser_profile_id: input.organiserProfileId }),
+          })
+          .select(ACTIVITY_COLUMNS)
+          .maybeSingle(),
+        null
+      )
+      if (row === null) {
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The activity could not be saved.",
+          retryable: true,
+        })
+      }
+      return mapActivity(row)
+    },
+    () => {
+      // Seed mode SIMULATES, as every other write in this module does.
+      const template = seedActivities()[0]
+      if (template === undefined) {
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The activity could not be saved.",
+          retryable: true,
+        })
+      }
+      const activity: Activity = {
+        ...template,
+        id: `e2ffffff-0000-4000-8000-${input.siteId.slice(-12)}`,
+        companyId: input.companyId,
+        siteId: input.siteId,
+        title,
+        description: input.description ?? null,
+        category: input.category,
+        startsAt: input.startsAt,
+        endsAt: input.endsAt,
+        status: "draft",
+        organiserProfileId: input.organiserProfileId ?? null,
+      }
+      return activity
+    },
+    "operations.createActivity"
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Opening a ticket
 // ---------------------------------------------------------------------------
 
