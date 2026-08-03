@@ -36,6 +36,8 @@
 import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { z } from "zod"
+import { headers } from "next/headers"
+import { consumeRateLimit, trustedClientAddress } from "@/lib/ai-rate-limit"
 import { createClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/env"
 import { defaultLocale, locales, type Locale } from "@/lib/contracts"
@@ -43,17 +45,42 @@ import type { LoginFormState } from "./form-state"
 import { localisedDestination, safeNextPath } from "./next-path"
 
 /**
+ * One sign-in attempt against the caller's address.
+ *
+ * A server action has no `Request`, so the headers come from `next/headers` and
+ * are wrapped in the minimal shape `trustedClientAddress` reads. Reusing that
+ * function rather than re-deriving the address is the point: it is the one place
+ * that decides which proxy headers may be believed, and it deliberately
+ * collapses to a single shared bucket in production rather than trusting a
+ * header an attacker can set.
+ *
+ * Ten attempts a minute. Generous for somebody who has forgotten which of four
+ * passwords they used, and useless for a dictionary.
+ */
+async function consumeSignInRateLimit(): Promise<{ allowed: boolean }> {
+  const requestHeaders = await headers()
+  const address = trustedClientAddress({
+    headers: requestHeaders,
+  } as unknown as Request)
+  return consumeRateLimit(address, {
+    scope: "sign-in",
+    limit: 10,
+    windowSeconds: 60,
+  })
+}
+
+/**
  * A sign-in failure, in the reader's own language.
  *
- * Every one of these messages used to be a German literal, so an English, Turkish
- * or Russian visitor who mistyped a password was answered in German on an
- * English page. Measured on `/en/login`: "E-Mail-Adresse oder Passwort ist
+ * Every one of these messages used to be a German literal, so an English,
+ * Turkish or Russian visitor who mistyped a password was answered in German on
+ * an English page. Measured on `/en/login`: "E-Mail-Adresse oder Passwort ist
  * falsch." The catalogue already carried the translations; the action simply
  * never asked for them.
  */
 async function authMessage(
   locale: Locale,
-  key: "invalid" | "unavailable" | "notConfigured"
+  key: "invalid" | "unavailable" | "notConfigured" | "throttled"
 ): Promise<string> {
   const t = await getTranslations({ locale, namespace: "auth.login" })
   return t(key)
@@ -106,6 +133,30 @@ export async function signIn(
   const nextPath = safeNextPath(formData.get("next"))
   const emailInput = formData.get("email")
   const email = typeof emailInput === "string" ? emailInput.trim() : ""
+
+  // Before the credentials are even parsed, let alone checked.
+  //
+  // This was the only unthrottled entry point in the application. Every route in
+  // the manifest goes through `createHandler`, which rate-limits at step 2 — but
+  // `signIn` is a server action and bypasses that wrapper entirely, so an
+  // attacker could post credentials to it as fast as the network allowed. The
+  // eleven demo accounts have predictable addresses, which makes the password
+  // the only thing standing between an attacker and an `admin` session.
+  //
+  // Keyed on the address alone (`trustedClientAddress` refuses to trust a
+  // spoofable header and collapses to one shared bucket in production rather
+  // than sharding), and NOT on the submitted email: keying on the email would
+  // let an attacker lock a known user out of their own account by burning the
+  // budget on their address, and would also confirm which addresses exist by
+  // how quickly they throttle.
+  const limit = await consumeSignInRateLimit()
+  if (!limit.allowed) {
+    return {
+      status: "error",
+      message: await authMessage(locale, "throttled"),
+      email,
+    }
+  }
 
   const parsed = credentialsSchema.safeParse({
     email,

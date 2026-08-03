@@ -21,6 +21,7 @@ import {
 } from "@/lib/communications-data"
 import type { Locale } from "@/lib/contracts"
 import { formatDateTime } from "@/lib/format"
+import { encodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 
 /**
@@ -307,7 +308,7 @@ function ThreadRow({
   return (
     <li>
       <Link
-        href={`/dashboard/communications/${thread.id}`}
+        href={`/dashboard/communications/${encodePublicId("thread", thread.id)}`}
         className={cn(
           "flex flex-col gap-1 rounded-lg border border-border p-4 transition-colors",
           "hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"

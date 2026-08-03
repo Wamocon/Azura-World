@@ -1193,7 +1193,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "searchOperationalRecords",
         summary: "Search operational records.",
         description:
-          "Full-text and trigram search across units, tickets, documents and people. Results are scoped to the caller's role on the server; the same boundary is enforced by the database function, so a client that forges a parameter gains nothing.",
+          "Full-text and trigram search across units, tickets, documents and people. Results are scoped to the caller's role on the server; the same boundary is enforced by the database function, so a client that forges a parameter gains nothing. Each hit carries an opaque `ref` — never the row's primary key — and the RPC's `metadata` column is not forwarded: it is unbounded `jsonb` that the client never read, so anything a future writer put in it would have been published to every searcher.",
         tag: "Dashboard",
         permission: "dashboard:view",
         rateLimit: { windowMs: 60_000, max: 60 },

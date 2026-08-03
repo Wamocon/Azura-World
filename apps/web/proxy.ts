@@ -144,9 +144,23 @@ function buildContentSecurityPolicy(nonce: string): string {
     "img-src 'self' data: blob: https://*.supabase.co",
     "font-src 'self' data:",
     "media-src 'self' blob: https://*.supabase.co",
-    // 127.0.0.1 covers the local dev server and the local AI gateway probe;
-    // the Supabase entries cover PostgREST, Storage and Realtime (wss).
-    "connect-src 'self' http://127.0.0.1:* ws://127.0.0.1:* https://*.supabase.co wss://*.supabase.co",
+    // The loopback entries cover the local dev server's HMR socket and the
+    // local AI gateway probe, and they are DEVELOPMENT ONLY.
+    //
+    // Shipping them in production widened the CSP in the one direction that
+    // matters for exfiltration: `connect-src` decides where injected script may
+    // send data, and `http://127.0.0.1:*` plus `ws://127.0.0.1:*` is the
+    // VICTIM'S OWN machine — every service they run locally, on any port,
+    // reachable from a page that has already loaded their session. It also
+    // makes any local listener a usable exfiltration channel that no corporate
+    // egress filter will ever see, because the traffic never leaves the host.
+    //
+    // The Supabase entries stay in both: PostgREST, Storage and Realtime (wss).
+    `connect-src 'self'${
+      process.env.NODE_ENV === "production"
+        ? ""
+        : " http://127.0.0.1:* ws://127.0.0.1:*"
+    } https://*.supabase.co wss://*.supabase.co`,
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "base-uri 'self'",

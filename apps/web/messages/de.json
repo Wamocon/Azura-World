@@ -2944,7 +2944,8 @@
       "backToHome": "Zur Startseite",
       "unavailable": "Die Anmeldung ist derzeit nicht möglich.",
       "notConfigured": "Die Anmeldung ist hier nicht eingerichtet.",
-      "close": "Schließen"
+      "close": "Schließen",
+      "throttled": "Zu viele Anmeldeversuche. Bitte eine Minute warten."
     },
     "signup": {
       "title": "Zugang anfragen",

@@ -21,6 +21,7 @@ import type { Locale } from "@/lib/contracts"
 import { serverEnv } from "@/lib/env"
 import { formatDateLong, intlLocale, PROJECT_TIME_ZONE } from "@/lib/format"
 import { getActivities, getTickets } from "@/lib/operations-repository"
+import { encodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 
 /**
@@ -185,7 +186,7 @@ export default async function CalendarPage({
         title: ticket.title,
         startsAt: ticket.slaDueAt as string,
         kind: "ticket_due",
-        href: `/dashboard/tickets/${ticket.id}`,
+        href: `/dashboard/tickets/${encodePublicId("ticket", ticket.id)}`,
         detail: ticket.ticketNo,
       })),
   ]

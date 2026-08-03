@@ -44,6 +44,7 @@ import {
   type TicketSeverity,
   type TicketStatus,
 } from "@/lib/operations-data"
+import { encodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 import { assessSla, closedOutStatuses } from "@/lib/ticket-workflow"
 
@@ -525,7 +526,7 @@ function TicketRow({
           the row so the scroll container cannot clip it.
         */}
         <Link
-          href={`/dashboard/tickets/${ticket.id}`}
+          href={`/dashboard/tickets/${encodePublicId("ticket", ticket.id)}`}
           aria-label={openLabel(ticket.ticketNo, ticket.title)}
           className={cn(
             "text-primary hover:underline",

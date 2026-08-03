@@ -51,18 +51,32 @@ export interface GlobalSearchHit {
  * This is the field-name contract that the component was silently getting wrong.
  * The header comment said it "mirrors W2-A's SearchHit, which the endpoint will
  * return" — but `search_operational_records()` returns `entity_table`,
- * `entity_id`, `summary` and `metadata`, and NO `href` at all, and the API maps
- * them to camelCase as `entityTable`/`entityId`/`summary`/`metadata`. The old
- * code read `hit.entity` (always undefined) and grouped by it, so every real
- * match was filtered out and the palette showed "no results" for every query
- * even though the API returned 200 with hits. Confirmed live before fixing.
+ * `entity_id`, `summary` and `metadata`, and NO `href` at all. The old code read
+ * `hit.entity` (always undefined) and grouped by it, so every real match was
+ * filtered out and the palette showed "no results" for every query even though
+ * the API returned 200 with hits. Confirmed live before fixing.
+ *
+ * **The endpoint no longer forwards the RPC's row as-is.** It maps each hit to
+ * `{ entityTable, ref, key, title, summary }`: the primary key is replaced by an
+ * opaque token and the unbounded `metadata` bag is dropped, both on the server,
+ * because dropping them here would not have stopped them being sent. `ref` and
+ * `key` are optional in this type only so a browser holding a stale bundle
+ * during a deploy degrades to the list page instead of throwing.
  */
 interface RawSearchHit {
   entityTable: string
-  entityId: string
+  /**
+   * An OPAQUE token, or null when the table has no detail route.
+   *
+   * This was `entityId` — the row's primary key — and it reached the address
+   * bar, and from there the Referer header of the next outbound link. The API
+   * now mints a token instead and drops the raw id and the `metadata` bag
+   * entirely; see the search route.
+   */
+  ref?: string | null
+  key?: string
   title: string
   summary?: string
-  metadata?: Record<string, unknown> | null
 }
 
 interface SearchResponse {
@@ -103,11 +117,13 @@ function entityOf(table: string): HitEntity | null {
  * where units live rather than a 404 — an honest destination, not a fake anchor.
  * Tickets do have a detail route and link straight to it.
  */
-function hrefOf(table: string, id: string): string {
+function hrefOf(table: string, ref: string | null): string {
   switch (table) {
     case "service_tickets":
     case "tickets":
-      return `/dashboard/tickets/${id}`
+      // Without a token there is no per-record destination, so the queue is
+      // the honest one rather than a link that 404s.
+      return ref === null ? "/dashboard/tickets" : `/dashboard/tickets/${ref}`
     case "documents":
       return "/dashboard/documents"
     case "leads":
@@ -129,13 +145,13 @@ function toClientHit(raw: RawSearchHit): GlobalSearchHit | null {
   if (entity === null) return null
   return {
     // Prefixed with the table so ids stay unique across entity types.
-    id: `${raw.entityTable}-${raw.entityId}`,
+    id: raw.key ?? `${raw.entityTable}-${raw.title}`,
     entity,
     title: raw.title,
     ...(raw.summary !== undefined && raw.summary.length > 0
       ? { subtitle: raw.summary }
       : {}),
-    href: hrefOf(raw.entityTable, raw.entityId),
+    href: hrefOf(raw.entityTable, raw.ref ?? null),
   }
 }
 

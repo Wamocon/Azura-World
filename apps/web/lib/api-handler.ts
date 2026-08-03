@@ -119,10 +119,23 @@ function rateIdentity(request: Request, scope: string): string {
         : (request.headers.get("x-real-ip") ??
           request.headers.get("x-forwarded-for")?.split(",")[0] ??
           "local")
-  const fingerprint = [
-    request.headers.get("user-agent") ?? "",
-    request.headers.get("accept-language") ?? "",
-  ].join("|")
+  // NO fingerprint. This used to mix in `user-agent` and `accept-language`,
+  // reasoning that a coarse fingerprint separates distinct clients behind one
+  // NAT. It does — and it also lets one client separate itself from itself.
+  // Both headers are set by the caller and were used raw, so rotating the
+  // user-agent string on every request produced a fresh bucket every time and
+  // the limit never engaged. That defeated every route in the manifest,
+  // including the three public ones and the 60/min search that fans out to a
+  // Postgres trigram RPC.
+  //
+  // Worse, the map evicts by insertion order past `MAX_TRACKED_KEYS`, so an
+  // attacker generating 4096 distinct fingerprints could also flush every
+  // legitimate caller's counter and reset their budgets on demand.
+  //
+  // The NAT problem it was solving is real but strictly smaller: a shared
+  // address means neighbours share a budget, which is a fairness cost. A
+  // defeatable limit is not a limit at all. `lib/ai-rate-limit.ts` already keys
+  // on address alone; this now matches it.
   // NUL as the domain separator, so a user-agent containing "|" cannot forge a
   // collision with another scope. Written as `\x00`, never as a literal byte:
   // one raw NUL makes git classify the whole file as binary, and both secret
@@ -130,7 +143,7 @@ function rateIdentity(request: Request, scope: string): string {
   // .githooks/pre-commit and `git grep -I` in ci.yml. `safeNextPath()` takes
   // the same care for the same reason.
   return createHash("sha256")
-    .update(`${scope}\x00${address.trim()}\x00${fingerprint}`)
+    .update(`${scope}\x00${address.trim()}`)
     .digest("hex")
     .slice(0, 32)
 }
@@ -183,6 +196,38 @@ interface IdempotencyRecord {
 
 const idempotencyStore = new Map<string, IdempotencyRecord>()
 const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000
+
+/**
+ * A ceiling on the replay store, because it had none.
+ *
+ * Entries live for 24 hours and nothing ever removed them, so the map grew with
+ * every idempotent write and held each one's full response body — the created
+ * lead, the created payment — in process memory for a day. On a busy instance
+ * that is both an unbounded memory leak and a pile of personal data sitting in
+ * a heap dump.
+ *
+ * Expired entries go first; only if the map is still over the ceiling does it
+ * drop the oldest live ones. Dropping a live entry costs a replay, which turns
+ * a duplicate request into a second write — so it must be the last resort, and
+ * the ceiling is set high enough that it effectively never is.
+ */
+const IDEMPOTENCY_MAX_ENTRIES = 5_000
+
+function pruneIdempotencyStore(): void {
+  const now = Date.now()
+  for (const [key, record] of idempotencyStore) {
+    if (now - record.storedAt >= IDEMPOTENCY_TTL_MS) idempotencyStore.delete(key)
+  }
+  if (idempotencyStore.size <= IDEMPOTENCY_MAX_ENTRIES) return
+  // Map iterates in insertion order, so this drops the oldest first.
+  const excess = idempotencyStore.size - IDEMPOTENCY_MAX_ENTRIES
+  let dropped = 0
+  for (const key of idempotencyStore.keys()) {
+    if (dropped >= excess) break
+    idempotencyStore.delete(key)
+    dropped += 1
+  }
+}
 
 function fingerprintBody(raw: string): string {
   return createHash("sha256").update(raw).digest("hex")
@@ -368,6 +413,17 @@ export interface HandlerResult<TResult> {
 export interface CreateHandlerConfig<TBody, TResult> {
   method: HttpMethod
   /**
+   * The manifest's `operationId`, when the handler was built from it.
+   *
+   * Used to scope the idempotency replay store, so a key stored by one
+   * operation cannot be replayed through another. Optional only because
+   * `createHandler` is exported and testable on its own; every real route goes
+   * through `createManifestHandler`, which always supplies it. Absent, the
+   * replay falls back to the method and path, which is narrower than nothing
+   * and still never crosses callers.
+   */
+  operationId?: string
+  /**
    * `null` means public, and `validate-openapi.mjs` then REQUIRES a rate limit
    * and a written justification. There is no way to declare a public route
    * quietly.
@@ -463,6 +519,7 @@ export function createManifestHandler<TBody, TResult>(
 
   return createHandler<TBody, TResult>({
     method: operation.method,
+    operationId,
     permission: operation.permission,
     handler: extra.handler,
     ...(extra.schema === undefined ? {} : { schema: extra.schema }),
@@ -581,10 +638,53 @@ export function createHandler<TBody, TResult>(
         }
       }
 
-      // 3b. Idempotency replay, before any work is done.
       const idempotencyKey = request.headers.get("idempotency-key")
-      if (config.idempotent === true && idempotencyKey !== null) {
-        const stored = idempotencyStore.get(idempotencyKey)
+
+      // 4. Who is calling.
+      const profile = await getUserProfile()
+
+      // 5. May they. Server-side, always.
+      if (config.permission !== null) {
+        if (!profile.authenticated) return respond(unauthorized())
+        if (!hasPermission(profile.role, config.permission)) {
+          return respond(forbidden())
+        }
+      }
+
+      // 5b. Idempotency replay — AFTER authentication and the permission check,
+      //     and scoped to the caller and the operation.
+      //
+      // It used to run at step 3b, before either. The store was a module-global
+      // `Map` keyed on the raw `Idempotency-Key` header and nothing else, so a
+      // caller who presented a key that was already in it received `stored.body`
+      // verbatim: the full success envelope of somebody else's mutation, which
+      // for `createLead` is a person's name, email, phone and budget. No session
+      // was required to reach that branch, and the key is not a secret — it
+      // travels in a plaintext header, is logged by every reverse proxy, and
+      // real integrations use predictable values like `invoice-2026-07`.
+      //
+      // Nor was it scoped to a route: an entry written by one `idempotent`
+      // operation could be replayed through another, because the stored record
+      // never recorded which operation produced it.
+      //
+      // Three changes together, and all three are needed. Moving it after the
+      // permission check alone would still let a caller with the permission
+      // replay another caller's response; namespacing by caller alone would
+      // still serve a body to an unauthenticated request; namespacing by
+      // operation alone would still cross users.
+      const replayKey =
+        idempotencyKey === null
+          ? null
+          : // NUL as the domain separator — `rateIdentity` explains why the
+            // escape is written out rather than embedded as a byte. Needed
+            // here because the fallback branch contains a space, so a space
+            // separator would let a crafted key straddle two fields.
+            `${profile.id ?? "anonymous"}\x00${
+              config.operationId ?? `${config.method} ${url.pathname}`
+            }\x00${idempotencyKey}`
+
+      if (config.idempotent === true && replayKey !== null) {
+        const stored = idempotencyStore.get(replayKey)
         if (
           stored !== undefined &&
           Date.now() - stored.storedAt < IDEMPOTENCY_TTL_MS
@@ -608,17 +708,6 @@ export function createHandler<TBody, TResult>(
               "Idempotency-Replayed": "true",
             },
           })
-        }
-      }
-
-      // 4. Who is calling.
-      const profile = await getUserProfile()
-
-      // 5. May they. Server-side, always.
-      if (config.permission !== null) {
-        if (!profile.authenticated) return respond(unauthorized())
-        if (!hasPermission(profile.role, config.permission)) {
-          return respond(forbidden())
         }
       }
 
@@ -694,13 +783,17 @@ export function createHandler<TBody, TResult>(
         successBody(result.data, result.source, requestId)
       )
 
-      if (config.idempotent === true && idempotencyKey !== null) {
-        idempotencyStore.set(idempotencyKey, {
+      if (config.idempotent === true && replayKey !== null) {
+        // Stored under the same caller-and-operation-scoped key the lookup
+        // uses. A bare `idempotencyKey` here would make the namespacing above
+        // decorative: the entry would be findable by anyone who guessed it.
+        idempotencyStore.set(replayKey, {
           fingerprint: fingerprintBody(rawBody),
           status: 200,
           body: payload,
           storedAt: Date.now(),
         })
+        pruneIdempotencyStore()
       }
 
       if (mutating && config.audit !== undefined) {

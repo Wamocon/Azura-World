@@ -264,6 +264,13 @@ const serverEnvSchema = z
     EVIDENCE_SNAPSHOT_HMAC_SECRET: serverSecret(
       "EVIDENCE_SNAPSHOT_HMAC_SECRET"
     ),
+    /**
+     * Keys the opaque record identifiers that appear in URLs
+     * (`lib/public-id.ts`). Rotating it invalidates every existing link, which
+     * is the intended way to revoke a leaked address; nothing else depends on
+     * it, so rotation is otherwise free.
+     */
+    PUBLIC_ID_SECRET: serverSecret("PUBLIC_ID_SECRET"),
 
     // — AI gateway (OpenAI-compatible) ——————————————————————————
     // No invented defaults: an unconfigured gateway is a supported state and

@@ -47,6 +47,25 @@ const supabaseOrigin = resolveSupabaseOrigin()
  * `'unsafe-inline'` (CONVENTIONS §4). A static header here would override it.
  */
 const securityHeaders = [
+  /**
+   * HSTS. There was none, which left the whole set below resting on the hope
+   * that the first request happened to be over TLS.
+   *
+   * It matters more here than it usually would, because the Supabase session
+   * cookies are written by `@supabase/ssr` and this application does not choose
+   * their flags. Without HSTS, one plain-HTTP request to the origin — a typed
+   * address, an old bookmark, a link in an email client that strips the scheme —
+   * is enough for a network attacker to see the session cookie in clear text and
+   * replay it. Two years, subdomains included, and `preload` so a browser that
+   * has never visited still refuses plain HTTP.
+   *
+   * Browsers ignore this header over plain HTTP, so it is inert in local
+   * development and does not need to be conditional.
+   */
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
   { key: "Referrer-Policy", value: "no-referrer" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },

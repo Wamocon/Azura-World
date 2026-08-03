@@ -8,7 +8,7 @@ import {
   type AuthorityChangeClassification,
   type AuthorityState,
 } from "./admin-capability-rules"
-import { createClient } from "./supabase/server"
+import { createClient, createServiceRoleClient } from "./supabase/server"
 import { conflict, forbidden, upstreamFailed } from "./api-errors"
 import type { ApiError, Role } from "./contracts"
 import type { ProfileRecord } from "./governance-data"
@@ -52,7 +52,17 @@ export * from "./admin-capability-rules"
  *    defeat guard 2 completely, since self-elevation is detected by comparing
  *    the actor to the subject.
  *
- * `createServiceRoleClient()` appears nowhere in this file on purpose.
+ * **No WRITE to `profiles` in this file uses the service role**, and that is the
+ * property the two points above protect. There is now exactly one service-role
+ * call, `revokeSessions()`, and it is a different kind of operation: ending
+ * somebody else's sessions is an admin action the caller's own session cannot
+ * perform at all, it changes no row this module is responsible for, and it runs
+ * strictly AFTER the decision has been made, checked by `lastAdminVerdict`, and
+ * enforced by RLS on the update above. Same justification and same ordering as
+ * the audit insert in `users/actions.ts`.
+ *
+ * Without it, deactivation was only half a revocation: migration 22 takes the
+ * authority away from the token, and this takes the token away.
  */
 
 // ---------------------------------------------------------------------------
@@ -184,6 +194,15 @@ async function readProfile(
 
 export interface ProfileWriteOutcome {
   profile: AdminProfileRecord
+  /**
+   * Present only on a deactivation: whether every session was actually ended.
+   *
+   * `false` means the account is closed and the database refuses it, but the
+   * person's browser may still hold a token until it expires. Surfaced rather
+   * than swallowed so an operator can be told, instead of the product quietly
+   * reporting a cleaner outcome than it achieved.
+   */
+  sessionRevoked?: boolean
   /** Present on an authority change, so the route can say it was recorded. */
   authority?: AuthorityChangeClassification
 }
@@ -308,14 +327,56 @@ export async function updateProfileAuthority(input: {
     )
   }
 
+  // The row now says the account is closed. The token does not.
+  //
+  // RLS is evaluated from the JWT, not from the application, so until this call
+  // the deactivated person's browser kept a valid access token, kept refreshing
+  // it, and kept whatever authority that token carried. Migration 22 removed the
+  // authority — every assignment-derived policy now resolves through
+  // `current_user_active_id()`, so a deactivated contractor reads nothing —
+  // but the session itself lived on, which is the difference between "can no
+  // longer do anything" and "is signed out".
+  //
+  // Deliberately after the write and deliberately not fatal. If the profile
+  // update landed and the sign-out fails, the account is still closed and the
+  // database still refuses it; throwing here would report failure for a change
+  // that succeeded, which is the worse error. The one thing it must not do is
+  // pass silently, so it is reported through the outcome.
+  let sessionRevoked: boolean | undefined
+  if (input.isActive === false) {
+    sessionRevoked = await revokeSessions(input.profileId)
+  }
+
   return {
     profile: mapRow(data as Record<string, unknown>),
+    ...(sessionRevoked === undefined ? {} : { sessionRevoked }),
     authority: classifyAuthorityChange({
       actorId: input.actorId,
       subjectId: input.profileId,
       before: beforeState,
       after: afterState,
     }),
+  }
+}
+
+/**
+ * End every session a person holds.
+ *
+ * The service-role client, because signing another user out is an admin
+ * operation the caller's own session cannot perform — the same justification
+ * the audit insert already uses in `users/actions.ts`, and for the same reason:
+ * it happens AFTER the decision has been made and checked, never before.
+ *
+ * Returns whether it worked rather than throwing. See the call site.
+ */
+async function revokeSessions(profileId: string): Promise<boolean> {
+  try {
+    const admin = createServiceRoleClient()
+    if (admin === null) return false
+    const { error } = await admin.auth.admin.signOut(profileId, "global")
+    return error === null
+  } catch {
+    return false
   }
 }
 

@@ -21,10 +21,11 @@ import {
 import type { Locale } from "@/lib/contracts"
 import { formatDateTime } from "@/lib/format"
 import { getProfiles } from "@/lib/governance-repository"
+import { decodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 
 /**
- * /[locale]/dashboard/communications/[threadId] — one thread.  Owner: W3-E
+ * /[locale]/dashboard/communications/[ref] — one thread.      Owner: W3-E
  *
  * ## Paginated, because a thread can be long
  *
@@ -79,10 +80,16 @@ export default async function ThreadPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: Locale; threadId: string }>
+  params: Promise<{ locale: Locale; ref: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { locale, threadId } = await params
+  const { locale, ref } = await params
+
+  // Opaque token, not the thread's primary key. A token that does not decode
+  // and a thread that does not exist give the same answer, so this page never
+  // confirms which tokens are well-formed. See `lib/public-id.ts`.
+  const threadId = decodePublicId("thread", ref)
+  if (threadId === null) notFound()
   const query = await searchParams
 
   const t = await getTranslations({
@@ -218,7 +225,7 @@ export default async function ThreadPage({
         >
           {page > 1 ? (
             <PageLink
-              href={`/dashboard/communications/${threadId}?page=${page - 1}`}
+              href={`/dashboard/communications/${ref}?page=${page - 1}`}
             >
               {tCommon("pagination.first")}
             </PageLink>
@@ -228,7 +235,7 @@ export default async function ThreadPage({
           </span>
           {page < pageCount ? (
             <PageLink
-              href={`/dashboard/communications/${threadId}?page=${page + 1}`}
+              href={`/dashboard/communications/${ref}?page=${page + 1}`}
             >
               {tCommon("pagination.last")}
             </PageLink>

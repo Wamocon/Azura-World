@@ -2944,7 +2944,8 @@
       "backToHome": "Ana sayfaya dön",
       "unavailable": "Şu anda giriş yapılamıyor.",
       "notConfigured": "Giriş burada kurulu değil.",
-      "close": "Kapat"
+      "close": "Kapat",
+      "throttled": "Çok fazla giriş denemesi yapıldı. Lütfen bir dakika bekleyip tekrar deneyin."
     },
     "signup": {
       "title": "Erişim talebi",

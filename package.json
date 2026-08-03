@@ -33,7 +33,8 @@
     "test:contract": "node scripts/validate-openapi.mjs",
     "typecheck": "turbo run typecheck",
     "verify:supabase": "node scripts/verify-supabase.mjs",
-    "qa:grants": "node scripts/write-grants-probe.mjs"
+    "qa:grants": "node scripts/write-grants-probe.mjs",
+    "qa:reads": "node scripts/read-boundary-probe.mjs"
   },
   "devDependencies": {
     "pg": "^8.13.1",

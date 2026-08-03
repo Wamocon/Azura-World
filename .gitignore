@@ -5,6 +5,14 @@
 *.pem
 *.key
 
+# `.vercel/` holds `.env.production.local` — every production secret, in clear.
+# It was excluded only by `.git/info/exclude`, which is local to one machine and
+# is never committed, so the protection did not travel with the repository: a
+# fresh clone that ran `vercel link` had nothing stopping the next `git add -A`.
+# Verified never committed (`git log --all -- .vercel` is empty) before adding
+# this, so there is no history to purge.
+.vercel/
+
 # --- dependencies ---
 node_modules/
 .pnpm-store/

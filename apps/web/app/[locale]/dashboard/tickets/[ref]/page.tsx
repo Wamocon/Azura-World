@@ -35,6 +35,7 @@ import {
   getTicketEvents,
 } from "@/lib/operations-repository"
 import { getProfiles } from "@/lib/governance-repository"
+import { decodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 import { routeTicket } from "@/lib/ticket-routing"
 import { allowedTransitions, assessSla } from "@/lib/ticket-workflow"
@@ -78,9 +79,16 @@ export async function generateMetadata({
 export default async function TicketDetailPage({
   params,
 }: {
-  params: Promise<{ locale: Locale; id: string }>
+  params: Promise<{ locale: Locale; ref: string }>
 }) {
-  const { locale, id } = await params
+  const { locale, ref } = await params
+
+  // The URL carries an opaque token, not the row's primary key. A token that
+  // does not decode is the same answer as a ticket that does not exist —
+  // distinguishing them would turn this page into an oracle for which tokens
+  // are well-formed. See `lib/public-id.ts`.
+  const id = decodePublicId("ticket", ref)
+  if (id === null) notFound()
 
   const t = await getTranslations({ locale, namespace: "dashboard.tickets" })
   const tUnits = await getTranslations({ locale, namespace: "dashboard.units" })
