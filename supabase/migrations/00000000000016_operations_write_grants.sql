@@ -1,0 +1,51 @@
+-- 00000000000016_operations_write_grants.sql
+--
+-- Restore the table privileges the operations write paths need.
+--
+-- ## What was wrong
+--
+-- Migration 06 created a complete and careful set of RLS policies for writing
+-- tickets and their history:
+--
+--   service_tickets_staff_write     ALL       is_admin() OR has_role_level(40) within the company
+--   ticket_events_insert_staff      INSERT    staff and above
+--   ticket_events_insert_comment    INSERT    a resident commenting on their own ticket
+--
+-- and then migration 06 (line 760) and migration 09 revoked INSERT/UPDATE/DELETE
+-- on those tables from `authenticated`.
+--
+-- In PostgreSQL a row-level policy can only narrow a privilege that has already
+-- been granted at the table level. With the GRANT revoked, every policy above is
+-- unreachable text: the request never reaches the row check, it is refused as
+-- error 42501 (insufficient_privilege) before that.
+--
+-- The effect in the product was that EVERY ticket transition failed. Measured,
+-- not inferred: signing in as `admin`, opening TCK-1037 and pressing Assign
+-- returned
+--
+--   403 {"code":"forbidden","message":"You do not have access to this data."}
+--
+-- which `lib/repository-base.ts` maps from Postgres 42501. A code reading of the
+-- repository suggests status changes work — they do not, and have not.
+--
+-- ## Why granting is the correct fix rather than widening a policy
+--
+-- Nothing here loosens who may do what. The policies are unchanged and they stay
+-- the boundary: a tenant still cannot update a ticket, because
+-- `service_tickets_staff_write` requires `has_role_level(40)`. This migration
+-- only restores the table-level privilege that lets Postgres evaluate them at
+-- all. `authenticated` is the role every signed-in user holds; the row filter is
+-- what distinguishes them, exactly as migration 06 intended.
+--
+-- DELETE is deliberately NOT granted on either table. `ticket_events` is
+-- append-only by design (`reject_ticket_events_mutation` raises 42501 on UPDATE
+-- and DELETE, and there is no UPDATE or DELETE policy at any role level).
+-- History you can edit is not history.
+
+-- Tickets: staff and above may move a ticket through its lifecycle. Row scope is
+-- `service_tickets_staff_write`.
+grant update on public.service_tickets to authenticated;
+
+-- Ticket history: append-only. INSERT only, so a correction is a further event
+-- rather than a rewrite of the record.
+grant insert on public.ticket_events to authenticated;

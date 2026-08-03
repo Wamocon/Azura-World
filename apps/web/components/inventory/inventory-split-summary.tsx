@@ -1,3 +1,4 @@
+import { Explain, type ExplainLabels } from "@/components/ui/explain"
 import { cn } from "@/lib/cn"
 import type { UnitDataQuality } from "@/lib/inventory-data"
 import {
@@ -48,6 +49,7 @@ export function InventorySplitSummary({
   heading,
   caption,
   countLabel,
+  explain,
   className,
 }: {
   byDataQuality: Record<UnitDataQuality, number>
@@ -58,6 +60,13 @@ export function InventorySplitSummary({
   caption: string
   /** `(count) => localised "N units"`, so the bar segments read in every locale. */
   countLabel: (count: number) => string
+  /**
+   * Plain-language explanation per provenance kind, keyed by glossary term.
+   * Optional: without it the badges render exactly as before. With it, the two
+   * words this whole control turns on — "real listing" and "modelled" — stop
+   * being vocabulary the reader is expected to already have.
+   */
+  explain?: Partial<Record<UnitDataQuality, ExplainLabels>>
   className?: string
 }) {
   const present = DISPLAY_ORDER.filter(
@@ -110,7 +119,12 @@ export function InventorySplitSummary({
               return (
                 <div key={quality} className="flex items-center gap-2">
                   <dt className="sr-only">{labels[quality]}</dt>
-                  <UnitProvenanceBadge dataQuality={quality} labels={labels} />
+                  <span className="inline-flex items-center gap-1">
+                    <UnitProvenanceBadge dataQuality={quality} labels={labels} />
+                    {explain?.[quality] === undefined ? null : (
+                      <Explain iconOnly labels={explain[quality]} />
+                    )}
+                  </span>
                   <dd className="text-sm text-foreground tabular-nums">
                     {countLabel(count)}
                     <span className="ml-1.5 text-muted-foreground">

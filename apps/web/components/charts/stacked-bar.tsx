@@ -214,9 +214,8 @@ export function StackedBar({
               // `staggerDelay` returns SECONDS, and is capped.
               style={{ transitionDelay: `${staggerDelay(index)}s` }}
             >
-              <title>
-                {bar.label}: {bar.display}
-              </title>
+              {/* One text node — see the note in `donut.tsx`. */}
+              <title>{`${bar.label}: ${bar.display}`}</title>
             </rect>
           ))}
         </svg>

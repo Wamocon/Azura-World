@@ -62,6 +62,7 @@ import {
   clampOffset,
   degraded,
   nowIso,
+  RepositoryError,
   unwrap,
   withRepository,
   type RepositoryClient,
@@ -595,6 +596,144 @@ export async function getMessages(
       return matched.slice(offset, offset + limit)
     },
     "communications.messages"
+  )
+}
+
+/** What `createMessage()` needs to file one reply. */
+export interface CreateMessageInput {
+  threadId: string
+  /** The thread's company. A mismatch is refused by the composite FK, not here. */
+  companyId: string
+  /** The author, personally — `profiles.id`, which equals `auth.uid()`. */
+  senderProfileId: string
+  body: string
+  /** The caller's role. Only consulted to decide if an internal note is allowed. */
+  role?: Role
+  channel?: CommunicationChannel
+  locale?: Locale
+  isInternalNote?: boolean
+  /** Optional replay guard; unique per company where present. */
+  idempotencyKey?: string
+}
+
+/** The DB caps the body at 10 000 characters; rejecting early gives a better message. */
+const MESSAGE_BODY_MAX = 10_000
+
+/**
+ * Post one message to a thread.
+ *
+ * This is the write half of `getMessages()`, and until now it did not exist:
+ * `POST /api/site-management/communications` returned 503 and the manifest said
+ * "no repository write path exists". It could not have worked even if written —
+ * `authenticated` held only SELECT on `messages`, and the only write policy was
+ * manager-and-above, so a tenant could read the thread about their own flat and
+ * had no way to answer it. Migration 17 adds the grant and a participant INSERT
+ * policy; this function is what uses them.
+ *
+ * **Authorisation is not performed here.** The row is inserted through the
+ * caller's own client, so `messages_insert_participant` decides: you may write
+ * into a thread you can read, as yourself, never as `system`, and never as an
+ * internal note unless you are staff. A caller who is not a participant gets
+ * 42501, which `repository-base` maps to `forbidden`. The two guards below are
+ * not the boundary — they exist so the common mistakes produce a sentence a
+ * person can act on instead of a Postgres error code.
+ *
+ * `sender_kind` is fixed to `'user'` and is not an input. A caller-supplied
+ * value would let a resident post a message that renders as if the building
+ * itself had said it; the policy refuses that too, and refusing it twice is
+ * cheap.
+ *
+ * `last_message_at` and `message_count` on the thread are NOT updated here —
+ * the `sync_thread_message_stats` trigger (migration 09) owns them. Setting
+ * them from here as well would double-count.
+ */
+export async function createMessage(
+  input: CreateMessageInput
+): Promise<RepositoryResult<MessageRecord>> {
+  const body = input.body.trim()
+  if (body.length === 0) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "A message cannot be empty.",
+      retryable: false,
+    })
+  }
+  if (body.length > MESSAGE_BODY_MAX) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: `A message cannot be longer than ${MESSAGE_BODY_MAX} characters.`,
+      retryable: false,
+    })
+  }
+
+  const isInternalNote = input.isInternalNote ?? false
+  if (isInternalNote && !mayReadInternalNotes(input.role)) {
+    // Writing into a channel you cannot read is never what the caller meant.
+    throw new RepositoryError({
+      code: "forbidden",
+      message: "Only staff can add an internal note.",
+      retryable: false,
+    })
+  }
+
+  const createdAt = nowIso()
+  const payload: Record<string, unknown> = {
+    thread_id: input.threadId,
+    company_id: input.companyId,
+    sender_profile_id: input.senderProfileId,
+    sender_kind: "user",
+    body,
+    channel: input.channel ?? "portal",
+    locale: input.locale ?? null,
+    is_internal_note: isInternalNote,
+    idempotency_key: input.idempotencyKey ?? null,
+  }
+
+  return withRepository(
+    async (client) => {
+      const row = unwrap<unknown>(
+        await client
+          .from("messages")
+          .insert(payload)
+          .select(MESSAGE_COLUMNS)
+          .maybeSingle(),
+        null
+      )
+      if (row === null) {
+        // An INSERT that returns no row means the row was written but is
+        // invisible to the SELECT that followed, or was refused. Either way the
+        // caller must not be told it succeeded.
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The message could not be saved.",
+          retryable: true,
+        })
+      }
+      return mapMessage(row)
+    },
+    () => {
+      // Seed mode SIMULATES, exactly as `appendTicketEvent` does: the record is
+      // returned so the UI can be exercised, and nothing is stored, because the
+      // seed builders are pure and must stay deterministic across runs.
+      const message: MessageRecord = {
+        id: `d1ffffff-0000-4000-8000-${input.threadId.slice(-12)}`,
+        threadId: input.threadId,
+        companyId: input.companyId,
+        senderProfileId: input.senderProfileId,
+        senderKind: "user",
+        body,
+        channel: input.channel ?? "portal",
+        locale: input.locale ?? null,
+        isInternalNote,
+        idempotencyKey: input.idempotencyKey ?? null,
+        attachmentDocumentId: null,
+        deliveredAt: null,
+        readAt: null,
+        createdAt,
+      }
+      return message
+    },
+    "communications.createMessage"
   )
 }
 

@@ -33,6 +33,8 @@ export interface AnnotationLabels {
   pending: string
   forbidden: string
   saved: string
+  /** Shown BEFORE the click when there is no store to write to. */
+  unavailable: string
 }
 
 const INITIAL: AnnotationState = { status: "idle" }
@@ -40,10 +42,27 @@ const INITIAL: AnnotationState = { status: "idle" }
 export function AnnotationForm({
   findingId,
   labels,
+  available = false,
   className,
 }: {
   findingId: string
   labels: AnnotationLabels
+  /**
+   * Whether a store exists to write to. **Defaults to false**, because today it
+   * does not: `annotateFinding` returns `unavailable` on both branches and
+   * `status: "saved"` is unreachable (`finding_annotations` is W1-A's, unbuilt).
+   *
+   * Until that lands the control is disabled and says so UP FRONT. It used to
+   * look entirely operable, so the reader learned the note was discarded only
+   * after typing it and pressing the button — and `useActionState` resets the
+   * form, so the text was destroyed in the process. Every other write gap in
+   * this dashboard announces itself before the click (`readOnlyNotice` on leads
+   * and buyer-pipeline); this one was the exception, and it was the worst place
+   * to make it, because the whole screen is an argument about honesty.
+   *
+   * Flip to `true` the same day the table exists.
+   */
+  available?: boolean
   className?: string
 }) {
   const [state, action, pending] = useActionState(annotateFinding, INITIAL)
@@ -90,20 +109,33 @@ export function AnnotationForm({
         </p>
       </div>
 
+      {/* The gap, stated before anything is typed rather than after. */}
+      {available ? null : (
+        <p
+          role="status"
+          className="max-w-prose rounded-md border border-confidence-gap/30 bg-confidence-gap/10 px-3 py-2 text-xs leading-relaxed text-foreground"
+        >
+          {labels.unavailable}
+        </p>
+      )}
+
       <textarea
         id="annotation-note"
         name="note"
         rows={3}
         maxLength={4000}
         placeholder={labels.placeholder}
+        disabled={!available}
+        aria-describedby={available ? undefined : "annotation-unavailable"}
         className={cn(
           "w-full resize-y rounded-md border border-border bg-background p-3 text-sm",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "disabled:cursor-not-allowed disabled:opacity-60"
         )}
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" size="sm" disabled={pending}>
+        <Button type="submit" size="sm" disabled={pending || !available}>
           {pending ? labels.pending : labels.submit}
         </Button>
         {message === null ? null : (

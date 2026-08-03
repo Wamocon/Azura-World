@@ -5,25 +5,47 @@ import { dataNoteLabels } from "@/components/evidence/data-note"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
-import { PriceConflictPanel } from "@/components/inventory/price-conflict-panel"
+import {
+  EvidenceConflictPanel,
+  type EvidenceConflictExplain,
+  type EvidenceConflictLabels,
+} from "@/components/evidence/evidence-conflict-panel"
 import type { PriceObservation } from "@/components/inventory/price-conflict-ladder"
 import { AnnotationForm } from "@/components/inventory/annotation-form"
 import { getUserProfile } from "@/lib/auth"
 import { hasPermission } from "@/lib/rbac"
 import { cn } from "@/lib/cn"
 import { getFinding } from "@/lib/evidence-repository"
+import { getGlossary } from "@/lib/glossary"
 import { getPortalListings } from "@/lib/portal-repository"
 import { getSources } from "@/lib/evidence-repository"
 import type { Finding, Locale, SourceRef } from "@/lib/contracts"
 
 /**
- * /[locale]/dashboard/evidence — the evidence cockpit.      Owner: W3-C
+ * /[locale]/dashboard/evidence — sources and evidence.      Owner: W3-C
  *
  * The screen that justifies the project, built F-002 first because the W3-C
  * brief says so and because it is the hardest thing here: four portals quoting
  * a 2.1× range for the same apartment type, in two currencies, one of them
  * stale by two years. If that renders clearly and honestly, the other three
  * views follow the same pattern.
+ *
+ * ## Redesigned after client review
+ *
+ * The first version failed the only test that matters for a graphic: a reader
+ * could not say what it showed. Thirteen unlabelled ticks on a shared rail,
+ * colliding end labels, two paragraphs of English analyst prose above them, and
+ * a six-column table that scrolled sideways on anything smaller than a laptop
+ * while repeating an "internal wording" disclosure under every row.
+ *
+ * What replaced it is in `components/evidence/`: one bar per portal, sorted,
+ * with the portal's name at one end and its price at the other; one translated
+ * sentence in place of the prose, with the recorded original kept behind a
+ * disclosure; and a record table grouped by portal so nothing is stated twice.
+ * Every honesty control survived the rewrite unchanged — the two currencies
+ * still never share a scale, the conflict is still unresolved, every quote is
+ * still on the page with its source, and stale listings are still marked in the
+ * same glance as the price.
  *
  * ## Rendering mode
  *
@@ -32,19 +54,19 @@ import type { Finding, Locale, SourceRef } from "@/lib/contracts"
  * already correct — and adding `force-static` here would ship a page whose
  * every script is CSP-blocked while still *looking* right (S-009). `pnpm qa:csp`
  * is the gate that keeps that from coming back.
- *
- * ## No dashboard shell yet
- *
- * W3-B owns `dashboard/layout.tsx` and has not published its module contract
- * (`HANDOFF/W3-B.md` does not exist at the time of writing), so this page
- * carries its own heading and spacing and uses no table primitive from that
- * contract. When the shell lands, the `<header>` here is the part to delete;
- * everything below it is shell-independent by construction.
  */
 
-export const metadata: Metadata = {
-  title: "Beleg-Cockpit",
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.evidence" })
+  // Translated rather than the hardcoded German "Beleg-Cockpit" this carried
+  // before: the tab title is a user-visible string like any other, and "Cockpit"
+  // is exactly the internal jargon azura-ui-ux §7b rules out.
+  return { title: t("title"), robots: { index: false, follow: false } }
 }
 
 /**
@@ -87,7 +109,6 @@ export default async function EvidencePage({
 }): Promise<ReactNode> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard.evidence" })
-  const tEvidence = await getTranslations({ locale, namespace: "evidence" })
   // Root namespace: `dataNote.*` is shared by every surface that renders a
   // dataset note, so it is not nested under this page.
   const tRoot = await getTranslations({ locale })
@@ -101,10 +122,6 @@ export default async function EvidencePage({
    * `tenant` received `Housearch`, `239.171` and `F-002` in the response body
    * of this route while the visible page showed a correct 403. Nine of eleven
    * roles hold `dashboard:view` without `evidence:view`.
-   *
-   * The guard's own header predicted it: *"If this component is the only thing
-   * between a `tenant` and the finance ledger, the ledger is public — the user
-   * can disable JavaScript, or read the RSC payload."* It was the only thing.
    *
    * Refusing before the reads is what matters: an early return after fetching
    * would still put the evidence in this function's scope and, worse, would
@@ -139,13 +156,19 @@ export default async function EvidencePage({
     )
   }
 
-  const [findingResult, listingsResult, allSaleResult, sourcesResult] =
-    await Promise.all([
-      getFinding("F-002"),
-      getPortalListings({ layout: F002_LAYOUT, priceKind: "sale", limit: 200 }),
-      getPortalListings({ priceKind: "sale", limit: 400 }),
-      getSources(),
-    ])
+  const [
+    findingResult,
+    listingsResult,
+    allSaleResult,
+    sourcesResult,
+    glossary,
+  ] = await Promise.all([
+    getFinding("F-002"),
+    getPortalListings({ layout: F002_LAYOUT, priceKind: "sale", limit: 200 }),
+    getPortalListings({ priceKind: "sale", limit: 400 }),
+    getSources(),
+    getGlossary(locale),
+  ])
 
   const observations = listingsResult.data
     .map(toObservation)
@@ -153,10 +176,10 @@ export default async function EvidencePage({
       (observation): observation is PriceObservation => observation !== null
     )
 
-  // The listings whose publisher stated a price but no layout. Kept separate
-  // from the ladder rather than dropped: Alanya-Home's €220,000 is one of the
-  // four figures F-002's message names, and it would otherwise vanish from a
-  // panel that is supposed to be about exactly that disagreement.
+  // The listings whose portal stated a price but no layout. Kept separate from
+  // the chart rather than dropped: Alanya-Home's €220,000 is one of the four
+  // figures F-002's message names, and it would otherwise vanish from a panel
+  // that is supposed to be about exactly that disagreement.
   const unstatedLayoutObservations = allSaleResult.data
     .filter((listing) => listing.layout === null)
     .map(toObservation)
@@ -180,19 +203,16 @@ export default async function EvidencePage({
   /**
    * Templates go through `t.raw`, not `t`.
    *
-   * W1-D's provenance components take a STRING WITH `{placeholders}` and
-   * interpolate it themselves (their labels cross a Server → Client boundary,
-   * where a formatter function cannot be serialised). next-intl's `t()` resolves
-   * placeholders eagerly and **throws** when the values are not supplied —
-   * `FORMATTING_ERROR: The intl string context variable "count" was not
-   * provided` — so a label destined for one of those components has to be
-   * fetched raw. `t()` is still correct for every label with no placeholder.
+   * A label with an ICU placeholder that these components substitute themselves
+   * has to be fetched raw: next-intl's `t()` resolves placeholders eagerly and
+   * **throws** when the values are not supplied — `FORMATTING_ERROR: The intl
+   * string context variable "count" was not provided`. `t()` stays correct for
+   * every label with no placeholder.
    */
   const template = (key: string): string => String(t.raw(key))
 
-  const labels = {
+  const labels: EvidenceConflictLabels = {
     headline: t("finding.headline"),
-    recordLabel: t("finding.recordLabel"),
     findingId: template("finding.id"),
     severity: {
       critical: t("finding.severity.critical"),
@@ -210,56 +230,70 @@ export default async function EvidencePage({
       availability: t("finding.area.availability"),
       harvest: t("finding.area.harvest"),
     },
+    summary: template("plain.summary"),
+    noPick: t("plain.noPick"),
+    originalLabel: t("plain.originalLabel"),
+    originalHint: t("plain.originalHint"),
+    originalFinding: t("plain.originalFinding"),
+    originalResolution: t("plain.originalResolution"),
+    recordHeading: t("record.heading"),
+    recordLead: t("record.lead"),
+    unstatedHeading: t("unstatedHeading"),
+    unstatedLead: t("unstatedLead"),
     resolutionHeading: t("finding.resolutionHeading"),
     resolvedHeading: t("finding.resolvedHeading"),
     unresolved: t("finding.unresolved"),
     unresolvedNote: t("finding.unresolvedNote"),
-    observationSummary: template("finding.observationSummary"),
-    unstatedHeading: t("unstatedHeading"),
-    unstatedLead: t("unstatedLead"),
-    ladder: {
-      railSummary: template("ladder.railSummary"),
-      notComparable: t("ladder.notComparable"),
-      spread: template("ladder.spread"),
-      stale: t("ladder.stale"),
-      lowest: t("ladder.lowest"),
-      highest: t("ladder.highest"),
-      singleObservation: t("ladder.singleObservation"),
-      negligible: template("ladder.negligible"),
+    bars: {
+      heading: t("chart.heading"),
+      groupHeading: template("chart.groupHeading"),
+      groupMeta: template("chart.groupMeta"),
+      groupMetaSingle: template("chart.groupMetaSingle"),
+      listings: template("chart.listings"),
+      oneListing: t("chart.oneListing"),
+      upTo: template("chart.upTo"),
+      stale: t("chart.stale"),
+      staleSome: template("chart.staleSome"),
+      staleNote: t("chart.staleNote"),
+      entryNote: t("chart.entryNote"),
+      rangeNote: t("chart.rangeNote"),
+      scaleNote: t("chart.scaleNote"),
+      notComparable: t("chart.notComparable"),
+      spread: template("chart.spread"),
+      singleSourceNote: t("chart.singleSourceNote"),
     },
-    table: {
+    record: {
       caption: t("table.caption"),
       price: t("table.price"),
-      layout: t("table.layout"),
-      area: t("table.area"),
-      publisher: t("table.publisher"),
-      observed: t("table.observed"),
-      evidence: t("table.evidence"),
+      size: t("table.area"),
+      collected: t("table.observed"),
+      source: t("table.evidence"),
+      openListing: t("record.openListing"),
+      openListingLabel: template("record.openListingLabel"),
+      snapshotLabel: template("record.snapshotLabel"),
       stale: t("table.stale"),
-      note: t("table.note"),
+      staleSome: template("chart.staleSome"),
+      sizeUnstated: t("table.areaUnstated"),
+      listings: template("chart.listings"),
+      oneListing: t("chart.oneListing"),
+      originalsLabel: t("record.originalsLabel"),
+      originalsHint: t("record.originalsHint"),
+      notComparable: t("chart.notComparable"),
       // `dataNote.*` lives in its own top-level namespace, not under this
       // page's, because the same eighteen sentences are needed anywhere a
       // dataset note is rendered. `tRoot` reads it.
       dataNote: dataNoteLabels(tRoot),
-      layoutUnstated: t("table.layoutUnstated"),
-      areaUnstated: t("table.areaUnstated"),
-      source: {
-        // Reused from W1-C's own `evidence.*` namespace rather than duplicated
-        // into this one: two copies of "Quelle öffnen" in four locales would
-        // drift, and these already exist.
-        openSource: tEvidence("label.openSource"),
-        snapshot: tEvidence("label.snapshot"),
-        unreachable: tEvidence("sourceUnreachable"),
-        tier: {
-          official: t("source.tier.official"),
-          developer: t("source.tier.developer"),
-          hotel: t("source.tier.hotel"),
-          portal: t("source.tier.portal"),
-          review: t("source.tier.review"),
-          press: t("source.tier.press"),
-        },
-      },
     },
+  }
+
+  // Four terms this page shows that a property manager is not obliged to know.
+  // Each one carries its own plain-language explanation, opened by keyboard or
+  // touch, never by hover alone.
+  const explain: EvidenceConflictExplain = {
+    conflicted: glossary.conflicted,
+    singleSource: glossary.singleSource,
+    gap: glossary.gap,
+    provenance: glossary.provenance,
   }
 
   return (
@@ -322,12 +356,14 @@ export default async function EvidencePage({
           {t("empty")}
         </p>
       ) : (
-        <PriceConflictPanel
+        <EvidenceConflictPanel
           finding={finding}
           observations={observations}
           unstatedLayoutObservations={unstatedLayoutObservations}
+          layout={F002_LAYOUT}
           locale={locale}
           labels={labels}
+          explain={explain}
           sourcesByUrl={sourcesByUrl}
           snapshotBasePath="/api/evidence/snapshot"
         />
@@ -349,6 +385,7 @@ export default async function EvidencePage({
             pending: t("annotation.pending"),
             forbidden: t("annotation.forbidden"),
             saved: t("annotation.saved"),
+            unavailable: t("annotation.unavailable"),
           }}
         />
       ) : null}

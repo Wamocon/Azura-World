@@ -1473,6 +1473,17 @@ export interface UpdateTicketStatusInput extends OperationsAccess {
   toStatus: TicketStatus
   actorProfileId?: string | null
   note?: string | null
+  /**
+   * Who the work now belongs to. **Required when `toStatus` is `assigned`.**
+   *
+   * Before this existed, the write payload was `{ status, ...timestamps }` and
+   * nothing else. "Assign" therefore returned 200, moved the ticket to
+   * `assigned`, and left `assignee_profile_id` NULL — a lift repair marked as
+   * assigned to nobody, which reads as handled on every list in the product and
+   * is the most expensive kind of wrong a maintenance system can be. The
+   * repository now refuses that transition without a name.
+   */
+  assigneeProfileId?: string | null
 }
 
 export interface UpdateTicketStatusResult {
@@ -1518,6 +1529,22 @@ export async function updateTicketStatus(
     return {}
   }
 
+  // An assignment with nobody in it is not an assignment. Refused here rather
+  // than in the route, so every caller — API, server action, a future job — is
+  // held to it by the same line.
+  if (
+    input.toStatus === "assigned" &&
+    (input.assigneeProfileId === undefined ||
+      input.assigneeProfileId === null ||
+      input.assigneeProfileId.length === 0)
+  ) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "Choose who should take this job before assigning it.",
+      retryable: false,
+    })
+  }
+
   return withRepository(
     async (client) => {
       const scope = await scopeFor(client, input)
@@ -1553,7 +1580,16 @@ export async function updateTicketStatus(
 
       const response = await client
         .from(T_TICKETS)
-        .update({ status: input.toStatus, ...statusTimestamps(input.toStatus) })
+        .update({
+          status: input.toStatus,
+          ...statusTimestamps(input.toStatus),
+          // The assignee travels with the status, in the same optimistic-locked
+          // UPDATE, so a ticket can never be `assigned` to nobody: either both
+          // land or the version check rejects both.
+          ...(input.assigneeProfileId === undefined
+            ? {}
+            : { assignee_profile_id: input.assigneeProfileId }),
+        })
         .eq("id", input.ticketId)
         .eq("version", input.expectedVersion)
         .select(TICKET_COLUMNS)
@@ -1613,5 +1649,261 @@ export async function updateTicketStatus(
       return { ticket, event }
     },
     "operations.updateTicketStatus"
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Opening a ticket
+// ---------------------------------------------------------------------------
+
+/**
+ * The homes this person actually holds — not the homes they can see.
+ *
+ * Those are different sets and conflating them is a real bug, not a nicety: a
+ * tenant can read other flats in their block (part of the inventory is public
+ * for the sales side), while `service_tickets_insert_requester` admits a ticket
+ * only against a unit in `current_user_unit_ids()`. A "which home?" picker built
+ * from the visible list therefore offers choices the database will refuse, and
+ * the refusal arrives as a permission error on submit rather than as an absent
+ * option — which reads to the resident as the product being broken.
+ *
+ * Same residency join the finance module scopes statements with, so one
+ * definition of "your home" serves both.
+ */
+export async function getOwnUnitIds(
+  profileId: string | null
+): Promise<RepositoryResult<string[]>> {
+  return withRepository(
+    async (client) => resolveScopedUnitIds(client, profileId),
+    () => (profileId === null ? [] : seedUnitIdsForProfile(profileId)),
+    "operations.ownUnitIds"
+  )
+}
+
+export interface CreateTicketInput extends OperationsAccess {
+  companyId: string
+  /** Resolved from the unit when absent; required for a common-area report. */
+  siteId?: string
+  /** `null` or absent means the common areas — a lobby light belongs to no flat. */
+  unitId?: string | null
+  title: string
+  description?: string | null
+  category: TicketCategory
+  priority: TicketPriority
+  severity?: TicketSeverity
+  /** The person reporting it, personally. */
+  requesterProfileId: string
+  idempotencyKey?: string
+}
+
+/** `TCK-1041` — the format every existing row uses. Unique per company, not globally. */
+const TICKET_NO_PREFIX = "TCK-"
+const TICKET_NO_FIRST = 1001
+/** Two people filing at the same instant collide on the unique index; one retry each. */
+const TICKET_NO_ATTEMPTS = 4
+
+function nextTicketNo(existing: readonly string[]): string {
+  let highest = TICKET_NO_FIRST - 1
+  for (const value of existing) {
+    if (!value.startsWith(TICKET_NO_PREFIX)) continue
+    const parsed = Number.parseInt(value.slice(TICKET_NO_PREFIX.length), 10)
+    if (Number.isFinite(parsed) && parsed > highest) highest = parsed
+  }
+  return `${TICKET_NO_PREFIX}${highest + 1}`
+}
+
+/**
+ * Open a service ticket.
+ *
+ * `POST /api/site-management/tickets` returned 503 with "no repository write
+ * path exists for ticket creation" — true, and the reason a resident could read
+ * every ticket about their own flat and had no way to report a new one. The
+ * only route in was to ask a manager to type it for them, which is the workflow
+ * an ERP is supposed to remove.
+ *
+ * ## Who is allowed
+ *
+ * Not decided here. The insert goes through the caller's own client, so
+ * `service_tickets_insert_requester` (migration 17) rules: level >= 8 — which
+ * excludes `guest` and `child_guest` — filing against a unit they hold or
+ * against the common areas, as themselves, untriaged. Staff and above go in
+ * under `service_tickets_staff_write` instead and are not narrowed to their own
+ * units. A caller outside both gets 42501, mapped to `forbidden`.
+ *
+ * The fields a resident must not control are simply not accepted as input:
+ * there is no assignee, no status, no cost and no `resolved_at` parameter on
+ * `CreateTicketInput`. A ticket starts `open` and unassigned because that is the
+ * only honest initial state — anything else claims work nobody has agreed to do.
+ *
+ * ## ticket_no
+ *
+ * Read-then-write, because `ticket_no` is a human-facing reference with a
+ * per-company sequence and no database sequence backs it. Two simultaneous
+ * filings resolve the same number and one loses on the unique index; that is a
+ * 23505, and the loop retries it with a freshly-read number rather than
+ * surfacing a constraint name to a resident.
+ */
+export async function createTicket(
+  input: CreateTicketInput
+): Promise<RepositoryResult<ServiceTicket>> {
+  const title = input.title.trim()
+  if (title.length === 0) {
+    throw new RepositoryError({
+      code: "validation_failed",
+      message: "Give the request a short title.",
+      retryable: false,
+    })
+  }
+  const description = (input.description ?? "").trim()
+  const reportedAt = nowIso()
+
+  return withRepository(
+    async (client) => {
+      const scope = await scopeFor(client, input)
+      if (scope.denied) {
+        throw new RepositoryError({
+          code: "forbidden",
+          message: "You do not have access to this data.",
+          retryable: false,
+        })
+      }
+
+      // A ticket needs a site and the column is NOT NULL. Prefer the unit's own
+      // site over anything the caller asserted: a unit cannot be in two places,
+      // and trusting the caller here would let a resident file work against a
+      // site they have no connection to.
+      let siteId = input.siteId ?? null
+      const unitId = input.unitId ?? null
+      if (unitId !== null) {
+        const unitRow = unwrap<unknown>(
+          await client
+            .from("units")
+            .select("id, site_id")
+            .eq("id", unitId)
+            .maybeSingle(),
+          null
+        )
+        if (unitRow === null) {
+          throw new RepositoryError({
+            code: "not_found",
+            message: "That home was not found.",
+            retryable: false,
+          })
+        }
+        siteId = asString(asRecord(unitRow)["site_id"])
+      }
+      if (siteId === null) {
+        throw new RepositoryError({
+          code: "validation_failed",
+          message: "Choose which home or which part of the site this is about.",
+          retryable: false,
+        })
+      }
+
+      for (let attempt = 0; attempt < TICKET_NO_ATTEMPTS; attempt += 1) {
+        const recent = unwrap<unknown[]>(
+          await client
+            .from(T_TICKETS)
+            .select("ticket_no")
+            .eq("company_id", input.companyId)
+            .order("ticket_no", { ascending: false })
+            .limit(1),
+          []
+        )
+        const ticketNo = nextTicketNo(
+          recent.map((row) => asString(asRecord(row)["ticket_no"]))
+        )
+
+        const response = await client
+          .from(T_TICKETS)
+          .insert({
+            company_id: input.companyId,
+            site_id: siteId,
+            unit_id: unitId,
+            ticket_no: ticketNo,
+            title,
+            description: description.length === 0 ? null : description,
+            category: input.category,
+            priority: input.priority,
+            // Untriaged, by construction. See the doc comment.
+            status: "open",
+            severity: input.severity ?? "moderate",
+            requester_profile_id: input.requesterProfileId,
+            assignee_profile_id: null,
+            reported_at: reportedAt,
+            requires_finance_approval: false,
+            ...(input.idempotencyKey === undefined
+              ? {}
+              : { idempotency_key: input.idempotencyKey }),
+          })
+          .select(TICKET_COLUMNS)
+          .maybeSingle()
+
+        // 23505 is the per-company ticket_no race, and only that: the other
+        // unique index on this table is on a caller-supplied idempotency key,
+        // where a repeat genuinely is a duplicate and must not be retried.
+        const error: { code?: unknown; message?: unknown } | null =
+          response.error ?? null
+        if (
+          error !== null &&
+          error.code === "23505" &&
+          String(error.message ?? "").includes("ticket_no")
+        ) {
+          continue
+        }
+
+        const row = unwrap<unknown>(response, null)
+        if (row === null) {
+          throw new RepositoryError({
+            code: "persistence_unavailable",
+            message: "The request could not be saved.",
+            retryable: true,
+          })
+        }
+        return mapTicket(row)
+      }
+
+      throw new RepositoryError({
+        code: "conflict",
+        message: "Another request was filed at the same moment. Try again.",
+        retryable: true,
+      })
+    },
+    () => {
+      // Seed mode SIMULATES, as `appendTicketEvent` does: returned, not stored,
+      // because the seed builders are pure and must stay deterministic.
+      const template = seedServiceTickets()[0]
+      if (template === undefined) {
+        throw new RepositoryError({
+          code: "persistence_unavailable",
+          message: "The request could not be saved.",
+          retryable: true,
+        })
+      }
+      const ticket: ServiceTicket = {
+        ...template,
+        id: `e1ffffff-0000-4000-8000-${input.requesterProfileId.slice(-12)}`,
+        companyId: input.companyId,
+        siteId: input.siteId ?? template.siteId,
+        unitId: input.unitId ?? null,
+        ticketNo: nextTicketNo(seedServiceTickets().map((t) => t.ticketNo)),
+        title,
+        description: description.length === 0 ? null : description,
+        category: input.category,
+        priority: input.priority,
+        status: "open",
+        severity: input.severity ?? "moderate",
+        requesterProfileId: input.requesterProfileId,
+        assigneeProfileId: null,
+        reportedAt,
+        resolvedAt: null,
+        closedAt: null,
+        version: 1,
+        createdAt: reportedAt,
+        updatedAt: reportedAt,
+      }
+      return ticket
+    },
+    "operations.createTicket"
   )
 }

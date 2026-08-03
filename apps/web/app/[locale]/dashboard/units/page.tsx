@@ -10,6 +10,7 @@ import {
   type UnitsMatrixLabels,
 } from "@/components/inventory/units-matrix"
 import { getUserProfile } from "@/lib/auth"
+import { getGlossary } from "@/lib/glossary"
 import { hasPermission } from "@/lib/rbac"
 import type { Locale } from "@/lib/contracts"
 import {
@@ -45,9 +46,22 @@ import {
  * `export const dynamic` — the root layout already forces dynamic (W-INT §4).
  */
 
-export const metadata: Metadata = {
-  title: "Wohnungen",
-  robots: { index: false, follow: false },
+/**
+ * The browser tab, in the reader's language. This was a German literal, so a
+ * Turkish page carried a German tab; the heading beside it was already
+ * translated, which made the mismatch worse rather than invisible.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.units" })
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  }
 }
 
 /** Fetch every scoped unit, paging past the repository's per-call clamp. */
@@ -111,6 +125,8 @@ export default async function UnitsPage({
     )
   }
 
+  const glossary = await getGlossary(locale)
+
   const [rollupResult, all] = await Promise.all([
     getAvailabilityRollup(scope),
     fetchAllUnits(scope),
@@ -165,6 +181,7 @@ export default async function UnitsPage({
     blockLabel: t("matrix.blockLabel"),
     hint: t("matrix.hint"),
     notAvailable: tCommon("notAvailable"),
+    explain: glossary,
   }
 
   const total = rollup.totalUnits
@@ -200,6 +217,12 @@ export default async function UnitsPage({
           total,
         })}
         countLabel={(count) => t("count", { count })}
+        explain={{
+          portal_listing: glossary.realListing,
+          official: glossary.official,
+          modelled: glossary.modelled,
+          source_missing: glossary.sourceMissing,
+        }}
       />
 
       {blocks.length === 0 ? (

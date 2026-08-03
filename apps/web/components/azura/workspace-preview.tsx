@@ -34,20 +34,18 @@ const NAV: ReadonlyArray<{ key: string; icon: LucideIcon }> = [
   { key: "documents", icon: FileText },
 ]
 
-/** Fixed block code + status tone per row, keyed by position so the tone does
- *  not depend on matching a localised status string. */
-const ROW_META: ReadonlyArray<{ block: string; color: string }> = [
-  { block: "B03", color: "var(--chart-4)" }, // in progress → amber
-  { block: "B01", color: "var(--chart-2)" }, // open → blue
-  { block: "B05", color: "var(--chart-3)" }, // done → green
-  { block: "B07", color: "var(--chart-5)" }, // planned → slate
+/**
+ * The four sample rows: a message key, a block code, and a status tone. Keyed
+ * by name rather than by array index because the message catalogue forbids
+ * arrays (check-i18n rule 0b) — and a named key is what makes a translator's
+ * job possible anyway.
+ */
+const ROWS: ReadonlyArray<{ key: string; block: string; color: string }> = [
+  { key: "lift", block: "B03", color: "var(--chart-4)" }, // in progress → amber
+  { key: "water", block: "B01", color: "var(--chart-2)" }, // open → blue
+  { key: "pool", block: "B05", color: "var(--chart-3)" }, // done → green
+  { key: "handover", block: "B07", color: "var(--chart-5)" }, // planned → slate
 ]
-
-interface Row {
-  task: string
-  status: string
-  due: string
-}
 
 export async function WorkspacePreview({
   locale,
@@ -55,7 +53,6 @@ export async function WorkspacePreview({
   locale: string
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing.workspace" })
-  const rows = t.raw("rows") as Row[]
 
   return (
     <figure className="m-0 flex flex-col gap-3">
@@ -124,47 +121,44 @@ export async function WorkspacePreview({
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row, index) => {
-                    const meta = ROW_META[index] ?? ROW_META[0]!
-                    return (
-                      <tr
-                        key={row.task}
-                        className="border-b border-[color-mix(in_srgb,var(--foreground)_7%,transparent)] last:border-0"
+                  {ROWS.map((row) => (
+                    <tr
+                      key={row.key}
+                      className="border-b border-[color-mix(in_srgb,var(--foreground)_7%,transparent)] last:border-0"
+                    >
+                      <td
+                        data-numeric
+                        className="py-2.5 pr-3 font-medium text-foreground"
                       >
-                        <td
-                          data-numeric
-                          className="py-2.5 pr-3 font-medium text-foreground"
+                        {row.block}
+                      </td>
+                      <td className="py-2.5 pr-3 text-muted-foreground">
+                        {t(`rows.${row.key}.task`)}
+                      </td>
+                      <td className="py-2.5 pr-3">
+                        <span
+                          className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[0.6875rem] font-medium whitespace-nowrap"
+                          style={{
+                            color: row.color,
+                            backgroundColor: `color-mix(in srgb, ${row.color} 14%, transparent)`,
+                          }}
                         >
-                          {meta.block}
-                        </td>
-                        <td className="py-2.5 pr-3 text-muted-foreground">
-                          {row.task}
-                        </td>
-                        <td className="py-2.5 pr-3">
                           <span
-                            className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[0.6875rem] font-medium whitespace-nowrap"
-                            style={{
-                              color: meta.color,
-                              backgroundColor: `color-mix(in srgb, ${meta.color} 14%, transparent)`,
-                            }}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="size-1.5 rounded-full"
-                              style={{ backgroundColor: meta.color }}
-                            />
-                            {row.status}
-                          </span>
-                        </td>
-                        <td
-                          data-numeric
-                          className="hidden py-2.5 pr-1 text-muted-foreground sm:table-cell"
-                        >
-                          {row.due}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                            aria-hidden="true"
+                            className="size-1.5 rounded-full"
+                            style={{ backgroundColor: row.color }}
+                          />
+                          {t(`rows.${row.key}.status`)}
+                        </span>
+                      </td>
+                      <td
+                        data-numeric
+                        className="hidden py-2.5 pr-1 text-muted-foreground sm:table-cell"
+                      >
+                        {t(`rows.${row.key}.due`)}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

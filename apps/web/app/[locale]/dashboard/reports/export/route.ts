@@ -1,6 +1,11 @@
 import { getTranslations } from "next-intl/server"
 import type { NextRequest } from "next/server"
 
+import {
+  coverageFileTable,
+  registerFileTable,
+  type ReportText,
+} from "@/components/reports/report-file"
 import { getUserProfile } from "@/lib/auth"
 import { locales, type Locale } from "@/lib/contracts"
 import { getEvidenceCoverage, getSourceHealth } from "@/lib/evidence-repository"
@@ -48,6 +53,24 @@ import {
  *
  * The two reports available today carry no personal data at all: coverage
  * counts, and a register of published URLs.
+ *
+ * ## Step 5, added by W-NIGHT: make the file readable
+ *
+ * `lib/report-artifacts.ts` produces the correct values; it does not produce a
+ * readable spreadsheet. `evidence_coverage` shipped a metric column of dotted
+ * key paths and a basis column of TypeScript expressions, `source_register`
+ * shipped `expect_missing` as a status and a bare tier number, and both files
+ * announced their origin as `local-seed`. Everything a reader needs was in the
+ * file and none of it was in their language.
+ *
+ * `components/reports/report-file.ts` is the presentation pass that fixes it.
+ * It keeps every machine-readable value and adds the plain-language one beside
+ * it, and it is the same module the catalogue page reads its promised column
+ * list from, so the two cannot disagree about what a download contains.
+ *
+ * The provenance guarantee is untouched: `toCsv` still refuses to serialise a
+ * report declared as carrying sourced facts unless a citation column survives
+ * the pass, and both presented column sets keep theirs.
  */
 
 const CSV_CONTENT_TYPE = "text/csv; charset=utf-8"
@@ -91,24 +114,55 @@ export async function GET(
   }
 
   const t = await getTranslations({ locale, namespace: "dashboard.reports" })
+  const text: ReportText = t
 
   let table: ReportTable
   try {
     if (definition.id === "evidence_coverage") {
       const coverage = await getEvidenceCoverage()
-      table = evidenceCoverageTable({
-        coverage: coverage.data,
-        source: coverage.source,
-      })
+      table = coverageFileTable(
+        evidenceCoverageTable({
+          coverage: coverage.data,
+          source: coverage.source,
+        }),
+        {
+          text,
+          // `truncated` means a page ceiling was hit and every count below it
+          // is a lower bound. A file that carried those numbers without saying
+          // so would be understating the dataset in the reader's hands.
+          //
+          // NOT `degradedReason !== undefined`. That field is also set for the
+          // ordinary "Supabase is not configured" fallback, which is already
+          // stated in the origin line and is not a truncation. Reading it here
+          // would print "the list is shortened" on a complete file, which is
+          // the kind of wrong-but-plausible sentence this product exists to
+          // stop shipping.
+          incomplete: coverage.data.truncated,
+        }
+      )
     } else if (definition.id === "source_register") {
       const health = await getSourceHealth()
-      table = sourceRegisterTable({
-        health: health.data,
-        // The register has no `generatedAt` of its own, so the export states
-        // when IT was produced rather than borrowing a timestamp from elsewhere.
-        generatedAt: new Date().toISOString(),
-        source: health.source,
-      })
+      table = registerFileTable(
+        sourceRegisterTable({
+          health: health.data,
+          // The register has no `generatedAt` of its own, so the export states
+          // when IT was produced rather than borrowing a timestamp from
+          // elsewhere.
+          generatedAt: new Date().toISOString(),
+          source: health.source,
+        }),
+        {
+          text,
+          // The register carries no `truncated` flag of its own, so this reads
+          // the one place the information survives. `runRepository` attaches a
+          // `degradedReason` to a `supabase` result in exactly one case: when
+          // `getSourceHealth` hit the page ceiling and wrapped it with the
+          // truncation note. A `local-seed` result always carries a reason (the
+          // fallback itself) and is never truncated, so it must not count.
+          incomplete:
+            health.source === "supabase" && health.degradedReason !== undefined,
+        }
+      )
     } else {
       return new Response(null, { status: 501 })
     }

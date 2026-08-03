@@ -38,9 +38,9 @@
  * same way.
  */
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(scriptDir, "..");
@@ -56,8 +56,8 @@ const messagesDir =
 /** CONTRACTS §7. Hard-coded rather than imported: this script must run with
  *  plain `node` and no TypeScript loader, and a drift between this list and
  *  lib/contracts.ts is itself something the gate should surface. */
-const LOCALES = ["de", "en", "tr", "ru"];
-const DEFAULT_LOCALE = "de";
+const LOCALES = ["tr", "en", "ru", "de"];
+const DEFAULT_LOCALE = "tr";
 /** Rule 6. German runs ~30% longer than English by nature; 1.4 is the point
  *  where it stops being the language and starts being a layout problem. */
 const LENGTH_RATIO_LIMIT = 1.4;
@@ -407,6 +407,11 @@ if (base === undefined) {
 }
 
 const english = catalogues.get("en");
+/** Rule 6 measures GERMAN against English regardless of which locale is the
+ *  source of truth: it is a layout check about German being ~30% longer, not a
+ *  statement about the default language. Moving the default to Turkish must not
+ *  quietly repoint it. */
+const german = catalogues.get("de");
 
 for (const locale of LOCALES) {
   const flat = catalogues.get(locale);
@@ -539,7 +544,7 @@ for (const locale of LOCALES) {
 
 // Rule 6 — German length blow-out against English.
 if (english !== undefined) {
-  for (const [key, deValue] of base) {
+  for (const [key, deValue] of german ?? []) {
     if (key.endsWith("_long")) continue; // the declared long variant is exempt
     const enValue = english.get(key);
     if (enValue === undefined || enValue.length === 0) continue;
@@ -563,8 +568,113 @@ if (english !== undefined) {
   }
 }
 
+// Rule 7 — CALL-SITE arity. A message with ICU arguments read through a bare
+// `t("key")` throws FORMATTING_ERROR at render, and next-intl's fallback prints
+// the KEY PATH on screen. That is how "dashboard.listings.compare.spread" and
+// "dashboard.pipeline.card.probability" both reached a client demo: rules 1-6
+// all passed, because the catalogues were perfect. The defect was never in the
+// catalogue, it was in how the call site read it.
+//
+// Two legitimate ways to read such a message, and this rule accepts both:
+//   t("key", { count })  — next-intl interpolates
+//   t.raw("key")         — the caller hands the template to a component that
+//                          substitutes it itself (the `fill()` pattern)
+// Anything else is a defect.
+checkCallSiteArity();
+
 report();
 process.exit(errors.length > 0 ? 1 : 0);
+
+/**
+ * Walks every `.ts`/`.tsx` under `apps/web/{app,components}`, resolves each
+ * `t("...")` against the namespace(s) declared in that file, and fails when the
+ * resolved message carries ICU arguments the call site does not supply.
+ *
+ * Deliberately conservative: a key that resolves in no declared namespace is
+ * skipped rather than guessed at, so this reports defects it can prove.
+ */
+function checkCallSiteArity() {
+  const roots = [
+    join(repoRoot, "apps", "web", "app"),
+    join(repoRoot, "apps", "web", "components"),
+  ];
+
+  /** @type {string[]} */
+  const files = [];
+  for (const root of roots) collectSourceFiles(root, files);
+
+  for (const file of files) {
+    let source;
+    try {
+      source = readFileSync(file, "utf8");
+    } catch {
+      continue;
+    }
+
+    const namespaces = [
+      ...source.matchAll(/namespace:\s*["'`]([^"'`]+)["'`]/g),
+    ].map((match) => match[1]);
+
+    // `t("key")` / `tCommon("key")` / `t.raw("key")`, capturing the delimiter
+    // that follows the key so a supplied argument object is visible.
+    //
+    // The suffix must start with a CAPITAL (`tCommon`, `tRoot`) or be absent.
+    // `[A-Za-z]*` was the first attempt and it matched `template("finding.id")`
+    // — a local `t.raw` alias — reporting five defects that did not exist. A
+    // build gate that cries wolf gets switched off, so it is deliberately narrow:
+    // it reports what it can prove and stays silent on helpers it cannot resolve.
+    const callPattern =
+      /\bt([A-Z][A-Za-z]*)?\s*(\.raw)?\s*\(\s*["'`]([^"'`${}]+)["'`]\s*(\)|,)/g;
+
+    let match;
+    while ((match = callPattern.exec(source)) !== null) {
+      const isRaw = match[2] === ".raw";
+      const key = match[3];
+      const suppliesArguments = match[4] === ",";
+      if (isRaw || suppliesArguments) continue;
+
+      const candidates =
+        namespaces.length > 0
+          ? namespaces.map((namespace) => `${namespace}.${key}`)
+          : [key];
+
+      for (const path of candidates) {
+        const value = base.get(path);
+        if (value === undefined) continue;
+        const args = icuArguments(value);
+        if (args.size === 0) break;
+        const line = source.slice(0, match.index).split("\n").length;
+        const where = `${relative(repoRoot, file).split(sep).join("/")}:${line}`;
+        error(
+          "7",
+          DEFAULT_LOCALE,
+          path,
+          `${where} reads this with a bare t("${key}") but the message takes ` +
+            `{${[...args].join("}, {")}} — pass the arguments, or use t.raw() if a ` +
+            `component substitutes them. As written it renders the key path on screen`,
+        );
+        break;
+      }
+    }
+  }
+}
+
+/** Every `.ts`/`.tsx` beneath `dir`, skipping build and dependency output. */
+function collectSourceFiles(dir, out) {
+  /** @type {import("node:fs").Dirent[]} */
+  let entries;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    if (entry.name === "node_modules" || entry.name === ".next") continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) collectSourceFiles(full, out);
+    else if (/\.tsx?$/.test(entry.name)) out.push(full);
+  }
+}
 
 // ---------------------------------------------------------------------------
 

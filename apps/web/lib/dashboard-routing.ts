@@ -51,18 +51,31 @@ export const SIDEBAR_COOKIE = "azura-sidebar-collapsed"
  * Sidebar groups, in render order.
  *
  * The order is the working day, not the org chart: what you look at first sits
- * highest. `intelligence` is second rather than buried under a "reports"
- * heading because the evidence cockpit is what makes this product defensible,
- * and a feature you have to go looking for reads as an afterthought.
+ * highest.
+ *
+ * ## Why `intelligence` moved from second to last
+ *
+ * It sat second, and the reason given was that the evidence cockpit is what
+ * makes this product defensible. That was true while this was a competitor
+ * dossier. PIVOT.md changed the reader to Azura World's own management, and a
+ * property manager does not open a source register in the morning — they open
+ * the overnight work orders, then what is owed, then the inventory. Benchmarked
+ * against the category (AppFolio, Buildium, Yardi, Entrata), the daily routine
+ * is work orders, then delinquency, then occupancy, in that order.
+ *
+ * So `operations` leads, `inventory` and `finance` follow, and the analyst
+ * surfaces sit at the bottom where a specialist will still find them. Nothing
+ * is removed: this is an order, not a deletion, and the evidence cockpit is one
+ * click away for the person whose job it actually is.
  */
 export const DASHBOARD_GROUPS = Object.freeze([
   "overview",
-  "intelligence",
-  "inventory",
-  "commercial",
-  "finance",
   "operations",
+  "inventory",
+  "finance",
+  "commercial",
   "governance",
+  "intelligence",
 ] as const)
 
 export type DashboardGroup = (typeof DASHBOARD_GROUPS)[number]

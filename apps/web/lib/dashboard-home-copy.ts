@@ -121,7 +121,7 @@ const de: DashboardShellCopy = {
   homeSubtitleByRole: "Ihre Ansicht als {role}",
   panelRestricted: "Nicht freigegeben",
   panelRestrictedHint:
-    "Dieser Bereich gehört nicht zu Ihrer Rolle. Das ist die richtige Antwort, kein Fehler.",
+    "Diese Zahl gehört zu einem Bereich, für den Sie keinen Zugang haben.",
   panelFailed: "Nicht geladen",
   panelFailedHint:
     "Dieser Bereich konnte nicht geladen werden. Die übrigen Kennzahlen sind davon unberührt.",
@@ -138,7 +138,7 @@ const de: DashboardShellCopy = {
   kpiFindings: "Befunde",
   kpiCriticalFindings: "Kritische Befunde",
   kpiFactGaps: "Angaben ohne Quelle",
-  kpiSourcesValidated: "Geprüfte Quellen",
+  kpiSourcesValidated: "Quellen",
   kpiHotelRooms: "Hotelzimmer",
   kpiReviewSources: "Bewertungsportale",
   kpiLedgerEntries: "Buchungen",
@@ -196,7 +196,7 @@ const en: DashboardShellCopy = {
   homeSubtitleByRole: "Your view as {role}",
   panelRestricted: "Not available",
   panelRestrictedHint:
-    "This panel is outside your role. That is the correct answer, not a fault.",
+    "This figure belongs to an area you do not have access to.",
   panelFailed: "Did not load",
   panelFailedHint:
     "This panel could not be loaded. The remaining figures are unaffected.",
@@ -213,7 +213,7 @@ const en: DashboardShellCopy = {
   kpiFindings: "Findings",
   kpiCriticalFindings: "Critical findings",
   kpiFactGaps: "Unestablished facts",
-  kpiSourcesValidated: "Validated sources",
+  kpiSourcesValidated: "Sources",
   kpiHotelRooms: "Hotel rooms",
   kpiReviewSources: "Review platforms",
   kpiLedgerEntries: "Ledger entries",
@@ -270,7 +270,7 @@ const tr: DashboardShellCopy = {
   homeSubtitleByRole: "{role} olarak görünümünüz",
   panelRestricted: "Yetki dışı",
   panelRestrictedHint:
-    "Bu panel rolünüzün dışında. Bu bir hata değil, doğru yanıt.",
+    "Bu bilgi, erişiminiz olmayan bir alana ait.",
   panelFailed: "Yüklenemedi",
   panelFailedHint: "Bu panel yüklenemedi. Diğer göstergeler bundan etkilenmez.",
   panelTruncated:
@@ -286,7 +286,7 @@ const tr: DashboardShellCopy = {
   kpiFindings: "Bulgular",
   kpiCriticalFindings: "Kritik bulgular",
   kpiFactGaps: "Kaynaksız veriler",
-  kpiSourcesValidated: "Doğrulanan kaynaklar",
+  kpiSourcesValidated: "Kaynaklar",
   kpiHotelRooms: "Otel odaları",
   kpiReviewSources: "Değerlendirme siteleri",
   kpiLedgerEntries: "Muhasebe kayıtları",
@@ -343,7 +343,7 @@ const ru: DashboardShellCopy = {
   homeSubtitleByRole: "Ваш вид как {role}",
   panelRestricted: "Недоступно",
   panelRestrictedHint:
-    "Эта панель вне вашей роли. Это правильный ответ, а не ошибка.",
+    "Этот показатель относится к разделу, к которому у вас нет доступа.",
   panelFailed: "Не загрузилось",
   panelFailedHint:
     "Эту панель не удалось загрузить. Остальные показатели это не затрагивает.",
@@ -360,7 +360,7 @@ const ru: DashboardShellCopy = {
   kpiFindings: "Находки",
   kpiCriticalFindings: "Критические находки",
   kpiFactGaps: "Неподтверждённые данные",
-  kpiSourcesValidated: "Проверенные источники",
+  kpiSourcesValidated: "Источники",
   kpiHotelRooms: "Номера отеля",
   kpiReviewSources: "Площадки отзывов",
   kpiLedgerEntries: "Проводки",

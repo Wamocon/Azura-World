@@ -20,7 +20,7 @@ import type {
 } from "@/lib/operations-repository"
 import type { HandlerResult } from "@/lib/api-handler"
 import { RepositoryError } from "@/lib/repository-base"
-import { commandPermissions, commandSchema } from "@/lib/validation/schemas"
+import { commandSchema, permissionForCommand } from "@/lib/validation/schemas"
 
 export const dynamic = "force-dynamic"
 
@@ -58,7 +58,10 @@ type CommandResult =
 export const POST = createManifestHandler("executeCommand", {
   schema: commandSchema,
   handler: async ({ body, profile }): Promise<HandlerResult<CommandResult>> => {
-    const required: Permission = commandPermissions[body.command]
+    // Kind-aware: a comment needs only `tickets:view`, so the person who
+    // reported the fault can reply on their own ticket. See the note on
+    // `permissionForCommand`.
+    const required: Permission = permissionForCommand(body)
     if (!hasPermission(profile.role, required)) {
       // Says nothing about which permission was missing. Naming it would turn
       // this endpoint into a way to map the permission matrix from outside.

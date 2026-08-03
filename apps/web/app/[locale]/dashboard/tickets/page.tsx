@@ -27,12 +27,20 @@ import { getUserProfile } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
 import { formatDateTime } from "@/lib/format"
+import { getGlossary } from "@/lib/glossary"
+import { NewRequestForm } from "@/components/operations/new-request-form"
 import {
   getOperationsSummary,
+  getOwnUnitIds,
   getTickets,
   type ServiceTicket,
 } from "@/lib/operations-repository"
-import { ticketStatuses, type TicketStatus } from "@/lib/operations-data"
+import {
+  ticketCategories,
+  ticketPriorities,
+  ticketStatuses,
+  type TicketStatus,
+} from "@/lib/operations-data"
 import { hasPermission } from "@/lib/rbac"
 import { assessSla, closedOutStatuses } from "@/lib/ticket-workflow"
 
@@ -54,9 +62,22 @@ import { assessSla, closedOutStatuses } from "@/lib/ticket-workflow"
  * see, and that is a disclosure even though no row is rendered.
  */
 
-export const metadata: Metadata = {
-  title: "Tickets",
-  robots: { index: false, follow: false },
+/**
+ * The browser tab, in the reader's language. This was a German literal, so a
+ * Turkish page carried a German tab; the heading beside it was already
+ * translated, which made the mismatch worse rather than invisible.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.tickets" })
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  }
 }
 
 const PAGE_SIZE = 50
@@ -139,6 +160,20 @@ export default async function TicketsPage({
   const categoryLabels = ticketCategoryLabels(t)
   const sla = slaLabels(t)
 
+  // The "report a problem" control. `tickets:create` is held by owner, tenant,
+  // manager, staff and admin — not by `guest`, and not by the `child_*` roles,
+  // which is the RBAC layer being deliberately stricter than the row policy
+  // (which admits level >= 8). Narrower is safe; wider would not be.
+  //
+  // The picker offers the homes the reader HOLDS. `getUnits` would return homes
+  // they can merely see — part of the inventory is public for the sales side —
+  // and every one of those would be refused on submit.
+  const canCreate = hasPermission(profile.role, "tickets:create")
+  const ownUnitIds = canCreate
+    ? (await getOwnUnitIds(profile.id)).data
+    : []
+  const glossary = await getGlossary(locale)
+
   // One instant for the whole page. Reading the clock per row makes a long list
   // disagree with itself about what "overdue" means between the first row and
   // the last.
@@ -177,11 +212,46 @@ export default async function TicketsPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {t("title")}
-        </h1>
-        <p className="max-w-prose text-sm text-muted-foreground">{t("lead")}</p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {t("title")}
+          </h1>
+          <p className="max-w-prose text-sm text-muted-foreground">
+            {t("lead")}
+          </p>
+        </div>
+        {canCreate ? (
+          <NewRequestForm
+            unitIds={ownUnitIds}
+            categories={ticketCategories}
+            priorities={ticketPriorities}
+            labels={{
+              trigger: t("create.trigger"),
+              heading: t("create.heading"),
+              lead: t("create.lead"),
+              titleLabel: t("create.titleLabel"),
+              titlePlaceholder: t("create.titlePlaceholder"),
+              whereLabel: t("create.whereLabel"),
+              whereCommon: t("create.whereCommon"),
+              categoryLabel: t("create.categoryLabel"),
+              priorityLabel: t("create.priorityLabel"),
+              descriptionLabel: t("create.descriptionLabel"),
+              descriptionPlaceholder: t("create.descriptionPlaceholder"),
+              submit: t("create.submit"),
+              busy: t("create.busy"),
+              cancel: tCommon("actions.cancel"),
+              close: tCommon("actions.close"),
+              titleRequired: t("create.titleRequired"),
+              genericError: t("create.genericError"),
+              unavailable: t("create.unavailable"),
+              afterNote: t("create.afterNote"),
+              categories: categoryLabels,
+              priorities: priorityLabels,
+              priorityExplain: glossary.priority,
+            }}
+          />
+        ) : null}
       </header>
 
       {degraded ? (

@@ -171,6 +171,12 @@ export const updateTicketStatusSchema = z.strictObject({
   expectedVersion: version,
   toStatus: ticketStatus,
   note: longText("Note").optional(),
+  /**
+   * Who takes the job. The repository REQUIRES it when `toStatus` is
+   * `assigned` — a ticket assigned to nobody reads as handled on every board in
+   * the product while nobody is actually coming.
+   */
+  assigneeProfileId: identifier.optional(),
 })
 
 export const createActivitySchema = z
@@ -350,3 +356,29 @@ export const commandPermissions = {
   "ledger.reverseEntry": "finance:manage",
   "vendorInvoice.settle": "vendor_invoices:approve",
 } as const satisfies Record<Command["command"], Permission>
+
+/**
+ * The permission a specific command instance needs.
+ *
+ * Almost always `commandPermissions[command]`. The exception is a **comment**,
+ * and it is the difference between a product and a filing cabinet.
+ *
+ * `ticket.appendEvent` covers both "the status moved" and "somebody said
+ * something", and requiring `tickets:update` for the whole command meant the
+ * person who reported the fault could not reply on their own ticket — the one
+ * conversation the system exists to carry. The database never intended that:
+ * `ticket_events_insert_comment` in migration 06 explicitly allows a resident to
+ * append `kind='comment'` to a ticket they can see, with the actor pinned to
+ * `auth.uid()` and both status fields NULL.
+ *
+ * So a comment asks for `tickets:view` and the row policy does the rest: you may
+ * write a comment exactly on the tickets you are already allowed to read, as
+ * yourself, and you cannot dress a status change up as one. Every other kind
+ * still needs `tickets:update`.
+ */
+export function permissionForCommand(command: Command): Permission {
+  if (command.command === "ticket.appendEvent" && command.kind === "comment") {
+    return "tickets:view"
+  }
+  return commandPermissions[command.command]
+}

@@ -437,13 +437,13 @@ export interface AiResponse {
 // ---------------------------------------------------------------------------
 
 /** Supported locales. `localePrefix: "always"` — every URL carries its locale. */
-export const locales = ["de", "en", "tr", "ru"] as const
+export const locales = ["tr", "en", "ru", "de"] as const
 
 /** One of the four supported locales. */
 export type Locale = (typeof locales)[number]
 
 /** German is default: the ticket is German and 5 of 7 portal sources are German. */
-export const defaultLocale: Locale = "de"
+export const defaultLocale: Locale = "tr"
 
 // ---------------------------------------------------------------------------
 // Runtime guards

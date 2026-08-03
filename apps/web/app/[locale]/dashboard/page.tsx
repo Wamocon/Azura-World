@@ -7,7 +7,21 @@ import type { Locale, Role } from "@/lib/contracts"
 import { getDashboardSnapshot } from "@/lib/dashboard-repository"
 import type { DashboardSnapshot } from "@/lib/dashboard-data"
 import { fill, shellCopy } from "@/lib/dashboard-home-copy"
-import { navGroupsForRole } from "@/lib/dashboard-routing"
+import { navGroupsForRole, routesForRole } from "@/lib/dashboard-routing"
+import { WelcomePanel } from "@/components/dashboard/welcome-panel"
+
+/**
+ * Roles whose home is a welcome rather than a metric grid. See `WelcomePanel`
+ * for why. Kept as a Set beside the KPI table so the two stay visibly adjacent:
+ * adding a role here without removing its KPI row is harmless, but the reverse
+ * — a role in neither — is the blank page this file already guards against.
+ */
+const WELCOME_ROLES: ReadonlySet<Role> = new Set<Role>([
+  "guest",
+  "child_owner",
+  "child_tenant",
+  "child_guest",
+])
 
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts"
 import { DashboardHomeLive } from "@/components/dashboard/home-live"
@@ -85,27 +99,51 @@ const KPIS_BY_ROLE: Record<Role, readonly KpiId[]> = {
     "hotelRooms",
     "reviewSources",
   ],
-  // Site KPIs, availability, open tickets, conflicts needing review.
+  // The manager's own working day, in the order they meet it: what is open,
+  // what has missed its deadline, then the estate and the money.
+  //
+  // This used to lead with `unitsModelled` and carry `findings` and
+  // `criticalFindings` — dataset-quality metrics that belong to whoever curates
+  // the evidence, not to the person running the building. A manager opening
+  // their home screen to "24 findings" learns nothing they can act on. The
+  // analyst KPIs are still on the admin view, which is whose job they are.
   manager: [
-    "unitsTotal",
-    "unitsModelled",
     "openTickets",
     "overdueTickets",
-    "findings",
-    "criticalFindings",
+    "unitsTotal",
+    "ledgerEntries",
     "hotelRooms",
+    "reviewSources",
   ],
   // Ledger first. No evidence access — `accountant` is level 60, below the
   // manager's 70, so `evidence:view` is not theirs (W1-B's matrix).
   accountant: ["ledgerEntries", "unitsTotal", "hotelRooms"],
   // Today's work.
   staff: ["openTickets", "overdueTickets", "unitsTotal", "hotelRooms"],
-  // The public showcase plus what an owner can see of the inventory.
-  owner: ["unitsTotal", "openTickets", "hotelRooms", "reviewSources"],
-  tenant: ["openTickets", "hotelRooms", "reviewSources"],
-  // Assigned work only. `service_provider ⊆ staff`, so never more than staff.
-  service_provider: ["openTickets", "hotelRooms"],
-  // Public information only.
+  //
+  // ---- the resident and vendor views --------------------------------------
+  //
+  // Every list below used to end in `hotelRooms` and `reviewSources`, and for
+  // the residents that was the whole card set. A tenant opened their home to
+  // "Hotel rooms 188" and "Review platforms 3" — two facts about a hotel they
+  // do not run and a set of review sites they will never read — beside a
+  // greyed-out "Open tickets" that said their own maintenance requests were
+  // "outside your role". None of the three helped anybody live in a flat.
+  //
+  // These now carry what the person actually came for. A site-wide unit count
+  // is deliberately NOT among them: RLS narrows it to the public listings plus
+  // the resident's own, which reads as "I have 23 apartments". Giving a resident
+  // their own unit needs a scoped query, and that is the next build rather than
+  // a number guessed at here.
+  owner: ["openTickets", "ledgerEntries"],
+  tenant: ["openTickets"],
+  // Assigned work and what has run late on it. `service_provider ⊆ staff`, so
+  // never more than staff. `hotelRooms` is gone: a contractor fixing a lift has
+  // no use for the hotel's room count.
+  service_provider: ["openTickets", "overdueTickets"],
+  // A guest genuinely is a hotel guest, so the hotel figures are the ones that
+  // belong to them. Thin by nature rather than by accident — the home page adds
+  // a proper welcome for these roles instead of leaving white space.
   guest: ["hotelRooms", "reviewSources"],
   // A read-only subset of the guardian's view, per CONTRACTS §3's
   // additive-authority rule. Never a superset of the parent.
@@ -143,6 +181,48 @@ export default async function DashboardHomePage({
 
   const cards = KPIS_BY_ROLE[profile.role]
   const groups = navGroupsForRole(profile.role)
+
+  // Four roles get a door rather than a dashboard. They hold no operational
+  // metric of their own, so the KPI grid could only ever show them the two
+  // panels they may read — "Hotel rooms 64", "Review sources 5" — which is a
+  // true and useless answer to a question a hotel guest never asked.
+  //
+  // The cards are built from the routes this role actually holds, so the
+  // welcome cannot advertise a page that would then refuse them.
+  if (WELCOME_ROLES.has(profile.role)) {
+    const welcomeCards = routesForRole(profile.role)
+      .filter((route) => route.href !== "/dashboard")
+      .map((route) => {
+        const slug = route.href.replace("/dashboard/", "")
+        return {
+          href: route.href,
+          slug,
+          title: t.has(route.labelKey.replace("dashboard.", "") as "units.title")
+            ? t(route.labelKey.replace("dashboard.", "") as "units.title")
+            : slug,
+          body: t(`welcome.cards.${slug}` as "welcome.cards.units"),
+        }
+      })
+
+    return (
+      <>
+        <DashboardPageHeader
+          title={t("shell.title")}
+          description={fill(copy.homeSubtitleByRole, { role: profile.role })}
+        />
+        <WelcomePanel
+          greeting={
+            profile.fullName === null
+              ? t("welcome.greetingAnonymous")
+              : t("welcome.greeting", { name: profile.fullName })
+          }
+          lead={t(`welcome.lead.${profile.role}` as "welcome.lead.guest")}
+          sectionTitle={t("welcome.sectionTitle")}
+          cards={welcomeCards}
+        />
+      </>
+    )
+  }
 
   return (
     <>
@@ -339,7 +419,7 @@ function resolveKpi(
     case "openTickets":
       return {
         label: copy.kpiOpenTickets,
-        value: snapshot.operations?.totalTickets ?? null,
+        value: snapshot.operations?.openTickets ?? null,
       }
 
     case "overdueTickets":

@@ -92,6 +92,11 @@ export interface InventoryPanel {
 /** Service-ticket rollup. Empty in seed mode — `seed.sql` has no tickets. */
 export interface OperationsPanel {
   totalTickets: number | null
+  /**
+   * Tickets that are still someone's work: everything not `resolved`, `closed`
+   * or `cancelled`. Distinct from `totalTickets`, which counts the archive too.
+   */
+  openTickets: number
   sampledTickets: number
   truncated: boolean
   byStatus: Record<string, number>
@@ -324,6 +329,7 @@ export function seedHotelPanel(): HotelPanel {
 export function seedOperationsPanel(): OperationsPanel {
   return {
     totalTickets: 0,
+    openTickets: 0,
     sampledTickets: 0,
     truncated: false,
     byStatus: {},

@@ -59,6 +59,10 @@ export interface TicketTransitionLabels {
   noteLabel: string
   notePlaceholder: string
   noteRequired: string
+  assigneeLabel: string
+  assigneePlaceholder: string
+  assigneeRequired: string
+  assigneeUnavailable: string
   submit: string
   cancel: string
   busy: string
@@ -85,6 +89,7 @@ function variantFor(
 export function TicketTransitions({
   ticket,
   available,
+  assignees = [],
   labels,
   className,
 }: {
@@ -94,25 +99,38 @@ export function TicketTransitions({
    * Plain data: strings and booleans, so it crosses the boundary unchanged.
    */
   available: readonly TicketTransition[]
+  /**
+   * Who this job can be handed to. Empty when the caller may not read the
+   * directory, in which case the assign action explains itself instead of
+   * offering an empty menu.
+   */
+  assignees?: readonly { id: string; name: string }[]
   labels: TicketTransitionLabels
   className?: string
 }) {
   const router = useRouter()
   const noteFieldId = useId()
+  const assigneeFieldId = useId()
   const [pending, startTransition] = useTransition()
   const [selected, setSelected] = useState<TicketTransition | null>(null)
   const [note, setNote] = useState("")
+  const [assignee, setAssignee] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
   const reset = useCallback(() => {
     setSelected(null)
     setNote("")
+    setAssignee("")
     setError(null)
   }, [])
 
   const submit = useCallback(
-    async (transition: TicketTransition, submittedNote: string) => {
+    async (
+      transition: TicketTransition,
+      submittedNote: string,
+      submittedAssignee: string
+    ) => {
       setBusy(true)
       setError(null)
       try {
@@ -126,6 +144,12 @@ export function TicketTransitions({
             ...(submittedNote.trim() === ""
               ? {}
               : { note: submittedNote.trim() }),
+            // Travels with the status. The repository refuses `assigned`
+            // without it, so this is the field that stops a job being assigned
+            // to nobody.
+            ...(submittedAssignee === ""
+              ? {}
+              : { assigneeProfileId: submittedAssignee }),
           }),
         })
         const payload = (await response.json()) as ApiResponse<unknown>
@@ -189,8 +213,13 @@ export function TicketTransitions({
               // A move needing no reason is one click. Adding a confirmation
               // step to "Arbeit beginnen" is friction on the action people
               // perform most.
-              if (transition.requiresNote) setSelected(transition)
-              else void submit(transition, "")
+              setAssignee("")
+              // A move needing a reason OR a person opens the panel. Assignment
+              // is the second case: it used to be one click and it silently
+              // assigned nobody.
+              if (transition.requiresNote || transition.to === "assigned") {
+                setSelected(transition)
+              } else void submit(transition, "", "")
             }}
           >
             {labels.actions[transition.id] ?? transition.id}
@@ -203,28 +232,68 @@ export function TicketTransitions({
           className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-3"
           onSubmit={(event) => {
             event.preventDefault()
-            if (note.trim() === "") {
+            if (selected.requiresNote && note.trim() === "") {
               setError(labels.noteRequired)
               return
             }
-            void submit(selected, note)
+            if (selected.to === "assigned" && assignee === "") {
+              setError(labels.assigneeRequired)
+              return
+            }
+            void submit(selected, note, assignee)
           }}
         >
-          <label
-            htmlFor={noteFieldId}
-            className="text-sm font-medium text-foreground"
-          >
-            {labels.noteLabel}
-          </label>
-          <textarea
-            id={noteFieldId}
-            required
-            rows={3}
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            placeholder={labels.notePlaceholder}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          />
+          {/* Who takes the job. Only on the assign move, and required there. */}
+          {selected.to === "assigned" ? (
+            <>
+              <label
+                htmlFor={assigneeFieldId}
+                className="text-sm font-medium text-foreground"
+              >
+                {labels.assigneeLabel}
+              </label>
+              {assignees.length === 0 ? (
+                <p className="rounded-md border border-confidence-gap/30 bg-confidence-gap/10 px-3 py-2 text-sm text-foreground">
+                  {labels.assigneeUnavailable}
+                </p>
+              ) : (
+                <select
+                  id={assigneeFieldId}
+                  required
+                  value={assignee}
+                  onChange={(event) => setAssignee(event.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <option value="">{labels.assigneePlaceholder}</option>
+                  {assignees.map((person) => (
+                    <option key={person.id} value={person.id}>
+                      {person.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </>
+          ) : null}
+
+          {selected.requiresNote ? (
+            <>
+              <label
+                htmlFor={noteFieldId}
+                className="text-sm font-medium text-foreground"
+              >
+                {labels.noteLabel}
+              </label>
+              <textarea
+                id={noteFieldId}
+                required
+                rows={3}
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder={labels.notePlaceholder}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </>
+          ) : null}
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={working}>
               {working ? labels.busy : labels.submit}

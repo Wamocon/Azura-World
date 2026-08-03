@@ -47,9 +47,22 @@ import { integrationStatuses, noIntegrationsConfigured } from "./integrations"
  * repository ceiling is 500 rows per read; this asks for 25.
  */
 
-export const metadata: Metadata = {
-  title: "Administration",
-  robots: { index: false, follow: false },
+/**
+ * The browser tab, in the reader's language. This was a German literal, so a
+ * Turkish page carried a German tab; the heading beside it was already
+ * translated, which made the mismatch worse rather than invisible.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.admin" })
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  }
 }
 
 const AUDIT_PAGE_SIZE = 25

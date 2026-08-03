@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
+import { MessageComposer } from "@/components/communications/message-composer"
 import {
   DeliveryBadge,
   DeliveryNotice,
@@ -19,6 +20,7 @@ import {
 } from "@/lib/communications-repository"
 import type { Locale } from "@/lib/contracts"
 import { formatDateTime } from "@/lib/format"
+import { getProfiles } from "@/lib/governance-repository"
 import { hasPermission } from "@/lib/rbac"
 
 /**
@@ -47,9 +49,22 @@ import { hasPermission } from "@/lib/rbac"
  * never gain a flag that does.
  */
 
-export const metadata: Metadata = {
-  title: "Nachricht",
-  robots: { index: false, follow: false },
+/**
+ * The browser tab, in the reader's language. This was a German literal, so a
+ * Turkish page carried a German tab; the heading beside it was already
+ * translated, which made the mismatch worse rather than invisible.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.communications" })
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  }
 }
 
 const PAGE_SIZE = 50
@@ -112,6 +127,28 @@ export default async function ThreadPage({
   const delivery = deliveryLabels(t)
   const pageCount = Math.max(1, Math.ceil(thread.messageCount / PAGE_SIZE))
 
+  // Who wrote each line. This used to render `message.senderProfileId` — a raw
+  // uuid — as the author of every message, which is unreadable and, on a
+  // complaint thread, faintly insulting.
+  //
+  // `getProfiles` refuses a caller who cannot read the directory, so a resident
+  // resolves nobody: their own messages are still labelled "You" from the
+  // session, and a co-participant they cannot look up is named as such rather
+  // than guessed at. Calling them "the Azura World team" would read better and
+  // would be a claim this page cannot support — a thread can hold two residents
+  // of the same home.
+  const directory = hasPermission(profile.role, "users:view")
+    ? await getProfiles({ role: profile.role, isActive: true, limit: 200 })
+    : null
+  const senderNames = new Map(
+    (directory?.data ?? []).map((entry) => [
+      entry.id,
+      entry.fullName ?? entry.email ?? entry.id,
+    ])
+  )
+
+  const canReply = hasPermission(profile.role, "communications:create")
+
   return (
     <div className="flex flex-col gap-6">
       <nav className="text-sm">
@@ -157,7 +194,17 @@ export default async function ThreadPage({
               locale={locale}
               deliveryLabelSet={delivery}
               internalNoteLabel={t("internalNote")}
-              senderFallback={t("systemSender")}
+              senderName={senderNameFor(message, {
+                selfProfileId: profile.id,
+                selfLabel: t("selfSender"),
+                names: senderNames,
+                systemLabel: t("systemSender"),
+                unknownLabel: t("otherSender"),
+              })}
+              isOwn={
+                message.senderProfileId !== null &&
+                message.senderProfileId === profile.id
+              }
               attachmentLabel={t("hasAttachment")}
             />
           ))}
@@ -189,14 +236,54 @@ export default async function ThreadPage({
         </nav>
       ) : null}
 
-      {/* Composition is deliberately absent rather than present and inert. A
-          compose box with no provider behind it teaches people to type messages
-          that go nowhere; the notice above explains why there is none. */}
-      <p className="max-w-prose text-sm text-muted-foreground">
-        {t("composeUnavailable")}
-      </p>
+      {/* The box exists now. What it cannot do — reach anyone by email or
+          WhatsApp — is stated by `DeliveryNotice` above and by `scopeNote`
+          under the button, rather than by refusing to render a composer. */}
+      {canReply ? (
+        <MessageComposer
+          threadId={thread.id}
+          labels={{
+            heading: t("composer.heading"),
+            placeholder: t("composer.placeholder"),
+            submit: t("composer.submit"),
+            busy: t("composer.busy"),
+            empty: t("composer.empty"),
+            genericError: t("composer.genericError"),
+            unavailable: t("composer.unavailable"),
+            scopeNote: t("composer.scopeNote"),
+          }}
+        />
+      ) : (
+        <p className="max-w-prose text-sm text-muted-foreground">
+          {t("composer.readOnly")}
+        </p>
+      )}
     </div>
   )
+}
+
+/**
+ * The author of one message, in the reader's terms.
+ *
+ * Order matters: your own name first, so a resident always recognises their own
+ * line; then the directory, which only staff can read; then the neutral
+ * fallback. A uuid is never a possible outcome.
+ */
+function senderNameFor(
+  message: MessageRecord,
+  labels: {
+    selfProfileId: string | null
+    selfLabel: string
+    names: ReadonlyMap<string, string>
+    systemLabel: string
+    unknownLabel: string
+  }
+): string {
+  if (message.senderKind !== "user") return labels.systemLabel
+  const senderId = message.senderProfileId
+  if (senderId === null) return labels.systemLabel
+  if (senderId === labels.selfProfileId) return labels.selfLabel
+  return labels.names.get(senderId) ?? labels.unknownLabel
 }
 
 function MessageBubble({
@@ -204,29 +291,40 @@ function MessageBubble({
   locale,
   deliveryLabelSet,
   internalNoteLabel,
-  senderFallback,
+  senderName,
+  isOwn,
   attachmentLabel,
 }: {
   message: MessageRecord
   locale: Locale
   deliveryLabelSet: Parameters<typeof DeliveryBadge>[0]["labels"]
   internalNoteLabel: string
-  senderFallback: string
+  senderName: string
+  isOwn: boolean
   attachmentLabel: string
 }) {
-  const state = deliveryStateFor({ isInternalNote: message.isInternalNote })
+  const state = deliveryStateFor({
+    isInternalNote: message.isInternalNote,
+    channel: message.channel,
+  })
   return (
     <li
       className={cn(
         "flex flex-col gap-1.5 rounded-lg border p-4",
         message.isInternalNote
           ? "border-quality-stale/40 bg-quality-stale/5"
-          : "border-border"
+          : isOwn
+            ? // Your own lines sit apart from the ones addressed to you. Tint
+              // only — never left/right alignment, which inverts under `dir`
+              // and would put a Turkish reader's own messages where a German
+              // reader's counterpart's messages are.
+              "border-primary/30 bg-primary/5"
+            : "border-border"
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-muted-foreground">
-          {message.senderProfileId ?? senderFallback}
+        <span className="text-xs font-medium text-foreground">
+          {senderName}
         </span>
         <time
           dateTime={message.createdAt}

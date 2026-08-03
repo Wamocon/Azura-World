@@ -1,6 +1,7 @@
 import { createManifestHandler, type HandlerResult } from "@/lib/api-handler"
 import { notFound, validationFailed } from "@/lib/api-errors"
 import {
+  createMessage,
   getMessages,
   getNotifications,
   getThread,
@@ -86,9 +87,48 @@ export const GET = createManifestHandler("getCommunications", {
   },
 })
 
+/**
+ * Post one message to a thread.
+ *
+ * The thread is loaded first, for two reasons. It is where the caller's access
+ * is checked — `getThread()` returns `null` for a thread they cannot see, and
+ * the reply is refused as 404 rather than 403 so the endpoint never confirms
+ * that an invisible thread exists. And it is where `companyId` comes from: the
+ * schema does not accept one, because a caller-supplied company on a message is
+ * how a message ends up filed under a tenant it does not belong to.
+ *
+ * The sender is `profile.id` and cannot be anything else — `createMessageSchema`
+ * has no sender field, and the row-level policy independently requires
+ * `sender_profile_id = auth.uid()`.
+ *
+ * `attachments` is accepted by the schema and is NOT yet stored: `messages` has
+ * a single `attachment_document_id`, not a join table, so honouring a list of
+ * ten would mean silently keeping one. Left unimplemented and named here rather
+ * than half-done.
+ */
 export const POST = createManifestHandler("createMessage", {
   schema: createMessageSchema,
-  handler: () => {
-    throw new Error("unreachable: createMessage declares a write gap")
+  handler: async ({ body, profile }) => {
+    if (profile.id === null) {
+      throw new RepositoryError(notFound("That conversation was not found."))
+    }
+
+    const thread = await getThread(body.threadId, {
+      role: profile.role,
+      profileId: profile.id,
+    })
+    if (thread.data === null) {
+      throw new RepositoryError(notFound("That conversation was not found."))
+    }
+
+    const result = await createMessage({
+      threadId: thread.data.id,
+      companyId: thread.data.companyId,
+      senderProfileId: profile.id,
+      body: body.body,
+      role: profile.role,
+      ...(profile.locale === null ? {} : { locale: profile.locale }),
+    })
+    return { data: result.data, source: result.source }
   },
 })

@@ -815,7 +815,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "createTicket",
         summary: "Open a service ticket.",
         description:
-          "Not implemented: no repository write path exists for ticket creation. Appending an event to an existing ticket is available as a command on `/api/site-management/actions`.",
+          "Files a new, untriaged ticket. The requester is the session. Status, assignee and cost are not accepted as input — a ticket is born `open` and unassigned, and triage is a separate staff action. A resident may file against a unit they hold or against the common areas; the database enforces that, not this handler.",
         tag: "Operations",
         permission: "tickets:create",
         rateLimit: WRITE_LIMIT,
@@ -823,8 +823,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         requiresPersistence: true,
         idempotent: true,
         requestSchema: "createTicketSchema",
-        writeGap: gap("Opening a ticket", W2A),
-        responses: [503],
+        responses: [200, 403, 404, 503],
       },
       {
         method: "PATCH",
@@ -1087,7 +1086,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         operationId: "createMessage",
         summary: "Post a message to a thread.",
         description:
-          "Not implemented: no repository write path exists for communications.",
+          "Appends one message to a thread the caller can already read. The sender is the session, never the payload. Returns 404 rather than 403 for a thread the caller cannot see, so the endpoint does not confirm that an invisible thread exists.",
         tag: "Communications",
         permission: "communications:create",
         rateLimit: WRITE_LIMIT,
@@ -1095,8 +1094,7 @@ export const apiRoutes: readonly RouteEntry[] = [
         requiresPersistence: true,
         idempotent: true,
         requestSchema: "createMessageSchema",
-        writeGap: gap("Posting a message", W2A),
-        responses: [503],
+        responses: [200, 403, 404, 503],
       },
     ],
   },

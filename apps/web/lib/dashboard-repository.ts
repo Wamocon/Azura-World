@@ -30,7 +30,7 @@
  * |---|---|
  * | `hotel` | none — public showcase, every role including anonymous |
  * | `inventory` | internal scope + `units:view` |
- * | `operations` | internal scope + `tickets:view` |
+ * | `operations` | `tickets:view` — RLS scopes the rows |
  * | `finance` | `canViewInternalFinance` (admin · manager · accountant) |
  * | `evidence` | `evidence:view` (manager and above, CONTRACTS §3) |
  *
@@ -123,6 +123,17 @@ export interface DashboardAccess {
  * showcase only — the same as `guest` and `child_guest`, which is the point:
  * "no role supplied" must fail closed rather than default to a staff view.
  */
+/** Roles that run the site rather than live in it. */
+function isInternalScope(role: Role): boolean {
+  const scope = roleScope(role)
+  return (
+    scope === "company" ||
+    scope === "site" ||
+    scope === "finance" ||
+    scope === "field"
+  )
+}
+
 export function dashboardAccess(role: Role | undefined): DashboardAccess {
   if (role === undefined) {
     return {
@@ -133,15 +144,30 @@ export function dashboardAccess(role: Role | undefined): DashboardAccess {
       hotel: true,
     }
   }
-  const scope = roleScope(role)
-  const internal =
-    scope === "company" ||
-    scope === "site" ||
-    scope === "finance" ||
-    scope === "field"
   return {
-    inventory: internal && hasPermission(role, "units:view"),
-    operations: internal && hasPermission(role, "tickets:view"),
+    /**
+     * Site-wide inventory stays internal, and that is a measurement rather than
+     * caution. Opening it to residents was tried, and a tenant's home came back
+     * reading "Units 23": RLS had correctly narrowed 656 rows to the 22 publicly
+     * listed units plus their own. A truthful row set, and a false headline —
+     * a resident reads that card as "I have 23 apartments". A site-wide count is
+     * a site-wide fact. Showing a resident THEIR unit needs a scoped query, not
+     * a filtered global one, and inventing the number was not on the table.
+     */
+    inventory: isInternalScope(role) && hasPermission(role, "units:view"),
+    /**
+     * Operations, by contrast, is now permission-only.
+     *
+     * It used to demand internal scope too, which produced a tenant home whose
+     * "Open tickets" card read "This panel is outside your role" — untrue (a
+     * tenant holds `tickets:view` and has Tickets in their nav) and unreadable.
+     * Dropping the second gate is safe because the row scoping never rested on
+     * it: every query here goes through `createClient()` in `lib/supabase/server`,
+     * which carries the ANON key plus the caller's own cookies, so Postgres RLS
+     * decides which rows exist for that session. A resident counts the tickets
+     * they may see, not the site's.
+     */
+    operations: hasPermission(role, "tickets:view"),
     finance: canViewInternalFinance(role),
     evidence: hasPermission(role, "evidence:view"),
     hotel: true,
@@ -214,6 +240,43 @@ async function fetchPage(
     []
   )
   return { rows, truncated: rows.length >= ROLLUP_PAGE_SIZE }
+}
+
+/**
+ * Every row of a table, paged on a stable ordered key.
+ *
+ * The generalisation of `fetchUnitRows`, written because `fetchPage` silently
+ * produced a WRONG number on a table larger than one page. `sourced_facts` holds
+ * 1,354 rows; a single unordered 500-row page contained no `gap` confidence at
+ * all, so "Unestablished facts" resolved to `undefined` and the dashboard
+ * rendered an em dash where 633 belonged. Worse, with no ORDER BY the sample was
+ * only stable while the table was untouched — one UPDATE moves rows in the heap
+ * and the figure changes with nothing having changed.
+ *
+ * A bounded page is the right tool only when there is no orderable key. When
+ * there is one, read the whole table.
+ */
+async function fetchAllRows(
+  client: RepositoryClient,
+  table: string,
+  columns: string,
+  orderKey: string
+): Promise<{ rows: Record<string, unknown>[]; truncated: boolean }> {
+  const rows: Record<string, unknown>[] = []
+  for (let offset = 0; offset < ROLLUP_ROW_CAP; offset += ROLLUP_PAGE_SIZE) {
+    const size = Math.min(ROLLUP_PAGE_SIZE, ROLLUP_ROW_CAP - offset)
+    const page = unwrap<Record<string, unknown>[]>(
+      await client
+        .from(table)
+        .select(columns)
+        .order(orderKey, { ascending: true })
+        .range(offset, offset + size - 1),
+      []
+    )
+    rows.push(...page)
+    if (page.length < size) return { rows, truncated: false }
+  }
+  return { rows, truncated: true }
 }
 
 /**
@@ -290,6 +353,13 @@ async function loadInventory(
   }
 }
 
+/**
+ * Ticket statuses that mean the work is finished. Everything else — `open`,
+ * `assigned`, `in_progress`, `blocked`, `draft` — is still somebody's job and
+ * counts as open.
+ */
+const TERMINAL_TICKET_STATUSES = new Set(["resolved", "closed", "cancelled"])
+
 async function loadOperations(
   client: RepositoryClient,
   slaEvaluatedAt: string
@@ -302,15 +372,24 @@ async function loadOperations(
 
   let overdueTickets = 0
   let ticketsWithoutSla = 0
+  let openTickets = 0
   for (const row of rows) {
     const due = asNullableString(row.sla_due_at)
     // No SLA date is not "on time" — it is no commitment at all, counted apart.
     if (due === null) ticketsWithoutSla += 1
     else if (due < slaEvaluatedAt) overdueTickets += 1
+
+    // "Open" means still someone's work. The card labelled "Open tickets" used
+    // to render `totalTickets`, so a site with 42 tickets of which 35 were
+    // closed, cancelled or resolved reported 42 — a number a manager reads as
+    // their workload, contradicted by the donut beside it on the same page.
+    const status = asNullableString(row.status)
+    if (status !== null && !TERMINAL_TICKET_STATUSES.has(status)) openTickets += 1
   }
 
   return {
     totalTickets,
+    openTickets,
     sampledTickets: rows.length,
     truncated,
     byStatus: tallyBy(rows, (row) => asNullableString(row.status)).counts,
@@ -382,7 +461,11 @@ async function loadEvidence(client: RepositoryClient): Promise<EvidencePanel> {
     countRows(client, "sourced_facts"),
     countRows(client, "sources"),
     fetchPage(client, "findings", "severity, area"),
-    fetchPage(client, "sourced_facts", "confidence"),
+    // `sourced_facts` is 1,354 rows — larger than one page. A single unordered
+    // page dropped the whole `gap` confidence and rendered the "Unestablished
+    // facts" card as an em dash. Read all of it, ordered, so the tally is the
+    // real distribution rather than whatever the heap happened to return.
+    fetchAllRows(client, "sourced_facts", "confidence", "id"),
     fetchPage(client, "sources", "tier"),
   ])
 

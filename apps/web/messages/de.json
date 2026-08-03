@@ -526,7 +526,7 @@
       "next": "Nächstes Bild",
       "counter": "{index} von {total}",
       "open": "Bild {index} öffnen",
-      "alt": "Ansicht der Anlage Azura World"
+      "alt": "Anlage Azura World"
     },
     "residences": {
       "designation": "Die Residenzen",
@@ -553,28 +553,28 @@
         "status": "Status",
         "due": "Frist"
       },
-      "rows": [
-        {
+      "rows": {
+        "lift": {
           "task": "Aufzug prüfen",
           "status": "In Arbeit",
           "due": "heute"
         },
-        {
+        "water": {
           "task": "Wasserschaden",
           "status": "Offen",
           "due": "morgen"
         },
-        {
+        "pool": {
           "task": "Poolpflege",
           "status": "Erledigt",
           "due": "—"
         },
-        {
+        "handover": {
           "task": "Übergabe",
           "status": "Geplant",
           "due": "Fr"
         }
-      ]
+      }
     }
   },
   "dashboard": {
@@ -694,7 +694,7 @@
       },
       "unstatedHeading": "Weitere Verkaufsangebote ohne Grundriss-Angabe",
       "unstatedLead": "Diese Portale nennen einen Preis, ohne den Grundriss anzugeben. Sie stehen deshalb nicht auf der Skala oben. Welchen Wohnungstyp sie beschreiben, sagt die Quelle nicht. Aufgeführt werden sie trotzdem: Alanya-Homes Einstiegspreis gehört zu den vier Angaben, die Befund F-002 nennt.",
-      "forbidden": "Diese Ansicht ist für Ihre Rolle nicht freigegeben. Das Beleg-Cockpit setzt die Berechtigung „evidence:view“ voraus.",
+      "forbidden": "Diese Ansicht ist für Ihre Rolle nicht freigegeben. Quellen und Nachweise sind nur für dafür freigeschaltete Rollen sichtbar. Wenden Sie sich an Ihre Administration, wenn Sie Zugriff brauchen.",
       "export": {
         "link": "Belege als CSV exportieren",
         "note": "Mit Quell-URL, Abrufdatum und Snapshot-Hash je Zeile."
@@ -706,7 +706,43 @@
         "submit": "Notiz speichern",
         "pending": "Wird gespeichert …",
         "forbidden": "Ihre Rolle darf Befunde lesen, aber nicht annotieren.",
-        "saved": "Notiz gespeichert."
+        "saved": "Notiz gespeichert.",
+        "unavailable": "Notizen lassen sich noch nicht speichern. Die Ablage dafür ist noch nicht gebaut, deshalb ist das Feld deaktiviert, statt Ihren Text zu verwerfen."
+      },
+      "plain": {
+        "summary": "{portals} Immobilienportale nennen einen Preis für dieselbe {layout}-Wohnung, und keine zwei stimmen überein.",
+        "noPick": "Es wurde nichts gemittelt und kein Preis zum richtigen erklärt. Jede Angabe bleibt erhalten, zusammen mit dem Portal, das sie veröffentlicht hat.",
+        "originalLabel": "Originaltext dieses Befunds, auf Englisch",
+        "originalHint": "Der Wortlaut, den unsere Analysten festgehalten haben. Er bleibt zur Prüfung erhalten und wird nicht übersetzt.",
+        "originalFinding": "Befund",
+        "originalResolution": "Umgang damit"
+      },
+      "chart": {
+        "heading": "Was jedes Portal verlangt",
+        "groupHeading": "Angegeben in {currency}",
+        "groupMeta": "{portals} Portale, {count} Angebote",
+        "groupMetaSingle": "1 Portal, {count} Angebote",
+        "listings": "{count} Angebote",
+        "oneListing": "1 Angebot",
+        "upTo": "bis {high}",
+        "stale": "Veraltet",
+        "staleSome": "{stale} von {count} veraltet",
+        "staleNote": "Ein so markiertes Portal zeigt das Projekt weiterhin als unfertig, Jahre nach der Fertigstellung. Seine Preise beschreiben einen älteren Markt.",
+        "entryNote": "Der volle Teil eines Balkens endet beim niedrigsten Preis dieses Portals.",
+        "rangeNote": "Der gestreifte Teil reicht bis zum höchsten Preis desselben Portals.",
+        "scaleNote": "Jeder Balken eines Blocks beginnt bei null und nutzt dieselbe Skala.",
+        "notComparable": "Eine andere Währung. Wir rechnen nie um, deshalb sind diese Preise nicht mit den Preisen oben vergleichbar.",
+        "spread": "Von {low} bis {high}. Der höchste Preis ist das {ratio}-Fache des niedrigsten.",
+        "singleSourceNote": "Nur ein Portal nennt Preise in dieser Währung, es gibt hier also keinen Vergleich."
+      },
+      "record": {
+        "heading": "Jeder genannte Preis und woher er stammt",
+        "lead": "Eine Zeile je Angebot, in der Währung des Portals. Nichts wird umgerechnet und nichts weggelassen.",
+        "openListing": "Angebot",
+        "openListingLabel": "Angebot bei {publisher} öffnen",
+        "snapshotLabel": "Gespeicherte Kopie der Seite von {publisher}",
+        "originalsLabel": "Originalwortlaut dieser Notizen",
+        "originalsHint": "Auf Englisch für unsere Prüfung geschrieben. Bleibt zur Nachvollziehbarkeit erhalten."
       }
     },
     "units": {
@@ -750,8 +786,8 @@
         "filterAll": "Alle Herkünfte"
       },
       "split": {
-        "heading": "Herkunft des Bestands",
-        "caption": "{portal} von {total} Einheiten stammen aus einem realen Inserat. Die übrigen {modelled} sind modelliert: sie füllen den Bestand auf und bilden kein reales Angebot ab.",
+        "heading": "Woher diese Wohnungen stammen",
+        "caption": "{portal} der {total} Wohnungen stammen aus einem echten Inserat. Die übrigen {modelled} wurden ergänzt, damit das Haus vollständig ist. Sie sind keine echten Angebote.",
         "rowNote": "Modelliert: kein reales Inserat"
       },
       "matrix": {
@@ -768,7 +804,7 @@
     },
     "listings": {
       "title": "Portal-Inserate",
-      "lead": "Dieselbe Wohnung auf mehreren Portalen, mit Preis, Datum und Abweichung.",
+      "lead": "Was die Immobilienportale derzeit über Azura World veröffentlichen.",
       "count": "{count, plural, one {# Inserat} other {# Inserate}}",
       "empty": "Keine Inserate erfasst.",
       "seedNotice": "Demodaten: Es wird ein Ausschnitt des erfassten Bestands gezeigt, keine Live-Daten.",
@@ -797,7 +833,7 @@
         "withoutPrice": "{count} Inserate nennen keinen Preis. Sie werden gezählt, nie als 0 gerechnet."
       },
       "compare": {
-        "heading": "Vier Portale, vier Preise",
+        "heading": "Was jedes Portal für dieselbe Wohnung verlangt",
         "lead": "Derselbe Grundriss bei jedem Portal, das ihn anbietet. Preise so, wie sie dort stehen. Nichts wird umgerechnet.",
         "layoutFilterLabel": "Grundriss wählen",
         "caption": "Preise je Portal, getrennt nach Währung",
@@ -810,7 +846,8 @@
         "empty": "Kein Portal nennt einen Verkaufspreis für {layout}.",
         "unstatedHeading": "Portale ohne Grundrissangabe",
         "unstatedLead": "Diese Zeilen tragen einen Preis, den das Portal keinem Grundriss zugeordnet hat. Mal ist es ein Einstiegspreis für das ganze Projekt, mal eine Zimmerangabe, die wir nicht abbilden können. Sie bleiben getrennt und ohne Spanne.",
-        "findingNote": "Befund F-002 nennt die Spanne je Währung und ein Verhältnis nur innerhalb EUR. Er vergleicht keinen Euro-Preis mit einem Dollar-Preis. Jede Spalte oben hat ihre eigene Spanne."
+        "findingNote": "Befund F-002 nennt die Spanne je Währung und ein Verhältnis nur innerhalb EUR. Er vergleicht keinen Euro-Preis mit einem Dollar-Preis. Jede Spalte oben hat ihre eigene Spanne.",
+        "unstatedToggle": "Die {count} Inserate ohne Grundriss anzeigen"
       },
       "claims": {
         "heading": "Was sagt welches Portal über das Projekt?",
@@ -854,8 +891,8 @@
       "group": {
         "caption": "Alle Inserate von {publisher}",
         "note": "Anmerkung",
-        "listingCount": "{count} Inserate",
-        "pageCount": "{count} Seiten",
+        "listingCount": "{count, plural, one {# Inserat} other {# Inserate}}",
+        "pageCount": "{count, plural, one {# Seite} other {# Seiten}}",
         "staleCount": "{count} veraltet",
         "rentCount": "{count} zur Miete",
         "lastFetched": "Zuletzt erhoben"
@@ -873,6 +910,47 @@
           "publisher": "Der gewählte Portal-Filter schließt alle Inserate aus.",
           "priceKind": "Der Filter für Verkauf oder Miete schließt alle Inserate aus.",
           "staleOnly": "Kein Inserat im aktuellen Filter ist als veraltet markiert."
+        }
+      },
+      "info": {
+        "heading": "Was diese Seite zeigt",
+        "body": "Dieselben Wohnungen werden auf mehreren Immobilienportalen angeboten, und jedes Portal nennt seinen eigenen Preis. Hier steht, was jedes Portal beim letzten Abruf gesagt hat.",
+        "body2": "Nichts wird korrigiert, gemittelt oder in eine andere Währung umgerechnet. Widersprechen sich zwei Portale, bleiben beide Zahlen stehen.",
+        "termsLead": "Begriffe auf dieser Seite:"
+      },
+      "portals": {
+        "heading": "Alle Portale auf einen Blick",
+        "lead": "Eine Karte je Portal: wie viele Inserate es veröffentlicht hat, welche Preise es nennt und wann wir sie zuletzt erhoben haben. Preise bleiben in der Währung des Portals.",
+        "pricesIn": "Preise in {currency}",
+        "fromListings": "{count} Inserate mit Preis",
+        "noSalePrice": "Dieses Portal nennt keinen Kaufpreis.",
+        "rentNote": "{count} Inserate sind Monatsmieten und bleiben außerhalb der Preisspanne.",
+        "withoutPrice": "{count} Inserate nennen keinen Preis.",
+        "layouts": "Genannte Grundrisse: {layouts}",
+        "layoutsUnstated": "{count} ohne Grundriss",
+        "layoutsNone": "Dieses Portal nennt keinen Grundriss.",
+        "allOutdated": "Alle Inserate dieses Portals sind veraltet.",
+        "someOutdated": "{count} seiner Inserate sind veraltet.",
+        "showListings": "Inserate anzeigen",
+        "showAll": "Alle Portale zeigen",
+        "openPage": "Seite des Portals öffnen",
+        "pictureCredit": "Bild dieses Portals",
+        "pictureSource": "Herkunftsseite öffnen",
+        "pictureStale": "aus einem veralteten Inserat",
+        "pictureNone": "Von diesem Portal haben wir kein Bild erhoben.",
+        "altPhoto": "Foto der Anlage Azura World, veröffentlicht von {publisher}",
+        "altRender": "Computervisualisierung der Anlage Azura World, veröffentlicht von {publisher}",
+        "altFloorplan": "Grundriss einer Wohnung in Azura World, veröffentlicht von {publisher}",
+        "altSiteplan": "Lageplan der Anlage Azura World, veröffentlicht von {publisher}"
+      },
+      "explain": {
+        "outdated": {
+          "term": "Veraltet",
+          "body": "Das Portal beschreibt das Projekt noch als im Bau, obwohl es 2024 fertiggestellt wurde. Preise in einem solchen Inserat beschreiben einen Markt, der sich weitergedreht hat."
+        },
+        "notStated": {
+          "term": "Keine Angabe",
+          "body": "Das Portal veröffentlicht diese Zahl nicht. Wir lassen sie offen, statt eine Schätzung einzusetzen."
         }
       }
     },
@@ -1485,7 +1563,38 @@
         "breached": "Frist überschritten"
       },
       "noValue": "Keine Angabe",
-      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden.",
+      "assigneeLabel": "Wer übernimmt das?",
+      "assigneePlaceholder": "Person auswählen",
+      "assigneeRequired": "Bitte wählen Sie eine Person aus.",
+      "assigneeUnavailable": "Sie können die Personenliste nicht einsehen, deshalb ist das Zuweisen hier nicht möglich.",
+      "commentHeading": "Antwort schreiben",
+      "commentPlaceholder": "Was ist der Stand? Alle Beteiligten sehen es.",
+      "commentSubmit": "Senden",
+      "commentBusy": "Wird gesendet …",
+      "commentEmpty": "Bitte schreiben Sie zuerst etwas.",
+      "commentUnavailable": "Die Nachricht wurde nicht gespeichert. Bitte später erneut versuchen.",
+      "selfActor": "Sie",
+      "unknownActor": "Team vor Ort",
+      "create": {
+        "trigger": "Problem melden",
+        "heading": "Neue Anfrage",
+        "lead": "Beschreiben Sie, was nicht stimmt. Die Anfrage geht als offener Auftrag an das Team vor Ort.",
+        "titleLabel": "Worum geht es?",
+        "titlePlaceholder": "Zum Beispiel: Der Küchenhahn tropft",
+        "whereLabel": "Wo ist es?",
+        "whereCommon": "Gemeinschaftsbereiche (Lobby, Pool, Außenanlage)",
+        "categoryLabel": "Welche Art von Arbeit?",
+        "priorityLabel": "Wie dringend ist es?",
+        "descriptionLabel": "Details (optional)",
+        "descriptionPlaceholder": "Seit wann, wo genau, was das Team sonst wissen sollte …",
+        "submit": "Anfrage senden",
+        "busy": "Wird gesendet …",
+        "titleRequired": "Geben Sie dem Problem einen kurzen Titel.",
+        "genericError": "Die Anfrage konnte nicht gesendet werden. Ihre Eingaben stehen noch da — bitte erneut versuchen.",
+        "unavailable": "Der Speicherdienst antwortet gerade nicht. Ihre Anfrage wurde nicht gespeichert — bitte gleich noch einmal versuchen.",
+        "afterNote": "Die Anfrage wird als „offen“ gespeichert und bleibt ohne Zuständige:n, bis jemand aus dem Team sie übernimmt. Sie können sie hier verfolgen und kommentieren."
+      }
     },
     "activities": {
       "title": "Aktivitäten",
@@ -1593,7 +1702,6 @@
       "internalNote": "Interne Notiz",
       "systemSender": "System",
       "hasAttachment": "Mit Anhang",
-      "composeUnavailable": "Es gibt hier kein Feld zum Schreiben, weil keine Nachricht das Haus verlassen könnte. Sobald ein Anbieter eingerichtet ist, kommt es dazu.",
       "deliveryNotice": {
         "title": "Nicht versendet, Anbieter nicht konfiguriert.",
         "body": "Für E-Mail, SMS und WhatsApp ist kein Anbieter eingerichtet. Nachrichten werden gespeichert und sind hier lesbar, aber nichts geht nach außen. Gehen Sie nicht davon aus, dass jemand informiert wurde."
@@ -1604,7 +1712,8 @@
         "sent": "Versendet",
         "delivered": "Zugestellt",
         "failed": "Versand gescheitert",
-        "internal_note": "Nur intern"
+        "internal_note": "Nur intern",
+        "portal_only": "Im Portal sichtbar"
       },
       "scopeUnknown": {
         "title": "Ihre Nachrichten lassen sich nicht zuordnen.",
@@ -1618,7 +1727,20 @@
         "archived": "Archiviert"
       },
       "noValue": "Keine Angabe",
-      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden.",
+      "selfSender": "Sie",
+      "otherSender": "Andere Person im Gespräch",
+      "composer": {
+        "heading": "Antwort schreiben",
+        "placeholder": "Nachricht hier eingeben …",
+        "submit": "Senden",
+        "busy": "Wird gesendet …",
+        "empty": "Schreiben Sie etwas, bevor Sie senden.",
+        "genericError": "Die Nachricht konnte nicht gesendet werden. Ihr Text steht noch da — bitte erneut versuchen.",
+        "unavailable": "Der Speicherdienst antwortet gerade nicht. Ihre Nachricht wurde nicht gesendet — bitte gleich noch einmal versuchen.",
+        "scopeNote": "Diese Nachricht wird im Portal gespeichert und hier gelesen. Sie geht nicht per E-Mail, SMS oder WhatsApp hinaus.",
+        "readOnly": "Sie können dieses Gespräch lesen, mit diesem Konto aber nicht antworten."
+      }
     },
     "documents": {
       "title": "Dokumente",
@@ -1778,7 +1900,7 @@
     },
     "reports": {
       "title": "Berichte",
-      "lead": "Auswertungen als Datei oder Zeitplan.",
+      "lead": "Auswertungen zum Herunterladen. Jede Datei nennt die Quellen, aus denen ihre Zahlen stammen.",
       "empty": "Keine Berichte.",
       "generate": "Bericht erzeugen",
       "generating": "Bericht wird erzeugt …",
@@ -1788,7 +1910,7 @@
       "catalogueLead": "Jeder Bericht mit dem Recht, das er verlangt.",
       "carriesProvenance": "Mit Quellenangabe",
       "requiresPermission": "Verlangt",
-      "downloadCsv": "Als CSV laden",
+      "downloadCsv": "CSV laden",
       "notPermitted": "Nicht freigegeben",
       "formats": "Formate",
       "formatsLead": "Was heute erzeugt werden kann und was nicht.",
@@ -1796,14 +1918,14 @@
       "unavailable": "Nicht verfügbar",
       "formatReason": {
         "csv_ready": "Wird auf Anfrage erzeugt, mit Quellenspalten.",
-        "no_library": "Dafür fehlt eine Programmbibliothek. Sie nachzuinstallieren ist Aufgabe von W0-A."
+        "no_library": "Dafür fehlt noch die technische Grundlage."
       },
       "unavailableReason": {
-        "not_built": "Noch nicht gebaut"
+        "not_built": "Noch nicht fertig"
       },
       "scheduled": "Geplante Berichte",
       "scheduledLead": "Berichte, die im Hintergrund laufen und abgelegt werden.",
-      "jobsUnavailable": "Hintergrundberichte antworten mit {status}. Dafür fehlt die Tabelle {table}, zuständig ist {owner}. Ein Knopf, der nichts erzeugt, wäre irreführend.",
+      "jobsUnavailable": "Berichte nach Zeitplan sind noch nicht möglich. Ein Knopf, der nichts erzeugt, wäre irreführend.",
       "columns": {
         "metric": "Kennzahl",
         "value": "Wert",
@@ -1813,35 +1935,117 @@
         "tier": "Rang",
         "fetchedAt": "Abgerufen",
         "snapshotHash": "Prüfsumme",
-        "lastStatus": "Letzter Status",
-        "lastOk": "Zuletzt bestätigt"
+        "lastStatus": "Antwort beim letzten Abruf",
+        "lastOk": "Letzte lesbare Kopie",
+        "metricKey": "Kennung",
+        "tierName": "Art der Quelle"
       },
       "csv": {
         "generatedAt": "Erzeugt am",
-        "source": "Datenherkunft"
+        "source": "Datenherkunft",
+        "origin": {
+          "supabase": "Aus der laufenden Datenbank.",
+          "local-seed": "Aus dem mitgelieferten Beispieldatensatz."
+        },
+        "incomplete": "Die Liste ist gekürzt, die Zahlen sind Mindestwerte."
       },
       "reports": {
         "evidence_coverage": {
           "title": "Belegdeckung",
-          "lead": "Wie viele Angaben belegt sind, wie viele nur behauptet, und wo es Lücken gibt."
+          "lead": "Wie viele Angaben eine gesicherte Quelle haben, wie viele nur eine einzige, und wo gar keine vorliegt."
         },
         "source_register": {
           "title": "Quellenverzeichnis",
-          "lead": "Jede Quelle mit Adresse, Rang, Abrufzeitpunkt und Prüfsumme der gespeicherten Fassung."
+          "lead": "Jede Quelle mit Adresse, Art, Abrufzeitpunkt und Prüfsumme der gespeicherten Kopie."
         },
         "inventory_split": {
           "title": "Bestandsaufteilung",
-          "lead": "Reale Inserate gegen modellierte Datensätze, je Block."
+          "lead": "Je Block: wie viele Einheiten aus echten Inseraten stammen und wie viele nur rechnerisch angesetzt sind."
         },
         "compliance_gaps": {
           "title": "Compliance-Lücken",
-          "lead": "Prüfungen ohne Nachweis, nach Frist."
+          "lead": "Prüfungen ohne Nachweis, geordnet nach Frist."
         }
       },
       "forbidden": {
         "title": "Kein Zugriff auf Berichte",
         "message": "Ihre Rolle darf diese Auswertungen nicht sehen. Die Adresse bleibt gültig.",
         "permissionLabel": "Benötigtes Recht:"
+      },
+      "availableTitle": "Sofort verfügbar",
+      "availableLead": "Wird beim Anklicken erzeugt und als CSV-Tabelle geladen. Die Datei lässt sich in Excel öffnen.",
+      "plannedTitle": "In Vorbereitung",
+      "plannedLead": "Angekündigt, aber noch nicht fertig. Es gibt bewusst keinen Knopf, der eine leere Datei liefern würde.",
+      "csvFormat": "CSV-Tabelle",
+      "containsLabel": "Spalten in der Datei:",
+      "notPermittedLead": "Ihre Rolle darf diese Datei nicht laden. Nötig ist das Recht „{permission}“.",
+      "limits": "Excel- und PDF-Dateien sowie Berichte nach Zeitplan sind noch nicht möglich. Sie erscheinen hier, sobald es sie gibt.",
+      "permissionName": {
+        "evidence_export": "Nachweise ausgeben",
+        "units_export": "Einheiten ausgeben",
+        "compliance_export": "Prüfungen ausgeben"
+      },
+      "coverageMetric": {
+        "sources_total": "Quellen insgesamt",
+        "snapshots_total": "Gespeicherte Seitenkopien",
+        "facts_total": "Erfasste Einzelangaben",
+        "citations_total": "Verweise auf Quellen",
+        "findings_total": "Festgehaltene Widersprüche",
+        "facts_established": "Angaben mit gesicherter Quelle",
+        "facts_provisional": "Angaben mit vorläufiger Quelle",
+        "facts_declaredGaps": "Angaben ohne jede Quelle",
+        "citations_withoutSnapshot": "Verweise ohne gespeicherte Kopie",
+        "sources_validated": "Quellen mit lesbarer Kopie",
+        "sources_fetchedNotValidated": "Quellen abgerufen, Kopie unbrauchbar",
+        "sources_neverFetched": "Quellen nie abgerufen",
+        "facts_byConfidence_confirmed": "Davon: von mindestens zwei Quellen bestätigt",
+        "facts_byConfidence_official": "Davon: von der offiziellen Seite genannt",
+        "facts_byConfidence_single_source": "Davon: nur von einer Quelle genannt",
+        "facts_byConfidence_conflicted": "Davon: die Quellen widersprechen sich",
+        "facts_byConfidence_inferred": "Davon: aus bestätigten Angaben berechnet",
+        "facts_byConfidence_gap": "Davon: keine Quelle nennt einen Wert"
+      },
+      "coverageBasis": {
+        "sources_total": "Anzahl der Einträge im Quellenverzeichnis.",
+        "snapshots_total": "Anzahl der beim Abruf gespeicherten Seitenkopien.",
+        "facts_total": "Alle erfassten Angaben, unabhängig von der Quellenlage.",
+        "citations_total": "Jeder Verweis verbindet eine Angabe mit einer Quelle.",
+        "findings_total": "Fälle, in denen sich Quellen widersprechen.",
+        "facts_established": "Von mindestens zwei Quellen bestätigt oder offiziell genannt.",
+        "facts_provisional": "Nur eine Quelle, sich widersprechende Quellen oder berechnet.",
+        "facts_declaredGaps": "Keine Quelle nennt einen Wert. Die Stelle bleibt leer.",
+        "citations_withoutSnapshot": "Die Adresse ist genannt, eine gespeicherte Fassung fehlt.",
+        "sources_validated": "Mindestens eine gespeicherte Kopie war lesbar.",
+        "sources_fetchedNotValidated": "Der Abruf hat geantwortet, die Kopie war nicht verwertbar.",
+        "sources_neverFetched": "Die Seite hat den Abruf untersagt oder er wurde nie versucht.",
+        "facts_byConfidence_confirmed": "Mindestens zwei unabhängige Quellen nennen denselben Wert.",
+        "facts_byConfidence_official": "Von azuraworld.com oder einer Seite der Cebeci Group genannt.",
+        "facts_byConfidence_single_source": "Genau eine Quelle nennt den Wert, ohne Widerspruch.",
+        "facts_byConfidence_conflicted": "Mehrere Quellen nennen unterschiedliche Werte.",
+        "facts_byConfidence_inferred": "Aus bestätigten Angaben berechnet, mit Erklärung.",
+        "facts_byConfidence_gap": "Keine Quelle nennt einen Wert."
+      },
+      "sourceTier": {
+        "1": "Offizielle Projektseite",
+        "2": "Bauträger",
+        "3": "Hotelbetrieb",
+        "4": "Immobilienportal",
+        "5": "Bewertung und Buchung",
+        "6": "Presse und Zweitquelle"
+      },
+      "sourceStatus": {
+        "ok": "Erfolgreich abgerufen ({code})",
+        "redirectedCode": "Weitergeleitet ({code})",
+        "failed": "Abruf fehlgeschlagen ({code})",
+        "never_fetched": "Nie abgerufen",
+        "robots_disallowed": "Abruf von der Seite untersagt",
+        "expect_missing": "Abgerufen, erwarteter Inhalt fehlte",
+        "redirected": "Weitergeleitet",
+        "dns_timeout": "Nicht erreichbar",
+        "soft_404": "Leere Seite mit Status 200",
+        "http_404": "Seite nicht gefunden (404)",
+        "http_500": "Serverfehler (500)",
+        "blocked_403": "Zugriff verweigert"
       }
     },
     "users": {
@@ -1927,7 +2131,7 @@
       "invitations": {
         "title": "Einladungen",
         "lead": "Einmalige, befristete Zugänge für neue Personen.",
-        "unavailable": "Einladungen sind noch nicht gebaut. Dafür fehlt die Tabelle invitations, zuständig ist W1-A. Ein Formular ohne Speicherort wäre irreführend."
+        "unavailable": "Einladungen sind noch nicht möglich. Wir zeigen kein Formular, das nirgends speichern würde."
       }
     },
     "admin": {
@@ -2064,7 +2268,7 @@
       "appearanceLead": "Gilt für die ganze Anwendung.",
       "themeFixedNotice": "Das helle Design ist für alle fest eingestellt. Eine Auswahl hier würde nichts bewirken, deshalb gibt es keine.",
       "notificationsLead": "Wann dieses System Sie ansprechen soll.",
-      "notificationsUnavailable": "Benachrichtigungen sind noch nicht gebaut. Dafür fehlt eine Tabelle für Einstellungen, zuständig ist W1-A.",
+      "notificationsUnavailable": "Benachrichtigungen sind noch nicht möglich.",
       "organisation": "Organisation",
       "organisationLead": "Nur für Administratoren.",
       "companyId": "Kennung",
@@ -2079,7 +2283,7 @@
     },
     "hotel": {
       "title": "Hotelbetrieb",
-      "lead": "Belegung, Zimmerstatus und Buchungsquellen.",
+      "lead": "Was die Quellen über das Hotel sagen: Zimmer, Zimmerarten und Zeiten für Anreise und Abreise.",
       "empty": "Keine Daten zum Hotelbetrieb.",
       "occupancy": "Auslastung",
       "adr": "Durchschnittsrate",
@@ -2124,11 +2328,40 @@
       },
       "occupancyPanel": {
         "heading": "Belegung",
-        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte: genau danach wird eine Wettbewerbsanalyse gelesen."
+        "gap": "Keine Quelle veröffentlicht eine Belegungsquote für dieses Haus, und hinter dieser Analyse steht kein Buchungssystem, das eine berechnen könnte. Es steht hier deshalb keine Zahl. Eine plausible Quote wäre die schädlichste Zahl, die dieses Produkt erfinden könnte: genau danach wird eine Wettbewerbsanalyse gelesen.",
+        "note": "Weil keine Quelle eine Belegungsquote für dieses Haus veröffentlicht und hinter dieser Analyse kein Buchungssystem steht, wird hier keine Zahl gezeigt."
       },
       "relationship": {
         "heading": "Hotel und Wohnanlage",
-        "body": "Hotel und Wohnanlage teilen sich ein Grundstück, aber nicht ihre Kennzahlen. 188 Hotelzimmer stehen 656 Wohneinheiten gegenüber; die Entfernungen zum Wasser werden getrennt geführt, weil sie zwei verschiedene Strecken von zwei verschiedenen Ausgangspunkten messen: die Anlage zum Meer, das Hotel zum öffentlichen Strand (F-003). Zusammengefasst würden aus zwei belegten Angaben eine unbelegte."
+        "body": "188 Hotelzimmer stehen 656 Wohneinheiten auf einem Grundstück gegenüber, gezählt wird beides getrennt. Die hier genannte Entfernung führt vom Hotel zum öffentlichen Strand und ist ein anderer Weg als der, der für die Wohnanlage veröffentlicht ist."
+      },
+      "identity": {
+        "eyebrow": "Das Haus",
+        "formerly": "Früher",
+        "stars": "{count, plural, one {# Stern} other {# Sterne}}",
+        "starsNotStated": "Kategorie nicht angegeben",
+        "chain": "Gehört zur Kette {name}.",
+        "chainNotStated": "Keine Quelle aus 2026 nennt für dieses Haus eine Hotelkette."
+      },
+      "roomMix": {
+        "heading": "Zimmerarten",
+        "detailHeading": "Jede Zimmerart im Detail",
+        "rooms": "Zimmer",
+        "area": "Größe",
+        "guests": "Max. Gäste",
+        "seaView": "Meerblick",
+        "chartAriaLabel": "Zimmer nach Zimmerart",
+        "chartBasis": "Anteil an allen Zimmern mit veröffentlichter Zimmerart.",
+        "chartEmpty": "Keine Zimmerzahlen veröffentlicht.",
+        "tableCategory": "Zimmerart",
+        "tableValue": "Zimmer",
+        "reconciled": "Die veröffentlichten Zimmerarten ergeben zusammen die genannten {total} Zimmer.",
+        "mismatch": "Die veröffentlichten Zimmerarten ergeben zusammen {published} Zimmer, genannt sind insgesamt {total}. Beide Werte stehen hier, keiner wurde angepasst.",
+        "noBreakdownHeading": "Zimmerarten nicht veröffentlicht",
+        "noBreakdown": "Keine Quelle veröffentlicht, wie sich die Zimmer auf die Zimmerarten verteilen. Hier steht deshalb nur die Gesamtzahl."
+      },
+      "stay": {
+        "heading": "Aufenthalt"
       }
     },
     "reviews": {
@@ -2151,7 +2384,7 @@
         "language": "Sprache",
         "publishedAt": "Datum"
       },
-      "seedNotice": "Diese Ansicht zeigt lokale Seed-Daten, keinen Live-Bestand.",
+      "seedNotice": "Demodaten: Es wird ein Ausschnitt der erfassten Bewertungen gezeigt, keine Live-Daten.",
       "noAverageNote": "Es gibt hier bewusst keinen Gesamtwert. 4,6 von 5 und 6,7 von 10 lassen sich nicht verrechnen: jede Zahl, die dabei herauskäme, hätte keine Quelle. Die Plattformen stehen deshalb nebeneinander, nicht übereinander.",
       "table": {
         "caption": "Bewertungen je Plattform, jeweils auf der veröffentlichten Skala",
@@ -2176,6 +2409,53 @@
         "titleGap": "Titel der Rezension: nicht erfasst, die Erhebung hat nur die Fließtexte gesichert.",
         "open": "Rezension beim Portal öffnen",
         "none": "Keine bewerteten Rezensionen."
+      },
+      "platformName": {
+        "tripadvisor": "Tripadvisor",
+        "booking": "Booking.com",
+        "agoda": "Agoda",
+        "google": "Google",
+        "onthebeach": "OnTheBeach"
+      },
+      "scores": {
+        "heading": "Wertungen je Plattform",
+        "description": "Jede Plattform auf ihrer eigenen Skala. Nichts auf dieser Seite wird zusammengerechnet.",
+        "noAverageHeading": "Warum es hier keine Gesamtnote gibt",
+        "scaleCaption": "{scale}er Skala, veröffentlicht von {platform}",
+        "rankingLabel": "Platzierung laut Portal",
+        "open": "Bei {platform} ansehen",
+        "syndicatedHeading": "Dieselbe Wertung, erneut gezeigt",
+        "syndicatedNote": "Eine andere Seite zeigt genau diese Wertung. Es ist eine wiederholte Zahl, keine zweite Meinung, und sie belegt die Wertung deshalb nicht besser.",
+        "syndicatedBy": "{publisher} zeigt dieselbe Wertung",
+        "distribution": {
+          "heading": "So verteilen sich die Noten",
+          "totalOf": "{count} Bewertungen mit Note",
+          "none": "Diese Plattform veröffentlicht keine Verteilung.",
+          "bucket": {
+            "excellent": "Ausgezeichnet",
+            "good": "Sehr gut",
+            "average": "Mittelmäßig",
+            "poor": "Mangelhaft",
+            "terrible": "Ungenügend",
+            "positive": "Positiv",
+            "mixed": "Gemischt",
+            "negative": "Negativ"
+          }
+        }
+      },
+      "quotes": {
+        "lead": "Je eine Rezension von beiden Enden der Skala, im Wortlaut der Gäste.",
+        "onPlatform": "auf {platform}",
+        "publishedLabel": "Datum laut Plattform: {label}",
+        "readFull": "Ganze Rezension lesen",
+        "collapse": "Weniger anzeigen",
+        "missingHeading": "Nicht erfasst"
+      },
+      "sources": {
+        "heading": "Alle erfassten Quellen",
+        "description": "Eine Zeile je erfasster Seite, auch für die Seite, die eine Wertung wiederholt.",
+        "show": "Tabelle anzeigen",
+        "hide": "Tabelle ausblenden"
       }
     },
     "charts": {
@@ -2192,6 +2472,28 @@
       "qualityOfficial": "Offiziell",
       "qualityGap": "Ohne Quelle",
       "ticketsTotal": "Vorgänge"
+    },
+    "welcome": {
+      "greeting": "Willkommen, {name}",
+      "greetingAnonymous": "Willkommen bei Azura World",
+      "sectionTitle": "Was Sie hier tun können",
+      "lead": {
+        "guest": "Alles zu Ihrem Aufenthalt finden Sie hier. Sie können sich das Hotel und seine Einrichtungen ansehen, den Wochenplan prüfen und Nachrichten an Sie lesen. Dieses Konto ändert nichts.",
+        "child_owner": "Dieses Konto gehört zu einem Familienkonto. Sie sehen die Wohnung, die Anlage und den Veranstaltungsplan und lesen Nachrichten an Sie. Zahlungen und Verträge bleiben bei der Person, die das Konto führt.",
+        "child_tenant": "Dieses Konto gehört zu einem Familienkonto. Sie sehen die Wohnung, die Anlage und den Veranstaltungsplan und lesen Nachrichten an Sie. Miete und Zahlungen bleiben bei der Person, die das Konto führt.",
+        "child_guest": "Dieses Konto gehört zu einem Familienkonto. Sie können sich die Anlage, die Hoteleinrichtungen und den Wochenplan ansehen. Ändern lässt sich von diesem Konto aus nichts."
+      },
+      "cards": {
+        "units": "Blöcke und Wohnungen — Grundrisse, Größen und was frei ist.",
+        "listings": "Wie diese Wohnungen auf den Immobilienportalen erscheinen — mit den geforderten Preisen.",
+        "hotel": "Das Hotel, seine Zimmer und die Einrichtungen vor Ort — Pools, Spa, Restaurants.",
+        "reviews": "Was Gäste anderswo über Azura World schreiben — jedes Zitat mit Quelle.",
+        "activities": "Geplante Arbeiten und Veranstaltungen auf der Anlage — wann und wo.",
+        "calendar": "Dasselbe als Kalender — diese Woche und die kommenden Tage.",
+        "communications": "Gespräche zu Ihnen und Ihrem Aufenthalt. Sie können hier mitlesen; antworten kann dieses Konto nicht.",
+        "reports": "Zusammenfassungen zum Herunterladen — jede nennt, woher ihre Zahlen stammen.",
+        "wallet": "Das Guthaben des Kontos und die Bewegungen darauf."
+      }
     }
   },
   "hotel": {
@@ -2450,17 +2752,20 @@
       "phoneNumber": "Telefonnummer",
       "phonePlaceholder": "+90 …",
       "sendCode": "Code senden",
-      "sendingCode": "Code wird gesendet …",
+      "sendingCode": "Sende Code …",
       "code": "Bestätigungscode",
       "codePlaceholder": "6-stelliger Code",
       "verifyCode": "Anmelden",
       "verifying": "Wird geprüft …",
-      "codeSent": "Wir haben Ihnen einen Code per SMS geschickt.",
+      "codeSent": "Wir haben einen Code per SMS geschickt.",
       "changeNumber": "Nummer ändern",
       "googlePending": "Die Google-Anmeldung wird in Kürze aktiviert. Bitte melden Sie sich so lange mit E-Mail an.",
       "phonePending": "Die Anmeldung per Telefon wird in Kürze aktiviert. Bitte melden Sie sich so lange mit E-Mail an.",
-      "socialFailed": "Anmeldung nicht möglich. Bitte versuchen Sie es erneut.",
-      "backToHome": "Zurück zur Startseite"
+      "socialFailed": "Anmeldung fehlgeschlagen. Erneut versuchen.",
+      "backToHome": "Zur Startseite",
+      "unavailable": "Die Anmeldung ist derzeit nicht möglich.",
+      "notConfigured": "Die Anmeldung ist hier nicht eingerichtet.",
+      "close": "Schließen"
     },
     "signup": {
       "title": "Zugang anfragen",
@@ -2488,7 +2793,7 @@
       "signIn": "Anmelden",
       "plateTitle": "Türkler, Alanya.",
       "plateLead": "Sieben Blöcke auf 76.000 Quadratmetern, 300 Meter vom Meer. Zugänge vergibt die Verwaltung.",
-      "backToHome": "Zurück zur Startseite"
+      "backToHome": "Zur Startseite"
     },
     "forbidden": {
       "title": "Kein Zugriff",
@@ -2593,5 +2898,76 @@
     "villaFloor": "Im Feld für das Geschoss steht eine Bauform, kein Geschoss.",
     "noChain": "Derzeit ist keine Hotelkette benannt. Die einzige Quelle dazu ist ein Pressebericht von 2023.",
     "noRanking": "Keine Quelle nennt eine Platzierung."
+  },
+  "glossary": {
+    "ariaLabel": "Was bedeutet {term}?",
+    "modelled": {
+      "term": "Modelliert",
+      "body": "Keine Quelle hat diese Wohnung veröffentlicht. Wir haben den Bestand aufgefüllt, damit das Haus vollständig ist. Sie ist kein echtes Angebot, ihr Preis steht nirgends."
+    },
+    "realListing": {
+      "term": "Echtes Inserat",
+      "body": "Diese Wohnung stand auf einem öffentlichen Portal. Preis und Fläche sind genau so übernommen, wie das Portal sie veröffentlicht hat."
+    },
+    "official": {
+      "term": "Offiziell",
+      "body": "Der Bauträger oder das Hotel hat das selbst veröffentlicht."
+    },
+    "sourceMissing": {
+      "term": "Quelle fehlt",
+      "body": "Wir haben nach einer Quelle gesucht und keine gefunden."
+    },
+    "notStated": {
+      "term": "Keine Angabe",
+      "body": "Niemand veröffentlicht, ob diese Wohnung frei ist. Wir lassen es offen, statt zu raten."
+    },
+    "confirmed": {
+      "term": "Bestätigt",
+      "body": "Zwei unabhängige Quellen nennen denselben Wert."
+    },
+    "conflicted": {
+      "term": "Quellen uneinig",
+      "body": "Die Quellen nennen verschiedene Werte. Wir zeigen alle, statt einen auszuwählen."
+    },
+    "singleSource": {
+      "term": "Eine Quelle",
+      "body": "Nur eine Quelle nennt das. Es wurde nicht gegengeprüft."
+    },
+    "inferred": {
+      "term": "Berechnet",
+      "body": "Aus anderen Zahlen ermittelt. So veröffentlicht ist sie nirgends."
+    },
+    "gap": {
+      "term": "Keine Angabe",
+      "body": "Keine Quelle nennt das. Wir lassen es leer, statt zu schätzen."
+    },
+    "sla": {
+      "term": "Frist",
+      "body": "Der Zeitpunkt, bis zu dem die Erledigung zugesagt war."
+    },
+    "provenance": {
+      "term": "Herkunft",
+      "body": "Woher eine Zahl stammt: wer sie veröffentlicht hat und wann."
+    },
+    "dataQuality": {
+      "term": "Datenqualität",
+      "body": "Wie gut eine Zahl belegt ist: von einer Quelle veröffentlicht oder von uns ergänzt."
+    },
+    "available": {
+      "term": "Verfügbar",
+      "body": "Eine Quelle führt diese Wohnung als verkäuflich."
+    },
+    "reserved": {
+      "term": "Reserviert",
+      "body": "Für einen Käufer reserviert."
+    },
+    "sold": {
+      "term": "Verkauft",
+      "body": "Nicht mehr im Verkauf."
+    },
+    "priority": {
+      "term": "Priorität",
+      "body": "Legt fest, an welcher Stelle der Auftrag in der Warteschlange steht. „Dringend“ nur für Dinge, die nicht warten können — Wasserschaden, Sicherheitsrisiko. Eine höhere Stufe lässt niemanden früher kommen, sie ändert nur die Reihenfolge."
+    }
   }
 }

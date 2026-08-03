@@ -34,12 +34,30 @@
  */
 
 import { redirect } from "next/navigation"
+import { getTranslations } from "next-intl/server"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/env"
 import { defaultLocale, locales, type Locale } from "@/lib/contracts"
 import type { LoginFormState } from "./form-state"
 import { localisedDestination, safeNextPath } from "./next-path"
+
+/**
+ * A sign-in failure, in the reader's own language.
+ *
+ * Every one of these messages used to be a German literal, so an English, Turkish
+ * or Russian visitor who mistyped a password was answered in German on an
+ * English page. Measured on `/en/login`: "E-Mail-Adresse oder Passwort ist
+ * falsch." The catalogue already carried the translations; the action simply
+ * never asked for them.
+ */
+async function authMessage(
+  locale: Locale,
+  key: "invalid" | "unavailable" | "notConfigured"
+): Promise<string> {
+  const t = await getTranslations({ locale, namespace: "auth.login" })
+  return t(key)
+}
 
 /**
  * ## W3-H changed three things in this file, and why
@@ -105,7 +123,7 @@ export async function signIn(
     return {
       status: "error",
       message:
-        "Die Anmeldung ist in dieser Umgebung nicht konfiguriert. Es gibt keine Datenbankverbindung.",
+        await authMessage(locale, "notConfigured"),
       email,
     }
   }
@@ -116,7 +134,7 @@ export async function signIn(
     if (supabase === null) {
       return {
         status: "error",
-        message: "Die Anmeldung ist derzeit nicht verfügbar.",
+        message: await authMessage(locale, "unavailable"),
         email,
       }
     }
@@ -132,7 +150,7 @@ export async function signIn(
   } catch {
     return {
       status: "error",
-      message: "Die Anmeldung ist derzeit nicht verfügbar.",
+      message: await authMessage(locale, "unavailable"),
       email,
     }
   }
@@ -140,7 +158,7 @@ export async function signIn(
   if (!signedIn) {
     return {
       status: "error",
-      message: "E-Mail-Adresse oder Passwort ist falsch.",
+      message: await authMessage(locale, "invalid"),
       email,
     }
   }

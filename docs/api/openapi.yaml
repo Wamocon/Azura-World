@@ -638,7 +638,7 @@ paths:
         - Communications
       operationId: createMessage
       summary: Post a message to a thread.
-      description: "Not implemented: no repository write path exists for communications."
+      description: Appends one message to a thread the caller can already read. The sender is the session, never the payload. Returns 404 rather than 403 for a thread the caller cannot see, so the endpoint does not confirm that an invisible thread exists.
       x-azura-permission: communications:create
       x-azura-rate-limit:
         requests: 20
@@ -647,9 +647,6 @@ paths:
         action: message.created
         entity: messages
       x-azura-idempotent: true
-      x-azura-write-gap:
-        reason: "Posting a message is not implemented: no repository write path exists yet."
-        owner: W2-A (repository mutations)
       requestBody:
         required: true
         description: Validated by `createMessageSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
@@ -658,12 +655,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/JsonObject"
       responses:
+        "200":
+          "$ref": "#/components/responses/Success"
         "400":
           "$ref": "#/components/responses/ValidationFailed"
         "401":
           "$ref": "#/components/responses/Unauthorized"
         "403":
           "$ref": "#/components/responses/Forbidden"
+        "404":
+          "$ref": "#/components/responses/NotFound"
         "429":
           "$ref": "#/components/responses/RateLimited"
         "503":
@@ -1854,7 +1855,7 @@ paths:
         - Operations
       operationId: createTicket
       summary: Open a service ticket.
-      description: "Not implemented: no repository write path exists for ticket creation. Appending an event to an existing ticket is available as a command on `/api/site-management/actions`."
+      description: Files a new, untriaged ticket. The requester is the session. Status, assignee and cost are not accepted as input — a ticket is born `open` and unassigned, and triage is a separate staff action. A resident may file against a unit they hold or against the common areas; the database enforces that, not this handler.
       x-azura-permission: tickets:create
       x-azura-rate-limit:
         requests: 20
@@ -1863,9 +1864,6 @@ paths:
         action: ticket.created
         entity: service_tickets
       x-azura-idempotent: true
-      x-azura-write-gap:
-        reason: "Opening a ticket is not implemented: no repository write path exists yet."
-        owner: W2-A (repository mutations)
       requestBody:
         required: true
         description: Validated by `createTicketSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
@@ -1874,12 +1872,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/JsonObject"
       responses:
+        "200":
+          "$ref": "#/components/responses/Success"
         "400":
           "$ref": "#/components/responses/ValidationFailed"
         "401":
           "$ref": "#/components/responses/Unauthorized"
         "403":
           "$ref": "#/components/responses/Forbidden"
+        "404":
+          "$ref": "#/components/responses/NotFound"
         "429":
           "$ref": "#/components/responses/RateLimited"
         "503":

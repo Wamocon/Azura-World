@@ -32,6 +32,8 @@ import type { ReactNode } from "react"
 import { Link } from "@/app/navigation"
 import { Container } from "@/components/azura/section"
 import { LocaleSwitcher } from "@/components/locale-switcher"
+import { AuthDialog } from "@/components/auth/auth-dialog"
+import { publicEnv } from "@/lib/env"
 import { SurfaceToggle } from "@/components/azura/surface-toggle"
 import { InventoryValue } from "@/components/azura/inventory-value"
 import { project } from "@/components/azura/landing-data"
@@ -52,6 +54,44 @@ export async function Navbar({
   surface: "night" | "day"
 }): Promise<ReactNode> {
   const t = await getTranslations({ locale, namespace: "landing" })
+  // The sign-in dialog's own copy. Resolved here rather than inside the client
+  // component so the whole label bag crosses as serialisable props and the
+  // dialog ships no translator of its own.
+  const tAuth = await getTranslations({ locale, namespace: "auth.login" })
+  const authLabels = {
+    trigger: t("nav.access"),
+    title: tAuth("title"),
+    lead: tAuth("lead"),
+    close: tAuth("close"),
+    noAccount: tAuth("noAccount"),
+    requestAccess: tAuth("requestAccess"),
+    login: {
+      email: tAuth("email"),
+      password: tAuth("password"),
+      submit: tAuth("submit"),
+      submitting: tAuth("submitting"),
+      showPassword: tAuth("showPassword"),
+      hidePassword: tAuth("hidePassword"),
+      forgot: tAuth("forgot"),
+      methodEmail: tAuth("methodEmail"),
+      methodPhone: tAuth("methodPhone"),
+      orContinue: tAuth("orContinue"),
+      google: tAuth("google"),
+      phoneNumber: tAuth("phoneNumber"),
+      phonePlaceholder: tAuth("phonePlaceholder"),
+      sendCode: tAuth("sendCode"),
+      sendingCode: tAuth("sendingCode"),
+      code: tAuth("code"),
+      codePlaceholder: tAuth("codePlaceholder"),
+      verifyCode: tAuth("verifyCode"),
+      verifying: tAuth("verifying"),
+      codeSent: tAuth("codeSent"),
+      changeNumber: tAuth("changeNumber"),
+      googlePending: tAuth("googlePending"),
+      phonePending: tAuth("phonePending"),
+      socialFailed: tAuth("socialFailed"),
+    },
+  }
   const items = [
     { href: "/#what", label: t("nav.project") },
     { href: "/#site", label: t("nav.site") },
@@ -134,12 +174,17 @@ export async function Navbar({
                 }}
               />
               <LocaleSwitcher compact />
-              <Link
-                href="/#access"
-                className="azura-tap-compact hidden items-center rounded-full border border-[color-mix(in_srgb,var(--primary)_55%,transparent)] px-4 text-[0.875rem] font-medium text-primary transition-colors duration-[var(--duration-fast)] hover:border-primary hover:bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] sm:inline-flex"
-              >
-                {t("nav.access")}
-              </Link>
+              {/* Signing in happens here, in a dialog, so a visitor reading
+                  the landing does not lose their place to type an email.
+                  `/login` still exists for bookmarks, password managers and
+                  no-JS, and this trigger is a real link to it until hydration. */}
+              <AuthDialog
+                locale={locale}
+                labels={authLabels}
+                googleLive={publicEnv.NEXT_PUBLIC_AUTH_GOOGLE === "1"}
+                phoneLive={publicEnv.NEXT_PUBLIC_AUTH_PHONE === "1"}
+                className="hidden sm:inline-flex"
+              />
             </div>
           </Container>
         </div>

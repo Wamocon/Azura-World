@@ -115,6 +115,7 @@ export function mediaReportStatusLabels(
 
 const deliveryStates: readonly DeliveryState[] = [
   "not_configured",
+  "portal_only",
   "queued",
   "sent",
   "delivered",

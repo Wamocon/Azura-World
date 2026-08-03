@@ -11,6 +11,7 @@ import {
   UnitProvenanceBadge,
   type UnitProvenanceLabels,
 } from "@/components/inventory/unit-provenance-badge"
+import { Explain, type ExplainLabels } from "@/components/ui/explain"
 import { cn } from "@/lib/cn"
 import type { Locale, Money } from "@/lib/contracts"
 import { formatArea, formatMoney } from "@/lib/format"
@@ -87,6 +88,12 @@ export interface UnitsMatrixLabels {
   blockLabel: string
   hint: string
   notAvailable: string
+  /**
+   * Plain-language explanations, keyed by glossary term. Every jargon word this
+   * matrix shows a reader — "Modelled", "Not stated" — carries one, because the
+   * honesty control is worthless if only its author can read it.
+   */
+  explain: Record<string, ExplainLabels>
 }
 
 type StatusKey = "available" | "reserved" | "sold" | "unknown"
@@ -105,6 +112,21 @@ const CELL_TONE: Record<StatusKey, string> = {
   sold: "bg-rose-500/70 hover:bg-rose-500 focus-visible:bg-rose-500 text-rose-950",
   unknown:
     "bg-muted-foreground/15 hover:bg-muted-foreground/30 focus-visible:bg-muted-foreground/30 text-muted-foreground",
+}
+
+/** Badge value -> glossary term. Kept beside the tones they label. */
+const QUALITY_TERM: Record<UnitDataQuality, string> = {
+  portal_listing: "realListing",
+  official: "official",
+  modelled: "modelled",
+  source_missing: "sourceMissing",
+}
+
+const STATUS_TERM: Record<StatusKey, string> = {
+  available: "available",
+  reserved: "reserved",
+  sold: "sold",
+  unknown: "notStated",
 }
 
 const LEGEND_DOT: Record<StatusKey, string> = {
@@ -156,17 +178,32 @@ export function UnitsMatrix({
           <span className="azura-label text-muted-foreground">
             {labels.legend}
           </span>
-          {legendKeys.map((key) => (
-            <span key={key} className="inline-flex items-center gap-1.5 text-xs">
+          {legendKeys.map((key) => {
+            // The legend is where a reader first meets these four words, so it
+            // is where the explanation belongs.
+            const term = key === "unknown" ? "notStated" : key
+            const explain = labels.explain[term]
+            return (
               <span
-                className={cn("size-2.5 rounded-[3px]", LEGEND_DOT[key])}
-                aria-hidden="true"
-              />
-              <span className="text-muted-foreground">
-                {statusLabel(key === "unknown" ? null : key)}
+                key={key}
+                className="inline-flex items-center gap-1.5 text-xs"
+              >
+                <span
+                  className={cn("size-2.5 rounded-[3px]", LEGEND_DOT[key])}
+                  aria-hidden="true"
+                />
+                {explain === undefined ? (
+                  <span className="text-muted-foreground">
+                    {statusLabel(key === "unknown" ? null : key)}
+                  </span>
+                ) : (
+                  <Explain labels={explain} className="text-muted-foreground">
+                    {statusLabel(key === "unknown" ? null : key)}
+                  </Explain>
+                )}
               </span>
-            </span>
-          ))}
+            )
+          })}
         </div>
 
         {presentQualities.size > 1 ? (
@@ -265,12 +302,43 @@ export function UnitsMatrix({
               </DialogTitle>
             </div>
 
+            {/* Both badges are jargon, and this popup is where a reader stops
+                to read. Each carries its own plain-language explanation. */}
             <div className="flex flex-wrap items-center gap-2">
-              <UnitProvenanceBadge
-                dataQuality={selected.dataQuality}
-                labels={labels.provenance}
-              />
-              <StatusPill status={selected.saleStatus} label={statusLabel(selected.saleStatus)} />
+              <span className="inline-flex items-center gap-1">
+                <UnitProvenanceBadge
+                  dataQuality={selected.dataQuality}
+                  labels={labels.provenance}
+                />
+                {labels.explain[QUALITY_TERM[selected.dataQuality]] ===
+                undefined ? null : (
+                  <Explain
+                    iconOnly
+                    labels={
+                      labels.explain[
+                        QUALITY_TERM[selected.dataQuality]
+                      ] as ExplainLabels
+                    }
+                  />
+                )}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <StatusPill
+                  status={selected.saleStatus}
+                  label={statusLabel(selected.saleStatus)}
+                />
+                {labels.explain[STATUS_TERM[statusKey(selected.saleStatus)]] ===
+                undefined ? null : (
+                  <Explain
+                    iconOnly
+                    labels={
+                      labels.explain[
+                        STATUS_TERM[statusKey(selected.saleStatus)]
+                      ] as ExplainLabels
+                    }
+                  />
+                )}
+              </span>
             </div>
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">

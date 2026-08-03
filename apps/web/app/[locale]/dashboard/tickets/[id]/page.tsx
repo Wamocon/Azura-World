@@ -21,6 +21,7 @@ import {
   TicketPriorityBadge,
   TicketStatusBadge,
 } from "@/components/operations/ticket-status-badge"
+import { TicketCommentForm } from "@/components/operations/ticket-comment-form"
 import { TicketTimeline } from "@/components/operations/ticket-timeline"
 import { TicketTransitions } from "@/components/operations/ticket-transitions"
 import { Badge } from "@/components/ui/badge"
@@ -33,6 +34,7 @@ import {
   getTicket,
   getTicketEvents,
 } from "@/lib/operations-repository"
+import { getProfiles } from "@/lib/governance-repository"
 import { hasPermission } from "@/lib/rbac"
 import { routeTicket } from "@/lib/ticket-routing"
 import { allowedTransitions, assessSla } from "@/lib/ticket-workflow"
@@ -55,9 +57,22 @@ import { allowedTransitions, assessSla } from "@/lib/ticket-workflow"
  * page does not know what a ticket can do next and must not learn.
  */
 
-export const metadata: Metadata = {
-  title: "Ticket",
-  robots: { index: false, follow: false },
+/**
+ * The browser tab, in the reader's language. This was a German literal, so a
+ * Turkish page carried a German tab; the heading beside it was already
+ * translated, which made the mismatch worse rather than invisible.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "dashboard.tickets" })
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function TicketDetailPage({
@@ -94,13 +109,43 @@ export default async function TicketDetailPage({
   const ticket = ticketResult.data
   if (ticket === null) notFound()
 
-  const [eventsResult, reportsResult, unitResult] = await Promise.all([
-    getTicketEvents(id, scope, { limit: 200 }),
-    getMediaReports({ ...scope, ticketId: id, limit: 50 }),
-    ticket.unitId === null
-      ? Promise.resolve(null)
-      : getUnit(ticket.unitId, scope),
-  ])
+  const [eventsResult, reportsResult, unitResult, assigneeResult] =
+    await Promise.all([
+      getTicketEvents(id, scope, { limit: 200 }),
+      getMediaReports({ ...scope, ticketId: id, limit: 50 }),
+      ticket.unitId === null
+        ? Promise.resolve(null)
+        : getUnit(ticket.unitId, scope),
+      // Who this job can be handed to. Only fetched for a caller who may
+      // actually assign; `getProfiles` refuses a role that cannot read the
+      // directory, and an empty list makes the action explain itself rather
+      // than offer an empty menu.
+      hasPermission(profile.role, "tickets:assign")
+        ? getProfiles({ role: profile.role, isActive: true, limit: 200 })
+        : Promise.resolve(null),
+    ])
+
+  /**
+   * The people who actually do the work: staff and contractors. A resident is
+   * in the directory too and must never appear here — assigning a lift repair
+   * to the tenant who reported it is not a thing this product should offer.
+   */
+  const assignees = (assigneeResult?.data ?? [])
+    .filter(
+      (person) => person.role === "staff" || person.role === "service_provider"
+    )
+    .map((person) => ({
+      id: person.id,
+      name: person.fullName ?? person.email ?? person.id,
+    }))
+
+  /** Every readable profile, so the assignee renders as a person not an id. */
+  const assigneeNames = new Map(
+    (assigneeResult?.data ?? []).map((person) => [
+      person.id,
+      person.fullName ?? person.email ?? person.id,
+    ])
+  )
 
   const statusLabels = ticketStatusLabels(t)
   const priorityLabels = ticketPriorityLabels(t)
@@ -190,7 +235,13 @@ export default async function TicketDetailPage({
         </Field>
         <Field label={t("columns.unit")}>{ticket.unitId ?? t("noValue")}</Field>
         <Field label={t("columns.assignee")}>
-          {ticket.assigneeProfileId ?? t("unassigned")}
+          {/* A name, not a UUID. `b0000000-0000-4000-8000-000000000004` is not
+              an answer to "who is dealing with this". Falls back to the id only
+              when the directory is unreadable for this caller. */}
+          {ticket.assigneeProfileId === null
+            ? t("unassigned")
+            : (assigneeNames.get(ticket.assigneeProfileId) ??
+              t("unknownActor"))}
         </Field>
         <Field label={t("columns.reportedAt")}>
           {formatDateTime(ticket.reportedAt, locale)}
@@ -243,6 +294,7 @@ export default async function TicketDetailPage({
             // the transition table permits this role from this status and knows
             // nothing else about the lifecycle.
             available={allowedTransitions(ticket.status, profile.role)}
+            assignees={assignees}
             labels={{
               actions,
               heading: t("actionsHeading"),
@@ -250,6 +302,10 @@ export default async function TicketDetailPage({
               noteLabel: t("noteLabel"),
               notePlaceholder: t("notePlaceholder"),
               noteRequired: t("noteRequired"),
+              assigneeLabel: t("assigneeLabel"),
+              assigneePlaceholder: t("assigneePlaceholder"),
+              assigneeRequired: t("assigneeRequired"),
+              assigneeUnavailable: t("assigneeUnavailable"),
               submit: tCommon("actions.confirm"),
               cancel: tCommon("actions.cancel"),
               busy: tCommon("states.saving"),
@@ -270,9 +326,30 @@ export default async function TicketDetailPage({
           locale={locale}
           kindLabels={kindLabels}
           statusLabels={statusLabels}
-          actorFallback={t("systemActor")}
+          actorFallback={t("unknownActor")}
+          actorNames={assigneeNames}
+          selfProfileId={profile.id}
+          selfLabel={t("selfActor")}
           emptyLabel={t("historyEmpty")}
           transitionLabel={(from, to) => t("transitionSummary", { from, to })}
+        />
+
+        {/* The reply box sits UNDER the history, where a conversation goes.
+            Anyone who can read this ticket can add to it: the requester chasing
+            an update, the contractor reporting what they found. */}
+        <TicketCommentForm
+          ticketId={ticket.id}
+          companyId={ticket.companyId}
+          labels={{
+            heading: t("commentHeading"),
+            placeholder: t("commentPlaceholder"),
+            submit: t("commentSubmit"),
+            busy: t("commentBusy"),
+            empty: t("commentEmpty"),
+            genericError: tCommon("errors.generic"),
+            unavailable: t("commentUnavailable"),
+          }}
+          className="mt-6"
         />
       </section>
 

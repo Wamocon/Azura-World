@@ -553,28 +553,28 @@
         "status": "Status",
         "due": "Due"
       },
-      "rows": [
-        {
+      "rows": {
+        "lift": {
           "task": "Check lift",
           "status": "In progress",
           "due": "today"
         },
-        {
+        "water": {
           "task": "Water damage",
           "status": "Open",
           "due": "tomorrow"
         },
-        {
+        "pool": {
           "task": "Pool service",
           "status": "Done",
           "due": "—"
         },
-        {
+        "handover": {
           "task": "Handover",
           "status": "Planned",
           "due": "Fri"
         }
-      ]
+      }
     }
   },
   "dashboard": {
@@ -677,7 +677,7 @@
         "publisher": "Portal",
         "observed": "Collected",
         "evidence": "Evidence",
-        "stale": "Stale",
+        "stale": "Out of date",
         "note": "Harvest note",
         "layoutUnstated": "not stated",
         "areaUnstated": "not stated"
@@ -694,7 +694,7 @@
       },
       "unstatedHeading": "Further sale listings with no layout stated",
       "unstatedLead": "These portals quote a price without saying which layout it describes, so they are not on the scale above, the source does not state the apartment type. They are listed anyway: Alanya-Home’s entry price is one of the four figures finding F-002 names.",
-      "forbidden": "This view is not available for your role. The evidence cockpit requires the “evidence:view” permission.",
+      "forbidden": "This view is not available for your role. Sources and evidence are visible only to roles that have been given access to them. Ask an administrator if you need it.",
       "export": {
         "link": "Export evidence as CSV",
         "note": "With source URL, fetch date and snapshot hash on every row."
@@ -706,7 +706,43 @@
         "submit": "Save note",
         "pending": "Saving …",
         "forbidden": "Your role may read findings but not annotate them.",
-        "saved": "Note saved."
+        "saved": "Note saved.",
+        "unavailable": "Notes cannot be saved yet. The store for them is not built, so the field is disabled rather than discarding what you write."
+      },
+      "plain": {
+        "summary": "{portals} property portals publish a price for the same {layout} apartment, and no two of them agree.",
+        "noPick": "Nothing was averaged and no price was declared the right one. Every quote stays on the record together with the portal that published it.",
+        "originalLabel": "Original text of this finding, in English",
+        "originalHint": "The wording our analysts recorded. It is kept so a figure can be checked, and it is not translated.",
+        "originalFinding": "Finding",
+        "originalResolution": "How it was handled"
+      },
+      "chart": {
+        "heading": "What each portal asks",
+        "groupHeading": "Quoted in {currency}",
+        "groupMeta": "{portals} portals, {count} listings",
+        "groupMetaSingle": "1 portal, {count} listings",
+        "listings": "{count} listings",
+        "oneListing": "1 listing",
+        "upTo": "up to {high}",
+        "stale": "Out of date",
+        "staleSome": "{stale} of {count} out of date",
+        "staleNote": "A portal marked this way still shows the project as unfinished, years after it was completed. Its prices describe an older market.",
+        "entryNote": "The solid part of a bar ends at the lowest price that portal publishes.",
+        "rangeNote": "The striped part runs on to the highest price the same portal publishes.",
+        "scaleNote": "Every bar in a block starts at zero and shares one scale.",
+        "notComparable": "A different currency. We never convert, so these prices cannot be compared with the ones above.",
+        "spread": "From {low} to {high}. The highest price is {ratio} times the lowest.",
+        "singleSourceNote": "Only one portal quotes in this currency, so there is nothing here to compare it with."
+      },
+      "record": {
+        "heading": "Every quoted price and where it comes from",
+        "lead": "One line per listing, in the currency the portal used. Nothing is converted and nothing is left out.",
+        "openListing": "Listing",
+        "openListingLabel": "Open the listing at {publisher}",
+        "snapshotLabel": "Stored copy of the {publisher} page",
+        "originalsLabel": "Original wording of these notes",
+        "originalsHint": "Written in English for our own review. Kept so a figure can be checked."
       }
     },
     "units": {
@@ -750,8 +786,8 @@
         "filterAll": "All provenances"
       },
       "split": {
-        "heading": "Where this inventory comes from",
-        "caption": "{portal} of {total} units come from a real listing. The remaining {modelled} are modelled: they fill out the inventory and represent no real offer.",
+        "heading": "Where these apartments come from",
+        "caption": "{portal} of the {total} apartments come from a real listing on a property portal. The other {modelled} were filled in so the building shows complete. They are not real offers.",
         "rowNote": "Modelled: not a real listing"
       },
       "matrix": {
@@ -768,7 +804,7 @@
     },
     "listings": {
       "title": "Portal listings",
-      "lead": "The same unit across several portals, with price, date and variance.",
+      "lead": "What each property portal currently publishes about Azura World.",
       "count": "{count, plural, one {# listing} other {# listings}}",
       "empty": "No listings on record.",
       "seedNotice": "Demo data: a section of the collected records is shown, not live data.",
@@ -797,7 +833,7 @@
         "withoutPrice": "{count} listings state no price. They are counted, never treated as 0."
       },
       "compare": {
-        "heading": "Four portals, four prices",
+        "heading": "What each portal asks for the same apartment",
         "lead": "The same layout at every portal that offers it. Prices exactly as published. Nothing is converted.",
         "layoutFilterLabel": "Choose layout",
         "caption": "Prices per portal, separated by currency",
@@ -810,7 +846,8 @@
         "empty": "No portal states a sale price for {layout}.",
         "unstatedHeading": "Portals stating no layout",
         "unstatedLead": "These rows carry a price the portal attached to no layout. Sometimes that is an entry price for the whole project, sometimes a room count we cannot represent. They stay separate, and without a spread.",
-        "findingNote": "Finding F-002 states its range separately per currency and gives a ratio within EUR only. It does not compare a euro price with a dollar price. Each column above carries its own spread."
+        "findingNote": "Finding F-002 states its range separately per currency and gives a ratio within EUR only. It does not compare a euro price with a dollar price. Each column above carries its own spread.",
+        "unstatedToggle": "Show the {count} listings with no layout"
       },
       "claims": {
         "heading": "What does each portal say about the project?",
@@ -854,8 +891,8 @@
       "group": {
         "caption": "All listings from {publisher}",
         "note": "Note",
-        "listingCount": "{count} listings",
-        "pageCount": "{count} pages",
+        "listingCount": "{count, plural, one {# listing} other {# listings}}",
+        "pageCount": "{count, plural, one {# page} other {# pages}}",
         "staleCount": "{count} outdated",
         "rentCount": "{count} to rent",
         "lastFetched": "Last collected"
@@ -873,6 +910,47 @@
           "publisher": "The selected portal filter excludes every listing.",
           "priceKind": "The sale or rent filter excludes every listing.",
           "staleOnly": "No listing in the current filter is marked outdated."
+        }
+      },
+      "info": {
+        "heading": "What this page shows",
+        "body": "The same apartments are advertised on several property portals, and every portal names its own price. This is what each portal said when we last collected it.",
+        "body2": "Nothing here is corrected, averaged or converted into another currency. Where two portals contradict each other, both figures stay on the page.",
+        "termsLead": "Words used on this page:"
+      },
+      "portals": {
+        "heading": "Every portal at a glance",
+        "lead": "One card per portal: how many listings it published, the prices it names, and when we last collected them. Prices stay in the currency the portal used.",
+        "pricesIn": "Prices in {currency}",
+        "fromListings": "{count} listings with a price",
+        "noSalePrice": "This portal names no sale price.",
+        "rentNote": "{count} listings are monthly rents and stay out of the price range.",
+        "withoutPrice": "{count} listings name no price.",
+        "layouts": "Layouts named: {layouts}",
+        "layoutsUnstated": "{count} without a layout",
+        "layoutsNone": "This portal names no layout.",
+        "allOutdated": "Every listing from this portal is out of date.",
+        "someOutdated": "{count} of its listings are out of date.",
+        "showListings": "Show its listings",
+        "showAll": "Show all portals",
+        "openPage": "Open a page from this portal",
+        "pictureCredit": "Picture published by this portal",
+        "pictureSource": "Open the page it came from",
+        "pictureStale": "from an out of date listing",
+        "pictureNone": "We collected no picture from this portal.",
+        "altPhoto": "Photograph of the Azura World complex, published by {publisher}",
+        "altRender": "Computer visualisation of the Azura World complex, published by {publisher}",
+        "altFloorplan": "Floor plan of an Azura World apartment, published by {publisher}",
+        "altSiteplan": "Site plan of the Azura World grounds, published by {publisher}"
+      },
+      "explain": {
+        "outdated": {
+          "term": "Out of date",
+          "body": "The portal still describes the project as under construction, although it was finished in 2024. Prices in such a listing describe a market that has moved on."
+        },
+        "notStated": {
+          "term": "Not stated",
+          "body": "The portal does not publish this figure. We leave it open instead of filling in an estimate."
         }
       }
     },
@@ -1485,7 +1563,38 @@
         "breached": "Target missed"
       },
       "noValue": "Not stated",
-      "seedNotice": "This page shows stored sample data. The database is not connected."
+      "seedNotice": "This page shows stored sample data. The database is not connected.",
+      "assigneeLabel": "Who takes this?",
+      "assigneePlaceholder": "Choose a person",
+      "assigneeRequired": "Choose who should take this job.",
+      "assigneeUnavailable": "You cannot see the list of people, so assigning is not possible here.",
+      "commentHeading": "Write a reply",
+      "commentPlaceholder": "What is the latest? Everyone involved can see it.",
+      "commentSubmit": "Send",
+      "commentBusy": "Sending …",
+      "commentEmpty": "Please write something first.",
+      "commentUnavailable": "Your message was not saved. Please try again later.",
+      "selfActor": "You",
+      "unknownActor": "Site team",
+      "create": {
+        "trigger": "Report a problem",
+        "heading": "New request",
+        "lead": "Tell us what is wrong. The request goes to the site team as an open job.",
+        "titleLabel": "What is wrong?",
+        "titlePlaceholder": "For example: the kitchen tap is dripping",
+        "whereLabel": "Where is it?",
+        "whereCommon": "Common areas (lobby, pool, grounds)",
+        "categoryLabel": "What kind of job?",
+        "priorityLabel": "How urgent is it?",
+        "descriptionLabel": "Details (optional)",
+        "descriptionPlaceholder": "When it started, exactly where it is, anything the team should know…",
+        "submit": "Send request",
+        "busy": "Sending…",
+        "titleRequired": "Give the problem a short title.",
+        "genericError": "The request could not be sent. What you wrote is still here — please try again.",
+        "unavailable": "The storage service is not responding right now. Your request was not saved — try again shortly.",
+        "afterNote": "The request is filed as “open” and stays unassigned until someone on the team picks it up. You can follow it here and add comments."
+      }
     },
     "activities": {
       "title": "Activities",
@@ -1593,7 +1702,6 @@
       "internalNote": "Internal note",
       "systemSender": "System",
       "hasAttachment": "Has attachment",
-      "composeUnavailable": "There is no box to write in here, because no message could leave the building. It will appear once a provider is set up.",
       "deliveryNotice": {
         "title": "Not sent, no provider configured.",
         "body": "No provider is set up for email, SMS or WhatsApp. Messages are stored and readable here, but nothing goes out. Do not rely on a recipient having been told."
@@ -1604,7 +1712,8 @@
         "sent": "Sent",
         "delivered": "Delivered",
         "failed": "Sending failed",
-        "internal_note": "Internal only"
+        "internal_note": "Internal only",
+        "portal_only": "Visible in the portal"
       },
       "scopeUnknown": {
         "title": "Your messages cannot be matched to you.",
@@ -1618,7 +1727,20 @@
         "archived": "Archived"
       },
       "noValue": "Not stated",
-      "seedNotice": "This page shows stored sample data. The database is not connected."
+      "seedNotice": "This page shows stored sample data. The database is not connected.",
+      "selfSender": "You",
+      "otherSender": "Another participant",
+      "composer": {
+        "heading": "Write a reply",
+        "placeholder": "Type your message here…",
+        "submit": "Send",
+        "busy": "Sending…",
+        "empty": "Write something before sending.",
+        "genericError": "The message could not be sent. What you wrote is still here — please try again.",
+        "unavailable": "The storage service is not responding right now. Your message was not sent — try again shortly.",
+        "scopeNote": "This message is stored in the portal and read here. It is not emailed, texted or sent by WhatsApp.",
+        "readOnly": "You can read this conversation, but this account cannot reply to it."
+      }
     },
     "documents": {
       "title": "Documents",
@@ -1778,7 +1900,7 @@
     },
     "reports": {
       "title": "Reports",
-      "lead": "Analyses as a file or on a schedule.",
+      "lead": "Analyses you can download. Every file names the sources its numbers come from.",
       "empty": "No reports.",
       "generate": "Generate report",
       "generating": "Generating report …",
@@ -1788,7 +1910,7 @@
       "catalogueLead": "Each report with the permission it requires.",
       "carriesProvenance": "Carries sources",
       "requiresPermission": "Requires",
-      "downloadCsv": "Download as CSV",
+      "downloadCsv": "Download CSV",
       "notPermitted": "Not permitted",
       "formats": "Formats",
       "formatsLead": "What can be produced today and what cannot.",
@@ -1796,14 +1918,14 @@
       "unavailable": "Not available",
       "formatReason": {
         "csv_ready": "Produced on request, with source columns.",
-        "no_library": "A software library is missing for this. Installing one is W0-A's job."
+        "no_library": "The technical basis for this is still missing."
       },
       "unavailableReason": {
-        "not_built": "Not built yet"
+        "not_built": "Not finished yet"
       },
       "scheduled": "Scheduled reports",
       "scheduledLead": "Reports that run in the background and are filed.",
-      "jobsUnavailable": "Background reports answer {status}. The {table} table is missing and {owner} owns it. A button that produces nothing would be misleading.",
+      "jobsUnavailable": "Reports on a schedule are not possible yet. A button that produces nothing would be misleading.",
       "columns": {
         "metric": "Measure",
         "value": "Value",
@@ -1813,35 +1935,117 @@
         "tier": "Tier",
         "fetchedAt": "Retrieved",
         "snapshotHash": "Checksum",
-        "lastStatus": "Last status",
-        "lastOk": "Last confirmed"
+        "lastStatus": "Response at last retrieval",
+        "lastOk": "Last readable copy",
+        "metricKey": "Identifier",
+        "tierName": "Kind of source"
       },
       "csv": {
         "generatedAt": "Produced on",
-        "source": "Data origin"
+        "source": "Data origin",
+        "origin": {
+          "supabase": "From the live database.",
+          "local-seed": "From the sample data supplied with the app."
+        },
+        "incomplete": "The list is shortened, the numbers are lower bounds."
       },
       "reports": {
         "evidence_coverage": {
           "title": "Evidence coverage",
-          "lead": "How many statements are backed by evidence, how many are only asserted, and where the gaps are."
+          "lead": "How many statements have a solid source, how many have only one, and where there is none at all."
         },
         "source_register": {
           "title": "Source register",
-          "lead": "Every source with address, tier, retrieval time and the checksum of the stored copy."
+          "lead": "Every source with its address, kind, retrieval time and the checksum of the stored copy."
         },
         "inventory_split": {
           "title": "Inventory split",
-          "lead": "Real listings against modelled records, by block."
+          "lead": "Per block: how many units come from real listings and how many are only assumed figures."
         },
         "compliance_gaps": {
           "title": "Compliance gaps",
-          "lead": "Checks without evidence, by deadline."
+          "lead": "Checks with no evidence, ordered by deadline."
         }
       },
       "forbidden": {
         "title": "No access to reports",
         "message": "Your role may not see these analyses. The address stays valid.",
         "permissionLabel": "Permission needed:"
+      },
+      "availableTitle": "Available now",
+      "availableLead": "Produced the moment you click and downloaded as a CSV table. The file opens in Excel.",
+      "plannedTitle": "In preparation",
+      "plannedLead": "Announced but not finished. There is deliberately no button that would hand you an empty file.",
+      "csvFormat": "CSV table",
+      "containsLabel": "Columns in the file:",
+      "notPermittedLead": "Your role may not download this file. It needs the permission “{permission}”.",
+      "limits": "Excel and PDF files, and reports on a schedule, are not possible yet. They will appear here once they exist.",
+      "permissionName": {
+        "evidence_export": "Export evidence",
+        "units_export": "Export units",
+        "compliance_export": "Export compliance checks"
+      },
+      "coverageMetric": {
+        "sources_total": "Sources in total",
+        "snapshots_total": "Stored copies of pages",
+        "facts_total": "Recorded statements",
+        "citations_total": "References to sources",
+        "findings_total": "Recorded contradictions",
+        "facts_established": "Statements with a solid source",
+        "facts_provisional": "Statements with a provisional source",
+        "facts_declaredGaps": "Statements with no source at all",
+        "citations_withoutSnapshot": "References with no stored copy",
+        "sources_validated": "Sources with a readable copy",
+        "sources_fetchedNotValidated": "Sources retrieved, copy unusable",
+        "sources_neverFetched": "Sources never retrieved",
+        "facts_byConfidence_confirmed": "Of those: confirmed by at least two sources",
+        "facts_byConfidence_official": "Of those: stated by the official site",
+        "facts_byConfidence_single_source": "Of those: stated by one source only",
+        "facts_byConfidence_conflicted": "Of those: the sources disagree",
+        "facts_byConfidence_inferred": "Of those: calculated from confirmed statements",
+        "facts_byConfidence_gap": "Of those: no source states a value"
+      },
+      "coverageBasis": {
+        "sources_total": "Number of entries in the source register.",
+        "snapshots_total": "Number of page copies stored at retrieval time.",
+        "facts_total": "Every recorded statement, whatever its sources.",
+        "citations_total": "Each reference links one statement to one source.",
+        "findings_total": "Cases in which sources disagree with each other.",
+        "facts_established": "Confirmed by at least two sources, or stated officially.",
+        "facts_provisional": "One source only, disagreeing sources, or calculated.",
+        "facts_declaredGaps": "No source states a value. The field is left empty.",
+        "citations_withoutSnapshot": "The address is named, but no stored copy exists.",
+        "sources_validated": "At least one stored copy was readable.",
+        "sources_fetchedNotValidated": "The retrieval answered, but the copy was not usable.",
+        "sources_neverFetched": "The site refused retrieval, or it was never attempted.",
+        "facts_byConfidence_confirmed": "At least two independent sources state the same value.",
+        "facts_byConfidence_official": "Stated by azuraworld.com or a Cebeci Group site.",
+        "facts_byConfidence_single_source": "Exactly one source states the value, uncontradicted.",
+        "facts_byConfidence_conflicted": "Several sources state different values.",
+        "facts_byConfidence_inferred": "Calculated from confirmed statements, with a note.",
+        "facts_byConfidence_gap": "No source states a value."
+      },
+      "sourceTier": {
+        "1": "Official project site",
+        "2": "Developer",
+        "3": "Hotel operations",
+        "4": "Property portal",
+        "5": "Reviews and booking",
+        "6": "Press and secondary source"
+      },
+      "sourceStatus": {
+        "ok": "Retrieved successfully ({code})",
+        "redirectedCode": "Redirected ({code})",
+        "failed": "Retrieval failed ({code})",
+        "never_fetched": "Never retrieved",
+        "robots_disallowed": "Retrieval refused by the site",
+        "expect_missing": "Retrieved, expected content missing",
+        "redirected": "Redirected",
+        "dns_timeout": "Unreachable",
+        "soft_404": "Empty page with status 200",
+        "http_404": "Page not found (404)",
+        "http_500": "Server error (500)",
+        "blocked_403": "Access refused"
       }
     },
     "users": {
@@ -1927,7 +2131,7 @@
       "invitations": {
         "title": "Invitations",
         "lead": "Single-use, expiring access for new people.",
-        "unavailable": "Invitations are not built yet. The invitations table is missing and W1-A owns it. A form with nowhere to write would be misleading."
+        "unavailable": "Invitations are not possible yet. We do not show a form that would save nowhere."
       }
     },
     "admin": {
@@ -2064,7 +2268,7 @@
       "appearanceLead": "Applies to the whole application.",
       "themeFixedNotice": "The light design is fixed for everyone. A choice here would do nothing, so there is none.",
       "notificationsLead": "When this system should get in touch with you.",
-      "notificationsUnavailable": "Notifications are not built yet. A preferences table is missing and W1-A owns it.",
+      "notificationsUnavailable": "Notifications are not possible yet.",
       "organisation": "Organisation",
       "organisationLead": "Administrators only.",
       "companyId": "Identifier",
@@ -2079,7 +2283,7 @@
     },
     "hotel": {
       "title": "Hotel operations",
-      "lead": "Occupancy, room status and booking sources.",
+      "lead": "What the sources state about the hotel: its rooms, its room types and its arrival and departure times.",
       "empty": "No hotel operations data.",
       "occupancy": "Occupancy",
       "adr": "Average room rate",
@@ -2124,11 +2328,40 @@
       },
       "occupancyPanel": {
         "heading": "Occupancy",
-        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent: it is exactly what a competitor analysis gets read for."
+        "gap": "No source publishes an occupancy rate for this property, and there is no booking system behind this analysis that could compute one. No figure is shown. A plausible rate would be the most damaging number this product could invent: it is exactly what a competitor analysis gets read for.",
+        "note": "Because no source publishes an occupancy rate for this hotel and no booking system sits behind this analysis, no figure is shown here."
       },
       "relationship": {
         "heading": "Hotel and residence",
-        "body": "The hotel and the residence share a site but not their figures. 188 hotel rooms sit beside 656 residential units; the distances to water are kept apart because they measure two different walks from two different starting points: the residence to the sea, the hotel to the public beach (F-003). Combined, two evidenced figures would become one unevidenced one."
+        "body": "188 hotel rooms sit beside 656 residential units on one site, and the two are counted separately. The distance shown here runs from the hotel to the public beach, which is a different walk from the one published for the residence."
+      },
+      "identity": {
+        "eyebrow": "The property",
+        "formerly": "Previously",
+        "stars": "{count, plural, one {# star} other {# stars}}",
+        "starsNotStated": "Category not stated",
+        "chain": "Belongs to the {name} chain.",
+        "chainNotStated": "No source from 2026 names a hotel chain for this property."
+      },
+      "roomMix": {
+        "heading": "Room mix",
+        "detailHeading": "Each room type in detail",
+        "rooms": "rooms",
+        "area": "Size",
+        "guests": "Max. guests",
+        "seaView": "Sea view",
+        "chartAriaLabel": "Rooms by room type",
+        "chartBasis": "Share of all rooms with a published room type.",
+        "chartEmpty": "No room counts published.",
+        "tableCategory": "Room type",
+        "tableValue": "Rooms",
+        "reconciled": "The published room types add up to the {total} rooms stated.",
+        "mismatch": "The published room types add up to {published} rooms, while {total} are stated in total. Both figures are shown as found, neither was adjusted.",
+        "noBreakdownHeading": "Room types not published",
+        "noBreakdown": "No source publishes how the rooms divide between room types, so only the total is stated here."
+      },
+      "stay": {
+        "heading": "Guest stay"
       }
     },
     "reviews": {
@@ -2151,7 +2384,7 @@
         "language": "Language",
         "publishedAt": "Date"
       },
-      "seedNotice": "This view shows local seed data, not live inventory.",
+      "seedNotice": "Demo data: a section of the collected reviews is shown, not live data.",
       "noAverageNote": "There is deliberately no overall score here. A 4.6 out of 5 and a 6.7 out of 10 cannot be combined: any number that came out would have no source. The platforms therefore sit side by side, not on top of one another.",
       "table": {
         "caption": "Scores per platform, each on the scale it was published on",
@@ -2176,6 +2409,53 @@
         "titleGap": "Review title: not captured, the harvest recovered bodies only.",
         "open": "Open the review on the platform",
         "none": "There are no rated reviews."
+      },
+      "platformName": {
+        "tripadvisor": "Tripadvisor",
+        "booking": "Booking.com",
+        "agoda": "Agoda",
+        "google": "Google",
+        "onthebeach": "OnTheBeach"
+      },
+      "scores": {
+        "heading": "Scores by platform",
+        "description": "Each platform on the scale it publishes on. Nothing on this page is added together.",
+        "noAverageHeading": "Why there is no single overall mark",
+        "scaleCaption": "{scale} point scale, published by {platform}",
+        "rankingLabel": "Ranking as stated",
+        "open": "Open on {platform}",
+        "syndicatedHeading": "Same score, shown again",
+        "syndicatedNote": "Another site shows this same score. It is one figure repeated, not a second opinion, so it does not make the score better checked.",
+        "syndicatedBy": "{publisher} shows the same score",
+        "distribution": {
+          "heading": "How the ratings split",
+          "totalOf": "{count} reviews carry a rating",
+          "none": "This platform publishes no split of its ratings.",
+          "bucket": {
+            "excellent": "Excellent",
+            "good": "Very good",
+            "average": "Average",
+            "poor": "Poor",
+            "terrible": "Terrible",
+            "positive": "Positive",
+            "mixed": "Mixed",
+            "negative": "Negative"
+          }
+        }
+      },
+      "quotes": {
+        "lead": "One review from each end of the scale, in the words of the guests.",
+        "onPlatform": "on {platform}",
+        "publishedLabel": "Date as the platform gives it: {label}",
+        "readFull": "Read the full review",
+        "collapse": "Show less",
+        "missingHeading": "Not captured"
+      },
+      "sources": {
+        "heading": "Every captured source",
+        "description": "One line per page we captured, including the page that repeats a score.",
+        "show": "Show the table",
+        "hide": "Hide the table"
       }
     },
     "charts": {
@@ -2192,6 +2472,28 @@
       "qualityOfficial": "Official",
       "qualityGap": "No source",
       "ticketsTotal": "tickets"
+    },
+    "welcome": {
+      "greeting": "Welcome, {name}",
+      "greetingAnonymous": "Welcome to Azura World",
+      "sectionTitle": "What you can do here",
+      "lead": {
+        "guest": "Everything about your stay is here. You can look through the hotel and its facilities, see what is on this week, and read messages sent to you. This account does not change anything.",
+        "child_owner": "This account is linked to a family account. You can see the home, the site and what is on, and read messages sent to you. Payments and agreements stay with the person who manages the account.",
+        "child_tenant": "This account is linked to a family account. You can see the home, the site and what is on, and read messages sent to you. Rent and payments stay with the person who manages the account.",
+        "child_guest": "This account is linked to a family account. You can look around the site, the hotel facilities and what is on this week. Nothing can be changed from this account."
+      },
+      "cards": {
+        "units": "The blocks and the homes — layouts, sizes, and which ones are free.",
+        "listings": "How these homes appear on the property portals, and the prices asked.",
+        "hotel": "The hotel, its rooms and the facilities on site — pools, spa, restaurants.",
+        "reviews": "What guests say about Azura World elsewhere — each quote with its source.",
+        "activities": "Work and events planned on the site — when, and where.",
+        "calendar": "The same thing as a calendar — this week and the days ahead.",
+        "communications": "Conversations about you and your stay. You can read them here; this account cannot reply.",
+        "reports": "Summaries you can download, each one saying where its figures came from.",
+        "wallet": "The balance on the account, and what has moved through it."
+      }
     }
   },
   "hotel": {
@@ -2460,7 +2762,10 @@
       "googlePending": "Google sign-in will be activated shortly. Please sign in with email in the meantime.",
       "phonePending": "Phone sign-in will be activated shortly. Please sign in with email in the meantime.",
       "socialFailed": "Sign-in failed. Please try again.",
-      "backToHome": "Back to home"
+      "backToHome": "Back to home",
+      "unavailable": "Signing in is not possible right now.",
+      "notConfigured": "Signing in is not set up here.",
+      "close": "Close"
     },
     "signup": {
       "title": "Request access",
@@ -2593,5 +2898,76 @@
     "villaFloor": "The floor field contains a building type, not a floor.",
     "noChain": "No hotel chain is currently named. The only source is a 2023 press report.",
     "noRanking": "No source states a ranking."
+  },
+  "glossary": {
+    "ariaLabel": "What does {term} mean?",
+    "modelled": {
+      "term": "Modelled",
+      "body": "No source published this apartment. We filled the inventory so the building is complete on screen. It is not a real offer and its price is not quoted anywhere."
+    },
+    "realListing": {
+      "term": "Real listing",
+      "body": "This apartment appeared on a public property portal. The price and the size are exactly as that portal published them."
+    },
+    "official": {
+      "term": "Official",
+      "body": "The developer or the hotel published this themselves."
+    },
+    "sourceMissing": {
+      "term": "Source missing",
+      "body": "We looked for a source for this and did not find one."
+    },
+    "notStated": {
+      "term": "Not stated",
+      "body": "Nobody publishes whether this apartment is free. We leave it open rather than guess."
+    },
+    "confirmed": {
+      "term": "Confirmed",
+      "body": "Two independent sources give the same figure."
+    },
+    "conflicted": {
+      "term": "Sources disagree",
+      "body": "The sources give different figures. We show all of them instead of picking one."
+    },
+    "singleSource": {
+      "term": "One source",
+      "body": "Only one source states this. It has not been checked against a second."
+    },
+    "inferred": {
+      "term": "Calculated",
+      "body": "Worked out from other figures. It is not published anywhere in this form."
+    },
+    "gap": {
+      "term": "Not stated",
+      "body": "No source states this. We leave it blank rather than estimate it."
+    },
+    "sla": {
+      "term": "Deadline",
+      "body": "The time by which this job was promised to be done."
+    },
+    "provenance": {
+      "term": "Origin",
+      "body": "Where a figure came from: who published it, and when."
+    },
+    "dataQuality": {
+      "term": "Data quality",
+      "body": "How well a figure is backed up: published by a source, or filled in by us."
+    },
+    "available": {
+      "term": "Available",
+      "body": "A source lists this apartment as for sale."
+    },
+    "reserved": {
+      "term": "Reserved",
+      "body": "Held for a buyer. Not sold yet."
+    },
+    "sold": {
+      "term": "Sold",
+      "body": "No longer for sale."
+    },
+    "priority": {
+      "term": "Priority",
+      "body": "This sets where the job sits in the queue. Choose “Urgent” only for things like a flood or a safety risk that cannot wait. Picking a higher level does not make anyone arrive sooner — it only changes the order."
+    }
   }
 }

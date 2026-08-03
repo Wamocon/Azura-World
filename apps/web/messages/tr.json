@@ -553,28 +553,28 @@
         "status": "Durum",
         "due": "Süre"
       },
-      "rows": [
-        {
+      "rows": {
+        "lift": {
           "task": "Asansör kontrolü",
           "status": "İşlemde",
           "due": "bugün"
         },
-        {
+        "water": {
           "task": "Su hasarı",
           "status": "Açık",
           "due": "yarın"
         },
-        {
+        "pool": {
           "task": "Havuz bakımı",
           "status": "Tamam",
           "due": "—"
         },
-        {
+        "handover": {
           "task": "Teslim",
           "status": "Planlı",
           "due": "Cu"
         }
-      ]
+      }
     }
   },
   "dashboard": {
@@ -694,7 +694,7 @@
       },
       "unstatedHeading": "Tip belirtilmeyen diğer satış ilanları",
       "unstatedLead": "Bu portallar fiyat veriyor ancak hangi tipe ait olduğunu söylemiyor; bu yüzden yukarıdaki ölçekte yer almıyorlar. Yine de listeleniyorlar: Alanya-Home’un giriş fiyatı, F-002 bulgusunun andığı dört rakamdan biri.",
-      "forbidden": "Bu görünüm rolünüze açık değil. Kanıt kokpiti “evidence:view” iznini gerektirir.",
+      "forbidden": "Bu görünüm rolünüze açık değil. Kaynakları ve belgeleri yalnızca erişim verilmiş roller görebilir. İhtiyacınız varsa yöneticinize başvurun.",
       "export": {
         "link": "Kanıtları CSV olarak dışa aktar",
         "note": "Her satırda kaynak URL’si, erişim tarihi ve anlık görüntü özeti ile."
@@ -706,7 +706,43 @@
         "submit": "Notu kaydet",
         "pending": "Kaydediliyor …",
         "forbidden": "Rolünüz bulguları okuyabilir ancak not ekleyemez.",
-        "saved": "Not kaydedildi."
+        "saved": "Not kaydedildi.",
+        "unavailable": "Notlar henüz kaydedilemiyor. Saklama alanı hazır olmadığı için, yazdığınızı silmek yerine alan devre dışı bırakıldı."
+      },
+      "plain": {
+        "summary": "{portals} emlak portalı aynı {layout} daire için fiyat veriyor ve hiçbiri diğeriyle aynı değil.",
+        "noPick": "Hiçbir şey ortalanmadı ve hiçbir fiyat doğru olarak seçilmedi. Her fiyat, onu yayımlayan portalla birlikte kayıtta kalıyor.",
+        "originalLabel": "Bu bulgunun özgün metni, İngilizce",
+        "originalHint": "Analistlerimizin kaydettiği ifade. Bir rakam denetlenebilsin diye saklanıyor ve çevrilmiyor.",
+        "originalFinding": "Bulgu",
+        "originalResolution": "Nasıl ele alındı"
+      },
+      "chart": {
+        "heading": "Her portal ne istiyor",
+        "groupHeading": "{currency} olarak verilen fiyatlar",
+        "groupMeta": "{portals} portal, {count} ilan",
+        "groupMetaSingle": "1 portal, {count} ilan",
+        "listings": "{count} ilan",
+        "oneListing": "1 ilan",
+        "upTo": "{high} kadar",
+        "stale": "Eskimiş",
+        "staleSome": "{count} ilandan {stale} tanesi eskimiş",
+        "staleNote": "Bu şekilde işaretlenen portal, proje tamamlandıktan yıllar sonra hâlâ bitmemiş gösteriyor. Fiyatları daha eski bir piyasayı anlatıyor.",
+        "entryNote": "Çubuğun dolu kısmı, o portalın yayımladığı en düşük fiyatta biter.",
+        "rangeNote": "Çizgili kısım, aynı portalın yayımladığı en yüksek fiyata kadar uzanır.",
+        "scaleNote": "Bir bloktaki her çubuk sıfırdan başlar ve aynı ölçeği kullanır.",
+        "notComparable": "Farklı bir para birimi. Hiçbir zaman dönüştürme yapmıyoruz, bu yüzden bu fiyatlar yukarıdakilerle karşılaştırılamaz.",
+        "spread": "{low} ile {high} arasında. En yüksek fiyat, en düşüğün {ratio} katı.",
+        "singleSourceNote": "Bu para biriminde fiyat veren tek portal var, dolayısıyla karşılaştıracak başka bir şey yok."
+      },
+      "record": {
+        "heading": "Verilen her fiyat ve nereden geldiği",
+        "lead": "Her ilan için bir satır, portalın kullandığı para biriminde. Hiçbir şey dönüştürülmüyor, hiçbir şey atlanmıyor.",
+        "openListing": "İlan",
+        "openListingLabel": "{publisher} sitesindeki ilanı aç",
+        "snapshotLabel": "{publisher} sayfasının saklanan kopyası",
+        "originalsLabel": "Bu notların özgün ifadesi",
+        "originalsHint": "Kendi denetimimiz için İngilizce yazıldı. Bir rakam denetlenebilsin diye saklanıyor."
       }
     },
     "units": {
@@ -750,8 +786,8 @@
         "filterAll": "Tüm kaynaklar"
       },
       "split": {
-        "heading": "Envanterin kaynağı",
-        "caption": "{total} dairenin {portal} tanesi gerçek bir ilandan geliyor. Kalan {modelled} tanesi modellenmiştir: envanteri tamamlarlar ve gerçek bir teklifi temsil etmezler.",
+        "heading": "Bu daireler nereden geliyor",
+        "caption": "{total} dairenin {portal} tanesi bir emlak portalındaki gerçek ilandan geliyor. Diğer {modelled} tanesi bina eksiksiz görünsün diye tamamlandı. Gerçek teklif değildir.",
         "rowNote": "Modellenmiş: gerçek ilan değil"
       },
       "matrix": {
@@ -768,7 +804,7 @@
     },
     "listings": {
       "title": "Portal ilanları",
-      "lead": "Aynı daire birden çok portalda. Fiyat, tarih ve farkla birlikte.",
+      "lead": "Emlak portallarının Azura World hakkında şu anda yayınladıkları.",
       "count": "{count, plural, other {# ilan}}",
       "empty": "Kayıtlı ilan yok.",
       "seedNotice": "Demo veri: Toplanan kayıtların bir bölümü gösterilir, canlı veri değil.",
@@ -797,7 +833,7 @@
         "withoutPrice": "{count} ilan fiyat belirtmiyor. Sayılırlar, asla 0 kabul edilmezler."
       },
       "compare": {
-        "heading": "Dört portal, dört fiyat",
+        "heading": "Aynı daire için her portalın istediği fiyat",
         "lead": "Aynı plan, onu sunan her portalda. Fiyatlar yayımlandığı gibi. Hiçbir çevrim yapılmaz.",
         "layoutFilterLabel": "Plan seçin",
         "caption": "Portal başına fiyatlar, para birimine göre ayrılmış",
@@ -810,7 +846,8 @@
         "empty": "Hiçbir portal {layout} için satış fiyatı vermiyor.",
         "unstatedHeading": "Plan belirtmeyen portallar",
         "unstatedLead": "Bu satırlar, portalın hiçbir plana bağlamadığı bir fiyat taşır. Kimi zaman tüm proje için bir başlangıç fiyatıdır, kimi zaman gösteremediğimiz bir oda sayısı. Ayrı ve fark bilgisi olmadan durur.",
-        "findingNote": "F-002 bulgusu aralığı her para birimi için ayrı verir ve oranı yalnızca EUR içinde belirtir. Euro fiyatını dolar fiyatıyla karşılaştırmaz. Yukarıdaki her sütun kendi aralığını taşır."
+        "findingNote": "F-002 bulgusu aralığı her para birimi için ayrı verir ve oranı yalnızca EUR içinde belirtir. Euro fiyatını dolar fiyatıyla karşılaştırmaz. Yukarıdaki her sütun kendi aralığını taşır.",
+        "unstatedToggle": "Daire tipi olmayan {count} ilanı göster"
       },
       "claims": {
         "heading": "Hangi portal proje hakkında ne diyor?",
@@ -873,6 +910,47 @@
           "publisher": "Seçilen portal filtresi tüm ilanları dışarıda bırakıyor.",
           "priceKind": "Satılık veya kiralık filtresi tüm ilanları dışarıda bırakıyor.",
           "staleOnly": "Geçerli filtredeki hiçbir ilan eskimiş olarak işaretli değil."
+        }
+      },
+      "info": {
+        "heading": "Bu sayfa neyi gösteriyor",
+        "body": "Aynı daireler birkaç emlak portalında ilan ediliyor ve her portal kendi fiyatını yazıyor. Burada her portalın son derleme anında söyledikleri yer alıyor.",
+        "body2": "Hiçbir şey düzeltilmiyor, ortalaması alınmıyor ve başka bir para birimine çevrilmiyor. İki portal birbiriyle çelişiyorsa iki rakam da sayfada kalıyor.",
+        "termsLead": "Bu sayfadaki terimler:"
+      },
+      "portals": {
+        "heading": "Tüm portallar bir bakışta",
+        "lead": "Her portal için bir kart: kaç ilan yayımladığı, hangi fiyatları verdiği ve en son ne zaman derlediğimiz. Fiyatlar portalın kullandığı para biriminde kalır.",
+        "pricesIn": "{currency} cinsinden fiyatlar",
+        "fromListings": "Fiyat veren {count} ilan",
+        "noSalePrice": "Bu portal satış fiyatı vermiyor.",
+        "rentNote": "{count} ilan aylık kira olduğu için fiyat aralığının dışında tutuluyor.",
+        "withoutPrice": "{count} ilan hiç fiyat vermiyor.",
+        "layouts": "Verilen daire tipleri: {layouts}",
+        "layoutsUnstated": "daire tipi olmayan {count} ilan",
+        "layoutsNone": "Bu portal daire tipi vermiyor.",
+        "allOutdated": "Bu portalın tüm ilanları güncelliğini yitirmiş.",
+        "someOutdated": "İlanlarından {count} tanesi güncelliğini yitirmiş.",
+        "showListings": "İlanlarını göster",
+        "showAll": "Tüm portalları göster",
+        "openPage": "Portalın sayfasını aç",
+        "pictureCredit": "Bu portalın yayımladığı görsel",
+        "pictureSource": "Görselin alındığı sayfayı aç",
+        "pictureStale": "güncelliğini yitirmiş bir ilandan",
+        "pictureNone": "Bu portaldan görsel derleyemedik.",
+        "altPhoto": "Azura World tesisinin fotoğrafı, yayımlayan {publisher}",
+        "altRender": "Azura World tesisinin bilgisayar görselleştirmesi, yayımlayan {publisher}",
+        "altFloorplan": "Azura World dairesinin kat planı, yayımlayan {publisher}",
+        "altSiteplan": "Azura World arazisinin vaziyet planı, yayımlayan {publisher}"
+      },
+      "explain": {
+        "outdated": {
+          "term": "Güncel değil",
+          "body": "Portal projeyi hâlâ inşa halinde diye tanıtıyor, oysa proje 2024 yılında tamamlandı. Böyle bir ilandaki fiyatlar geride kalmış bir piyasayı anlatır."
+        },
+        "notStated": {
+          "term": "Belirtilmemiş",
+          "body": "Portal bu bilgiyi yayımlamıyor. Tahmin yazmak yerine boş bırakıyoruz."
         }
       }
     },
@@ -1485,7 +1563,38 @@
         "breached": "Süre aşıldı"
       },
       "noValue": "Belirtilmemiş",
-      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil.",
+      "assigneeLabel": "Bunu kim üstlenecek?",
+      "assigneePlaceholder": "Kişi seçin",
+      "assigneeRequired": "İşi kimin üstleneceğini seçin.",
+      "assigneeUnavailable": "Kişi listesini göremediğiniz için burada atama yapılamıyor.",
+      "commentHeading": "Yanıt yazın",
+      "commentPlaceholder": "Durum nedir? İlgili herkes görebilir.",
+      "commentSubmit": "Gönder",
+      "commentBusy": "Gönderiliyor …",
+      "commentEmpty": "Lütfen önce bir şeyler yazın.",
+      "commentUnavailable": "Mesajınız kaydedilmedi. Lütfen daha sonra tekrar deneyin.",
+      "selfActor": "Siz",
+      "unknownActor": "Saha ekibi",
+      "create": {
+        "trigger": "Arıza bildir",
+        "heading": "Yeni talep",
+        "lead": "Neyin yolunda gitmediğini anlatın. Talep, yönetim ekibine açık olarak iletilir.",
+        "titleLabel": "Sorun nedir?",
+        "titlePlaceholder": "Örneğin: Mutfak musluğu damlatıyor",
+        "whereLabel": "Nerede?",
+        "whereCommon": "Ortak alanlar (giriş, havuz, bahçe)",
+        "categoryLabel": "Ne tür bir iş?",
+        "priorityLabel": "Ne kadar acil?",
+        "descriptionLabel": "Ayrıntılar (isteğe bağlı)",
+        "descriptionPlaceholder": "Ne zaman başladı, nerede olduğu, ekibin bilmesi gereken başka bir şey…",
+        "submit": "Talebi gönder",
+        "busy": "Gönderiliyor…",
+        "titleRequired": "Sorunu bir cümleyle özetleyin.",
+        "genericError": "Talep gönderilemedi. Yazdıklarınız duruyor; lütfen tekrar deneyin.",
+        "unavailable": "Kayıt servisi şu anda yanıt vermiyor. Talebiniz kaydedilmedi; birazdan tekrar deneyin.",
+        "afterNote": "Talep «açık» olarak kaydedilir ve ekip üstlenene kadar kimseye atanmaz. Buradan takip edebilir, yorum ekleyebilirsiniz."
+      }
     },
     "activities": {
       "title": "Etkinlikler",
@@ -1593,7 +1702,6 @@
       "internalNote": "İç not",
       "systemSender": "Sistem",
       "hasAttachment": "Ek var",
-      "composeUnavailable": "Burada yazma alanı yok, çünkü hiçbir mesaj dışarı çıkamaz. Bir sağlayıcı kurulduğunda eklenecek.",
       "deliveryNotice": {
         "title": "Gönderilmedi, sağlayıcı tanımlı değil.",
         "body": "E-posta, SMS ve WhatsApp için sağlayıcı tanımlı değil. Mesajlar kaydediliyor ve burada okunabiliyor, ama dışarı hiçbir şey gitmiyor. Alıcının bilgilendirildiğini varsaymayın."
@@ -1604,7 +1712,8 @@
         "sent": "Gönderildi",
         "delivered": "Ulaştı",
         "failed": "Gönderim başarısız",
-        "internal_note": "Sadece iç kullanım"
+        "internal_note": "Sadece iç kullanım",
+        "portal_only": "Portalda görünür"
       },
       "scopeUnknown": {
         "title": "Mesajlarınız eşleştirilemiyor.",
@@ -1618,7 +1727,20 @@
         "archived": "Arşivlendi"
       },
       "noValue": "Belirtilmemiş",
-      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil.",
+      "selfSender": "Siz",
+      "otherSender": "Görüşmedeki diğer kişi",
+      "composer": {
+        "heading": "Yanıt yazın",
+        "placeholder": "Mesajınızı buraya yazın…",
+        "submit": "Gönder",
+        "busy": "Gönderiliyor…",
+        "empty": "Göndermeden önce bir şeyler yazın.",
+        "genericError": "Mesaj gönderilemedi. Yazdığınız metin duruyor; lütfen tekrar deneyin.",
+        "unavailable": "Kayıt servisi şu anda yanıt vermiyor. Mesajınız gönderilmedi; birazdan tekrar deneyin.",
+        "scopeNote": "Bu mesaj portalda saklanır ve burada okunur. E-posta, SMS veya WhatsApp ile gönderilmez.",
+        "readOnly": "Bu görüşmeyi okuyabilirsiniz, ancak bu hesapla yanıt yazamazsınız."
+      }
     },
     "documents": {
       "title": "Belgeler",
@@ -1778,7 +1900,7 @@
     },
     "reports": {
       "title": "Raporlar",
-      "lead": "Dosya olarak veya zamanlanmış analizler.",
+      "lead": "İndirilebilir değerlendirmeler. Her dosya, sayılarının geldiği kaynakları belirtir.",
       "empty": "Rapor yok.",
       "generate": "Rapor oluştur",
       "generating": "Rapor oluşturuluyor …",
@@ -1788,7 +1910,7 @@
       "catalogueLead": "Her rapor, gerektirdiği yetkiyle birlikte.",
       "carriesProvenance": "Kaynak taşır",
       "requiresPermission": "Gerektirir",
-      "downloadCsv": "CSV olarak indir",
+      "downloadCsv": "CSV indir",
       "notPermitted": "İzin yok",
       "formats": "Biçimler",
       "formatsLead": "Bugün neyin üretilebildiği ve neyin üretilemediği.",
@@ -1796,14 +1918,14 @@
       "unavailable": "Kullanılamaz",
       "formatReason": {
         "csv_ready": "İstek üzerine, kaynak sütunlarıyla üretilir.",
-        "no_library": "Bunun için bir yazılım kitaplığı eksik. Kurmak W0-A'nın işi."
+        "no_library": "Bunun için gereken teknik altyapı henüz yok."
       },
       "unavailableReason": {
-        "not_built": "Henüz yapılmadı"
+        "not_built": "Henüz hazır değil"
       },
       "scheduled": "Zamanlanmış raporlar",
       "scheduledLead": "Arka planda çalışıp arşivlenen raporlar.",
-      "jobsUnavailable": "Arka plan raporları {status} yanıtı verir. {table} tablosu yok, sorumlusu {owner}. Hiçbir şey üretmeyen bir düğme yanıltıcı olurdu.",
+      "jobsUnavailable": "Zamanlanmış raporlar henüz mümkün değil. Hiçbir şey üretmeyen bir düğme yanıltıcı olurdu.",
       "columns": {
         "metric": "Ölçüt",
         "value": "Değer",
@@ -1813,35 +1935,117 @@
         "tier": "Kademe",
         "fetchedAt": "Alınma",
         "snapshotHash": "Sağlama toplamı",
-        "lastStatus": "Son durum",
-        "lastOk": "Son doğrulama"
+        "lastStatus": "Son alımdaki yanıt",
+        "lastOk": "Son okunabilir kopya",
+        "metricKey": "Tanımlayıcı",
+        "tierName": "Kaynak türü"
       },
       "csv": {
         "generatedAt": "Üretim tarihi",
-        "source": "Veri kaynağı"
+        "source": "Veri kaynağı",
+        "origin": {
+          "supabase": "Canlı veritabanından.",
+          "local-seed": "Uygulamayla gelen örnek verilerden."
+        },
+        "incomplete": "Liste kısaltıldı, sayılar alt sınırdır."
       },
       "reports": {
         "evidence_coverage": {
           "title": "Kanıt kapsamı",
-          "lead": "Kaç bilginin kanıtı var, kaçı yalnızca iddia ve boşluklar nerede."
+          "lead": "Kaç bilginin sağlam kaynağı var, kaçının yalnızca bir kaynağı var ve nerede hiç kaynak yok."
         },
         "source_register": {
           "title": "Kaynak listesi",
-          "lead": "Her kaynak, adresi, kademesi, alınma zamanı ve saklanan kopyanın sağlama toplamıyla."
+          "lead": "Her kaynak; adresi, türü, alınma zamanı ve kaydedilmiş kopyanın sağlama toplamıyla."
         },
         "inventory_split": {
           "title": "Envanter dağılımı",
-          "lead": "Gerçek ilanlara karşı modellenmiş kayıtlar, blok blok."
+          "lead": "Blok bazında: kaç birim gerçek ilanlardan geliyor, kaçı yalnızca varsayılan."
         },
         "compliance_gaps": {
           "title": "Uyum boşlukları",
-          "lead": "Kanıtı olmayan denetimler, süreye göre."
+          "lead": "Kanıtı olmayan denetimler, süreye göre sıralanmış."
         }
       },
       "forbidden": {
         "title": "Raporlara erişim yok",
         "message": "Rolünüz bu değerlendirmeleri göremez. Adres geçerli kalır.",
         "permissionLabel": "Gereken yetki:"
+      },
+      "availableTitle": "Hemen kullanılabilir",
+      "availableLead": "Tıkladığınız anda oluşturulur ve CSV tablosu olarak indirilir. Dosya Excel ile açılır.",
+      "plannedTitle": "Hazırlanıyor",
+      "plannedLead": "Duyuruldu ama henüz hazır değil. Boş bir dosya verecek bir düğme bilerek konmadı.",
+      "csvFormat": "CSV tablosu",
+      "containsLabel": "Dosyadaki sütunlar:",
+      "notPermittedLead": "Rolünüz bu dosyayı indiremez. Bunun için „{permission}“ yetkisi gerekir.",
+      "limits": "Excel ve PDF dosyaları ile zamanlanmış raporlar henüz mümkün değil. Hazır olduklarında burada görünecekler.",
+      "permissionName": {
+        "evidence_export": "Kanıtları dışa aktar",
+        "units_export": "Birimleri dışa aktar",
+        "compliance_export": "Denetimleri dışa aktar"
+      },
+      "coverageMetric": {
+        "sources_total": "Toplam kaynak",
+        "snapshots_total": "Kaydedilmiş sayfa kopyaları",
+        "facts_total": "Kayıtlı tek tek bilgiler",
+        "citations_total": "Kaynak referansları",
+        "findings_total": "Kayıtlı çelişkiler",
+        "facts_established": "Sağlam kaynaklı bilgiler",
+        "facts_provisional": "Geçici kaynaklı bilgiler",
+        "facts_declaredGaps": "Hiç kaynağı olmayan bilgiler",
+        "citations_withoutSnapshot": "Kaydedilmiş kopyası olmayan referanslar",
+        "sources_validated": "Okunabilir kopyası olan kaynaklar",
+        "sources_fetchedNotValidated": "Kaynak alındı, kopya kullanılamaz",
+        "sources_neverFetched": "Hiç alınmayan kaynaklar",
+        "facts_byConfidence_confirmed": "Bunlardan: en az iki kaynakla doğrulanmış",
+        "facts_byConfidence_official": "Bunlardan: resmî sitede belirtilmiş",
+        "facts_byConfidence_single_source": "Bunlardan: yalnızca tek kaynakta",
+        "facts_byConfidence_conflicted": "Bunlardan: kaynaklar çelişiyor",
+        "facts_byConfidence_inferred": "Bunlardan: doğrulanmış bilgilerden hesaplanmış",
+        "facts_byConfidence_gap": "Bunlardan: hiçbir kaynak değer vermiyor"
+      },
+      "coverageBasis": {
+        "sources_total": "Kaynak listesindeki kayıt sayısı.",
+        "snapshots_total": "Alım sırasında kaydedilen sayfa kopyası sayısı.",
+        "facts_total": "Kaynak durumundan bağımsız olarak tüm kayıtlı bilgiler.",
+        "citations_total": "Her referans bir bilgiyi bir kaynağa bağlar.",
+        "findings_total": "Kaynakların çeliştiği durumlar.",
+        "facts_established": "En az iki kaynakla doğrulanmış ya da resmen belirtilmiş.",
+        "facts_provisional": "Tek kaynak, çelişen kaynaklar ya da hesaplanmış.",
+        "facts_declaredGaps": "Hiçbir kaynak değer vermiyor. Alan boş bırakılır.",
+        "citations_withoutSnapshot": "Adres belirtilmiş, kaydedilmiş bir sürüm yok.",
+        "sources_validated": "En az bir kaydedilmiş kopya okunabilirdi.",
+        "sources_fetchedNotValidated": "Alım yanıt verdi, ancak kopya kullanılabilir değildi.",
+        "sources_neverFetched": "Site alıma izin vermedi ya da hiç denenmedi.",
+        "facts_byConfidence_confirmed": "En az iki bağımsız kaynak aynı değeri veriyor.",
+        "facts_byConfidence_official": "azuraworld.com ya da bir Cebeci Group sayfası belirtiyor.",
+        "facts_byConfidence_single_source": "Tam olarak bir kaynak değeri veriyor, çelişki yok.",
+        "facts_byConfidence_conflicted": "Birden çok kaynak farklı değerler veriyor.",
+        "facts_byConfidence_inferred": "Doğrulanmış bilgilerden hesaplandı, açıklamasıyla.",
+        "facts_byConfidence_gap": "Hiçbir kaynak değer vermiyor."
+      },
+      "sourceTier": {
+        "1": "Resmî proje sitesi",
+        "2": "Müteahhit",
+        "3": "Otel işletmesi",
+        "4": "Emlak portalı",
+        "5": "Değerlendirme ve rezervasyon",
+        "6": "Basın ve ikincil kaynak"
+      },
+      "sourceStatus": {
+        "ok": "Başarıyla alındı ({code})",
+        "redirectedCode": "Yönlendirildi ({code})",
+        "failed": "Alım başarısız ({code})",
+        "never_fetched": "Hiç alınmadı",
+        "robots_disallowed": "Site alımı reddetti",
+        "expect_missing": "Alındı, beklenen içerik yoktu",
+        "redirected": "Yönlendirildi",
+        "dns_timeout": "Ulaşılamadı",
+        "soft_404": "200 durumuyla boş sayfa",
+        "http_404": "Sayfa bulunamadı (404)",
+        "http_500": "Sunucu hatası (500)",
+        "blocked_403": "Erişim reddedildi"
       }
     },
     "users": {
@@ -1927,7 +2131,7 @@
       "invitations": {
         "title": "Davetler",
         "lead": "Yeni kişiler için tek kullanımlık, süreli erişim.",
-        "unavailable": "Davetler henüz yapılmadı. invitations tablosu yok, sorumlusu W1-A. Yazacak yeri olmayan bir form yanıltıcı olurdu."
+        "unavailable": "Davetler henüz mümkün değil. Hiçbir yere kaydetmeyecek bir formu göstermiyoruz."
       }
     },
     "admin": {
@@ -2064,7 +2268,7 @@
       "appearanceLead": "Tüm uygulama için geçerlidir.",
       "themeFixedNotice": "Açık tasarım herkes için sabit. Buradaki bir seçim hiçbir şey yapmazdı, bu yüzden yok.",
       "notificationsLead": "Bu sistemin sizinle ne zaman iletişim kuracağı.",
-      "notificationsUnavailable": "Bildirimler henüz yapılmadı. Tercihler tablosu yok, sorumlusu W1-A.",
+      "notificationsUnavailable": "Bildirimler henüz mümkün değil.",
       "organisation": "Kuruluş",
       "organisationLead": "Yalnızca yöneticiler.",
       "companyId": "Tanımlayıcı",
@@ -2079,7 +2283,7 @@
     },
     "hotel": {
       "title": "Otel operasyonu",
-      "lead": "Doluluk, oda durumu ve rezervasyon kaynakları.",
+      "lead": "Kaynakların otel hakkında belirttikleri: odalar, oda tipleri ve giriş çıkış saatleri.",
       "empty": "Otel operasyon verisi yok.",
       "occupancy": "Doluluk",
       "adr": "Ortalama fiyat",
@@ -2124,11 +2328,40 @@
       },
       "occupancyPanel": {
         "heading": "Doluluk",
-        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu: rekabet analizleri tam da bunun için okunur."
+        "gap": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamıyor ve bu analizin arkasında oranı hesaplayabilecek bir rezervasyon sistemi yok. Bu nedenle burada bir sayı yer almıyor. Makul görünen bir oran, bu ürünün uydurabileceği en zararlı sayı olurdu: rekabet analizleri tam da bunun için okunur.",
+        "note": "Hiçbir kaynak bu tesis için doluluk oranı yayımlamadığından ve bu analizin arkasında bir rezervasyon sistemi bulunmadığından, burada bir sayı gösterilmiyor."
       },
       "relationship": {
         "heading": "Otel ve konut sitesi",
-        "body": "Otel ve site aynı araziyi paylaşır, rakamlarını değil. 188 otel odasının yanında 656 konut birimi bulunur; suya olan mesafeler ayrı tutulur, çünkü iki farklı başlangıç noktasından iki farklı güzergâhı ölçerler: site denize, otel halk plajına (F-003). Birleştirildiğinde, belgelenmiş iki değer belgelenmemiş tek bir değere dönüşürdü."
+        "body": "Aynı arazide 188 otel odası ile 656 konut birimi yer alır ve ikisi ayrı sayılır. Burada belirtilen mesafe otelden halk plajına gider, site için yayımlanan güzergâh ise bundan farklıdır."
+      },
+      "identity": {
+        "eyebrow": "Tesis",
+        "formerly": "Önceki adı",
+        "stars": "{count} yıldız",
+        "starsNotStated": "Kategori belirtilmemiş",
+        "chain": "{name} zincirine bağlı.",
+        "chainNotStated": "2026 tarihli hiçbir kaynak bu tesis için bir otel zinciri belirtmiyor."
+      },
+      "roomMix": {
+        "heading": "Oda dağılımı",
+        "detailHeading": "Her oda tipi ayrıntılı",
+        "rooms": "oda",
+        "area": "Büyüklük",
+        "guests": "En fazla kişi",
+        "seaView": "Deniz manzarası",
+        "chartAriaLabel": "Oda tipine göre odalar",
+        "chartBasis": "Oda tipi yayımlanmış tüm odalar içindeki pay.",
+        "chartEmpty": "Yayımlanmış oda sayısı yok.",
+        "tableCategory": "Oda tipi",
+        "tableValue": "Oda",
+        "reconciled": "Yayımlanan oda tipleri, belirtilen {total} odayı tam olarak veriyor.",
+        "mismatch": "Yayımlanan oda tipleri toplamda {published} oda ediyor, toplam ise {total} olarak belirtiliyor. Her iki değer de bulunduğu gibi burada, hiçbiri düzeltilmedi.",
+        "noBreakdownHeading": "Oda tipleri yayımlanmamış",
+        "noBreakdown": "Hiçbir kaynak odaların oda tiplerine nasıl dağıldığını yayımlamıyor, bu nedenle burada yalnızca toplam yer alıyor."
+      },
+      "stay": {
+        "heading": "Konaklama"
       }
     },
     "reviews": {
@@ -2176,6 +2409,53 @@
         "titleGap": "Değerlendirme başlığı: kaydedilmedi, derleme yalnızca metin gövdelerini aldı.",
         "open": "Değerlendirmeyi platformda aç",
         "none": "Puanlanmış değerlendirme bulunmuyor."
+      },
+      "platformName": {
+        "tripadvisor": "Tripadvisor",
+        "booking": "Booking.com",
+        "agoda": "Agoda",
+        "google": "Google",
+        "onthebeach": "OnTheBeach"
+      },
+      "scores": {
+        "heading": "Platforma göre puanlar",
+        "description": "Her platform kendi ölçeğinde. Bu sayfada hiçbir puan toplanmaz.",
+        "noAverageHeading": "Neden tek bir genel not yok",
+        "scaleCaption": "{platform} tarafından yayımlanan {scale} puanlık ölçek",
+        "rankingLabel": "Portala göre sıralama",
+        "open": "{platform} üzerinde aç",
+        "syndicatedHeading": "Aynı puan, tekrar gösteriliyor",
+        "syndicatedNote": "Başka bir site aynı puanı gösteriyor. Bu tekrarlanan tek bir rakam, ikinci bir görüş değil, bu yüzden puanı daha sağlam kılmaz.",
+        "syndicatedBy": "{publisher} aynı puanı gösteriyor",
+        "distribution": {
+          "heading": "Notların dağılımı",
+          "totalOf": "{count} değerlendirmede not var",
+          "none": "Bu platform not dağılımını yayımlamıyor.",
+          "bucket": {
+            "excellent": "Mükemmel",
+            "good": "Çok iyi",
+            "average": "Orta",
+            "poor": "Kötü",
+            "terrible": "Berbat",
+            "positive": "Olumlu",
+            "mixed": "Karışık",
+            "negative": "Olumsuz"
+          }
+        }
+      },
+      "quotes": {
+        "lead": "Ölçeğin iki ucundan birer yorum, misafirlerin kendi sözleriyle.",
+        "onPlatform": "{platform} üzerinde",
+        "publishedLabel": "Platformun verdiği tarih: {label}",
+        "readFull": "Yorumun tamamını oku",
+        "collapse": "Daha az göster",
+        "missingHeading": "Kaydedilmedi"
+      },
+      "sources": {
+        "heading": "Kaydedilen tüm kaynaklar",
+        "description": "Kaydedilen her sayfa için bir satır, puanı tekrarlayan sayfa dahil.",
+        "show": "Tabloyu göster",
+        "hide": "Tabloyu gizle"
       }
     },
     "charts": {
@@ -2192,6 +2472,28 @@
       "qualityOfficial": "Resmi",
       "qualityGap": "Kaynak yok",
       "ticketsTotal": "kayıt"
+    },
+    "welcome": {
+      "greeting": "Hoş geldiniz, {name}",
+      "greetingAnonymous": "Azura World'e hoş geldiniz",
+      "sectionTitle": "Burada neler yapabilirsiniz",
+      "lead": {
+        "guest": "Konaklamanız süresince tesise dair bilgiler burada. Otel ve olanakları görebilir, etkinlik takvimine bakabilir ve size gelen mesajları okuyabilirsiniz. Bu hesapla değişiklik yapılamaz.",
+        "child_owner": "Bu hesap bir aile hesabına bağlıdır. Daireyi, tesisi ve etkinlikleri görebilir, size gelen mesajları okuyabilirsiniz. Ödeme ve sözleşme işlemleri hesabı yöneten kişide kalır.",
+        "child_tenant": "Bu hesap bir aile hesabına bağlıdır. Daireyi, tesisi ve etkinlikleri görebilir, size gelen mesajları okuyabilirsiniz. Kira ve ödeme işlemleri hesabı yöneten kişide kalır.",
+        "child_guest": "Bu hesap bir aile hesabına bağlıdır. Tesisi, otel olanaklarını ve haftanın etkinliklerini görebilirsiniz. Bu hesapla hiçbir şey değiştirilemez."
+      },
+      "cards": {
+        "units": "Bloklar ve daireler — kat planı, büyüklükler ve hangi dairenin boş olduğu.",
+        "listings": "Bu dairelerin emlak portallarında nasıl göründüğü ve istenen fiyatlar.",
+        "hotel": "Otel, odalar ve tesisin olanakları — havuzlar, spa, restoranlar.",
+        "reviews": "Misafirlerin Azura World hakkında dışarıda ne yazdığı — kaynağıyla birlikte.",
+        "activities": "Tesiste planlanan işler ve etkinlikler — ne zaman, nerede.",
+        "calendar": "Aynı bilgiler takvim görünümünde — bu hafta ve önümüzdeki günler.",
+        "communications": "Sizinle ilgili yazışmalar. Buradan okuyabilirsiniz; bu hesapla yanıt yazılamaz.",
+        "reports": "İndirilebilir özetler — her rakamın nereden geldiği yazılı.",
+        "wallet": "Hesaba bağlı bakiye ve hareketler."
+      }
     }
   },
   "hotel": {
@@ -2460,7 +2762,10 @@
       "googlePending": "Google ile giriş kısa süre içinde etkinleştirilecek. Bu arada lütfen e-posta ile giriş yapın.",
       "phonePending": "Telefon ile giriş kısa süre içinde etkinleştirilecek. Bu arada lütfen e-posta ile giriş yapın.",
       "socialFailed": "Giriş yapılamadı. Lütfen tekrar deneyin.",
-      "backToHome": "Ana sayfaya dön"
+      "backToHome": "Ana sayfaya dön",
+      "unavailable": "Şu anda giriş yapılamıyor.",
+      "notConfigured": "Giriş burada kurulu değil.",
+      "close": "Kapat"
     },
     "signup": {
       "title": "Erişim talebi",
@@ -2593,5 +2898,76 @@
     "villaFloor": "Kat alanında kat değil, yapı tipi yazıyor.",
     "noChain": "Şu anda bir otel zinciri belirtilmiyor. Tek kaynak 2023 tarihli bir basın haberi.",
     "noRanking": "Hiçbir kaynak sıralama belirtmiyor."
+  },
+  "glossary": {
+    "ariaLabel": "{term} ne demek?",
+    "modelled": {
+      "term": "Modellenmiş",
+      "body": "Bu daireyi hiçbir kaynak yayımlamadı. Bina ekranda eksiksiz görünsün diye envanteri tamamladık. Gerçek bir teklif değildir ve fiyatı hiçbir yerde yazmaz."
+    },
+    "realListing": {
+      "term": "Gerçek ilan",
+      "body": "Bu daire açık bir emlak portalında yer aldı. Fiyat ve alan, portalın yayımladığı gibidir."
+    },
+    "official": {
+      "term": "Resmi",
+      "body": "Bunu müteahhit veya otel kendisi yayımladı."
+    },
+    "sourceMissing": {
+      "term": "Kaynak yok",
+      "body": "Bunun için kaynak aradık ve bulamadık."
+    },
+    "notStated": {
+      "term": "Belirtilmemiş",
+      "body": "Bu dairenin boş olup olmadığını kimse yayımlamıyor. Tahmin etmek yerine açık bırakıyoruz."
+    },
+    "confirmed": {
+      "term": "Doğrulandı",
+      "body": "İki bağımsız kaynak aynı değeri veriyor."
+    },
+    "conflicted": {
+      "term": "Kaynaklar çelişiyor",
+      "body": "Kaynaklar farklı değerler veriyor. Birini seçmek yerine hepsini gösteriyoruz."
+    },
+    "singleSource": {
+      "term": "Tek kaynak",
+      "body": "Bunu yalnızca bir kaynak söylüyor. İkinci bir kaynakla karşılaştırılmadı."
+    },
+    "inferred": {
+      "term": "Hesaplanmış",
+      "body": "Diğer sayılardan çıkarıldı. Bu haliyle hiçbir yerde yayımlanmadı."
+    },
+    "gap": {
+      "term": "Belirtilmemiş",
+      "body": "Bunu hiçbir kaynak söylemiyor. Tahmin etmek yerine boş bırakıyoruz."
+    },
+    "sla": {
+      "term": "Süre",
+      "body": "Bu işin bitirileceği söz verilen zaman."
+    },
+    "provenance": {
+      "term": "Kaynak",
+      "body": "Bir sayının nereden geldiği: kim, ne zaman yayımladı."
+    },
+    "dataQuality": {
+      "term": "Veri kalitesi",
+      "body": "Bir sayının ne kadar desteklendiği: kaynak yayımladı mı, yoksa biz mi tamamladık."
+    },
+    "available": {
+      "term": "Uygun",
+      "body": "Bir kaynak bu daireyi satılık olarak gösteriyor."
+    },
+    "reserved": {
+      "term": "Rezerve",
+      "body": "Bir alıcı için ayrıldı. Henüz satılmadı."
+    },
+    "sold": {
+      "term": "Satıldı",
+      "body": "Artık satılık değil."
+    },
+    "priority": {
+      "term": "Öncelik",
+      "body": "Bu işin sıraya nereye gireceğini belirler. «Acil», su baskını veya güvenlik gibi hemen müdahale gerektiren durumlar içindir. Yüksek öncelik seçmek ekibi daha hızlı getirmez; yalnızca sıralamayı değiştirir."
+    }
   }
 }

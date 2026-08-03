@@ -109,7 +109,7 @@ export default async function HotelPage({
   const quoteScale = platforms[0]?.scale ?? 5
 
   const quoteLabels = {
-    ratingOf: t("quote.ratingOf"),
+    ratingOf: t.raw("quote.ratingOf") as string,
     ratingUnknown: t("quote.ratingUnknown"),
     notTranslated: t("quote.notTranslated"),
     expand: t("quote.expand"),
@@ -127,8 +127,8 @@ export default async function HotelPage({
       poor: t("sentiment.bucket.poor"),
       terrible: t("sentiment.bucket.terrible"),
     },
-    countOf: t("sentiment.countOf"),
-    distributionOf: t("sentiment.distributionOf"),
+    countOf: t.raw("sentiment.countOf") as string,
+    distributionOf: t.raw("sentiment.distributionOf") as string,
     foldOnly: t("sentiment.foldOnly"),
     positive: t("sentiment.positive"),
     mixed: t("sentiment.mixed"),
@@ -162,11 +162,11 @@ export default async function HotelPage({
         locale={locale}
         labels={{
           heading: t("rebrand.heading"),
-          body: t("rebrand.body"),
+          body: t.raw("rebrand.body") as string,
           currentNameLabel: t("rebrand.currentName"),
           formerNameLabel: t("rebrand.formerName"),
           findingRef: t("rebrand.finding"),
-          more: t("provenance.more"),
+          more: t.raw("provenance.more") as string,
           source: provenance.source,
         }}
       />
@@ -256,8 +256,8 @@ export default async function HotelPage({
                 reviewCount: t("platform.reviewCount"),
                 ranking: t("platform.ranking"),
                 fetchedAt: t("platform.fetchedAt"),
-                openPlatform: t("platform.open"),
-                syndicatedBy: t("platform.syndicatedBy"),
+                openPlatform: t.raw("platform.open") as string,
+                syndicatedBy: t.raw("platform.syndicatedBy") as string,
                 syndicatedNote: t("platform.syndicatedNote"),
                 noReviews: t("platform.noReviews"),
                 sentiment: sentimentLabels,
@@ -278,7 +278,7 @@ export default async function HotelPage({
           worstEyebrow: t("verdict.worst"),
           degenerate: t("verdict.degenerate"),
           noRatings: t("verdict.noRatings"),
-          unrated: t("verdict.unrated"),
+          unrated: t.raw("verdict.unrated") as string,
           quote: quoteLabels,
         }}
       />
@@ -293,7 +293,7 @@ export default async function HotelPage({
             {t("quotes.heading")}
           </h2>
           <p className="max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
-            {t("quotes.intro").replace("{count}", String(totalQuotes(reviews)))}
+            {(t.raw("quotes.intro") as string).replace("{count}", String(totalQuotes(reviews)))}
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">

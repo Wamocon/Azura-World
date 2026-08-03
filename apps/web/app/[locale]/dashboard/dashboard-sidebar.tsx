@@ -298,11 +298,34 @@ export function DashboardSidebar({
             collapsed && "justify-center px-0"
           )}
         >
-          {collapsed ? null : (
-            <span className="min-w-0 flex-1 truncate font-display text-sm font-semibold">
-              {t("nav.brandShort")}
-            </span>
-          )}
+          {/* The client's own mark, not their name set in our type. The landing
+              and the sign-in screen both open on the Azura World wordmark and
+              then the product a customer actually lives in dropped it for a
+              text label, so the one surface they use every day was the one that
+              did not look like theirs. Collapsed, the rail keeps the symbol:
+              a brand that disappears when the nav narrows is not an identity. */}
+          <Link
+            href="/dashboard"
+            aria-label={t("nav.brandShort")}
+            className={cn(
+              "inline-flex min-w-0 items-center rounded-md outline-none",
+              "focus-visible:ring-2 focus-visible:ring-ring",
+              collapsed ? "justify-center" : "flex-1"
+            )}
+          >
+            <img
+              src={
+                collapsed
+                  ? "/brand/azura-world-symbol.svg"
+                  : "/brand/azura-world-wordmark-dark.svg"
+              }
+              alt="Azura World"
+              className={cn(
+                "w-auto opacity-90 transition-opacity hover:opacity-100",
+                collapsed ? "h-7" : "h-6"
+              )}
+            />
+          </Link>
           <button
             type="button"
             onClick={toggleCollapsed}
@@ -350,9 +373,19 @@ export function DashboardSidebar({
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="flex min-h-16 items-center gap-2 border-b border-border px-3">
-            <span className="min-w-0 flex-1 truncate font-display text-sm font-semibold">
-              {t("nav.brandShort")}
-            </span>
+            {/* Same mark on the phone sheet. */}
+            <Link
+              href="/dashboard"
+              aria-label={t("nav.brandShort")}
+              onClick={() => setMobileOpen(false)}
+              className="inline-flex min-w-0 flex-1 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <img
+                src="/brand/azura-world-wordmark-dark.svg"
+                alt="Azura World"
+                className="h-6 w-auto opacity-90"
+              />
+            </Link>
             <button
               type="button"
               onClick={() => setMobileOpen(false)}

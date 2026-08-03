@@ -34,6 +34,22 @@ import { cn } from "@/lib/cn"
 export type DeliveryState =
   /** Stored in the product. Nothing was transmitted, because nothing can be. */
   | "not_configured"
+  /**
+   * A message on the `portal` channel: this page IS its delivery.
+   *
+   * Distinct from `not_configured` because the two are different facts and
+   * saying the wrong one is an error in each direction. An email that could not
+   * be sent needs the warning. A portal reply needs the opposite reassurance —
+   * it arrived, the site team reads this inbox, and telling the resident who
+   * just typed it "not sent, no provider configured" would send them to the
+   * telephone to repeat a message that had in fact landed.
+   *
+   * This is NOT the false green the rest of this file exists to prevent. The
+   * claim is "it is in the portal", which the reader can verify by the fact that
+   * they are looking at it. No claim is made about email, SMS or WhatsApp; the
+   * page-level `DeliveryNotice` still makes that one, once.
+   */
+  | "portal_only"
   /** Handed to a provider, not yet acknowledged. */
   | "queued"
   | "sent"
@@ -52,6 +68,9 @@ const treatment: Record<
   // is broken. The capability is absent, which is a different fact from a
   // failure, and conflating them would send someone to look for an outage.
   not_configured: { variant: "gap" },
+  // `outline`, not `confirmed`. Green is reserved for "the recipient was
+  // actually reached by a provider", which is still unreachable here.
+  portal_only: { variant: "outline" },
   queued: { variant: "outline" },
   sent: { variant: "outline" },
   delivered: { variant: "confirmed" },
@@ -71,8 +90,16 @@ export const OUTBOUND_PROVIDER_CONFIGURED = false
 
 export function deliveryStateFor(message: {
   isInternalNote?: boolean
+  /**
+   * The channel the message was filed on. Absent is treated as an outbound
+   * channel — the cautious reading, so a caller that forgets to pass it gets
+   * the warning rather than the reassurance.
+   */
+  channel?: string
 }): DeliveryState {
   if (message.isInternalNote === true) return "internal_note"
+  // A portal message needs no provider: it is delivered by being on this page.
+  if (message.channel === "portal") return "portal_only"
   return OUTBOUND_PROVIDER_CONFIGURED ? "queued" : "not_configured"
 }
 

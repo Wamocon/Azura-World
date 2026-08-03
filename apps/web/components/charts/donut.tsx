@@ -178,9 +178,13 @@ export function Donut({
               // it works in the server-rendered chart exactly as shipped.
               className="cursor-default transition-[filter] duration-150 hover:brightness-115"
             >
-              <title>
-                {arc.label}: {arc.display}
-              </title>
+              {/* ONE text node, built in JS, not `{a}: {b}` in JSX.
+                  The two-expression form emits several children, and hydrating
+                  a multi-child `<title>` inside SVG foreign content mismatched
+                  against what the browser's parser produced — React 19 #418 on
+                  every page that draws a chart. A single interpolated string
+                  hydrates cleanly. */}
+              <title>{`${arc.label}: ${arc.display}`}</title>
             </circle>
           ))}
         </svg>

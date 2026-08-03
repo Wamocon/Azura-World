@@ -81,10 +81,18 @@ export interface ListingGroupLabels {
   openListing: string
   /** Template with `{publisher}`, for the table caption. */
   caption: string
-  /** Template with `{count}` — rows in this group. */
-  listingCount: string
-  /** Template with `{count}` — distinct pages behind those rows. */
-  pageCount: string
+  /**
+   * Rows in this group, pluralised by the caller.
+   *
+   * A function rather than a `{count}` template: Capital Estate publishes eight
+   * apartments on ONE page, so this header renders a count of 1, and filling a
+   * template by string substitution printed "1 Seiten" / "1 страниц". Only ICU
+   * knows that German needs two forms here and Russian three. Legal because this
+   * is a Server Component — nothing in this file crosses a `"use client"` line.
+   */
+  listingCount: (count: number) => string
+  /** Distinct pages behind those rows, pluralised by the caller. */
+  pageCount: (count: number) => string
   /** Template with `{count}` — stale rows in this group. */
   staleCount: string
   /** Template with `{count}` — rent rows, which never join a sale series. */
@@ -123,11 +131,9 @@ export function PublisherListingGroup({
             {group.publisher}
           </h3>
           <p className="text-xs text-muted-foreground">
-            {fill(labels.listingCount, {
-              count: String(group.listings.length),
-            })}
+            {labels.listingCount(group.listings.length)}
             {" · "}
-            {fill(labels.pageCount, { count: String(group.pageCount) })}
+            {labels.pageCount(group.pageCount)}
             {group.rentCount > 0
               ? ` · ${fill(labels.rentCount, { count: String(group.rentCount) })}`
               : ""}

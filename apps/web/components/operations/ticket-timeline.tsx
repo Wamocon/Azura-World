@@ -34,6 +34,9 @@ export function TicketTimeline({
   kindLabels,
   statusLabels,
   actorFallback,
+  actorNames,
+  selfProfileId,
+  selfLabel,
   emptyLabel,
   transitionLabel,
 }: {
@@ -43,6 +46,12 @@ export function TicketTimeline({
   statusLabels: Record<string, string>
   /** Shown when `actor_profile_id` is null, e.g. a system-raised SLA breach. */
   actorFallback: string
+  /** Readable names by profile id. Empty when the caller may not read the
+   *  directory — a resident, for instance. */
+  actorNames?: ReadonlyMap<string, string>
+  selfProfileId?: string | null
+  /** What to call the reader themselves, e.g. "You". */
+  selfLabel?: string
   emptyLabel: string
   /** `(from, to) => "Offen zu Zugewiesen"`, localised by the caller. */
   transitionLabel: (from: string, to: string) => string
@@ -100,7 +109,14 @@ export function TicketTimeline({
                 </time>
               </div>
               <p className="text-xs text-muted-foreground">
-                {event.actorProfileId ?? actorFallback}
+                {/* A person, never a UUID. A resident cannot read the
+                    directory, so an unnamed actor falls back to the neutral
+                    label rather than leaking an internal identifier. */}
+                {event.actorProfileId === null
+                  ? actorFallback
+                  : event.actorProfileId === selfProfileId
+                    ? (selfLabel ?? actorFallback)
+                    : (actorNames?.get(event.actorProfileId) ?? actorFallback)}
               </p>
               {event.note === null ? null : (
                 // Plain text in a text node. Never dangerouslySetInnerHTML: a
