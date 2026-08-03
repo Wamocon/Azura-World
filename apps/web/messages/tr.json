@@ -1703,7 +1703,7 @@
       "systemSender": "Sistem",
       "hasAttachment": "Ek var",
       "deliveryNotice": {
-        "title": "Gönderilmedi, sağlayıcı tanımlı değil.",
+        "title": "Buradaki mesajlar e-posta veya SMS ile gönderilmez.",
         "body": "E-posta, SMS ve WhatsApp için sağlayıcı tanımlı değil. Mesajlar kaydediliyor ve burada okunabiliyor, ama dışarı hiçbir şey gitmiyor. Alıcının bilgilendirildiğini varsaymayın."
       },
       "delivery": {

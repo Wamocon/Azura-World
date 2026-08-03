@@ -1703,7 +1703,7 @@
       "systemSender": "System",
       "hasAttachment": "Has attachment",
       "deliveryNotice": {
-        "title": "Not sent, no provider configured.",
+        "title": "Messages here are not emailed or texted.",
         "body": "No provider is set up for email, SMS or WhatsApp. Messages are stored and readable here, but nothing goes out. Do not rely on a recipient having been told."
       },
       "delivery": {

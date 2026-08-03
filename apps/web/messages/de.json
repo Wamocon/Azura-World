@@ -1703,7 +1703,7 @@
       "systemSender": "System",
       "hasAttachment": "Mit Anhang",
       "deliveryNotice": {
-        "title": "Nicht versendet, Anbieter nicht konfiguriert.",
+        "title": "Keine E-Mail, keine SMS von hier.",
         "body": "Für E-Mail, SMS und WhatsApp ist kein Anbieter eingerichtet. Nachrichten werden gespeichert und sind hier lesbar, aber nichts geht nach außen. Gehen Sie nicht davon aus, dass jemand informiert wurde."
       },
       "delivery": {
