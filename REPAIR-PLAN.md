@@ -111,3 +111,92 @@ work · `communications-repository.ts` says the staff-note boundary is
 application-side when migration 22 moved it into RLS · the admin panel tells
 administrators the storage bucket does not exist (it was created 3 August) ·
 a failed payment blames a write path restored by migration 21.
+
+---
+
+# Status — 4 August, end of the repair pass
+
+**36 of the 53 findings are closed and verified against the running product.**
+Everything below is measured, not asserted: 28 browser assertions plus the
+standing probes (contracts 33 · writes 11 · grants 15 · reads · audit 8 ·
+verify:supabase 27), typecheck, lint, i18n parity and build.
+
+## Closed
+
+Wave 1 — migration 26: `profiles.version` (every account block and role change
+faulted 42703 before it), `documents` INSERT, `storage.objects` policies. The
+two writes were then performed as the role, through PostgREST, to prove it.
+
+Wave 2 — evidence snapshot route written (19 dead links); calendar feed reads
+with the service role (404 for the correct token, for the life of the feature);
+`createProfile` and `deleteProfile` withdrawn from the manifest, the spec and
+the handlers (50 → 48 operations); both public forms state their gap above the
+form; the ledger's "Edit draft" is a status, not a phantom action.
+
+Wave 3 — fabricated hotel room mix deleted from the seeder and the database;
+dashboard hotel renders the conflicts the public page already showed;
+modelled unit price labelled, rounded and carrying its note; landing sources
+figure derived (45, not a hardcoded 56); demonstration-data notice in the
+shell, counting rows; review platforms counts distinct platforms; opening year
+formatted as a year.
+
+Wave 4 — the whole operational fixture translated to Turkish (42/43 tickets,
+198/198 ledger lines, 24/24 documents, 30/30 activities, 24/24 lead notes);
+role labels instead of enums on the home page and the refusal page; "Blok";
+404 and error pages in four languages keeping the reader's locale; the footer
+mistranslation; lead layout values.
+
+Wave 5 — `wallet:view` corrected; `listings` off residents and staff;
+`activities`/`calendar` off the two roles RLS refuses; Reports nav derived from
+the catalogue; `/dashboard/admin` given a nav entry; the users page no longer
+tells an admin they see a partial list; staff's vendor-invoices no longer links
+to a page they cannot open; the accountant's wallet says whose names it cannot
+show.
+
+Wave 6 — staff `profiles.id` values no longer cross the wire on the documents
+page; verified by reading the raw RSC payload as tenant, owner and guest.
+
+Wave 7 — the admin panel's storage claim and the payment console's
+`no_write_path` copy, both stale and both misdirecting.
+
+## Open, and why
+
+**One is a genuine disagreement, not an oversight.** The landing renders eleven
+conflicted facts as settled values beside a chart declaring 13 conflicts. That
+is `components/azura/inventory-value.tsx`, which exists precisely to strip
+provenance — PIVOT.md §5, "no chips, no confidence badge, no conflict popover",
+because the audience is the client looking at their own building. One of the
+three skeptics dissented on this finding for that reason. The tension is real:
+the page states a conflict count and gives no way to tell which facts it names.
+Resolving it by naming the contested facts in the chart rather than by putting
+chips back on eleven values is the shape that respects both, and it is a
+product decision, not a defect fix.
+
+**Also a governance question, deliberately not answered here.** An accountant
+cannot read the resident directory: RLS caps it at `has_role_level(70)` and
+they are 60, so every wallet holder name is withheld from the role whose job
+the reconciliation is. The copy now says so. Whether the policy line is in the
+right place is yours to decide; CLAUDE.md forbids widening it to suit a screen.
+
+**Fifteen smaller items remain**, all MEDIUM or LOW and none adjudicated by the
+skeptics before the session limit cut the pass short:
+
+- `createActivity` is granted and documented with no interface to reach it
+- `vendorInvoice.settle` unverified against the restored grants
+- `service_provider`'s documents empty state addresses a resident
+- `guest` / `child_guest` / `service_provider` get an empty Messages page while
+  the explanation that fits exists in the code and never fires
+- `child_owner` and `child_tenant` are indistinguishable from each other
+- the owner's home carries a KPI tile that permanently refuses
+- `vendor_invoices.id` is rendered as `<option value="invoice:<uuid>">`
+- finance and vendor-invoice CSV exports lead with raw primary keys
+- every list ships row primary keys as React keys in the flight payload, on
+  pages whose links are deliberately opaque
+- the site-management API forwards `metadata` and `idempotencyKey`
+- the Russian home subtitle is not grammatical Russian
+- `check-plain-language` has no Turkish or Russian vocabulary
+- `CLAUDE.md` §5 and §7 describe a tree that no longer exists
+- `communications-repository.ts` says the staff-note boundary is
+  application-side; migration 22 moved it into RLS
+- 27 of the 53 findings lost their skeptics to a session limit and are
+  **unadjudicated, not cleared** — the list above is what they contained

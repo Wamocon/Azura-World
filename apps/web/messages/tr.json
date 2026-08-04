@@ -1442,7 +1442,8 @@
       },
       "noHolder": "Belirli bir sahibi yok",
       "emptyHint": "Hesabınız için henüz bir bakiye yok.",
-      "holderNotVisible": "Sahibi bu hesapla görüntülenemiyor"
+      "holderNotVisible": "Sahibi bu hesapla görüntülenemiyor",
+      "leadWithoutHolders": "Cüzdan bakiyeleri ve hareketleri. Cüzdan sahiplerinin adları rolünüze gösterilmiyor — rehberi yalnızca site müdürü ve üstü görebilir."
     },
     "vendorInvoices": {
       "title": "Tedarikçi faturaları",

@@ -259,8 +259,21 @@ export default async function WalletPage({
         <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
           {t("title")}
         </h1>
+        {/* The lead describes the view this reader actually gets.
+
+            It said "Balance and movements per owner" to everybody, including a
+            reader for whom every single holder name renders "Holder not visible
+            to you" — an accountant, whose job the reconciliation is. `directory`
+            is null exactly when the names could not be read, so the sentence and
+            the table can never disagree.
+
+            The permission is deliberately NOT widened to make the original
+            sentence true: RLS caps the directory at `has_role_level(70)` and an
+            accountant is 60, and whether that is the right line is a governance
+            decision rather than a copy fix. Flagged rather than quietly
+            changed. */}
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {t("lead")}
+          {directory === null ? t("leadWithoutHolders") : t("lead")}
         </p>
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
           {t("intro")}

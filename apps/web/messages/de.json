@@ -1442,7 +1442,8 @@
       },
       "noHolder": "Ohne festen Inhaber",
       "emptyHint": "Zu Ihrem Zugang gibt es noch kein Guthaben.",
-      "holderNotVisible": "Inhaber für Sie nicht sichtbar"
+      "holderNotVisible": "Inhaber für Sie nicht sichtbar",
+      "leadWithoutHolders": "Guthaben und Bewegungen der Konten. Die Namen der Inhaber werden Ihrer Rolle nicht gezeigt — das Verzeichnis sehen erst Objektleitung und höher."
     },
     "vendorInvoices": {
       "title": "Lieferantenrechnungen",

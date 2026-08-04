@@ -1442,7 +1442,8 @@
       },
       "noHolder": "No named holder",
       "emptyHint": "There is no balance for your account yet.",
-      "holderNotVisible": "Holder not visible to you"
+      "holderNotVisible": "Holder not visible to you",
+      "leadWithoutHolders": "Wallet balances and movements. Holder names are not shown to your role — only a site manager and above may read the directory."
     },
     "vendorInvoices": {
       "title": "Vendor invoices",

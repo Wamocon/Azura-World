@@ -256,6 +256,10 @@ export default async function VendorInvoicesPage({
   )
 
   const mayApprove = scope.can("vendor_invoices:approve")
+  // staff holds vendor_invoices:view and not finance:view, so the settlement
+  // link below would send them to a 403. Checked here rather than assumed from
+  // the approve permission: they are different questions.
+  const mayViewFinance = scope.can("finance:view")
   const mayExport = scope.can("vendor_invoices:export")
 
   const hrefFor = (next: {
@@ -599,17 +603,31 @@ export default async function VendorInvoicesPage({
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
           {mayApprove ? t("approval.canApprove") : t("approval.cannotApprove")}
         </p>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {t("approval.settleHint")}
-        </p>
-        <p className="max-w-prose text-sm">
-          <Link
-            href="/dashboard/finance"
-            className="underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          >
-            {t("approval.settle")}
-          </Link>
-        </p>
+        {/* The settlement route, offered only to somebody who can walk it.
+
+            `staff` holds `vendor_invoices:view` but not `finance:view`, so this
+            link — the section's only action — sent them to a page that answers
+            403. A dead end is worse than an absence: it reads as a permission
+            fault they should report, when it is just a route they were never
+            meant to be offered.
+
+            The hint above it is dropped with the link for the same reason: it
+            explains how to do something they cannot do. */}
+        {mayViewFinance ? (
+          <>
+            <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+              {t("approval.settleHint")}
+            </p>
+            <p className="max-w-prose text-sm">
+              <Link
+                href="/dashboard/finance"
+                className="underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                {t("approval.settle")}
+              </Link>
+            </p>
+          </>
+        ) : null}
       </section>
     </div>
   )
