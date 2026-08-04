@@ -2053,7 +2053,8 @@
         }
       },
       "emptyLeadUploader": "Es ist noch nichts abgelegt. Verträge, Abnahmen und Zertifikate sammeln sich hier beim Hochladen, und die Download-Links werden von hier ausgegeben.",
-      "emptyLeadReader": "Für Sie ist noch nichts abgelegt. Ihr Vertrag und Abnahmeprotokolle stehen hier, sobald die Verwaltung sie hochlädt."
+      "emptyLeadReader": "Für Sie ist noch nichts abgelegt. Ihr Vertrag und Abnahmeprotokolle stehen hier, sobald die Verwaltung sie hochlädt.",
+      "emptyLeadVendor": "Es wurden Ihnen noch keine Dokumente übermittelt. Leistungsbeschreibungen, Abnahmeprotokolle und Fotos zu Ihren Aufträgen erscheinen hier."
     },
     "compliance": {
       "title": "Compliance",

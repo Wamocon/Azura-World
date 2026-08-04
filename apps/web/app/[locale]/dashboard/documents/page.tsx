@@ -232,8 +232,20 @@ export default async function DocumentsPage({
           <EmptyState
             icon={FileText}
             title={t("empty")}
+            /* Three readers, three sentences.
+
+               `emptyLeadReader` says "Your contract and any handover records
+               appear here once site management uploads them" — right for an
+               owner or a tenant, and addressed to the wrong person entirely for
+               `service_provider`, an outside firm with no tenancy and no
+               handover. What reaches them is paperwork attached to the work
+               they were assigned, so that is what their empty state says. */
             description={
-              mayUpload ? t("emptyLeadUploader") : t("emptyLeadReader")
+              mayUpload
+                ? t("emptyLeadUploader")
+                : profile.role === "service_provider"
+                  ? t("emptyLeadVendor")
+                  : t("emptyLeadReader")
             }
           />
         ) : (

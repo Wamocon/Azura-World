@@ -1,14 +1,17 @@
 # CLAUDE.md — Azura World CATI
 
-> **Last verified: 2026-07-27**, immediately after W0-A completed, against the tree at
-> `D:\Azura World`.
+> **Last verified: 2026-08-04**, against the tree at `D:\Azura World`. §5 and §7 were
+> re-checked row by row that day and were wrong on nearly every one — see the corrections in
+> both. The tree is well past wave zero: 28 migrations, ~30 routes, four message catalogues.
+>
 > **Code wins over docs.** If this file and the repository disagree, the repository is right and
 > this file is stale — fix the file, do not "correct" the tree to match it. The 1Çatı reference
 > `CLAUDE.md` still claims 7 migrations while 64 exist on disk; that is the failure mode this
-> line exists to prevent.
+> line exists to prevent, and this file had fallen into it too.
 >
-> Waves 0-B, 0-C and 0-D are running in parallel windows as this was written, so the "exists"
-> lists below are a snapshot, not a contract. `ls` beats this file.
+> `ls` beats this file. That was written as a caveat about parallel windows and it is really the
+> rule: any list here of what does or does not exist is a snapshot, and a snapshot of absences
+> goes stale fastest. Prefer a check to a claim.
 
 ---
 
@@ -112,18 +115,21 @@ Pasted output for all of these is in `HANDOFF/W0-A.md`, not here.
 (`scripts/harvest-azura.mjs`), `pnpm dataset` (`scripts/build-azura-dataset.py`), `pnpm
 qa:evidence` (`scripts/verify-evidence.mjs`) — all W0-B's, which was still running.
 
-**Command defined, target does not exist yet — it will fail, and that is correct:**
+**~~Command defined, target does not exist yet~~ — every one of these now exists.**
+Corrected 2026-08-04. The table below said five commands would fail and that failing was
+correct. All five targets are on disk: `scripts/validate-openapi.mjs`,
+`scripts/layout-audit.mjs`, `scripts/perf.mjs`, `scripts/quality-gate.mjs`,
+`supabase/config.toml` (with **28** migrations, not none) and
+`apps/web/playwright.config.ts`.
 
-| Command                           | Missing target                                  | Written by |
-| --------------------------------- | ----------------------------------------------- | ---------- |
-| `pnpm test:contract`              | `scripts/validate-openapi.mjs`                  | W2-B       |
-| `pnpm qa:layout` / `pnpm qa:perf` | `scripts/layout-audit.mjs` / `scripts/perf.mjs` | W4-B       |
-| `pnpm quality:gate`               | `scripts/quality-gate.mjs`                      | W4-D       |
-| `pnpm db:test`                    | no `supabase/config.toml`, no migrations        | W1-A       |
-| `pnpm --dir apps/web test:e2e`    | `apps/web/playwright.config.ts`                 | W4-A       |
+That mattered more than a stale line usually does, because the paragraph under it gave an
+active instruction — "do not stub a missing target to make a script pass" — and somebody
+following it would have treated a *passing* `pnpm test:contract` or `pnpm quality:gate` as
+evidence that a stub had been slipped in. A stale warning turns a working gate into a suspect.
 
-Do not stub a missing target to make a script "pass". A failing script that names its owner is
-information; a stub is a lie the next window builds on.
+The rule itself stands and is worth keeping: **do not stub a missing target to make a script
+"pass".** A failing script that names its owner is information; a stub is a lie the next window
+builds on.
 
 **Port 3200.** 1Çatı runs on **3100** and both may run at once — verified simultaneously on
 2026-07-27. Never collide. `NEXT_PUBLIC_APP_URL` in `.env.example` matches 3200.
@@ -166,25 +172,31 @@ scripts/{setup-supabase.mjs,smoke-contracts.mts}
 CLAUDE.md · AGENTS.md · HANDOFF/W0-A.md
 ```
 
-**Does not exist yet — do not assume it:**
+**~~Does not exist yet — do not assume it~~ — all of it exists.** Corrected 2026-08-04.
 
-| Missing                                                    | Owner                                                       |
-| ---------------------------------------------------------- | ----------------------------------------------------------- |
-| `apps/web/app/globals.css`                                 | W1-D (plus the one-line import seam in `app/layout.tsx`)    |
-| `apps/web/lib/cn.ts`                                       | W1-D — class merging lives there, **not** in `lib/utils.ts` |
-| `apps/web/i18n*.ts`, `apps/web/messages/*.json`            | W1-C (plus the plugin seam in `next.config.ts`)             |
-| the Supabase and route-guard bodies in `apps/web/proxy.ts` | W1-B — two marked `TODO(W1-B)` seams                        |
-| `apps/web/lib/rbac.ts`, `auth.ts`, `lib/supabase/*`        | W1-B                                                        |
-| migrations, `seed.sql`, `config.toml`, pgTAP tests         | W1-A                                                        |
-| `docs/api/openapi.yaml`                                    | W2-B                                                        |
-| any `app/[locale]/**` route                                | W1-C / W3-*                                                 |
+Every row of the table that stood here was wrong: `apps/web/app/globals.css`,
+`apps/web/lib/cn.ts`, `apps/web/i18n.ts` and the four `messages/*.json`, the Supabase and
+route-guard bodies in `proxy.ts`, `apps/web/lib/rbac.ts`, `auth.ts`, `lib/supabase/*`, 28
+migrations with `seed.sql` and `config.toml`, `docs/api/openapi.yaml`, and roughly thirty
+`app/[locale]/**` routes.
 
-There is **no routable page yet**: `/` redirects to `/de` and `/de` renders `app/not-found.tsx`
-with a 404. That is the correct state until W3-A adds `app/[locale]/page.tsx`.
+Likewise the paragraph that followed it. There is no longer "no routable page": `/` resolves
+the reader's locale and `/tr` is the landing page. `supabase/` is not an empty directory.
 
-`packages/ui/` holds only `.gitkeep` and has no `package.json`, so pnpm resolves no workspace
-package there — the same as the 1Çatı reference. `supabase/` is W1-A's; W0-A created the bare
-directory and nothing inside it.
+This is the drift the header of this file warns about, and it had grown to two whole sections.
+A newcomer reading §7 would have concluded the project was at wave zero and built a second
+`globals.css`, a second `cn.ts` and a second set of message catalogues on top of the ones
+already there — which is precisely the "two windows writing the same file silently lose work"
+failure §3 exists to prevent.
+
+**The lesson, since it keeps recurring:** a table of what does not exist has a shelf life of
+days. `ls` beats this file, the header says so, and the two sections that ignored their own
+header are the reason the line is there. If you find yourself writing "X does not exist yet"
+here, write the check instead.
+
+`packages/ui/` still holds only `.gitkeep` and has no `package.json`, so pnpm resolves no
+workspace package there — the same as the 1Çatı reference. That one is still true, verified
+2026-08-04.
 
 **Two known contract gaps.** `CONTRACTS.md` §2 references `AzuraBlock` and `Amenity` but never
 defines either. `lib/contracts.ts` declares both as `Record<string, unknown>`, tagged

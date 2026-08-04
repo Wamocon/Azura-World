@@ -2053,7 +2053,8 @@
         }
       },
       "emptyLeadUploader": "Henüz hiçbir belge yüklenmedi. Sözleşmeler, tutanaklar ve sertifikalar yükledikçe burada toplanır ve indirme bağlantıları buradan verilir.",
-      "emptyLeadReader": "Sizin için henüz belge yüklenmedi. Sözleşmeniz ve teslim tutanakları, site yönetimi yükledikten sonra burada görünür."
+      "emptyLeadReader": "Sizin için henüz belge yüklenmedi. Sözleşmeniz ve teslim tutanakları, site yönetimi yükledikten sonra burada görünür.",
+      "emptyLeadVendor": "Henüz size iletilmiş bir belge yok. Üstlendiğiniz işlere eklenen şartnameler, kabul tutanakları ve fotoğraflar burada görünür."
     },
     "compliance": {
       "title": "Uyum",
