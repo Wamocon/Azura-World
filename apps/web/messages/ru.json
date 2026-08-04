@@ -512,7 +512,29 @@
         "factsTotal": "фактов",
         "tableCategory": "Категория",
         "tableCount": "Количество",
-        "empty": "Нет данных."
+        "empty": "Нет данных.",
+        "conflictedWhich": "Расхождения по:"
+      },
+      "conflicted": {
+        "project": {
+          "developer": "застройщик",
+          "greenAreaSqm": "зелёная зона",
+          "floorsPerBuilding": "этажность",
+          "buildStatus": "статус строительства",
+          "distanceToSeaM": "расстояние до моря",
+          "distanceToAlanyaCentreKm": "расстояние до центра Аланьи",
+          "distanceToGazipasaAirportKm": "расстояние до аэропорта Газипаша",
+          "distanceToAntalyaAirportKm": "расстояние до аэропорта Анталья",
+          "contact": {
+            "address": "контактный адрес",
+            "phone": "контактный телефон"
+          }
+        },
+        "hotel": {
+          "roomCount": "число номеров",
+          "aquaparkSlides": "число горок",
+          "brandAffiliation": "бренд отеля"
+        }
       }
     },
     "gallery": {

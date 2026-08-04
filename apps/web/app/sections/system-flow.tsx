@@ -12,6 +12,7 @@ import type { ReactNode } from "react"
 
 import { Counter } from "@/components/anim/counter"
 import {
+  conflictedFactKeys,
   coverage,
   findings,
   portalListings,
@@ -134,6 +135,19 @@ export async function SystemFlowSection({
     },
   ]
 
+  /**
+   * The contested facts, in the reader's language.
+   *
+   * `t.has` rather than `t`: the key list comes from the dataset, so a fact
+   * added to the harvest tomorrow would otherwise throw a MISSING_MESSAGE and
+   * take the whole landing page down. An unnamed one is skipped — the count
+   * beside it is still correct, and a partial list is better than a 500.
+   */
+  const conflictedFactNames = conflictedFactKeys
+    .map((key) => `conflicted.${key}`)
+    .filter((key) => t.has(key))
+    .map((key) => t(key))
+
   const conf = coverage.projectFactsByConfidence
   const confidenceSegments: ChartPoint[] = (
     [
@@ -223,6 +237,25 @@ export async function SystemFlowSection({
                     tableLabels={tableLabels}
                   />
                 </div>
+
+                {/* Which facts the amber band is counting.
+
+                    The chart said "13 conflicted" and the page showed eleven of
+                    those thirteen as settled figures a few sections up, because
+                    `InventoryValue` strips provenance by design (PIVOT.md §5 —
+                    the audience is the client looking at their own building, not
+                    an auditor). That decision stands; what did not work was
+                    stating a count and giving no way to tell what it counted.
+
+                    Names, not chips. Nothing is added to the eleven values. */}
+                {conflictedFactNames.length === 0 ? null : (
+                  <p className="text-[0.8125rem] leading-[1.5] text-muted-foreground">
+                    <span className="text-confidence-conflicted">
+                      {t("charts.conflictedWhich")}
+                    </span>{" "}
+                    {conflictedFactNames.join(" · ")}
+                  </p>
+                )}
               </div>
             </Panel>
           </div>

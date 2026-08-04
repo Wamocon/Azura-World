@@ -236,6 +236,59 @@ export const renderedFacts: ReadonlyArray<{
   { key: "hotel.distanceToBeachM", fact: hotel.distanceToBeachM },
 ]
 
+/**
+ * The keys of the facts the sources disagree about.
+ *
+ * The landing shows a chart counting 13 conflicts and eleven of the contested
+ * facts as settled values, because `InventoryValue` deliberately strips
+ * provenance (PIVOT.md §5). Both are defensible; together they left the reader
+ * told that the dataset is contested with no way to tell which parts.
+ *
+ * Naming them beside the count is the resolution that keeps the pivot's
+ * decision: no chip on any value, and the number is no longer an assertion the
+ * page cannot support.
+ *
+ * Derived from the same `renderedFacts` list the chart counts, so the names and
+ * the number can never disagree.
+ */
+export const conflictedFactKeys: readonly string[] = Object.freeze([
+  ...renderedFacts
+    .filter(({ fact }) => fact.confidence === "conflicted")
+    .map(({ key }) => key),
+  // The two the chart counts and `renderedFacts` does not.
+  //
+  // `coverage.projectFactsByConfidence` counts the DATASET (13 conflicted);
+  // `renderedFacts` is what this page puts on screen, and the contact details
+  // are published in the footer rather than as evidence-band facts. Naming
+  // eleven under a count of thirteen is a smaller version of the defect this
+  // list exists to close, so they are added explicitly and the assertion below
+  // fails if the two ever stop agreeing.
+  ...(project.contact.address.confidence === "conflicted"
+    ? ["project.contact.address"]
+    : []),
+  ...(project.contact.phone.confidence === "conflicted"
+    ? ["project.contact.phone"]
+    : []),
+])
+
+/**
+ * The named list must account for every conflict the chart counts.
+ *
+ * A module-load check rather than a test, because the two numbers come from
+ * different places — one from the dataset's coverage block, one from a list
+ * assembled here — and the whole point of naming the facts was that a reader
+ * could reconcile them. A silent mismatch would restore the defect while
+ * looking like the fix.
+ */
+if (
+  coverage.projectFactsByConfidence.conflicted !== undefined &&
+  conflictedFactKeys.length !== coverage.projectFactsByConfidence.conflicted
+) {
+  console.warn(
+    `azura.landing.conflict-count-mismatch: the chart counts ${coverage.projectFactsByConfidence.conflicted} conflicted facts and ${conflictedFactKeys.length} are named. Add the missing key to conflictedFactKeys and its copy under landing.flow.conflicted.*`
+  )
+}
+
 export const factsByConfidence: Record<Confidence, number> = (() => {
   const counts: Record<Confidence, number> = {
     confirmed: 0,

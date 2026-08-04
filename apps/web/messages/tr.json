@@ -512,7 +512,29 @@
         "factsTotal": "bilgi",
         "tableCategory": "Kategori",
         "tableCount": "Adet",
-        "empty": "Veri yok."
+        "empty": "Veri yok.",
+        "conflictedWhich": "Ayrışan kayıtlar:"
+      },
+      "conflicted": {
+        "project": {
+          "developer": "geliştirici",
+          "greenAreaSqm": "yeşil alan",
+          "floorsPerBuilding": "kat sayısı",
+          "buildStatus": "yapım durumu",
+          "distanceToSeaM": "denize uzaklık",
+          "distanceToAlanyaCentreKm": "Alanya merkeze uzaklık",
+          "distanceToGazipasaAirportKm": "Gazipaşa havalimanına uzaklık",
+          "distanceToAntalyaAirportKm": "Antalya havalimanına uzaklık",
+          "contact": {
+            "address": "iletişim adresi",
+            "phone": "iletişim telefonu"
+          }
+        },
+        "hotel": {
+          "roomCount": "otel oda sayısı",
+          "aquaparkSlides": "aquapark kaydırak sayısı",
+          "brandAffiliation": "otel markası"
+        }
       }
     },
     "gallery": {

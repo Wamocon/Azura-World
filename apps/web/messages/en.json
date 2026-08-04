@@ -512,7 +512,29 @@
         "factsTotal": "facts",
         "tableCategory": "Category",
         "tableCount": "Count",
-        "empty": "No data."
+        "empty": "No data.",
+        "conflictedWhich": "Sources disagree about:"
+      },
+      "conflicted": {
+        "project": {
+          "developer": "developer",
+          "greenAreaSqm": "green area",
+          "floorsPerBuilding": "floors per building",
+          "buildStatus": "build status",
+          "distanceToSeaM": "distance to the sea",
+          "distanceToAlanyaCentreKm": "distance to Alanya centre",
+          "distanceToGazipasaAirportKm": "distance to Gazipaşa airport",
+          "distanceToAntalyaAirportKm": "distance to Antalya airport",
+          "contact": {
+            "address": "contact address",
+            "phone": "contact telephone"
+          }
+        },
+        "hotel": {
+          "roomCount": "hotel room count",
+          "aquaparkSlides": "aquapark slides",
+          "brandAffiliation": "hotel brand"
+        }
       }
     },
     "gallery": {
