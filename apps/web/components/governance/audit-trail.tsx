@@ -106,10 +106,24 @@ export function AuditTrail({
   page,
   hasNextPage,
   hrefForPage,
+  actorNames,
   className,
 }: {
   /** ONE page. Never the whole table. */
   events: readonly AuditEventRecord[]
+  /**
+   * `profiles.id` → the person's name, resolved server-side.
+   *
+   * The actor column rendered `actorProfileId` directly and printed four raw
+   * uuids on `/dashboard/admin` — the last text defect in a 119-page sweep, and
+   * the worst place for one: this is the table whose entire purpose is
+   * answering "who did this", and it answered with a row id.
+   *
+   * Optional, and absent means "nothing was resolved", never "resolve it here":
+   * a client component cannot ask the directory. An unresolved id falls through
+   * to the stated `unknownActor` label rather than back to the uuid.
+   */
+  actorNames?: Readonly<Record<string, string>>
   locale: Locale
   labels: AuditTrailLabels
   /** 1-based. */
@@ -153,12 +167,34 @@ export function AuditTrail({
                     <span className="font-mono">{event.action}</span>
                   </Badge>
                 </TableCell>
+                {/* What was changed, in terms a reader recognises.
+
+                    This printed `entityTable · entityId`, and for a `profiles`
+                    row that is a person's uuid — so an audit line about a role
+                    change named neither the actor nor the subject. Resolved
+                    through the same directory the actor column uses.
+
+                    Everything else shortens to `#` plus eight characters: a
+                    ticket or document id is not a name and cannot be resolved
+                    here, but a full uuid in a table cell is the database
+                    showing through, and eight characters is enough to match a
+                    row against the register it came from. Same reference form
+                    the compliance register settled on. */}
                 <TableCell className="font-mono text-xs">
                   {event.entityTable}
-                  {event.entityId === null ? "" : ` · ${event.entityId}`}
+                  {event.entityId === null
+                    ? ""
+                    : ` · ${
+                        (event.entityTable === "profiles"
+                          ? actorNames?.[event.entityId]
+                          : undefined) ?? `#${event.entityId.slice(0, 8)}`
+                      }`}
                 </TableCell>
                 <TableCell className="font-mono text-xs text-muted-foreground">
-                  {event.actorProfileId ?? labels.unknownActor}
+                  {event.actorProfileId === null
+                    ? labels.unknownActor
+                    : (actorNames?.[event.actorProfileId] ??
+                      labels.unknownActor)}
                 </TableCell>
                 <TableCell>
                   {renderPayload(

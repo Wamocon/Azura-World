@@ -13,7 +13,11 @@ import { Badge } from "@/components/ui/badge"
 import { getUserProfile } from "@/lib/auth"
 import { CONTRACT_VERSION, locales, type Locale } from "@/lib/contracts"
 import { accessProfilesEnabled } from "@/lib/env"
-import { getAccessEvents, getAuditEvents } from "@/lib/governance-repository"
+import {
+  getAccessEvents,
+  getAuditEvents,
+  getProfiles,
+} from "@/lib/governance-repository"
 import { hasPermission } from "@/lib/rbac"
 
 import { checkIntegration } from "./actions"
@@ -110,7 +114,7 @@ export default async function AdminPage({
   const auditPage = pageFrom(query["auditPage"])
   const accessPage = pageFrom(query["accessPage"])
 
-  const [auditResult, accessResult] = await Promise.all([
+  const [auditResult, accessResult, directoryResult] = await Promise.all([
     getAuditEvents({
       role: profile.role,
       limit: AUDIT_PAGE_SIZE + 1,
@@ -121,7 +125,24 @@ export default async function AdminPage({
       limit: AUDIT_PAGE_SIZE + 1,
       offset: (accessPage - 1) * AUDIT_PAGE_SIZE,
     }),
+    // Who acted, by name.
+    //
+    // Both tables printed `actor_profile_id` — four raw uuids, the last text
+    // defect a 119-page sweep found, and the worst place for one: this is the
+    // table whose entire purpose is answering "who did this", and it answered
+    // with a row id. `getProfiles` enforces `users:view` itself and returns an
+    // empty labelled result for a role that lacks it, so reading it here cannot
+    // widen anybody's access; an id that does not resolve falls through to the
+    // stated "unknown actor" rather than back to the uuid.
+    getProfiles({ role: profile.role, limit: 200 }),
   ])
+
+  const actorNames = Object.fromEntries(
+    directoryResult.data.map((person) => [
+      person.id,
+      person.fullName ?? person.email ?? person.id,
+    ])
+  )
 
   // One extra row is requested and then dropped: it answers "is there a next
   // page" without a second count query, and without ever claiming a total the
@@ -248,6 +269,7 @@ export default async function AdminPage({
 
         <AuditTrail
           events={auditEvents}
+          actorNames={actorNames}
           locale={locale}
           labels={auditLabels}
           page={auditPage}
@@ -281,6 +303,7 @@ export default async function AdminPage({
             requestId: event.requestId,
             createdAt: event.createdAt,
           }))}
+          actorNames={actorNames}
           locale={locale}
           labels={{ ...auditLabels, caption: t("access.caption") }}
           page={accessPage}

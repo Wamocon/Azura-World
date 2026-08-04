@@ -182,7 +182,17 @@ export function formatFactValue(
       // string came from a source; showing it is honest and surfaces the
       // parser bug instead of hiding it.
       if (Number.isNaN(parsed)) return value
-      return new Intl.DateTimeFormat(locale, {
+      // `intlLocaleTag(locale)`, like every other formatter in this file — this
+      // was the one line passing the raw string straight to `Intl`.
+      //
+      // `locale` is a route segment, not a validated `Locale`, so a malformed
+      // one reaches the constructor and throws RangeError "Incorrect locale
+      // information provided". That took the whole landing page to a 500 —
+      // observed in the server log on 2026-08-04 as
+      // `at new DateTimeFormat … at [locale]/page`. Every sibling here already
+      // went through the helper, which validates and falls back; this branch
+      // simply never did.
+      return new Intl.DateTimeFormat(intlLocaleTag(locale), {
         year: "numeric",
         month: "long",
         day: "numeric",

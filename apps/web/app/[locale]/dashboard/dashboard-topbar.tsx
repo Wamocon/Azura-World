@@ -36,12 +36,23 @@ export function DashboardTopbar(): ReactNode {
   const tShell = useTranslations("dashboard.shell")
   const [searchOpen, setSearchOpen] = useState(false)
 
-  // `fullName` then `email` then the role. Every arm is a real identifier the
-  // person recognises; falling through to the role rather than to an empty
+  /**
+   * The role in the reader's language, never the database enum.
+   *
+   * The topbar printed the raw slug twice — "Manager" under the brand and
+   * "manager" in the account chip — on a Turkish page whose own subtitle two
+   * lines below said "Site müdürü olarak görünümünüz". The product disagreed
+   * with itself inside one viewport, and the translated labels have always
+   * existed at `dashboard.users.roles.*` in all four catalogues.
+   */
+  const roleLabel = t(`dashboard.users.roles.${user.role}` as "dashboard.users.roles.guest")
+
+  // `fullName` then `email` then the role LABEL. Every arm is a real identifier
+  // the person recognises; falling through to the role rather than to an empty
   // string keeps the second line from collapsing and shifting the bar.
   const displayName = user.profile.authenticated
-    ? (user.profile.fullName ?? user.profile.email ?? user.role)
-    : user.role
+    ? (user.profile.fullName ?? user.profile.email ?? roleLabel)
+    : roleLabel
 
   return (
     <>
@@ -92,7 +103,7 @@ export function DashboardTopbar(): ReactNode {
 
             <Badge variant="secondary" className="hidden md:inline-flex">
               <ShieldCheck aria-hidden="true" />
-              <span className="max-w-28 truncate">{user.role}</span>
+              <span className="max-w-28 truncate">{roleLabel}</span>
             </Badge>
 
             {/* W1-B's `signOut` server action, as a real form action rather

@@ -165,7 +165,7 @@ export default async function DocumentsPage({
     if (profileId === null) return { text: absent, resolved: false }
     const name = actorNames.get(profileId)
     return name === undefined
-      ? { text: t("detail.actorNotVisible"), resolved: false }
+      ? { text: t("detail.fields.actorNotVisible"), resolved: false }
       : { text: name, resolved: true }
   }
 

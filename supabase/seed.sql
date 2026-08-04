@@ -4195,11 +4195,43 @@ declare
   v_idx      integer := 0;
   v_uid      uuid;
   v_email    text;
+  v_name     text;
+  /**
+   * A person's name, not their job title.
+   *
+   * `full_name` was `initcap(replace(v_role, '_', ' '))`, so the eleven accounts
+   * were called "Manager", "Owner", "Tenant" and "Service Provider". The topbar
+   * renders `fullName ?? email ?? role`, so a Turkish dashboard read
+   * "Azura World / Manager" directly above a subtitle that correctly said
+   * "Site müdürü olarak görünümünüz" — the product disagreeing with itself
+   * inside one viewport, and an obvious fixture tell in front of a demo
+   * audience, who read names as people.
+   *
+   * Turkish names, matching the locale and the building's location. The three
+   * `child_*` accounts take their guardian's surname so a sub-account is legible
+   * as one at a glance: Kaya, Yılmaz, Arslan.
+   */
+  v_names    jsonb := jsonb_build_object(
+    'admin',            'Kerem Aydın',
+    'manager',          'Selin Yıldırım',
+    'accountant',       'Burak Şahin',
+    'staff',            'Hakan Demir',
+    'owner',            'Ayşe Kaya',
+    'tenant',           'Mehmet Yılmaz',
+    'guest',            'Elif Arslan',
+    'service_provider', 'Güvenlik 24 — Onur Çetin',
+    'child_owner',      'Deniz Kaya',
+    'child_tenant',     'Ece Yılmaz',
+    'child_guest',      'Kaan Arslan'
+  );
 begin
   foreach v_role in array v_roles loop
     v_idx := v_idx + 1;
     v_uid := ('b0000000-0000-4000-8000-' || lpad(v_idx::text, 12, '0'))::uuid;
     v_email := v_role || '@azura.local';
+    -- Falls back to the old derivation if a role is ever added to v_roles and
+    -- not to v_names, so a missing entry is a plain title rather than a null.
+    v_name := coalesce(v_names ->> v_role, initcap(replace(v_role, '_', ' ')));
 
     insert into auth.users (
       instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -4217,7 +4249,7 @@ begin
       '{"provider":"email","providers":["email"]}'::jsonb,
       -- No "role" key here, ever. public.handle_new_user() ignores client-supplied roles
       -- by design (migration 00); putting one in this object would suggest otherwise.
-      jsonb_build_object('full_name', initcap(replace(v_role, '_', ' ')), 'locale', 'de'),
+      jsonb_build_object('full_name', v_name, 'locale', 'tr'),
       now(), now(), false, false
     )
     on conflict (id) do update
@@ -4263,7 +4295,7 @@ begin
     update public.profiles
        set role = v_role::public.app_role,
            company_id = v_company,
-           full_name = initcap(replace(v_role, '_', ' ')),
+           full_name = v_name,
            email = v_email,
            is_active = true
      where id = v_uid;

@@ -48,7 +48,18 @@ export const PROJECT_TIME_ZONE = "Europe/Istanbul" as const
 
 /** Resolves an app locale to the BCP-47 tag `Intl` expects. */
 export function intlLocale(locale: Locale): string {
-  return INTL_LOCALE[locale]
+  // `locale` is typed `Locale` and is not always one at runtime: Next hands a
+  // route segment through as `params.locale`, and a page may declare that field
+  // `Locale` without anything having verified it — the paragraph under
+  // `isLocale` says exactly this. A bare lookup then returns `undefined`, and a
+  // *malformed* value reaches `Intl.DateTimeFormat` and throws RangeError
+  // "Incorrect locale information provided", which surfaces as a 500 on a page
+  // whose only fault was a bad URL. Observed once in the server log on
+  // 2026-08-04 from `[locale]/page`.
+  //
+  // `intlLocaleTag` next to this already validates and falls back; this is the
+  // same guarantee for the function the date and money formatters use.
+  return INTL_LOCALE[locale] ?? INTL_LOCALE[defaultLocale]
 }
 
 /**
