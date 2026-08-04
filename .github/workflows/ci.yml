@@ -54,7 +54,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22.14.0, matching .nvmrc and quality.yml.
+          #
+          # Was 20, and CI had failed on every push to main since 2026-07-29 —
+          # five consecutive red runs — with `node: bad option:
+          # --experimental-strip-types`. That flag needs Node 22, and eight
+          # scripts plus package.json use it. A gate that is always red tells
+          # you nothing about the change you just made, which is worse than no
+          # gate: it trains everybody to ignore the one signal that would catch
+          # a real break.
+          node-version: 22.14.0
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -82,7 +91,16 @@ jobs:
           version: 10.0.0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22.14.0, matching .nvmrc and quality.yml.
+          #
+          # Was 20, and CI had failed on every push to main since 2026-07-29 —
+          # five consecutive red runs — with `node: bad option:
+          # --experimental-strip-types`. That flag needs Node 22, and eight
+          # scripts plus package.json use it. A gate that is always red tells
+          # you nothing about the change you just made, which is worse than no
+          # gate: it trains everybody to ignore the one signal that would catch
+          # a real break.
+          node-version: 22.14.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
