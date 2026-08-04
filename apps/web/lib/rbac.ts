@@ -228,6 +228,22 @@ const ACCOUNTANT = [
   "wallet:update",
   "wallet:approve",
   "wallet:export",
+  /**
+   * Added 2026-08-04, with migration 27, which lowered
+   * `profiles_select_elevated` from level 70 to 60.
+   *
+   * Without it the wallet register showed this role every balance and named
+   * none of the holders — "Holder not visible to you" on every row of the one
+   * screen whose purpose is reconciling money against people. An accountant
+   * already reads every ledger entry, payment, wallet and supplier invoice in
+   * the company; a name against a balance they can already see in full is
+   * strictly less disclosure than what they hold, not more.
+   *
+   * Read only. `users:manage` and `users:create` stay out, so an accountant
+   * still cannot change a role, block an account or create anybody — asserted
+   * against the live database, not assumed.
+   */
+  "users:view",
   "vendor_invoices:view",
   "vendor_invoices:create",
   "vendor_invoices:update",
