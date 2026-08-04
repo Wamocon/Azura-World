@@ -52,7 +52,7 @@ jobs:
         with:
           version: 10.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # 22.14.0, matching .nvmrc and quality.yml.
           #
@@ -89,7 +89,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10.0.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # 22.14.0, matching .nvmrc and quality.yml.
           #
