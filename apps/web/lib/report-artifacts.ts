@@ -136,6 +136,33 @@ export function reportDefinition(id: string): ReportDefinition | null {
   return REPORT_DEFINITIONS.find((report) => report.id === id) ?? null
 }
 
+/**
+ * The permissions that unlock a report somebody can actually download.
+ *
+ * Derived from the catalogue rather than written down, because the navigation
+ * entry for `/dashboard/reports` was gated on `reports:view` — a permission
+ * eight roles hold — while both built reports are gated on `evidence:export`,
+ * which two hold. Six roles were given a top-level destination on which every
+ * single item was either forbidden or not built. They arrived at a page that
+ * listed four things and offered none.
+ *
+ * `available: false` entries are excluded deliberately. A declared-but-unbuilt
+ * report is worth showing to somebody who has other reports to download — it
+ * tells them what is coming — and is not worth a nav entry on its own.
+ *
+ * Reading this instead of a literal means the day `inventory_split` is built,
+ * the roles holding `units:export` get the entry without anybody remembering to
+ * add it, and if the last available report were withdrawn the entry would
+ * disappear rather than becoming the next dead link.
+ */
+export const REPORT_UNLOCKING_PERMISSIONS: readonly string[] = Object.freeze([
+  ...new Set(
+    REPORT_DEFINITIONS.filter((report) => report.available).map(
+      (report) => report.permission
+    )
+  ),
+])
+
 // ---------------------------------------------------------------------------
 // CSV
 // ---------------------------------------------------------------------------

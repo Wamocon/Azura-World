@@ -70,19 +70,38 @@ export default function NotFound() {
   return (
     <main id="main" style={page}>
       <div style={card}>
+        {/* Four languages, Turkish first.
+
+            This file sits ABOVE `[locale]`, so it has no locale and no
+            `next-intl` provider — which is why it was written in German with an
+            English subtitle. The consequence: `/tr/nope` returned
+            `<html lang="tr">` wrapping German prose, and so did `/ru/nope`. A
+            mistyped or stale URL is a routine event and the recovery page is
+            exactly where a lost reader needs their own language.
+
+            Rendering all four is the honest answer to having none: it costs
+            three short lines, it is correct for every reader, and it does not
+            require guessing a locale from a URL that is by definition wrong.
+            Turkish leads because it is the default locale. */}
         <p style={code}>404</p>
-        <h1 style={heading}>Diese Seite wurde nicht gefunden.</h1>
+        <h1 style={heading}>Bu sayfa bulunamadı.</h1>
         <p style={subheading}>This page could not be found.</p>
+        <p style={subheading}>Эта страница не найдена.</p>
+        <p style={subheading}>Diese Seite wurde nicht gefunden.</p>
         {/* Plain anchor, not next/link: a full navigation is the correct
-            recovery when the router may itself be the thing that failed. */}
+            recovery when the router may itself be the thing that failed.
+
+            `/` and not `/de`. The hardcoded German homepage ejected a Turkish
+            or Russian reader into a language they had not chosen, losing the
+            locale on the one screen where they are already lost. `/` is the
+            locale router — `proxy.ts` resolves it from the cookie and the
+            Accept-Language header, which is a better guess than any constant. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-        W3-A: `/de` became a real page route in wave 3, so this rule now
-        fires. The plain anchor is deliberate and documented above: a full
-        navigation is the correct recovery when the router may itself be
-        the thing that failed. `<Link>` here would prefetch and soft-navigate
-        with the same broken router. Reported to W0-A in HANDOFF/W3-A.md. */}
-        <a href="/de" style={link}>
-          Zur Startseite · Back to start
+        deliberate and argued above: a full navigation is the correct recovery
+        when the router may itself be the thing that failed. `<Link>` would
+        prefetch and soft-navigate with the same broken router. */}
+        <a href="/" style={link}>
+          Ana sayfa · Home · На главную · Startseite
         </a>
       </div>
     </main>

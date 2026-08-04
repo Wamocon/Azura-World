@@ -28,7 +28,12 @@ import { getUserProfile } from "@/lib/auth"
 import type { Locale } from "@/lib/contracts"
 import { getDocuments } from "@/lib/document-repository"
 import { getLedgerEntries } from "@/lib/finance-repository"
-import { formatDate, formatMoney, formatNumber } from "@/lib/format"
+import {
+  formatDate,
+  formatMoney,
+  formatMoneyCompact,
+  formatNumber,
+} from "@/lib/format"
 import { getUnit } from "@/lib/inventory-repository"
 import { getTickets } from "@/lib/operations-repository"
 import { encodePublicId } from "@/lib/public-id"
@@ -254,13 +259,33 @@ export default async function UnitDetailPage({
                 : `${formatNumber(unit.outdoorM2, locale)} m²`
             }
           />
+          {/* The price, labelled for what it actually is.
+
+              This rendered `formatMoney(price)` under the flat word "Price",
+              with cents — €168,500.00 — for a value whose own note begins
+              "MODELLED, NOT A LISTING" and goes on to forbid exactly that
+              presentation. 631 of the 656 units are modelled; only the 25 that
+              appear on a portal have a price anybody published.
+
+              Three things changed. The label says "modelled" when it is; the
+              note is rendered rather than discarded; and the figure is rounded,
+              because two decimal places on a median EUR/m² times a median area
+              is precision the derivation cannot support and is what makes a
+              model read as a quotation. */}
           <Fact
-            label={t("columns.price")}
+            label={
+              unit.dataQuality === "modelled"
+                ? t("detail.modelledPriceLabel")
+                : t("columns.price")
+            }
             value={
               price === null
                 ? t("detail.notStated")
-                : formatMoney(price, locale)
+                : unit.dataQuality === "modelled"
+                  ? formatMoneyCompact(price, locale)
+                  : formatMoney(price, locale)
             }
+            note={unit.askingPrice.note}
           />
         </dl>
       </DashboardSection>
@@ -416,13 +441,35 @@ export default async function UnitDetailPage({
   )
 }
 
-function Fact({ label, value }: { label: string; value: string }): ReactNode {
+function Fact({
+  label,
+  value,
+  note,
+}: {
+  label: string
+  value: string
+  /**
+   * The derivation, when the value is one. `SourcedFact` makes this mandatory
+   * for `inferred` and `gap` (CONTRACTS §1, invariant 4) precisely so a reader
+   * can see why a number exists, and this component used to drop it.
+   *
+   * Shown, not hidden behind a tooltip: the note on a modelled price says in
+   * its own words that it must never be read as an asking price, and a
+   * disclosure a reader has to hover to find is not a disclosure.
+   */
+  note?: string | undefined
+}): ReactNode {
   return (
     <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-input px-3 py-2.5">
       <dt className="text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase">
         {label}
       </dt>
       <dd className="min-w-0 truncate text-sm tabular-nums">{value}</dd>
+      {note !== undefined && note.length > 0 ? (
+        <p className="text-xs leading-relaxed text-balance text-muted-foreground">
+          {note}
+        </p>
+      ) : null}
     </div>
   )
 }

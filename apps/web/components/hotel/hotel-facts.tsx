@@ -48,7 +48,14 @@ function FactRow<T>({
 }: {
   label: string
   fact: AzuraSourcedFact<T>
-  format: "text" | "number" | "metres" | "stars"
+  /**
+   * A subset of `FactFormat`. `"year"` is in it because the opening year is on
+   * this grid: without it the year went through `"number"` and rendered
+   * "OPENED 2,025" — the group separator turning a date into a quantity.
+   * `ProvenanceValue` has always understood `"year"`; only this local union did
+   * not offer it.
+   */
+  format: "text" | "number" | "year" | "metres" | "stars"
   locale: string
   provenance: ProvenanceLabels
 }) {
@@ -112,10 +119,15 @@ export function HotelFactGrid({
         locale={locale}
         provenance={provenance}
       />
+      {/* "year", not "number". Through the number formatter this rendered
+          "OPENED 2,025" — a year with a group separator reads as a count, and
+          it is the one figure on this band a reader might scan past as "2,025
+          of something". The landing page already renders the same fact
+          correctly from the same source; this made the two disagree in print. */}
       <FactRow
         label={labels.openedYear}
         fact={hotel.openedYear}
-        format="number"
+        format="year"
         locale={locale}
         provenance={provenance}
       />

@@ -330,7 +330,7 @@
     "footer": {
       "rights": "Azura World Residence & Hotel için bir sunum. Tüm markalar ve görsel hakları sahiplerine aittir.",
       "legalLink": "Yasal",
-      "contactHeading": "Konu iletişim",
+      "contactHeading": "Proje iletişim bilgileri",
       "aboutHeading": "Bu sunum hakkında"
     },
     "provenance": {
@@ -826,7 +826,8 @@
         "noDocuments": "Bu daireye bağlı belge yok",
         "noDocumentsLead": "Yüklenen sözleşme, tutanak ve raporlar burada toplanır.",
         "openDocuments": "Belgeler sayfasını aç",
-        "open": "Daireyi aç"
+        "open": "Daireyi aç",
+        "modelledPriceLabel": "Modellenen değer"
       },
       "mine": {
         "title": "Dairem",
@@ -1088,6 +1089,10 @@
         "emailRequired": "E-posta adresi gerekli.",
         "genericError": "Talep kaydedilemedi. Hiçbir şey yazılmadı.",
         "unavailable": "Veritabanı yazmayı kabul etmedi, talep kaydedilmedi."
+      },
+      "layoutValues": {
+        "penthouse": "Çatı katı",
+        "villa": "Villa"
       }
     },
     "pipeline": {
@@ -1345,7 +1350,7 @@
         "posted": "Ödeme kaydedildi.",
         "duplicate": "Bu ödeme zaten kaydedilmişti. Hiçbir şey iki kez kaydedilmedi.",
         "unavailable": "Veritabanı olmadan hiçbir şey kaydedilemez. Hiçbir şey kaydedilmedi.",
-        "notImplemented": "Veritabanına yazma yolu henüz yok. Hiçbir şey kaydedilmedi.",
+        "notImplemented": "Ödeme kaydedilemedi. Bu bir eksik özellik değil: ya hesabınıza bir şirket tanımlı değil ya da kayıt servisi yanıt vermedi. Hiçbir tutar işlenmedi — lütfen sistem yöneticisine bildirin.",
         "forbidden": "Rolünüz ödeme kaydedemez.",
         "conflict": "Kayıt siz çalışırken değişti. Sayfayı yenileyip tekrar deneyin.",
         "exceedsInvoice": "Tutar, bu faturanın kalan borcundan fazla. Kalan: {remaining}.",
@@ -2412,7 +2417,7 @@
         },
         "note": {
           "supabase": "Tüm temel verileri tutar.",
-          "storage": "Belgeler için. Depolama alanı henüz oluşturulmadı, bu yüzden yükleme 503 yanıtı verir.",
+          "storage": "Belgeler için. İki alan da oluşturuldu ve yükleme yolu açık; yükleme yalnızca yetkisi olan roller için çalışır.",
           "aiGateway": "Asistanın yanıtları için.",
           "jira": "Yalnızca bir betikte kullanılıyor, uygulamada hiçbir yerde."
         }
@@ -2761,6 +2766,9 @@
     "live": {
       "updated": "Az önce güncellendi",
       "offline": "Canlı bağlantı koptu; yenileyin"
+    },
+    "common": {
+      "demonstrationData": "Bu bölümdeki işlem kayıtları — talepler, muhasebe kalemleri, belgeler, randevular ve satış adayları — gösterim amacıyla oluşturulmuş örnek verilerdir. Daireler, bloklar ve otel bilgileri gerçektir ve kaynaklarıyla birlikte gösterilir."
     }
   },
   "hotel": {
@@ -2919,14 +2927,15 @@
       "storedBody": "Numarayı not edin. Durumu yalnızca onunla sorgulayabilirsiniz.",
       "referenceLabel": "Numaranız",
       "unavailableTitle": "Kaydedilmedi",
-      "unavailableBody": "Bildirim kaydedilmedi ve numara verilmedi. Lütfen daha sonra tekrar gönderin.",
+      "unavailableBody": "Bildirim kaydedilmedi ve bir numara oluşmadı. Bu geçici bir arıza değil: bildirim alma yolu henüz kurulmadı. Lütfen doğrudan site yönetimine ulaşın.",
       "throttledTitle": "Çok fazla bildirim",
       "conflictTitle": "Zaten gönderildi",
       "invalidTitle": "Lütfen girdileri kontrol edin",
       "errorTitle": "Gönderilemedi",
       "retryAfter": "Lütfen {seconds} saniye bekleyin.",
       "trackCta": "Durumu sorgula",
-      "haveReference": "Numaranız var mı?"
+      "haveReference": "Numaranız var mı?",
+      "gapNotice": "Bu form henüz kayıt yapmıyor. Bildirim alma yolu kurulmadı; yazdıklarınız hiçbir yere ulaşmaz. Acil bir durum varsa doğrudan site yönetimini arayın."
     },
     "track": {
       "title": "Durumu sorgula",
@@ -3053,7 +3062,7 @@
       "submitting": "Gönderiliyor …",
       "receivedTitle": "Talebiniz alındı",
       "unavailableTitle": "Kaydedilmedi",
-      "unavailableBody": "Talep kaydedilmedi. Lütfen doğrudan yönetime başvurun.",
+      "unavailableBody": "Talep kaydedilmedi. Bu geçici bir arıza değil: talep alma yolu henüz kurulmadı. Lütfen doğrudan site yönetimine ulaşın.",
       "throttledTitle": "Çok fazla talep",
       "retryAfter": "Lütfen {seconds} saniye bekleyin.",
       "invalidTitle": "Lütfen girdileri kontrol edin",
@@ -3061,7 +3070,8 @@
       "signIn": "Giriş yap",
       "plateTitle": "Türkler, Alanya.",
       "plateLead": "76.000 metrekare üzerinde yedi blok, denize 300 metre. Erişimi yönetim verir.",
-      "backToHome": "Ana sayfaya dön"
+      "backToHome": "Ana sayfaya dön",
+      "gapNotice": "Bu form henüz kayıt yapmıyor. Talebiniz hiçbir yere ulaşmaz. Erişim için doğrudan site yönetimiyle iletişime geçin."
     },
     "forbidden": {
       "title": "Erişim yok",

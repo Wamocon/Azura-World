@@ -541,7 +541,14 @@ async function loadHotel(client: RepositoryClient): Promise<HotelPanel> {
     // room-type breakdown for this property, only the total.
     publishedRoomTypes,
     roomBreakdownPublished: publishedRoomTypes > 0,
-    reviewSourceCount: sources.length,
+    // DISTINCT platforms, not rows. Two of the three review_sources rows are
+    // `platform: "tripadvisor"` — OnTheBeach embeds the Tripadvisor widget for
+    // the same location id, which is finding F-016 and which /dashboard/reviews
+    // states in words on the very next screen. Counting rows told the reader
+    // three independent platforms cover this hotel when two of them are one
+    // widget, reintroducing at the tile the double-count the dataset layer was
+    // built to avoid.
+    reviewSourceCount: new Set(sources.map((source) => source.platform)).size,
     scores: sources.map((source) => ({
       url: source.url,
       platform: source.platform,

@@ -2002,42 +2002,6 @@ paths:
           "$ref": "#/components/responses/Forbidden"
         "429":
           "$ref": "#/components/responses/RateLimited"
-    post:
-      tags:
-        - Governance
-      operationId: createProfile
-      summary: Create a person's record.
-      description: "Creates the profile row and its role. It does NOT create a sign-in account: auth.users is written by Supabase Auth's admin API, which needs the service-role key and a mail path, and neither is configured here. The response says so rather than implying an invitation was sent."
-      x-azura-permission: users:create
-      x-azura-rate-limit:
-        requests: 20
-        windowSeconds: 60
-      x-azura-audit:
-        action: profile.created
-        entity: profiles
-      x-azura-idempotent: true
-      requestBody:
-        required: true
-        description: Validated by `createProfileSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/JsonObject"
-      responses:
-        "200":
-          "$ref": "#/components/responses/Success"
-        "400":
-          "$ref": "#/components/responses/ValidationFailed"
-        "401":
-          "$ref": "#/components/responses/Unauthorized"
-        "403":
-          "$ref": "#/components/responses/Forbidden"
-        "409":
-          "$ref": "#/components/responses/Conflict"
-        "429":
-          "$ref": "#/components/responses/RateLimited"
-        "503":
-          "$ref": "#/components/responses/PersistenceUnavailable"
     patch:
       tags:
         - Governance
@@ -2054,43 +2018,6 @@ paths:
       requestBody:
         required: true
         description: Validated by `updateProfileRoleSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/JsonObject"
-      responses:
-        "200":
-          "$ref": "#/components/responses/Success"
-        "400":
-          "$ref": "#/components/responses/ValidationFailed"
-        "401":
-          "$ref": "#/components/responses/Unauthorized"
-        "403":
-          "$ref": "#/components/responses/Forbidden"
-        "404":
-          "$ref": "#/components/responses/NotFound"
-        "409":
-          "$ref": "#/components/responses/Conflict"
-        "429":
-          "$ref": "#/components/responses/RateLimited"
-        "503":
-          "$ref": "#/components/responses/PersistenceUnavailable"
-    delete:
-      tags:
-        - Governance
-      operationId: deleteProfile
-      summary: Delete a person's record.
-      description: Succeeds only for somebody who has never acted. audit_events.actor_profile_id references profiles(id) ON DELETE RESTRICT, so deleting an actor would take the record of their actions with them and Postgres refuses; the 409 names deactivation as the alternative. The last-administrator guard applies here too.
-      x-azura-permission: users:delete
-      x-azura-rate-limit:
-        requests: 20
-        windowSeconds: 60
-      x-azura-audit:
-        action: profile.deleted
-        entity: profiles
-      requestBody:
-        required: true
-        description: Validated by `deleteProfileSchema` in `lib/validation/schemas.ts`. Unknown properties are rejected.
         content:
           application/json:
             schema:

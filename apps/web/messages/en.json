@@ -330,7 +330,7 @@
     "footer": {
       "rights": "A demonstration for Azura World Residence & Hotel. All trademarks and image rights remain with their owners.",
       "legalLink": "Legal",
-      "contactHeading": "Subject contact",
+      "contactHeading": "Property contact",
       "aboutHeading": "About this demonstration"
     },
     "provenance": {
@@ -826,7 +826,8 @@
         "noDocuments": "No documents are attached to this apartment",
         "noDocumentsLead": "Contracts, handover records and reports collect here once uploaded.",
         "openDocuments": "Open documents",
-        "open": "Open apartment"
+        "open": "Open apartment",
+        "modelledPriceLabel": "Modelled value"
       },
       "mine": {
         "title": "My apartment",
@@ -1088,6 +1089,10 @@
         "emailRequired": "An email address is required.",
         "genericError": "The enquiry could not be saved. Nothing was written.",
         "unavailable": "The database did not accept the write, so the enquiry was not saved."
+      },
+      "layoutValues": {
+        "penthouse": "Penthouse",
+        "villa": "Villa"
       }
     },
     "pipeline": {
@@ -1345,7 +1350,7 @@
         "posted": "Payment recorded.",
         "duplicate": "This payment was already recorded. Nothing was booked twice.",
         "unavailable": "Nothing can be saved without a database. Nothing was booked.",
-        "notImplemented": "The write path into the database does not exist yet. Nothing was booked.",
+        "notImplemented": "The payment could not be booked. This is not a missing feature: either your profile has no company on it, or the record service did not answer. Nothing was booked — please report it to your administrator.",
         "forbidden": "Your role cannot record payments.",
         "conflict": "The record changed while you were working on it. Reload and try again.",
         "exceedsInvoice": "The amount is more than this invoice still owes. {remaining} remains.",
@@ -2412,7 +2417,7 @@
         },
         "note": {
           "supabase": "Holds all core data.",
-          "storage": "For documents. The storage area has not been created yet, so an upload answers 503.",
+          "storage": "For documents. Both areas exist and the upload path is open; uploading works for the roles permitted to file documents.",
           "aiGateway": "For the assistant's answers.",
           "jira": "Used by a script only, nowhere in the application."
         }
@@ -2761,6 +2766,9 @@
     "live": {
       "updated": "Just updated",
       "offline": "Live connection lost — reload to be sure"
+    },
+    "common": {
+      "demonstrationData": "The operational records here — tickets, ledger entries, documents, appointments and leads — are sample data created for this demonstration. The apartments, blocks and hotel information are real and are shown with their sources."
     }
   },
   "hotel": {
@@ -2919,14 +2927,15 @@
       "storedBody": "Write the number down. It is the only way to check the status later.",
       "referenceLabel": "Your number",
       "unavailableTitle": "Not stored",
-      "unavailableBody": "The report was not recorded and there is no number. Please send it again later.",
+      "unavailableBody": "The report was not recorded and there is no number. This is not a temporary fault: the intake has not been built yet. Please contact site management directly.",
       "throttledTitle": "Too many reports",
       "conflictTitle": "Already sent",
       "invalidTitle": "Please check your entries",
       "errorTitle": "Sending failed",
       "retryAfter": "Please wait {seconds} seconds.",
       "trackCta": "Check status",
-      "haveReference": "Already have a number?"
+      "haveReference": "Already have a number?",
+      "gapNotice": "This form does not store anything yet. There is no intake behind it, so what you write here reaches nobody. If something is urgent, telephone site management directly."
     },
     "track": {
       "title": "Check status",
@@ -3053,7 +3062,7 @@
       "submitting": "Sending …",
       "receivedTitle": "Your request has been received",
       "unavailableTitle": "Not stored",
-      "unavailableBody": "The request was not recorded. Please contact the management directly.",
+      "unavailableBody": "The request was not recorded. This is not a temporary fault: the intake has not been built yet. Please contact site management directly.",
       "throttledTitle": "Too many requests",
       "retryAfter": "Please wait {seconds} seconds.",
       "invalidTitle": "Please check your entries",
@@ -3061,7 +3070,8 @@
       "signIn": "Sign in",
       "plateTitle": "Türkler, Alanya.",
       "plateLead": "Seven blocks on 76,000 square metres, 300 metres from the sea. Access is granted by management.",
-      "backToHome": "Back to home"
+      "backToHome": "Back to home",
+      "gapNotice": "This form does not store anything yet. Your request reaches nobody. To ask for access, contact site management directly."
     },
     "forbidden": {
       "title": "No access",

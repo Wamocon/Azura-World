@@ -178,8 +178,14 @@ export default async function UnitsPage({
                   <span className="font-mono text-sm tabular-nums">
                     {unit.id}
                   </span>
+                  {/* `blockName` is null by design — see `seedBlockRows` — so
+                      the fallback is the ordinary path, not the exception. It
+                      composes the reader's own word for "block" with the code
+                      rather than dropping to a bare "B01". */}
                   <span className="text-sm text-muted-foreground">
-                    {unit.layout} · {unit.blockName ?? unit.blockCode}
+                    {unit.layout} ·{" "}
+                    {unit.blockName ??
+                      `${t("matrix.blockLabel")} ${unit.blockCode}`}
                   </span>
                 </Link>
               </li>

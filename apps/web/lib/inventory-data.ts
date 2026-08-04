@@ -1042,7 +1042,24 @@ export function seedBlockRows(): SeedBlockRow[] {
     id: seedBlockId(code),
     site_id: SEED_SITE_ID,
     code,
-    name: `Block ${code.slice(1)}`,
+    /**
+     * **Null, deliberately.** The block's display name is the reader's word for
+     * "block" plus its code, composed at render time.
+     *
+     * This was `` `Block ${code.slice(1)}` ``, an English literal stored in the
+     * database, so `/tr/dashboard/units` showed seven headings reading
+     * "Block 01" … "Block 07" with Turkish counts beside them, and `/ru` showed
+     * the same. "Block" is not a Turkish word; the Turkish is "blok", and the
+     * catalogue has carried `matrix.blockLabel` = "Blok" / "Блок" the whole
+     * time. The marketing page used it and the inventory two clicks later did
+     * not, so the same building had two names in one language.
+     *
+     * A name stored in one language cannot be a name in four. `name` stays on
+     * the type because a block may one day have a real proper name — "Sunset
+     * Residence" — which is not a translation of anything and should survive
+     * a locale switch. Until one does, it is absent rather than English.
+     */
+    name: null,
     floors: SEED_FLOORS_PER_BUILDING,
     unit_count: unitCount,
     sort_order: index,

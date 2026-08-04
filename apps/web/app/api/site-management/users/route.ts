@@ -11,16 +11,11 @@ import {
   getGuardianships,
   getProfiles,
 } from "@/lib/governance-repository"
-import {
-  createProfile,
-  deleteProfile,
-  updateProfileAuthority,
-} from "@/lib/admin-capability"
-import {
-  createProfileSchema,
-  deleteProfileSchema,
-  updateProfileRoleSchema,
-} from "@/lib/validation/schemas"
+// `createProfile` and `deleteProfile` are no longer imported — see the
+// withdrawal note below. They remain in `lib/admin-capability.ts` so the
+// reasoning and the guards stay reviewable, and nothing calls them.
+import { updateProfileAuthority } from "@/lib/admin-capability"
+import { updateProfileRoleSchema } from "@/lib/validation/schemas"
 import { readBoolean, readEnum, readText } from "@/lib/validation/query"
 import { isValidRole } from "@/lib/rbac"
 
@@ -103,20 +98,48 @@ export const GET = createManifestHandler("getProfiles", {
  * a role change would be the fake success the whole project is built to avoid.
  */
 
-export const POST = createManifestHandler("createProfile", {
-  schema: createProfileSchema,
-  handler: async ({ body, profile }) => {
-    const created = await createProfile({
-      email: body.email,
-      fullName: body.fullName,
-      role: body.role,
-      companyId: body.companyId,
-      language: body.language,
-      actorCompanyId: profile.companyId,
-    })
-    return { data: created, source: "supabase" as const }
-  },
-})
+/**
+ * Creating and deleting a person's record: withdrawn 2026-08-04.
+ *
+ * Both were declared operations — permissioned, rate-limited, audited, and
+ * published in `docs/api/openapi.yaml` — and neither could ever return 200.
+ * `authenticated` holds no INSERT and no DELETE on `profiles`; `createProfile`
+ * supplied no `id` for a NOT NULL primary key that is a foreign key to
+ * `auth.users(id)`, so it could only have written a row nobody could sign in
+ * as; and deletion contradicts the product's own governance rule, "Accounts are
+ * blocked, never deleted. The history has to survive."
+ *
+ * Migration 26 §4 argues the grants stay revoked, so the operations are gone
+ * from the manifest and from the specification. These handlers stay, answering
+ * 405 with the reason, rather than being deleted outright: a consumer that
+ * built against the published document deserves an answer that explains itself
+ * rather than Next's bare "method not allowed".
+ */
+function withdrawn(instead: string): Response {
+  return Response.json(
+    {
+      ok: false,
+      error: {
+        code: "method_not_allowed",
+        message: instead,
+        retryable: false,
+      },
+    },
+    { status: 405, headers: { allow: "GET, PATCH" } }
+  )
+}
+
+export function POST(): Response {
+  return withdrawn(
+    "Accounts are not created through this API. A sign-in account is created in Supabase Auth; this endpoint could only ever have written a profile row nobody could sign in as."
+  )
+}
+
+export function DELETE(): Response {
+  return withdrawn(
+    "Accounts are blocked, never deleted — the history has to survive. Use PATCH with isActive: false."
+  )
+}
 
 export const PATCH = createManifestHandler("updateProfileRole", {
   schema: updateProfileRoleSchema,
@@ -129,16 +152,5 @@ export const PATCH = createManifestHandler("updateProfileRole", {
       expectedVersion: body.expectedVersion,
     })
     return { data: updated, source: "supabase" as const }
-  },
-})
-
-export const DELETE = createManifestHandler("deleteProfile", {
-  schema: deleteProfileSchema,
-  handler: async ({ body, profile }) => {
-    const removed = await deleteProfile({
-      profileId: body.profileId,
-      actorId: profile.id,
-    })
-    return { data: removed, source: "supabase" as const }
   },
 })

@@ -91,11 +91,17 @@ export function integrationStatuses(): readonly IntegrationStatus[] {
     {
       id: "storage",
       // Storage is part of the same project, so its configuration cannot be
-      // more present than Supabase's. It is listed separately because a
-      // configured project with no bucket created is the exact state this
-      // deployment is in (W0-A ran `setup:supabase --dry-run` only), and
-      // folding it into "supabase" would hide that from the person reading
-      // this panel to find out why an upload returned 503.
+      // more present than Supabase's. It is listed separately because the two
+      // can fail independently, and this panel exists for the person reading it
+      // to find out why an upload did not work.
+      //
+      // The comment here used to say "a configured project with no bucket
+      // created is the exact state this deployment is in". That stopped being
+      // true on 2026-08-03, when `azura-documents` and `azura-evidence` were
+      // created — and the copy beside it went on telling administrators to
+      // create a bucket that already existed. The real blocker was never the
+      // bucket: it was a revoked INSERT grant on `documents` and RLS enabled on
+      // `storage.objects` with zero policies, both closed by migration 26.
       state: isSupabaseConfigured()
         ? ("configured_unverified" as const)
         : ("not_configured" as const),

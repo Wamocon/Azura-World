@@ -2,7 +2,7 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto"
 
 import { createManifestHandler } from "@/lib/api-handler"
 import { notFound } from "@/lib/api-errors"
-import { getActivities } from "@/lib/operations-repository"
+import { getActivitiesForCalendarFeed } from "@/lib/operations-repository"
 import { RepositoryError } from "@/lib/repository-base"
 import { serverEnv } from "@/lib/env"
 
@@ -119,11 +119,22 @@ export const GET = createManifestHandler("getCalendarFeed", {
     // grants exactly this and carries no identity, so there is no caller role to
     // widen or narrow it with.
     //
-    // Past this line the token is known good, and that is precisely why the
-    // failure has to be laundered. `getActivities` runs unauthenticated: with
-    // Supabase configured, RLS refuses the read and `withRepository` throws
-    // `forbidden` rather than quietly serving seed data. Letting that reach the
-    // caller answers 403 to a right token and 404 to a wrong one.
+    // Past this line the token is known good, and the failure below still has
+    // to be laundered — but it is no longer the ORDINARY path, which is the bug
+    // this comment used to describe without noticing.
+    //
+    // This read used to be `getActivities({ role: "manager" })`. That runs with
+    // no Supabase session, as `anon`, and `anon` holds no grant on `activities`,
+    // so the read threw on EVERY request, the catch below turned it into the
+    // endpoint's one answer, and the subscription URL the Calendar page prints
+    // returned 404 for the correct token — for the whole life of the feature.
+    // A calendar client never surfaces that: it shows an empty calendar and
+    // keeps polling. Measured 2026-08-04.
+    //
+    // `getActivitiesForCalendarFeed` reads with the service role, which is the
+    // right instrument here for the same reason the old call was wrong: there
+    // is no session to scope by, because the token IS the credential and it was
+    // verified above.
     //
     // The cause is not swallowed — it is logged here, under the same
     // `requestId` the caller was handed, because a feed that cannot read its
@@ -132,7 +143,7 @@ export const GET = createManifestHandler("getCalendarFeed", {
     // no feed is served and none is claimed (SYSTEM-PROMPT honesty rule).
     let result
     try {
-      result = await getActivities({ role: "manager", limit: 200 })
+      result = await getActivitiesForCalendarFeed({ limit: 200 })
     } catch (cause) {
       console.error(
         "azura.calendar.feed-read-failed",

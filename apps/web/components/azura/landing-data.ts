@@ -25,6 +25,18 @@ export const coverage = dataset.coverage
 export const unitSplit = dataset.unitSplit
 export const generatedAt = dataset.generatedAt
 
+/**
+ * The two collections the landing counts, re-exported so a section counts them
+ * rather than writing the count down.
+ *
+ * `system-flow.tsx` had `{ key: "sources", value: 56 }` as a literal under the
+ * label "sources verified", beside a doc comment insisting the figures were
+ * "real and counted, not decoration". The dataset says `sourcesTotal: 60,
+ * sourcesValidated: 45` — 56 is neither. A literal cannot go stale loudly.
+ */
+export const portalListings = dataset.portalListings
+export const findings = dataset.findings
+
 // ---------------------------------------------------------------------------
 // The entry price — F-002, the page's central conflict
 // ---------------------------------------------------------------------------

@@ -826,7 +826,8 @@
         "noDocuments": "Zu dieser Wohnung liegen keine Dokumente",
         "noDocumentsLead": "Verträge, Abnahmen und Berichte sammeln sich hier nach dem Hochladen.",
         "openDocuments": "Dokumente öffnen",
-        "open": "Wohnung öffnen"
+        "open": "Wohnung öffnen",
+        "modelledPriceLabel": "Modellierter Wert"
       },
       "mine": {
         "title": "Meine Wohnung",
@@ -1088,6 +1089,10 @@
         "emailRequired": "Eine E-Mail-Adresse ist erforderlich.",
         "genericError": "Die Anfrage wurde nicht gespeichert. Nichts wurde geschrieben.",
         "unavailable": "Die Datenbank nahm den Schreibvorgang nicht an; die Anfrage wurde nicht gespeichert."
+      },
+      "layoutValues": {
+        "penthouse": "Penthouse",
+        "villa": "Villa"
       }
     },
     "pipeline": {
@@ -1345,7 +1350,7 @@
         "posted": "Zahlung erfasst.",
         "duplicate": "Diese Zahlung wurde bereits erfasst. Es wurde nichts doppelt gebucht.",
         "unavailable": "Ohne Datenbank kann nichts gespeichert werden. Es wurde nichts gebucht.",
-        "notImplemented": "Der Schreibweg in die Datenbank existiert noch nicht. Es wurde nichts gebucht.",
+        "notImplemented": "Die Zahlung konnte nicht gebucht werden. Das ist keine fehlende Funktion: entweder ist Ihrem Profil keine Firma zugeordnet, oder der Schreibdienst hat nicht geantwortet. Es wurde nichts gebucht — bitte melden Sie es Ihrer Administration.",
         "forbidden": "Ihre Rolle darf keine Zahlungen erfassen.",
         "conflict": "Der Vorgang hat sich zwischenzeitlich geändert. Bitte neu laden und erneut versuchen.",
         "exceedsInvoice": "Der Betrag übersteigt den offenen Rest dieser Rechnung. Offen sind noch {remaining}.",
@@ -2412,7 +2417,7 @@
         },
         "note": {
           "supabase": "Trägt alle Stammdaten.",
-          "storage": "Für Dokumente. Der Speicherbereich wurde noch nicht angelegt, deshalb antwortet ein Upload mit 503.",
+          "storage": "Für Dokumente. Beide Bereiche bestehen und der Upload-Pfad ist offen; hochladen können die Rollen, die Dokumente einreichen dürfen.",
           "aiGateway": "Für die Antworten des Assistenten.",
           "jira": "Nur in einem Skript verwendet, in der Anwendung nirgends."
         }
@@ -2761,6 +2766,9 @@
     "live": {
       "updated": "Gerade aktualisiert",
       "offline": "Verbindung getrennt — neu laden"
+    },
+    "common": {
+      "demonstrationData": "Die operativen Datensätze hier — Meldungen, Buchungen, Dokumente, Termine und Anfragen — sind Beispieldaten für diese Demonstration. Wohnungen, Blöcke und Hotelangaben sind echt und werden mit ihren Quellen gezeigt."
     }
   },
   "hotel": {
@@ -2919,14 +2927,15 @@
       "storedBody": "Notieren Sie die Nummer. Nur damit können Sie den Stand abfragen.",
       "referenceLabel": "Ihre Nummer",
       "unavailableTitle": "Nicht gespeichert",
-      "unavailableBody": "Die Meldung wurde nicht erfasst, und es gibt keine Nummer. Bitte später erneut senden.",
+      "unavailableBody": "Die Meldung wurde nicht erfasst und es gibt keine Nummer. Das ist keine vorübergehende Störung: die Annahme ist noch nicht gebaut. Wenden Sie sich bitte direkt an die Verwaltung.",
       "throttledTitle": "Zu viele Meldungen",
       "conflictTitle": "Schon gesendet",
       "invalidTitle": "Bitte Eingaben prüfen",
       "errorTitle": "Nicht gesendet",
       "retryAfter": "Bitte {seconds} Sekunden warten.",
       "trackCta": "Stand abfragen",
-      "haveReference": "Sie haben schon eine Nummer?"
+      "haveReference": "Sie haben schon eine Nummer?",
+      "gapNotice": "Dieses Formular speichert noch nichts. Dahinter liegt keine Annahme — was Sie hier schreiben, erreicht niemanden. Bei Dringlichkeit rufen Sie die Verwaltung direkt an."
     },
     "track": {
       "title": "Stand abfragen",
@@ -3053,7 +3062,7 @@
       "submitting": "Wird gesendet …",
       "receivedTitle": "Anfrage ist eingegangen",
       "unavailableTitle": "Nicht gespeichert",
-      "unavailableBody": "Die Anfrage wurde nicht erfasst. Bitte wenden Sie sich direkt an die Verwaltung.",
+      "unavailableBody": "Die Anfrage wurde nicht erfasst. Das ist keine vorübergehende Störung: die Annahme ist noch nicht gebaut. Wenden Sie sich bitte direkt an die Verwaltung.",
       "throttledTitle": "Zu viele Anfragen",
       "retryAfter": "Bitte {seconds} Sekunden warten.",
       "invalidTitle": "Bitte Eingaben prüfen",
@@ -3061,7 +3070,8 @@
       "signIn": "Anmelden",
       "plateTitle": "Türkler, Alanya.",
       "plateLead": "Sieben Blöcke auf 76.000 Quadratmetern, 300 Meter vom Meer. Zugänge vergibt die Verwaltung.",
-      "backToHome": "Zur Startseite"
+      "backToHome": "Zur Startseite",
+      "gapNotice": "Dieses Formular speichert noch nichts. Ihre Anfrage erreicht niemanden. Für einen Zugang wenden Sie sich bitte direkt an die Verwaltung."
     },
     "forbidden": {
       "title": "Kein Zugriff",

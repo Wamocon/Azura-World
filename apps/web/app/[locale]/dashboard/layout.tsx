@@ -3,7 +3,9 @@ import { setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { getUserProfile } from "@/lib/auth"
+import type { Locale } from "@/lib/contracts"
 import { hasPermission } from "@/lib/rbac"
+import { DemonstrationDataNotice } from "@/components/dashboard/demonstration-data-notice"
 import { UserProvider } from "@/components/user-provider"
 import { SIDEBAR_COOKIE } from "@/lib/dashboard-routing"
 
@@ -85,6 +87,12 @@ export default async function DashboardLayout({
                 arrival, so a navigation reads as the page settling rather than
                 as a flash. It has to be a client component to replay per
                 route — the reason is in that file. */}
+            {/* Said once, in the shell, because the landing promises fixtures
+                are marked "throughout the system" and eighteen independently
+                wired per-page notices is exactly how that became true in
+                eighteen places and false in the product. It counts the rows
+                rather than asserting, so it removes itself. */}
+            <DemonstrationDataNotice locale={locale as Locale} />
             <DashboardRouteGuard mayViewDashboard={mayViewDashboard}>
               <DashboardContent>{children}</DashboardContent>
             </DashboardRouteGuard>

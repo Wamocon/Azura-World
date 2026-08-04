@@ -11,7 +11,12 @@ import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { Counter } from "@/components/anim/counter"
-import { coverage, unitSplit } from "@/components/azura/landing-data"
+import {
+  coverage,
+  findings,
+  portalListings,
+  unitSplit,
+} from "@/components/azura/landing-data"
 import { Container, Panel, Section } from "@/components/azura/section"
 import { WorkspacePreview } from "@/components/azura/workspace-preview"
 import { Donut, StackedBar } from "@/components/charts"
@@ -34,12 +39,16 @@ import { intlLocaleTag } from "@/lib/format"
  *
  * ## The numbers are real and counted, not decoration
  *
- * 656 units, 47 watched portal listings, 56 verified sources, 24 findings — all
+ * They are now. This paragraph used to make that claim over six hardcoded
+ * literals, one of which — "56 verified sources" — matched nothing in the
+ * dataset, which records `sourcesTotal: 60, sourcesValidated: 45`. See `STATS`.
+ *
+ * Units, watched portal listings, verified sources and findings are all read
  * from the dataset (`landing-data`, and the harvest the evidence cockpit reads).
- * 11 roles and 4 languages are constants of the build. Nothing here is invented;
- * a landing that shows a KPI it cannot back is the exact failure this product
- * exists to avoid. The count-up is `Counter`, which renders the final value
- * under reduced motion and never a partial frame.
+ * 11 roles and 4 languages are constants of the build. A landing that shows a
+ * KPI it cannot back is the exact failure this product exists to avoid. The
+ * count-up is `Counter`, which renders the final value under reduced motion and
+ * never a partial frame.
  *
  * ## The flow is the ticket lifecycle, which actually exists
  *
@@ -59,12 +68,34 @@ const STEP_ICONS: Record<string, LucideIcon> = {
 
 const STEPS = ["report", "assign", "work", "review", "settle"] as const
 
-/** The counted figures. `value` is the real number; `suffix` is rare. */
+/**
+ * The counted figures — **read from the dataset, never written down here.**
+ *
+ * Every one of these was a hardcoded literal, under a doc comment two paragraphs
+ * up asserting they were "real and counted, not decoration". One of them was
+ * wrong in the direction that matters: `sources: 56` sat under the label
+ * "SOURCES VERIFIED", while the dataset's own coverage block says
+ * `sourcesTotal: 60, sourcesValidated: 45`. 56 is neither number. Fifteen of the
+ * sixty never returned a readable page — three DNS timeouts, three 404s, one
+ * 500, two robots-disallowed, one soft-404, one redirect — so the marketing
+ * surface of an evidence product overstated its own verified evidence by about
+ * a quarter.
+ *
+ * A literal cannot go stale loudly; it goes stale silently, which is why the
+ * comment could keep claiming the numbers were counted long after they were
+ * not. These now move when the harvest moves.
+ *
+ * `roles` and `languages` stay literal because they are constants of the build,
+ * not observations: eleven roles in the `Role` union, four message catalogues.
+ */
 const STATS: ReadonlyArray<{ key: string; value: number; suffix?: string }> = [
-  { key: "units", value: 656 },
-  { key: "listings", value: 47 },
-  { key: "sources", value: 56 },
-  { key: "findings", value: 24 },
+  { key: "units", value: unitSplit.total },
+  { key: "listings", value: portalListings.length },
+  // Validated, because the label says "sources verified". `sourcesTotal` (60)
+  // is the size of the register, which is a different claim and not the one the
+  // label makes. The literal here was 56, which is neither figure.
+  { key: "sources", value: coverage.sourcesValidated },
+  { key: "findings", value: findings.length },
   { key: "roles", value: 11 },
   { key: "languages", value: 4 },
 ]

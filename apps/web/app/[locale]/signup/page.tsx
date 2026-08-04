@@ -72,6 +72,18 @@ export default async function SignupPage({
         </p>
       </header>
 
+      {/* `requestAccess` returns `unavailable` unconditionally — there is no
+          access-request repository, and the action's own comment says the
+          temptation to fake a "we'll be in touch" is what costs a real person
+          their access. Correct, and said one submit too late: this is the route
+          the login page advertises as the way in. */}
+      <p
+        role="status"
+        className="rounded-lg border border-confidence-gap/40 bg-confidence-gap/10 px-4 py-3 text-[0.9375rem] leading-[1.6] text-foreground"
+      >
+        {t("gapNotice")}
+      </p>
+
       <PublicAccessRequest
         labels={{
           fullName: t("name"),

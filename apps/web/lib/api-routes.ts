@@ -1137,21 +1137,25 @@ export const apiRoutes: readonly RouteEntry[] = [
         ],
         responses: [200],
       },
-      {
-        method: "POST",
-        operationId: "createProfile",
-        summary: "Create a person's record.",
-        description:
-          "Creates the profile row and its role. It does NOT create a sign-in account: auth.users is written by Supabase Auth's admin API, which needs the service-role key and a mail path, and neither is configured here. The response says so rather than implying an invitation was sent.",
-        tag: "Governance",
-        permission: "users:create",
-        rateLimit: WRITE_LIMIT,
-        audit: { action: "profile.created", entity: "profiles" },
-        requiresPersistence: true,
-        idempotent: true,
-        requestSchema: "createProfileSchema",
-        responses: [200, 409, 503],
-      },
+      // WITHDRAWN 2026-08-04: `POST` (createProfile) and `DELETE`
+      // (deleteProfile) on this path. Both were declared here, served in
+      // `docs/api/openapi.yaml`, permissioned, rate-limited and audited, and
+      // neither could ever return 200.
+      //
+      //   - `authenticated` holds no INSERT and no DELETE on `profiles`, and
+      //     migration 26 §4 argues at length that it must not;
+      //   - `createProfile` supplies no `id`, and `profiles.id` is NOT NULL
+      //     with no default and a foreign key to `auth.users(id)`. Creating an
+      //     account is Supabase Auth's business, and the users page already says
+      //     so: "Invitations are not possible yet. We do not show a form that
+      //     would save nowhere.";
+      //   - deletion contradicts the product's own governance copy, "Accounts
+      //     are blocked, never deleted. The history has to survive", and the
+      //     in-app action has always answered "Always refused."
+      //
+      // A published specification describing a call that cannot succeed is
+      // worse than no specification: a consumer builds against it. The route
+      // handlers now answer 405 naming the reason.
       {
         method: "PATCH",
         operationId: "updateProfileRole",
@@ -1164,20 +1168,6 @@ export const apiRoutes: readonly RouteEntry[] = [
         audit: { action: "profile.authority_changed", entity: "profiles" },
         requiresPersistence: true,
         requestSchema: "updateProfileRoleSchema",
-        responses: [200, 403, 404, 409, 503],
-      },
-      {
-        method: "DELETE",
-        operationId: "deleteProfile",
-        summary: "Delete a person's record.",
-        description:
-          "Succeeds only for somebody who has never acted. audit_events.actor_profile_id references profiles(id) ON DELETE RESTRICT, so deleting an actor would take the record of their actions with them and Postgres refuses; the 409 names deactivation as the alternative. The last-administrator guard applies here too.",
-        tag: "Governance",
-        permission: "users:delete",
-        rateLimit: WRITE_LIMIT,
-        audit: { action: "profile.deleted", entity: "profiles" },
-        requiresPersistence: true,
-        requestSchema: "deleteProfileSchema",
         responses: [200, 403, 404, 409, 503],
       },
     ],

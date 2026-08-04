@@ -16,6 +16,7 @@ import {
   PanelLeftOpen,
   ReceiptText,
   Settings,
+  ServerCog,
   ShieldCheck,
   Star,
   Tags,
@@ -71,6 +72,10 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard,
   ShieldCheck,
+  // Administration. Distinct from ShieldCheck, which Evidence already uses —
+  // two identical glyphs in one sidebar is a navigation defect, not a style
+  // preference: the icon is what a returning user aims at.
+  ServerCog,
   FileBarChart,
   Building2,
   Tags,

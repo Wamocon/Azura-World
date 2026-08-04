@@ -1,7 +1,7 @@
 "use client"
 
 import { ShieldAlert } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 
 import { Link, usePathname } from "@/app/navigation"
@@ -48,6 +48,13 @@ export function DashboardRouteGuard({
   const locale = useLocale()
   const pathname = usePathname()
   const copy = shellCopy(locale)
+  /**
+   * The refusal names the role the reader is in, and named it with the raw
+   * database enum — "guest" on a Turkish page. This is the one screen where a
+   * person most needs to understand which role they are in, so it is the worst
+   * place to hand them an identifier. The translated labels already exist.
+   */
+  const tRoles = useTranslations("dashboard.users.roles")
 
   // `usePathname` from `@/app/navigation` is next-intl's, so it is already
   // locale-stripped — `/de/dashboard/units` arrives as `/dashboard/units`.
@@ -91,7 +98,9 @@ export function DashboardRouteGuard({
         {copy.forbiddenTitle}
       </h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
-        {fill(copy.forbiddenBody, { role: user.role })}
+        {fill(copy.forbiddenBody, {
+          role: tRoles(user.role as "guest"),
+        })}
       </p>
 
       {/* A role with nothing to offer gets no button. A dead-end link that

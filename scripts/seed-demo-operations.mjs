@@ -16,7 +16,7 @@
  *   threads · messages · notifications · hotel_rooms
  *
  * That is seventeen of the twenty-four dashboard routes with nothing to render.
- * Tickets says "Keine Tickets", Finanzen says "Noch keine Beträge", and the home
+ * Tickets says "Talep yok", Finans says "Henüz tutar yok", and the home
  * KPIs read 0 / 0 / 0 — so the demo shows a property-management system that has
  * never managed anything. No amount of visual work fixes that; a restyled empty
  * table is a prettier empty table.
@@ -250,45 +250,49 @@ const residentOf = (unit) => UNIT_RESIDENT[unit] ?? null
 // Builders
 // ---------------------------------------------------------------------------
 
+/**
+ * **Empty, and that is the correct answer.** Removed 2026-08-04.
+ *
+ * This used to return six room types — Standardzimmer 96, Standardzimmer
+ * Meerblick 42, Familienzimmer 28, Superior-Zimmer 14, Suite 6, King-Suite 2 —
+ * each with an interior area, a maximum occupancy and a sea-view flag, and
+ * `source_url` null on every single one. `/dashboard/hotel` rendered them under
+ * the lead "What the sources state about the hotel", and then asserted that the
+ * published types account for exactly the stated 188 rooms.
+ *
+ * No source publishes a room-type breakdown for this property. Only the total,
+ * which lives on `hotels.room_count` and is itself `conflicted` (188 here, 112
+ * from Wyndham Alanya). Everything else on those six rows was invented, and
+ * `lib/hotel-data.ts:seedHotelRooms()` — the module this one is supposed to
+ * mirror — says so in as many words: "Seeding invented room types … to make a
+ * panel render is exactly the fabrication SYSTEM-PROMPT §2.3 forbids: a
+ * plausible-looking made-up figure is worse than a visible gap."
+ *
+ * The old comment here defended the choice on the wrong axis. It argued against
+ * inventing 188 individual rooms, which would indeed have been worse, and took
+ * that as licence to invent six aggregates instead. Fewer fabricated rows is
+ * still fabricated rows.
+ *
+ * They were also German product nouns presented as a Turkish hotel's own room
+ * names, on the Turkish, English and Russian pages alike.
+ */
 function hotelRooms() {
-  // The 188 rooms as the six types the hotel publishes, not 188 rows: the
-  // dataset has a room COUNT, not a room register, and inventing 188 numbered
-  // rooms would be fabricating a level of detail no source supports.
-  const types = [
-    ["STD", "Standardzimmer", "standard", 96, 28, 3, false],
-    ["STD-SV", "Standardzimmer Meerblick", "standard", 42, 28, 3, true],
-    ["FAM", "Familienzimmer", "family", 28, 42, 5, false],
-    ["SUP", "Superior-Zimmer", "superior", 14, 36, 3, true],
-    ["SUI", "Suite", "suite", 6, 62, 4, true],
-    ["KSUI", "King-Suite", "suite", 2, 88, 4, true],
-  ]
-  return types.map(([code, name, room_type, room_count, interior_m2, max_occupancy, has_sea_view], i) => ({
-    id: uid("a1000001", i + 1),
-    hotel_id: HOTEL,
-    code,
-    name,
-    room_type,
-    room_count,
-    interior_m2,
-    max_occupancy,
-    has_sea_view,
-    sort_order: i,
-  }))
+  return []
 }
 
 function tickets() {
   const r = rng(1201)
   const categories = ["maintenance", "cleaning", "technical", "amenity", "security", "billing", "concierge", "inspection", "complaint"]
   const titles = {
-    maintenance: ["Wasserhahn im Bad tropft", "Rollladen klemmt", "Türschloss schwergängig", "Heizkörper wird nicht warm", "Fuge im Duschbereich erneuern"],
-    cleaning: ["Treppenhaus B03 reinigen", "Tiefgarage kehren", "Poolbereich nach Sturm säubern", "Fensterreinigung Fassade Süd"],
-    technical: ["Aufzug B02 bleibt stehen", "Lüftung Tiefgarage laut", "Poolpumpe verliert Druck", "Notbeleuchtung Etage 4 defekt", "Gegensprechanlage ohne Ton"],
-    amenity: ["Liegen am Hauptpool ergänzen", "Aquapark-Rutsche gesperrt", "Fitnessgerät wartungsfällig", "Sonnenschirm gerissen"],
-    security: ["Schranke Zufahrt öffnet verzögert", "Kamera Eingang Ost ohne Bild", "Zutrittskarte funktioniert nicht"],
-    billing: ["Nebenkostenabrechnung unklar", "Doppelte Abbuchung geprüft", "Zahlungserinnerung strittig"],
-    concierge: ["Paketannahme außerhalb der Zeiten", "Transferwunsch Flughafen", "Schlüsselübergabe organisieren"],
-    inspection: ["Abnahme nach Malerarbeiten", "Brandschutzbegehung Block B05", "Zwischenabnahme Wohnung"],
-    complaint: ["Lärm aus Nachbarwohnung", "Rauchen im Treppenhaus", "Falschparker auf Besucherplatz"],
+    maintenance: ["Banyo bataryası damlatıyor", "Panjur sıkışıyor", "Kapı kilidi zor dönüyor", "Radyatör ısınmıyor", "Duş alanındaki derz yenilenmeli"],
+    cleaning: ["B03 merdiven boşluğu temizliği", "Kapalı otopark süpürülecek", "Fırtına sonrası havuz alanı temizliği", "Güney cephe cam temizliği"],
+    technical: ["B02 asansörü duruyor", "Otopark havalandırması gürültülü", "Havuz pompası basınç kaybediyor", "4. kat acil aydınlatması arızalı", "Diafon sesi gelmiyor"],
+    amenity: ["Ana havuza şezlong eklenmeli", "Aquapark kaydırağı kapalı", "Spor aleti bakım zamanı geldi", "Şemsiye yırtılmış"],
+    security: ["Giriş bariyeri geç açılıyor", "Doğu giriş kamerası görüntü vermiyor", "Geçiş kartı çalışmıyor"],
+    billing: ["Aidat hesabı anlaşılmıyor", "Çift tahsilat incelendi", "Ödeme hatırlatması itirazlı"],
+    concierge: ["Mesai dışı kargo teslim alma", "Havalimanı transfer talebi", "Anahtar teslimi organizasyonu"],
+    inspection: ["Boya işleri sonrası kabul", "B05 blok yangın güvenliği turu", "Daire ara kabulü"],
+    complaint: ["Komşu daireden gürültü", "Merdiven boşluğunda sigara", "Ziyaretçi yerine hatalı park"],
   }
   const rows = []
   const events = []
@@ -311,8 +315,8 @@ function tickets() {
     // THE SLA HAS TO BE MOSTLY MET, or the board is a wall of red and the
     // badge stops carrying information. The first build set `sla_due_at` to
     // `reported_at + slaHours` for every ticket; since every ticket is in the
-    // past, all 42 rendered "Frist überschritten" and the home KPI read
-    // "SLA überschritten 42". Screenshotted, and it made the demo look like an
+    // past, all 42 rendered "Süre aşıldı" and the home KPI read
+    // "SLA aşıldı 42". Screenshotted, and it made the demo look like an
     // operation that has never once hit a deadline.
     //
     // So a breach is chosen deliberately, for one ticket in six, and the due
@@ -332,7 +336,7 @@ function tickets() {
       unit_id: r() > 0.45 ? pick(r, RESIDENT_UNITS) : null,
       ticket_no: `TCK-${String(1000 + i)}`,
       title,
-      description: `${title}. Gemeldet über das Bewohnerportal, Standort Azura World Türkler.`,
+      description: `${title}. Sakin portalı üzerinden bildirildi, konum Azura World Türkler.`,
       category,
       priority,
       status,
@@ -371,7 +375,7 @@ function tickets() {
       events.push(event(2, "assigned", P.manager, "open", "assigned", "Zugewiesen an den technischen Dienst.", at(reportedDays, 3)))
     }
     if (resolved) {
-      events.push(event(3, "resolved", assigned ?? P.staff, "in_progress", "resolved", "Arbeiten abgeschlossen, Rückmeldung an den Melder.", at(reportedDays + 2)))
+      events.push(event(3, "resolved", assigned ?? P.staff, "in_progress", "resolved", "İşler tamamlandı, bildirimi yapana geri dönüş yapıldı.", at(reportedDays + 2)))
     }
   }
   return { rows, events }
@@ -379,7 +383,7 @@ function tickets() {
 
 function workforceTasks(ticketRows) {
   const r = rng(2202)
-  const teams = ["Technik", "Reinigung", "Garten", "Sicherheit", "Pool"]
+  const teams = ["Teknik", "Temizlik", "Bahçe", "Güvenlik", "Havuz"]
   return ticketRows
     .filter((t) => t.assignee_profile_id !== null)
     .slice(0, 26)
@@ -403,13 +407,13 @@ function workforceTasks(ticketRows) {
         checklist: {
           ...DEMO,
           steps: [
-            { label: "Vor Ort geprüft", done: true },
+            { label: "Yerinde kontrol edildi", done: true },
             { label: "Material beschafft", done: done },
-            { label: "Ausgeführt", done: done },
+            { label: "Yapıldı", done: done },
             { label: "Abgenommen", done: done && r() > 0.4 },
           ],
         },
-        field_note: done ? "Ausgeführt und abgenommen." : "In Bearbeitung.",
+        field_note: done ? "Yapıldı ve kabul edildi." : "In Bearbeitung.",
         metadata: { ...DEMO },
       }
     })
@@ -418,18 +422,18 @@ function workforceTasks(ticketRows) {
 function activities() {
   const r = rng(3303)
   const set = [
-    ["wellness", "Yoga am Pool", "Poolterrasse", 20],
-    ["wellness", "Aqua-Fitness", "Hauptpool", 16],
+    ["wellness", "Havuz başında yoga", "Havuzterrasse", 20],
+    ["wellness", "Su jimnastiği", "Hauptpool", 16],
     ["sports", "Tennisturnier", "Tennisplatz", 16],
     ["sports", "Beachvolleyball", "Strandbereich", 12],
     ["kids", "Kinderclub Basteln", "Kinderclub", 24],
-    ["kids", "Schatzsuche im Garten", "Gartenanlage", 30],
+    ["kids", "Bahçede hazine avı", "Bahçeanlage", 30],
     ["social", "Willkommensabend", "Lobby-Bar", 60],
-    ["social", "Livemusik am Abend", "Poolbar", 80],
-    ["dining", "Türkischer Abend", "Hauptrestaurant", 120],
+    ["social", "Akşam canlı müzik", "Havuz bar", 80],
+    ["dining", "Türk gecesi", "Hauptrestaurant", 120],
     ["dining", "Grillabend am Strand", "Strandbereich", 70],
     ["excursion", "Ausflug Alanya-Burg", "Treffpunkt Lobby", 25],
-    ["maintenance_window", "Wartung Poolpumpe", "Technikraum", null],
+    ["maintenance_window", "Havuz pompası bakımı", "Teknikraum", null],
   ]
   const rows = []
   for (let i = 0; i < 30; i++) {
@@ -461,17 +465,17 @@ function documents() {
   // values (documents_category); anything else is rejected at insert.
   const set = [
     ["Kaufvertrag", "contract", "vertraege"],
-    ["Übergabeprotokoll", "handover", "protokolle"],
+    ["Teslim tutanağı", "handover", "tutanaklar"],
     ["Energieausweis", "permit", "nachweise"],
     ["Hausordnung", "general", "allgemein"],
-    ["Nebenkostenabrechnung 2025", "invoice", "finanzen"],
-    ["Brandschutzprotokoll", "inspection", "protokolle"],
-    ["Wartungsvertrag Aufzug", "contract", "vertraege"],
-    ["Versicherungspolice Gebäude", "insurance", "nachweise"],
+    ["Aidat hesabı 2025", "invoice", "finanzen"],
+    ["Yangın güvenliği tutanağı", "inspection", "tutanaklar"],
+    ["Asansör bakım sözleşmesi", "contract", "vertraege"],
+    ["Bina sigorta poliçesi", "insurance", "nachweise"],
     ["Eigentumsurkunde", "title_deed", "nachweise"],
-    ["Abnahmeprotokoll Malerarbeiten", "handover", "protokolle"],
-    ["Prüfbericht Poolwasser", "inspection", "protokolle"],
-    ["Schriftverkehr Bauträger", "correspondence", "allgemein"],
+    ["Boya işleri kabul tutanağı", "handover", "tutanaklar"],
+    ["Havuz suyu analiz raporu", "inspection", "tutanaklar"],
+    ["Müteahhit yazışmaları", "correspondence", "allgemein"],
   ]
   return set.flatMap(([title, category, folder], i) =>
     [0, 1].map((k) => {
@@ -534,7 +538,7 @@ function compliance() {
   // "overdue" status; none of them exist. Overdue is expressed by a `due_at` in
   // the past on a still-`pending` check, which is what the UI reads anyway.
   const checks = [
-    ["fire_safety", "Brandschutzprüfung", "high"],
+    ["fire_safety", "Yangın güvenliği denetimi", "high"],
     ["occupancy_permit", "Nutzungsgenehmigung", "high"],
     ["building_permit", "Baugenehmigung", "high"],
     ["energy_certificate", "Energieausweis", "medium"],
@@ -543,9 +547,9 @@ function compliance() {
     ["gdpr_consent", "Einwilligungen nach KVKK", "medium"],
     ["tax_registration", "Steuerliche Registrierung", "low"],
     ["title_deed", "Eigentumsnachweis", "high"],
-    ["contract_review", "Vertragsprüfung", "medium"],
-    ["vendor_due_diligence", "Lieferantenprüfung", "low"],
-    ["kyc_identity", "Identitätsprüfung", "medium"],
+    ["contract_review", "Sözleşme denetimi", "medium"],
+    ["vendor_due_diligence", "Tedarikçi denetimi", "low"],
+    ["kyc_identity", "Kimlik doğrulama", "medium"],
   ]
   return checks.map(([check_type, label, risk_level], i) => {
     const overdue = i % 5 === 0
@@ -599,7 +603,7 @@ function leadsAndPipeline() {
       desired_layout: pick(r, layouts),
       assigned_to: P.manager,
       score: between(r, 20, 98),
-      notes: "Interesse an der Anlage. Kontaktdaten sind Beispieldaten.",
+      notes: "Sitemize ilgi gösterdi. İletişim bilgileri örnek veridir.",
       last_contacted_at: at(created + between(r, 1, 20)),
       next_action_at: ["won", "lost", "dormant"].includes(status) ? null : at(between(r, 1, 21)),
       lost_reason: status === "lost" ? "Budget nicht ausreichend." : null,
@@ -661,7 +665,7 @@ function finance() {
           debit_amount: amount,
           credit_amount: 0,
           currency: "EUR",
-          description: { dues: "Hausgeld", service_charge: "Nebenkosten", utility: "Verbrauch" }[kind],
+          description: { dues: "Aidat", service_charge: "Aidat", utility: "Tüketim" }[kind],
           reference: `${label}/${unit}`,
           metadata: { ...DEMO },
         })
@@ -685,7 +689,7 @@ function finance() {
             debit_amount: 0,
             credit_amount: amount,
             currency: "EUR",
-            description: "Zahlungseingang",
+            description: "Ödeme girişi",
             reference: `${label}/${unit}/PAY`,
             metadata: { ...DEMO },
           })
@@ -748,11 +752,11 @@ function wallets() {
  * which it can only do if some jobs genuinely produce no invoice.
  */
 const TRADE_FOR_CATEGORY = {
-  maintenance: ["Alanya Teknik Servis", "Instandsetzung"],
+  maintenance: ["Alanya Teknik Servis", "Onarım"],
   technical: ["Enerji Bakım", "Technischer Einsatz"],
-  security: ["Güvenlik 24", "Sicherheitstechnik"],
+  security: ["Güvenlik 24", "Güvenlikstechnik"],
   cleaning: ["Akdeniz Temizlik", "Sonderreinigung"],
-  amenity: ["Peyzaj Bahçe", "Außenanlage"],
+  amenity: ["Peyzaj Bahçe", "Dış alan"],
 }
 
 /**
@@ -810,7 +814,7 @@ function ticketInvoices(ticketRows) {
       issued_on: issuedOn,
       due_on: dueOn,
       ticket_id: ticket.id,
-      notes: `${subject}: ${ticket.title} · Beispieldaten`,
+      notes: `${subject}: ${ticket.title} · Örnek veri`,
     }
   })
 }
@@ -852,11 +856,11 @@ function vendorPayments(invoiceRows) {
 function vendorInvoices() {
   const r = rng(8808)
   const vendors = [
-    ["Alanya Teknik Servis", "Aufzugswartung"],
-    ["Türkler Havuz", "Poolchemie und Wartung"],
-    ["Akdeniz Temizlik", "Reinigung Gemeinschaftsflächen"],
-    ["Güvenlik 24", "Sicherheitsdienst"],
-    ["Peyzaj Bahçe", "Gartenpflege"],
+    ["Alanya Teknik Servis", "Asansör bakımı"],
+    ["Türkler Havuz", "Havuz kimyasalı ve bakımı"],
+    ["Akdeniz Temizlik", "Ortak alan temizliği"],
+    ["Güvenlik 24", "Güvenliksdienst"],
+    ["Peyzaj Bahçe", "Bahçepflege"],
     ["Enerji Bakım", "Notstrom und Elektrik"],
   ]
   return Array.from({ length: 18 }, (_, i) => {
@@ -885,7 +889,7 @@ function vendorInvoices() {
       ticket_id: null,
       // No `metadata` column on this table, so the demo marker cannot live in
       // one. The id prefix is the marker instead — see WIPE_FILTER.
-      notes: `${subject} · Beispieldaten`,
+      notes: `${subject} · Örnek veri`,
     }
   })
 }
@@ -893,18 +897,18 @@ function vendorInvoices() {
 function messaging() {
   const r = rng(9909)
   const subjects = [
-    ["Nebenkosten 2025 - Rückfrage", "billing"],
-    ["Schlüsselübergabe Termin", "concierge"],
-    ["Wasserschaden Bad", "maintenance"],
-    ["Zutritt für Handwerker", "access"],
+    ["2025 aidatı - soru", "billing"],
+    ["Anahtar teslim randevusu", "concierge"],
+    ["Banyoda su hasarı", "maintenance"],
+    ["Usta için giriş izni", "access"],
     ["Parkplatz dauerhaft belegt", "complaint"],
-    ["Poolzeiten im August", "general"],
+    ["Havuzzeiten im August", "general"],
     ["Internetanschluss langsam", "technical"],
-    ["Bestätigung Zahlungseingang", "billing"],
+    ["Ödeme alındı teyidi", "billing"],
     ["Hausordnung - Ruhezeiten", "general"],
-    ["Abnahme nach Malerarbeiten", "handover"],
-    ["Kaution Rückzahlung", "billing"],
-    ["Anfrage Ferienvermietung", "general"],
+    ["Boya işleri sonrası kabul", "handover"],
+    ["Depozito iadesi", "billing"],
+    ["Kısa dönem kiralama talebi", "general"],
   ]
   const threadRows = []
   const messageRows = []
@@ -944,8 +948,8 @@ function messaging() {
         sender_profile_id: fromResident ? P.tenant : P.manager,
         sender_kind: "user",
         body: fromResident
-          ? `Guten Tag, es geht um ${subject.toLowerCase()}. Können Sie das bitte prüfen?`
-          : "Vielen Dank für Ihre Nachricht. Wir haben den Vorgang aufgenommen und melden uns zurück.",
+          ? `Merhaba, ${subject.toLowerCase()}. konusunda kontrol edebilir misiniz?`
+          : "Mesajınız için teşekkür ederiz. Kaydınızı aldık, en kısa sürede dönüş yapacağız.",
         channel: "portal",
         locale: "de",
         is_internal_note: false,
@@ -980,11 +984,11 @@ function notifications() {
   // notification lists were German regardless of the language they had chosen.
   const set = [
     ["service", "info", "service.ticketAssigned", "Neue Meldung zugewiesen", "Ein Vorgang wurde Ihnen zugewiesen.", "/dashboard/tickets"],
-    ["finance", "warning", "finance.itemOverdue", "Offener Posten fällig", "Eine Position ist seit mehr als 14 Tagen offen.", "/dashboard/finance"],
-    ["compliance", "critical", "compliance.checkOverdue", "Prüfung überfällig", "Eine Pflichtprüfung hat die Frist überschritten.", "/dashboard/compliance"],
-    ["document", "info", "document.approved", "Dokument freigegeben", "Ein Dokument wurde geprüft und freigegeben.", "/dashboard/documents"],
-    ["announcement", "info", "lead.received", "Neue Anfrage", "Über das Portal ist eine Anfrage eingegangen.", "/dashboard/leads"],
-    ["service", "warning", "service.slaBreached", "Frist überschritten", "Ein Vorgang hat seine Bearbeitungsfrist überschritten.", "/dashboard/tickets"],
+    ["finance", "warning", "finance.itemOverdue", "Açık kalem vadesi geldi", "Bir kalem 14 günden uzun süredir açık.", "/dashboard/finance"],
+    ["compliance", "critical", "compliance.checkOverdue", "Denetim gecikti", "Zorunlu bir denetim süresini aştı.", "/dashboard/compliance"],
+    ["document", "info", "document.approved", "Belge onaylandı", "Bir belge incelendi ve onaylandı.", "/dashboard/documents"],
+    ["announcement", "info", "lead.received", "Yeni talep", "Portal üzerinden bir talep geldi.", "/dashboard/leads"],
+    ["service", "warning", "service.slaBreached", "Süre aşıldı", "Bir kayıt işlem süresini aştı.", "/dashboard/tickets"],
     ["message", "info", "message.residentReplied", "Neue Nachricht", "Ein Bewohner hat auf einen Vorgang geantwortet.", "/dashboard/communications"],
     ["finance", "warning", "finance.walletLow", "Guthaben niedrig", "Ein Wallet liegt unter der Warnschwelle.", "/dashboard/wallet"],
   ]

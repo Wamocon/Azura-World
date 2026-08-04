@@ -432,6 +432,12 @@ export default async function LeadsPage({
                   noBudget: t("card.noBudget"),
                   layout: t("card.layout"),
                   noLayout: t("card.noLayout"),
+                  // Only the word-valued layouts need a label; `1+1` is
+                  // already the reader's own notation in every locale.
+                  layoutValues: {
+                    penthouse: t("layoutValues.penthouse"),
+                    villa: t("layoutValues.villa"),
+                  },
                   assigned: t("card.assigned"),
                   unassigned: t("card.unassigned"),
                   assignedUnnamed: directoryReadable
@@ -465,6 +471,13 @@ interface LeadCardLabels {
   noBudget: string
   layout: string
   noLayout: string
+  /**
+   * Only the word-valued layouts. `1+1` … `5+1` are the Turkish room-count
+   * convention and are already the reader's own notation in every locale, so
+   * they fall through the lookup unchanged; `penthouse` and `villa` are English
+   * enum values that were being printed raw.
+   */
+  layoutValues: Readonly<Record<string, string>>
   assigned: string
   unassigned: string
   assignedUnnamed: string
@@ -566,9 +579,17 @@ function LeadCard({
           )}
         </Field>
 
+        {/* `1+1` … `5+1` are the Turkish room-count convention and are already
+            the reader's own notation, so they pass through untouched. The two
+            word values — `penthouse` and `villa` — were printed straight from
+            the column, so ten of twenty-four lead cards showed lowercase
+            English under 'İSTENEN PLAN' beside the fourteen that read `2+1`.
+            A mixed-register field on the primary locale. */}
         <Field label={labels.layout}>
-          {lead.desiredLayout ?? (
+          {lead.desiredLayout === null ? (
             <span className="text-muted-foreground">{labels.noLayout}</span>
+          ) : (
+            (labels.layoutValues[lead.desiredLayout] ?? lead.desiredLayout)
           )}
         </Field>
 

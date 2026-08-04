@@ -72,6 +72,22 @@ export default async function ReportPage({
         <p className="text-sm text-muted-foreground">{t("privacy")}</p>
       </header>
 
+      {/* Said before the form, not after the submit.
+
+          This page took a flood report from somebody with no account and no
+          other channel, and told them afterwards that it had not been stored.
+          The intake is a declared write gap — `writeGap: gap("Public report
+          intake")` in the manifest, answered 503 before the handler runs — so
+          it is not an outage and never resolves by waiting. Somebody who is
+          going to be turned away should be turned away before they compose the
+          report, and pointed at something that works. */}
+      <p
+        role="status"
+        className="rounded-lg border border-confidence-gap/40 bg-confidence-gap/10 px-4 py-3 text-sm leading-relaxed text-foreground"
+      >
+        {t("gapNotice")}
+      </p>
+
       <PublicReportForm
         idempotencyKey={randomUUID()}
         trackHref={`/${locale}/report/track`}

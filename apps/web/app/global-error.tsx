@@ -112,28 +112,43 @@ export default function GlobalError({
   const ref = toReference(error.digest)
 
   return (
-    <html lang="de" dir="ltr">
+    // `lang="tr"`, the default locale. This replaces the root document
+    // entirely, so it cannot know the reader's locale — but asserting German
+    // was the one answer guaranteed wrong for the primary audience, and a
+    // screen reader was being told to pronounce four languages as German.
+    <html lang="tr" dir="ltr">
       <body style={page}>
         <main id="main" style={card}>
-          <h1 style={heading}>Es ist ein Fehler aufgetreten.</h1>
+          {/* Four languages, Turkish first — same reason as `not-found.tsx`.
+              This component replaces the whole document when the root layout
+              itself has failed, so there is no `next-intl` provider and no
+              locale to read. Rendering all four is the honest answer to having
+              none, and an error page is the last place to make somebody read a
+              language they do not speak. */}
+          <h1 style={heading}>Bir hata oluştu.</h1>
           <p style={subheading}>Something went wrong. Please try again.</p>
+          <p style={subheading}>Произошла ошибка.</p>
+          <p style={subheading}>Es ist ein Fehler aufgetreten.</p>
           {ref !== null ? (
-            <p style={reference}>Referenz / reference: {ref}</p>
+            <p style={reference}>Referans · reference: {ref}</p>
           ) : null}
           <div style={actions}>
             <button type="button" onClick={() => reset()} style={button}>
-              Erneut versuchen · Try again
+              Tekrar dene · Try again
             </button>
             {/* Plain anchor, not next/link: a full reload is the correct
-                recovery when the router may itself be the thing that failed. */}
+                recovery when the router may itself be the thing that failed.
+
+                `/` and not `/de` — the locale router resolves the reader's
+                language from their cookie and Accept-Language, which beats
+                ejecting everybody into German. */}
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-            W3-A: `/de` became a real page route in wave 3, so this rule now
-            fires. The plain anchor is deliberate and documented above: a full
-            navigation is the correct recovery when the router may itself be
-            the thing that failed. `<Link>` here would prefetch and soft-navigate
-            with the same broken router. Reported to W0-A in HANDOFF/W3-A.md. */}
-            <a href="/de" style={link}>
-              Zur Startseite · Back to start
+            deliberate and argued above: a full navigation is the correct
+            recovery when the router may itself be the thing that failed.
+            `<Link>` would prefetch and soft-navigate with the same broken
+            router. */}
+            <a href="/" style={link}>
+              Ana sayfa · Home · На главную · Startseite
             </a>
           </div>
         </main>

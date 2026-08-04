@@ -31,6 +31,25 @@
 
 import type { Permission, Resource, Role } from "./contracts"
 import { hasPermission, isResidentRole } from "./rbac"
+import { REPORT_UNLOCKING_PERMISSIONS } from "./report-artifacts"
+
+/**
+ * The permission the Reports nav entry is gated on, read from the catalogue.
+ *
+ * Throws rather than falling back. A silent fallback to `reports:view` is how
+ * the entry came to be offered to six roles with nothing to download, and a
+ * catalogue with no available report at all is a state somebody should have to
+ * notice at build time rather than discover from an empty page.
+ */
+function reportNavPermission(): Permission {
+  const first = REPORT_UNLOCKING_PERMISSIONS[0]
+  if (first === undefined) {
+    throw new Error(
+      "REPORT_DEFINITIONS contains no available report. The Reports nav entry would lead to a catalogue offering nothing; remove the entry or mark a report available."
+    )
+  }
+  return first as Permission
+}
 
 /**
  * Cookie holding the sidebar collapse state.
@@ -163,7 +182,24 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     href: "/dashboard/reports",
     labelKey: "dashboard.reports.title",
     icon: "FileBarChart",
-    permission: "reports:view",
+    /**
+     * The permission that unlocks a report somebody can actually download, not
+     * the one that merely opens the catalogue.
+     *
+     * This was `reports:view`, held by eight roles, while both built reports are
+     * gated on `evidence:export`, held by two. Six roles — accountant, staff,
+     * owner, tenant, child_owner, child_tenant — were given a top-level
+     * destination listing four reports and offering none of them.
+     *
+     * `REPORT_UNLOCKING_PERMISSIONS` is derived from the catalogue, so this
+     * cannot drift again: build `inventory_split` and the roles holding
+     * `units:export` get the entry with no edit here. The `[0]` is safe because
+     * the catalogue has at least one available report and the assertion below
+     * fails the build if that ever stops being true. `reports:view` remains the
+     * gate on the PAGE — somebody who can reach it by URL still may — this is
+     * only about whether it earns a place in the sidebar.
+     */
+    permission: reportNavPermission(),
     group: "intelligence",
     resource: "reports",
   },
@@ -335,6 +371,24 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
     labelKey: "dashboard.settings.title",
     icon: "Settings",
     permission: "settings:view",
+    group: "governance",
+    resource: "settings",
+  },
+  {
+    /**
+     * Added 2026-08-04. `/dashboard/admin` — system health, the connected-service
+     * panel and the audit log — existed as a route with **no navigation entry
+     * for any role, including admin**. Twenty hrefs were in this table and none
+     * of them was this one, so the only way to reach the page that tells you why
+     * an upload failed was to already know its URL.
+     *
+     * Gated on `settings:manage`, which is what the page itself checks, so the
+     * entry and the page can never disagree about who may open it.
+     */
+    href: "/dashboard/admin",
+    labelKey: "dashboard.admin.title",
+    icon: "ServerCog",
+    permission: "settings:manage",
     group: "governance",
     resource: "settings",
   },

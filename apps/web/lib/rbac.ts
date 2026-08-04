@@ -250,7 +250,8 @@ const ACCOUNTANT = [
  */
 const STAFF = [
   "dashboard:view",
-  "listings:view",
+  // listings:view removed 2026-08-04: a maintenance technician has no use for
+  // competitor asking prices. Same reasoning as TENANT and GUEST above.
   "units:view",
   "tickets:view",
   "tickets:create",
@@ -267,6 +268,19 @@ const STAFF = [
   "communications:create",
   "vendor_invoices:view",
   "vendor_invoices:create",
+  /**
+   * Kept, though no `staff` profile holds a wallet (0 rows on 2026-08-04).
+   *
+   * It was removed in the first pass of this repair and put back, because
+   * `type StaffPermission = (typeof STAFF)[number]` makes SERVICE_PROVIDER a
+   * typed subset of this list — a contractor can never hold a permission an
+   * employee lacks. A service provider **does** hold a wallet and is paid
+   * through it, so removing it here would have taken it from them too.
+   *
+   * That invariant is worth more than the tidiness. The empty-register problem
+   * it leaves is fixed where it belongs — on the page, which now explains that
+   * this role has no wallet rather than rendering a blank list.
+   */
   "wallet:view",
   "reports:view",
   "hotel:view",
@@ -302,7 +316,11 @@ const OWNER = [
 /** `tenant` rents a unit. Parent of both `guest` and `child_tenant`. */
 const TENANT = [
   "dashboard:view",
-  "listings:view",
+  // listings:view removed 2026-08-04. This page is competitor portal-price
+  // intelligence — what rival agents are asking for comparable units, and where
+  // the register disagrees with itself. It is a market-analysis surface for the
+  // people selling the building. A resident opening it learns nothing about
+  // their own home and reads a commercial position not addressed to them.
   "units:view",
   "tickets:view",
   "tickets:create",
@@ -334,11 +352,24 @@ type TenantPermission = (typeof TENANT)[number]
  */
 const GUEST = [
   "dashboard:view",
-  "listings:view",
+  // listings:view removed 2026-08-04. This page is competitor portal-price
+  // intelligence — what rival agents are asking for comparable units, and where
+  // the register disagrees with itself. It is a market-analysis surface for the
+  // people selling the building. A resident opening it learns nothing about
+  // their own home and reads a commercial position not addressed to them.
   "units:view",
-  "activities:view",
-  "calendar:view",
+  // activities:view and calendar:view removed 2026-08-04. Not a taste call:
+  // `activities_select_resident` requires `has_role_level(8)` and this role sits
+  // below it, so Postgres refuses every row and both pages were permanently
+  // empty. CLAUDE.md is explicit that a policy is never widened to make a screen
+  // work, so the screen goes instead. If guests SHOULD see the activity
+  // programme — and for a residence with a hotel that is a fair argument — the
+  // change belongs in the policy, deliberately, not in this list.
   "communications:view",
+  // A guest DOES hold a wallet — one row, seeded, with a balance — and could
+  // not see it. Withheld from the two roles that have one and granted to three
+  // that do not was the exact inversion; measured 2026-08-04.
+  "wallet:view",
   "hotel:view",
   "reviews:view",
 ] as const satisfies readonly TenantPermission[]
@@ -356,6 +387,9 @@ const SERVICE_PROVIDER = [
   "calendar:view",
   "documents:view",
   "communications:view",
+  // A contractor holds a wallet (one row) and is paid through it, so the
+  // balance is arguably more load-bearing here than for any resident.
+  "wallet:view",
   "communications:create",
   "vendor_invoices:view",
   "vendor_invoices:create",
@@ -368,7 +402,9 @@ const CHILD_OWNER = [
   "activities:view",
   "activities:create",
   "calendar:view",
-  "wallet:view",
+  // wallet:view removed 2026-08-04: a sub-account holds no wallet of its own
+  // (0 rows) and cannot read its guardian's, so the page could only ever be
+  // empty. An empty page reached from a nav entry reads as a fault.
   "communications:view",
   "reports:view",
   "hotel:view",
@@ -382,7 +418,8 @@ const CHILD_TENANT = [
   "activities:view",
   "activities:create",
   "calendar:view",
-  "wallet:view",
+  // wallet:view removed 2026-08-04 — same as CHILD_OWNER: no wallet exists for
+  // this role and none is readable, so the entry led nowhere.
   "communications:view",
   "reports:view",
   "hotel:view",
@@ -397,8 +434,13 @@ const CHILD_TENANT = [
 const CHILD_GUEST = [
   "dashboard:view",
   "units:view",
-  "activities:view",
-  "calendar:view",
+  // activities:view and calendar:view removed 2026-08-04. Not a taste call:
+  // `activities_select_resident` requires `has_role_level(8)` and this role sits
+  // below it, so Postgres refuses every row and both pages were permanently
+  // empty. CLAUDE.md is explicit that a policy is never widened to make a screen
+  // work, so the screen goes instead. If guests SHOULD see the activity
+  // programme — and for a residence with a hotel that is a fair argument — the
+  // change belongs in the policy, deliberately, not in this list.
   "communications:view",
   "hotel:view",
   "reviews:view",

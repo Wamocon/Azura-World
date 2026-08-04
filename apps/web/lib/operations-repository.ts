@@ -38,6 +38,7 @@
  */
 
 import type { ApiError, Money, RepositoryResult, Role } from "@/lib/contracts"
+import { isSupabaseConfigured } from "@/lib/env"
 import { roleLevel } from "@/lib/contracts"
 import {
   asMoney,
@@ -50,6 +51,7 @@ import {
   clampOffset,
   nowIso,
   RepositoryError,
+  runRepository,
   totalsByCurrency,
   unwrap,
   withRepository,
@@ -997,6 +999,56 @@ export async function getActivities(
     },
     () => seedActivitiesFiltered(query, seedScope(query), asOf),
     "operations.getActivities"
+  )
+}
+
+/**
+ * The activity feed behind the token-authorised calendar subscription.
+ *
+ * ## Why this exists, and why it is not `getActivities`
+ *
+ * `/api/calendar/ics/[token]` is reached by Outlook, Google Calendar and Apple
+ * Calendar. They present no session — the **token is the credential**, an HMAC
+ * the dashboard mints and the route verifies before this is ever called. So the
+ * read runs with no Supabase session, as `anon`, and `anon` holds no grant on
+ * `activities`: the read failed, the route laundered the failure into its one
+ * answer, and the URL the Calendar page prints returned 404 for the correct
+ * token. Measured 2026-08-04 — the subscription has never worked, and a calendar
+ * client does not show a 404, it shows an empty calendar forever.
+ *
+ * The service role is the right instrument precisely because there is no session
+ * to scope by. It is used **only** here, only after the token has been verified,
+ * and only for this fixed query — no caller-supplied filter reaches it.
+ *
+ * ## What it deliberately does not do
+ *
+ * No `role` and no `profileId`: there is no user to scope to, so it does not
+ * pretend there is one. The feed is the site's activity calendar, which is what
+ * the Calendar page says it is when it offers the subscription. If per-person
+ * feeds are ever wanted, the token has to carry the person, and that is a
+ * different token — not a scope argument bolted onto this.
+ */
+export async function getActivitiesForCalendarFeed(
+  options: { limit?: number } = {}
+): Promise<RepositoryResult<Activity[]>> {
+  const asOf = nowIso()
+  const query: ActivityQuery = { limit: clampLimit(options.limit ?? 200) }
+  return runRepository(
+    async (client) => {
+      const scope = await scopeFor(client, query)
+      return fetchActivityRows(client, query, scope, query, asOf)
+    },
+    () => seedActivitiesFiltered(query, seedScope(query), asOf),
+    "operations.getActivitiesForCalendarFeed",
+    {
+      isConfigured: isSupabaseConfigured,
+      getClient: async () => {
+        const { createServiceRoleClient } = await import(
+          "@/lib/supabase/server"
+        )
+        return createServiceRoleClient()
+      },
+    }
   )
 }
 

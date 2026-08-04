@@ -167,6 +167,18 @@ export default async function DashboardHomePage({
   const copy = shellCopy(locale)
   const t = await getTranslations({ locale, namespace: "dashboard" })
 
+  /**
+   * The role in the reader's language, not the database enum.
+   *
+   * This subtitle is the first line of the first screen after signing in, and
+   * on the primary locale it read "manager olarak görünümünüz" — half English,
+   * from `profile.role` going straight into the {role} slot. The translated
+   * labels have always existed at `dashboard.users.roles.*` in all four
+   * catalogues; nothing here reached for them. The settings page two clicks
+   * away shows the translated one, so the product disagreed with itself.
+   */
+  const roleLabel = t(`users.roles.${profile.role}` as "users.roles.guest")
+
   const result = await getDashboardSnapshot({
     role: profile.role,
     ...(profile.id === null ? {} : { profileId: profile.id }),
@@ -218,7 +230,7 @@ export default async function DashboardHomePage({
       <>
         <DashboardPageHeader
           title={t("shell.title")}
-          description={fill(copy.homeSubtitleByRole, { role: profile.role })}
+          description={fill(copy.homeSubtitleByRole, { role: roleLabel })}
         />
         <WelcomePanel
           greeting={
@@ -238,7 +250,7 @@ export default async function DashboardHomePage({
     <>
       <DashboardPageHeader
         title={t("shell.title")}
-        description={fill(copy.homeSubtitleByRole, { role: profile.role })}
+        description={fill(copy.homeSubtitleByRole, { role: roleLabel })}
         meta={
           <DashboardHomeLive
             source={result.source}
