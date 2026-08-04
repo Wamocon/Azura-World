@@ -24,6 +24,7 @@ import {
   formatPercent,
 } from "@/lib/format"
 import { getGlossary } from "@/lib/glossary"
+import { hotel as datasetHotel } from "@/components/azura/landing-data"
 import { getHotel, getHotelRooms } from "@/lib/hotel-repository"
 import { hasPermission } from "@/lib/rbac"
 
@@ -176,6 +177,45 @@ export default async function HotelDashboardPage({
   // ---------------------------------------------------------------------------
 
   const metres = hotel.distanceToBeachM
+
+  /**
+   * The disagreement behind a figure, from the dataset that records it.
+   *
+   * This page reads `getHotel()` — the operational `hotels` row, plain
+   * numbers with no provenance — while the PUBLIC /hotel page reads
+   * `azuraWorldDataset.hotel`, whose fields carry `confidence` and
+   * `conflictsWith`. The result was that an anonymous visitor was told the
+   * sources disagree about the room count and the signed-in manager was not.
+   * The manager is the one who would act on it.
+   *
+   * Only the provenance is taken from the dataset. The value on screen still
+   * comes from `getHotel()`, so this cannot change what the page reports — it
+   * can only stop the page reporting it as settled when it is not.
+   */
+  const conflictFor = (
+    fact: { confidence: string; conflictsWith?: Array<{ value: unknown }> }
+  ): { label: string; alternatives: string } | null => {
+    if (fact.confidence !== "conflicted") return null
+    // Deduplicated. Two sources reporting the same competing figure is one
+    // disagreement, not two — the aquapark slide count has 16 from both
+    // OnTheBeach and Wyndham Alanya, which rendered as "16 · 16" and read like
+    // a formatting fault. The number of sources behind a reading is a separate
+    // fact and belongs in the evidence cockpit, not in a headline tile.
+    const others = [
+      ...new Set(
+        (fact.conflictsWith ?? [])
+          .map((entry) =>
+            typeof entry.value === "number"
+              ? formatNumber(entry.value, locale)
+              : String(entry.value)
+          )
+          .filter((text) => text.length > 0)
+      ),
+    ]
+    if (others.length === 0) return null
+    return { label: t("facts.conflictLabel"), alternatives: others.join(" · ") }
+  }
+
   const headlineFigures: HotelOpsStatItem[] = [
     {
       key: "rooms",
@@ -183,6 +223,7 @@ export default async function HotelDashboardPage({
       value: hotel.roomCount === null ? gapText : formatNumber(hotel.roomCount, locale),
       gap: hotel.roomCount === null,
       title: null,
+      conflict: conflictFor(datasetHotel.roomCount),
     },
     {
       key: "floors",
@@ -200,6 +241,7 @@ export default async function HotelDashboardPage({
           : formatNumber(hotel.aquaparkSlides, locale),
       gap: hotel.aquaparkSlides === null,
       title: null,
+      conflict: conflictFor(datasetHotel.aquaparkSlides),
     },
     {
       key: "beach",

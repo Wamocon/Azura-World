@@ -165,7 +165,23 @@ export default async function UsersPage({
         </GovernanceNotice>
       )}
 
-      {directory.degradedReason === null ? null : (
+      {/* `== null`, not `=== null`.
+
+          `RepositoryResult.degradedReason` is declared `?: string`, so when
+          nothing was restricted it is **undefined** — and `undefined !== null`
+          is true, so this notice rendered on every single load. Measured on the
+          running page: an admin saw all 22 directory rows and was simultaneously
+          told "you are seeing part of the list; your role does not cover the
+          whole directory."
+
+          Telling somebody with complete access that their view is incomplete is
+          worse than saying nothing: it invites them to go looking for people who
+          are already in front of them, and it trains them to disbelieve the
+          notice on the day it is true.
+
+          The two `profile.degradedReason === null` tests above are correct and
+          left alone — `auth-resolution.ts` declares that one `string | null`. */}
+      {directory.degradedReason == null ? null : (
         <GovernanceNotice tone="info">{t("restrictedNotice")}</GovernanceNotice>
       )}
 

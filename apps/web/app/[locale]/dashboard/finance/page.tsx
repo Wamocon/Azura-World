@@ -362,7 +362,7 @@ export default async function FinancePage({
     },
     locked: t("immutable.locked"),
     voidLocked: t("immutable.voidLocked"),
-    editDraft: t("immutable.editDraft"),
+    draftOpen: t("immutable.draftOpen"),
     reasonElementId: "finance-immutability-notice",
     gapLabel,
     reversalOf: (id) => `${t("entryType.reversal")}: ${id.slice(0, 8)}`,

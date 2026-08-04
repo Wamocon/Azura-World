@@ -1,4 +1,4 @@
-import { Lock, PencilLine } from "lucide-react"
+import { Lock, FileClock } from "lucide-react"
 import type { ReactNode } from "react"
 
 import { Link } from "@/app/navigation"
@@ -47,7 +47,14 @@ import { toMinor } from "./money"
  * ## Posted rows are distinct while SCANNING, not only while reading
  *
  * A posted row carries a left accent and a lock glyph; a draft carries an amber
- * accent and an enabled pencil. Colour is never the only channel: the status
+ * accent and a stated "draft, not yet posted" — never an edit control, because
+ * there is no edit path and there is not going to be one:
+ * `finance-repository.ts` has no `updateLedgerEntry()`, since a posted entry is
+ * corrected by a reversal. This column used to render a pencil and the words
+ * "Edit draft" beside "Posted, locked" and "Void, locked", so two rows stated a
+ * state and the third offered an action that led nowhere.
+ *
+ * Colour is never the only channel: the status
  * column states it in words, and the disabled control is disabled whatever the
  * theme. That mirrors what W3-C did for modelled units, deliberately, because
  * a second visual language for "this row is different" would be a third thing
@@ -78,7 +85,7 @@ export interface LedgerTableLabels {
   entryType: Record<LedgerEntryType, string>
   locked: string
   voidLocked: string
-  editDraft: string
+  draftOpen: string
   /** Id of the element carrying the full explanation. */
   reasonElementId: string
   gapLabel: string
@@ -252,9 +259,23 @@ function LedgerRow({
             describedBy={labels.reasonElementId}
           />
         ) : (
-          <span className="inline-flex items-center gap-1.5 text-sm text-foreground">
-            <PencilLine className="size-3.5" aria-hidden="true" />
-            {labels.editDraft}
+          /* A status, not an affordance.
+
+             This rendered a pencil icon and the words "Edit draft", in a column
+             whose other two values are "Posted, locked" and "Void, locked" — so
+             two rows stated a state and the third offered an action. It was a
+             plain `<span>`: not a button, not a link, and there is nothing for
+             it to have been. `finance-repository.ts` says so in its own header:
+             there is no `updateLedgerEntry()` and there will not be one, because
+             a posted entry is corrected by a reversal and never by an edit.
+
+             An accountant looking for the edit control this promised would have
+             looked until they gave up. The row now says what is true — the entry
+             is a draft and has not been posted — in the same grammar as its
+             neighbours. */
+          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+            <FileClock className="size-3.5" aria-hidden="true" />
+            {labels.draftOpen}
           </span>
         )}
       </TableCell>

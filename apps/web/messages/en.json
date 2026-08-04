@@ -1237,7 +1237,8 @@
         "editDraft": "Edit draft",
         "correction": "Create a reversal",
         "voidLocked": "Void, locked",
-        "voidReason": "This draft was abandoned and is therefore closed."
+        "voidReason": "This draft was abandoned and is therefore closed.",
+        "draftOpen": "Draft, not yet posted"
       },
       "balanceCheck": {
         "heading": "Debit equals credit",
@@ -2562,7 +2563,8 @@
         "aquapark": "Aquapark slides",
         "checkIn": "Check-in from",
         "checkOut": "Check-out by",
-        "beach": "To the public beach"
+        "beach": "To the public beach",
+        "conflictLabel": "Sources disagree:"
       },
       "roomTable": {
         "heading": "Room structure",

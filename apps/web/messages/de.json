@@ -1237,7 +1237,8 @@
         "editDraft": "Entwurf bearbeiten",
         "correction": "Gegenbuchung anlegen",
         "voidLocked": "Verworfen, gesperrt",
-        "voidReason": "Dieser Entwurf wurde verworfen und ist damit abgeschlossen."
+        "voidReason": "Dieser Entwurf wurde verworfen und ist damit abgeschlossen.",
+        "draftOpen": "Entwurf, nicht gebucht"
       },
       "balanceCheck": {
         "heading": "Soll gleich Haben",
@@ -2562,7 +2563,8 @@
         "aquapark": "Aquapark-Rutschen",
         "checkIn": "Anreise ab",
         "checkOut": "Abreise bis",
-        "beach": "Zum öffentlichen Strand"
+        "beach": "Zum öffentlichen Strand",
+        "conflictLabel": "Quellen uneinig:"
       },
       "roomTable": {
         "heading": "Zimmerstruktur",

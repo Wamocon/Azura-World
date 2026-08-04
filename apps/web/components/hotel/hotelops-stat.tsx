@@ -33,6 +33,20 @@ export interface HotelOpsStatItem {
   gap: boolean
   /** The finer stored figure, one hover away. `null` when there is none. */
   title: string | null
+  /**
+   * The sources disagree, and by how much.
+   *
+   * `null` for every figure with one settled value. When present, the figure is
+   * rendered with the conflict marker and the competing reading beside it.
+   *
+   * This existed on the public `/hotel` page and not here, so `/dashboard/hotel`
+   * showed "ROOMS 188" and "AQUAPARK SLIDES 13" as flat numbers while an
+   * anonymous visitor got the honest version — 188 against 112 from Wyndham
+   * Alanya, 13 against 16. The signed-in manager, who is the person who would
+   * act on the figure, was the one getting the version with the argument
+   * deleted. A 40% difference on the page's headline number.
+   */
+  conflict?: { label: string; alternatives: string } | null
 }
 
 export function HotelOpsStat({
@@ -74,6 +88,17 @@ export function HotelOpsStat({
             {item.value}
           </span>
         )}
+        {/* The disagreement, under the figure rather than behind a hover.
+
+            A conflict a reader has to discover is a conflict most readers do
+            not discover, and this is the number they will quote. Text, not
+            colour alone — `text-confidence-conflicted` carries the same signal
+            for anyone who cannot see it. */}
+        {item.conflict != null && !item.gap ? (
+          <span className="mt-1 block text-xs leading-snug text-confidence-conflicted">
+            {item.conflict.label} {item.conflict.alternatives}
+          </span>
+        ) : null}
       </dd>
     </div>
   )

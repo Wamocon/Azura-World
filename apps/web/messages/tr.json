@@ -1237,7 +1237,8 @@
         "editDraft": "Taslağı düzenle",
         "correction": "Ters kayıt oluştur",
         "voidLocked": "İptal, kilitli",
-        "voidReason": "Bu taslak bırakıldı ve kapandı."
+        "voidReason": "Bu taslak bırakıldı ve kapandı.",
+        "draftOpen": "Taslak, henüz işlenmedi"
       },
       "balanceCheck": {
         "heading": "Borç alacağa eşit",
@@ -2562,7 +2563,8 @@
         "aquapark": "Aquapark kaydırağı",
         "checkIn": "Giriş",
         "checkOut": "Çıkış",
-        "beach": "Halk plajına uzaklık"
+        "beach": "Halk plajına uzaklık",
+        "conflictLabel": "Kaynaklar ayrışıyor:"
       },
       "roomTable": {
         "heading": "Oda yapısı",

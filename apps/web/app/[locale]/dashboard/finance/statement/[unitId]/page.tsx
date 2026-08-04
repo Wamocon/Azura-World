@@ -267,7 +267,7 @@ export default async function StatementPage({
     },
     locked: t("immutable.locked"),
     voidLocked: t("immutable.voidLocked"),
-    editDraft: t("immutable.editDraft"),
+    draftOpen: t("immutable.draftOpen"),
     reasonElementId: "statement-immutability-notice",
     gapLabel,
     reversalOf: (id) => `${t("entryType.reversal")}: ${id.slice(0, 8)}`,
