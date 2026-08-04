@@ -1293,7 +1293,8 @@
         "forbiddenHint": "Bu daire sizin kapsamınızda değil. Deneme kayıt altına alındı.",
         "notFound": "Bu daire için kayıt yok.",
         "openBalance": "Bakiye",
-        "entries": "Kalemler"
+        "entries": "Kalemler",
+        "openUnit": "Daireyi aç"
       }
     },
     "payments": {

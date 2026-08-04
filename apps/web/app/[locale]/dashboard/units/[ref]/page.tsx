@@ -353,7 +353,10 @@ export default async function UnitDetailPage({
               </p>
               <div>
                 <Link
-                  href="/dashboard/finance"
+                  // The statement for THIS apartment, not the finance module.
+                  // A link that lands on a company-wide ledger, from a page
+                  // about one flat, makes the reader find their own row again.
+                  href={`/dashboard/finance/statement/${encodeURIComponent(unit.id)}`}
                   locale={locale}
                   className="rounded text-sm underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >

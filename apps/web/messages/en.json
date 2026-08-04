@@ -1293,7 +1293,8 @@
         "forbiddenHint": "This unit is not in your scope. The attempt was logged.",
         "notFound": "There are no entries for this unit.",
         "openBalance": "Balance",
-        "entries": "Items"
+        "entries": "Items",
+        "openUnit": "Open the apartment"
       }
     },
     "payments": {

@@ -279,6 +279,8 @@ export default async function StatementPage({
         title={t("statement.title", { unit: unitId })}
         lead={t("statement.lead")}
         backLabel={t("statement.back")}
+        unitHref={`/dashboard/units/${encodeURIComponent(unitId)}`}
+        unitLabel={t("statement.openUnit")}
       />
 
       {seedMode ? (
@@ -329,19 +331,42 @@ function StatementHeader({
   title,
   lead,
   backLabel,
+  unitHref,
+  unitLabel,
 }: {
   title: string
   lead: string
   backLabel: string
+  /**
+   * The apartment this statement is about.
+   *
+   * A statement is one view of a flat — the money — and until this link existed
+   * it was the only page in the product that knew which flat it was about and
+   * offered no way to get there. The reverse link, from the apartment's Account
+   * section into here, was added at the same time: a one-way link between two
+   * pages about the same thing is a dead end at one end of it.
+   */
+  unitHref?: string
+  unitLabel?: string
 }): ReactNode {
   return (
     <header className="flex flex-col gap-2">
-      <Link
-        href="/dashboard/finance"
-        className="w-fit text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      >
-        {backLabel}
-      </Link>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <Link
+          href="/dashboard/finance"
+          className="w-fit text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        >
+          {backLabel}
+        </Link>
+        {unitHref === undefined || unitLabel === undefined ? null : (
+          <Link
+            href={unitHref}
+            className="w-fit text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            {unitLabel}
+          </Link>
+        )}
+      </div>
       <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
         {title}
       </h1>

@@ -1293,7 +1293,8 @@
         "forbiddenHint": "Diese Einheit ist nicht in Ihrem Bereich. Der Zugriff wurde protokolliert.",
         "notFound": "Zu dieser Wohneinheit gibt es keine Buchungen.",
         "openBalance": "Saldo",
-        "entries": "Positionen"
+        "entries": "Positionen",
+        "openUnit": "Wohnung öffnen"
       }
     },
     "payments": {
