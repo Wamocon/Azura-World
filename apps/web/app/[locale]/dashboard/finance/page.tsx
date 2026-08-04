@@ -44,6 +44,7 @@ import {
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
+import { encodePublicId } from "@/lib/public-id"
 import { formatDateTime } from "@/lib/format"
 import {
   currencyCodes,
@@ -404,7 +405,10 @@ export default async function FinancePage({
       .filter((invoice) => invoice.currency !== null)
       .slice(0, 25)
       .map((invoice) => ({
-        value: `invoice:${invoice.id}`,
+        // Opaque, kind-bound. This was `invoice:${invoice.id}` — the raw
+        // primary key, in the markup, on a page whose links are deliberately
+        // tokenised everywhere else.
+        value: `invoice:${encodePublicId("invoice", invoice.id)}`,
         label: tPay("console.allocationInvoice", {
           invoiceNo: invoice.invoiceNo,
         }),

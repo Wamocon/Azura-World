@@ -23,6 +23,7 @@ import {
   upstreamFailed,
   validationFailed,
 } from "./api-errors"
+import { projectRecord, projectRecords } from "./api-projection"
 import type { ApiError, Permission, Role } from "./contracts"
 
 /**
@@ -817,8 +818,26 @@ export function createHandler<TBody, TResult>(
         })
       }
 
+      // 9b. Internal bookkeeping does not leave the building.
+      //
+      // Applied HERE rather than in each route, because "here" is one seam that
+      // twenty route files cannot forget and a twenty-first cannot miss. The
+      // served OpenAPI document already argued that `metadata` and
+      // `idempotencyKey` must never be forwarded; it argued it while
+      // /tickets returned both on every row and /documents and /activities
+      // returned `metadata` carrying the demo markers. Measured 2026-08-04.
+      //
+      // `config.serialize` routes are deliberately not projected: those are CSV
+      // and iCal builders that pick their own columns explicitly, so a blanket
+      // strip would be silent and useless where it is already unnecessary.
       const payload = JSON.stringify(
-        successBody(result.data, result.source, requestId)
+        successBody(
+          Array.isArray(result.data)
+            ? projectRecords(result.data)
+            : projectRecord(result.data),
+          result.source,
+          requestId
+        )
       )
 
       if (config.idempotent === true && replayKey !== null) {

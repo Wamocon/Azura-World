@@ -2,6 +2,7 @@ import type {
   LedgerEntry,
   VendorInvoice,
 } from "@/lib/finance-repository"
+import { encodePublicId } from "@/lib/public-id"
 
 import { minorToDecimalString, toMinor } from "./money"
 
@@ -141,7 +142,12 @@ function header(filter: ExportFilter, rowCount: number): string[] {
 // ---------------------------------------------------------------------------
 
 const LEDGER_COLUMNS = [
-  "entry_id",
+  // `entry_ref`, not `entry_id`. The column carried the raw
+  // `finance_ledger_entries.id` and now carries the opaque public id — stable
+  // across exports, traceable by the product, meaningless outside it. Renamed
+  // rather than silently repurposed, so a consumer parsing the old column fails
+  // loudly instead of storing tokens as if they were keys.
+  "entry_ref",
   "posted_at",
   "due_date",
   "period",
@@ -173,7 +179,7 @@ export function buildLedgerCsv(
     const signed = toMinor(entry.signedAmount)
     lines.push(
       csvRow([
-        entry.id,
+        encodePublicId("ledger", entry.id),
         entry.postedAt,
         entry.dueDate,
         entry.period,
@@ -199,7 +205,8 @@ export function buildLedgerCsv(
 }
 
 const INVOICE_COLUMNS = [
-  "invoice_id",
+  // Same change and same reason as `entry_ref` above.
+  "invoice_ref",
   "vendor_name",
   "invoice_no",
   "status",
@@ -211,7 +218,7 @@ const INVOICE_COLUMNS = [
   "outstanding",
   "currency",
   "possible_duplicate",
-  "ledger_entry_id",
+  "ledger_entry_ref",
 ] as const
 
 export function buildVendorInvoiceCsv(
@@ -231,7 +238,7 @@ export function buildVendorInvoiceCsv(
     const outstanding = toMinor(invoice.outstandingAmount)
     lines.push(
       csvRow([
-        invoice.id,
+        encodePublicId("invoice", invoice.id),
         invoice.vendorName,
         invoice.invoiceNo,
         invoice.status,
@@ -243,7 +250,11 @@ export function buildVendorInvoiceCsv(
         outstanding === null ? null : minorToDecimalString(outstanding),
         invoice.currency,
         duplicateIds.has(invoice.id) ? "yes" : "no",
-        invoice.ledgerEntryId,
+        // Null when the invoice has never been posted; a token only when there
+        // is a ledger row to point at.
+        invoice.ledgerEntryId === null
+          ? null
+          : encodePublicId("ledger", invoice.ledgerEntryId),
       ])
     )
   }

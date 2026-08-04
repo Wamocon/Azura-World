@@ -72,7 +72,20 @@ import { serverEnv } from "@/lib/env"
  * The resource types that appear in a URL. Adding one is deliberate: each gets
  * its own derived key, so tokens never cross between them.
  */
-export const PUBLIC_ID_KINDS = ["ticket", "thread", "document"] as const
+export const PUBLIC_ID_KINDS = [
+  "ticket",
+  "thread",
+  "document",
+  // A supplier invoice. Not in a URL — in the `<option value>` of the
+  // record-payment form, which is the same exposure: the id is in the markup,
+  // in view-source, and in anything that reads the page. Added 2026-08-04 after
+  // 25 raw `vendor_invoices.id` values were found in the DOM of
+  // /dashboard/finance.
+  "invoice",
+  // A ledger entry. Appears in the finance CSV export, which needs a stable
+  // reference so a downloaded row can be traced back — but not the primary key.
+  "ledger",
+] as const
 
 export type PublicIdKind = (typeof PUBLIC_ID_KINDS)[number]
 

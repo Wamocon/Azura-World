@@ -15,6 +15,7 @@ import { invoiceRemainingAfter } from "@/components/finance/ledger-analysis"
 import { resolveFinanceScope } from "@/components/finance/finance-scope"
 import { getUserProfile } from "@/lib/auth"
 import type { Locale } from "@/lib/contracts"
+import { decodePublicId } from "@/lib/public-id"
 import { isSupabaseConfigured } from "@/lib/env"
 import {
   createPayment,
@@ -324,13 +325,28 @@ interface Allocation {
   id: string
 }
 
-/** `invoice:<id>` or `unit:<id>`. Anything else is `null`, never a guess. */
+/**
+ * `invoice:<token>` or `unit:<AZW-…>`. Anything else is `null`, never a guess.
+ *
+ * The invoice half carries an **opaque public id**, not the row's uuid, and is
+ * decoded here. A token that does not decode returns `null` and the caller
+ * answers "no such invoice" — which is also what a token minted for a different
+ * kind does, because `decodePublicId` derives a separate key per kind and a
+ * ticket token simply will not decrypt as an invoice one.
+ *
+ * The unit half is untouched: `AZW-B07-0064` is the building's own designation
+ * and is legible by design.
+ */
 function parseAllocation(raw: string): Allocation | null {
   const separator = raw.indexOf(":")
   if (separator <= 0) return null
   const kind = raw.slice(0, separator)
-  const id = raw.slice(separator + 1).trim()
-  if (id.length === 0 || id.length > 64) return null
-  if (kind === "invoice" || kind === "unit") return { kind, id }
+  const value = raw.slice(separator + 1).trim()
+  if (value.length === 0 || value.length > 64) return null
+  if (kind === "unit") return { kind, id: value }
+  if (kind === "invoice") {
+    const id = decodePublicId("invoice", value)
+    return id === null ? null : { kind, id }
+  }
   return null
 }
