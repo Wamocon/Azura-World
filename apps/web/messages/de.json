@@ -2003,7 +2003,9 @@
           "failed": "Es wurde kein Link erstellt und nichts heruntergeladen. Die Dateiablage hat nicht geantwortet.",
           "seed": "Dieser Eintrag stammt aus dem Demo-Satz. Es gibt keine Datei, also keinen Link."
         }
-      }
+      },
+      "emptyLeadUploader": "Es ist noch nichts abgelegt. Verträge, Abnahmen und Zertifikate sammeln sich hier beim Hochladen, und die Download-Links werden von hier ausgegeben.",
+      "emptyLeadReader": "Für Sie ist noch nichts abgelegt. Ihr Vertrag und Abnahmeprotokolle stehen hier, sobald die Verwaltung sie hochlädt."
     },
     "compliance": {
       "title": "Compliance",

@@ -1719,3 +1719,50 @@ body:has([data-surface="day"]) {
     padding-bottom: 3rem;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Dashboard content entrance
+   ---------------------------------------------------------------------------
+   The dashboard had no loading state and no entrance. A navigation held the
+   previous page for the whole of a multi-query server render and then replaced
+   it in one frame. `app/[locale]/dashboard/loading.tsx` now covers the wait;
+   this covers the arrival, so the swap reads as the page settling rather than
+   as a flash.
+
+   Constraints it is written to, all from the project's own motion rules:
+
+     - 220ms, inside the 300ms budget for UI motion, and short enough that a
+       reader moving fast never waits on it;
+     - `--ease-out`, the project curve. Never a CSS keyword — `ease-in` delays
+       the thing the reader asked for and `linear` reads as a machine;
+     - `opacity` and `transform` only. Animating height or margin here would put
+       every dashboard page through layout on arrival, which is both the
+       expensive path and the one that shifts content under a cursor;
+     - 6px of travel. Enough to register as direction, too little to be a slide.
+       A larger figure turns every page load into a performance.
+
+   Reduced motion is handled by NOT declaring the animation, rather than by
+   overriding it. The rule sits inside `(prefers-reduced-motion: no-preference)`,
+   which is the inversion this stylesheet already argues for above: ambient
+   motion is opted IN, never opted out, so nothing can be left mid-transition or
+   invisible for the one reader who cannot dismiss it. A second `reduce` branch
+   was written here first and was pure ceremony — the global reset further up
+   forces every animation to 0.01ms, so it could only ever have described a
+   fade that does not run.
+------------------------------------------------------------------------------ */
+@keyframes azura-content-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .azura-content-in {
+    animation: azura-content-in var(--duration-fast) var(--ease-out) both;
+  }
+}

@@ -2003,7 +2003,9 @@
           "failed": "Hiçbir bağlantı verilmedi ve hiçbir şey indirilmedi. Dosya deposu yanıt vermedi.",
           "seed": "Bu kayıt demo kümesinden geliyor. Saklanan dosya yok, bu yüzden bağlantı verilemez."
         }
-      }
+      },
+      "emptyLeadUploader": "Henüz hiçbir belge yüklenmedi. Sözleşmeler, tutanaklar ve sertifikalar yükledikçe burada toplanır ve indirme bağlantıları buradan verilir.",
+      "emptyLeadReader": "Sizin için henüz belge yüklenmedi. Sözleşmeniz ve teslim tutanakları, site yönetimi yükledikten sonra burada görünür."
     },
     "compliance": {
       "title": "Uyum",

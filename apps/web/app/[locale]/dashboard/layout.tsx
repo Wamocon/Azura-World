@@ -8,6 +8,7 @@ import { UserProvider } from "@/components/user-provider"
 import { SIDEBAR_COOKIE } from "@/lib/dashboard-routing"
 
 import { DashboardRouteGuard } from "./dashboard-route-guard"
+import { DashboardContent } from "./dashboard-content"
 import { DashboardSidebar } from "./dashboard-sidebar"
 import { DashboardTopbar } from "./dashboard-topbar"
 
@@ -80,8 +81,12 @@ export default async function DashboardLayout({
               bearing: without it a 656-row table's intrinsic width wins over
               the flex basis and the whole page scrolls sideways. */}
           <main id="main" className="min-w-0 flex-1 p-4 md:p-6 lg:p-8">
+            {/* `loading.tsx` covers the wait; `DashboardContent` covers the
+                arrival, so a navigation reads as the page settling rather than
+                as a flash. It has to be a client component to replay per
+                route — the reason is in that file. */}
             <DashboardRouteGuard mayViewDashboard={mayViewDashboard}>
-              {children}
+              <DashboardContent>{children}</DashboardContent>
             </DashboardRouteGuard>
           </main>
         </div>

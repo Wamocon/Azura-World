@@ -1,3 +1,4 @@
+import { FileText } from "lucide-react"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
@@ -184,12 +185,33 @@ export default async function DocumentsPage({
         {t("signedUrlNotice", { seconds: DEFAULT_SIGNED_URL_TTL_SECONDS })}
       </GovernanceNotice>
 
+      {/* One statement of the fact, not three.
+
+          An empty register used to say it in triplicate: the section
+          description ("0 documents in your view"), the empty-state title ("No
+          documents.") and its body ("There are no documents in your view.").
+          A contractor's whole documents page was those three sentences.
+
+          The count belongs above a list; above nothing it is noise, so it is
+          omitted when there is nothing to count. And the empty state now says
+          what would FILL it — which differs by role, because a manager can put
+          a document here and a resident has to wait for one. */}
       <DashboardSection
         title={t("register")}
-        description={t("registerLead", { count: documents.data.length })}
+        {...(documents.data.length === 0
+          ? {}
+          : {
+              description: t("registerLead", { count: documents.data.length }),
+            })}
       >
         {documents.data.length === 0 ? (
-          <EmptyState title={t("empty")} description={t("emptyLead")} />
+          <EmptyState
+            icon={FileText}
+            title={t("empty")}
+            description={
+              mayUpload ? t("emptyLeadUploader") : t("emptyLeadReader")
+            }
+          />
         ) : (
           <GovernanceTableFrame>
             <DocumentRegister

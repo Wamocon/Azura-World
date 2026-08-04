@@ -2003,7 +2003,9 @@
           "failed": "No link was issued and nothing was downloaded. The file store did not answer.",
           "seed": "This entry comes from the demo set. There is no stored file, so no link can be issued."
         }
-      }
+      },
+      "emptyLeadUploader": "Nothing has been filed yet. Contracts, handover records and certificates collect here as you upload them, and download links are issued from here.",
+      "emptyLeadReader": "Nothing has been filed for you yet. Your contract and any handover records appear here once site management uploads them."
     },
     "compliance": {
       "title": "Compliance",
