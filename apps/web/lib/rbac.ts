@@ -273,7 +273,11 @@ const STAFF = [
   "tickets:create",
   "tickets:update",
   "activities:view",
-  "activities:create",
+  // activities:create removed 2026-08-04. `activities_manager_write` admits
+  // `is_admin() or has_role_level(70)` — admin and manager — so Postgres
+  // refuses this role's insert. It was inert while nothing in the product
+  // created an activity; the new form on /dashboard/activities would have shown
+  // this role a control that 403s every time.
   "activities:update",
   "calendar:view",
   "calendar:create",
@@ -312,7 +316,11 @@ const OWNER = [
   "tickets:create",
   "tickets:approve",
   "activities:view",
-  "activities:create",
+  // activities:create removed 2026-08-04. `activities_manager_write` admits
+  // `is_admin() or has_role_level(70)` — admin and manager — so Postgres
+  // refuses this role's insert. It was inert while nothing in the product
+  // created an activity; the new form on /dashboard/activities would have shown
+  // this role a control that 403s every time.
   "calendar:view",
   "calendar:create",
   "documents:view",
@@ -341,7 +349,11 @@ const TENANT = [
   "tickets:view",
   "tickets:create",
   "activities:view",
-  "activities:create",
+  // activities:create removed 2026-08-04. `activities_manager_write` admits
+  // `is_admin() or has_role_level(70)` — admin and manager — so Postgres
+  // refuses this role's insert. It was inert while nothing in the product
+  // created an activity; the new form on /dashboard/activities would have shown
+  // this role a control that 403s every time.
   "calendar:view",
   "calendar:create",
   "documents:view",
@@ -399,7 +411,11 @@ const SERVICE_PROVIDER = [
   "tickets:view",
   "tickets:update",
   "activities:view",
-  "activities:create",
+  // activities:create removed 2026-08-04. `activities_manager_write` admits
+  // `is_admin() or has_role_level(70)` — admin and manager — so Postgres
+  // refuses this role's insert. It was inert while nothing in the product
+  // created an activity; the new form on /dashboard/activities would have shown
+  // this role a control that 403s every time.
   "calendar:view",
   "documents:view",
   "communications:view",

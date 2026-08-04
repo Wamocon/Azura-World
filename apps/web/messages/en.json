@@ -1787,7 +1787,24 @@
         "totalPlaces": "{capacity} places in total"
       },
       "noValue": "Not stated",
-      "seedNotice": "This page shows stored sample data. The database is not connected."
+      "seedNotice": "This page shows stored sample data. The database is not connected.",
+      "create": {
+        "trigger": "Add to the programme",
+        "heading": "New activity",
+        "lead": "Put an activity on the site programme. Times are recorded in site time.",
+        "title": "Title",
+        "category": "Category",
+        "description": "Description",
+        "startsAt": "Starts",
+        "endsAt": "Ends",
+        "submit": "Add to programme",
+        "submitting": "Adding …",
+        "cancel": "Cancel",
+        "titleRequired": "Give the activity a short title.",
+        "timesRequired": "Enter a start and an end time.",
+        "endBeforeStart": "The end must come after the start.",
+        "failed": "The activity was not saved. Nothing was added to the programme."
+      }
     },
     "calendar": {
       "title": "Calendar",

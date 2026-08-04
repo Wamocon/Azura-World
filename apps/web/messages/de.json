@@ -1787,7 +1787,24 @@
         "totalPlaces": "{capacity} Plätze insgesamt"
       },
       "noValue": "Keine Angabe",
-      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
+      "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden.",
+      "create": {
+        "trigger": "Zum Programm hinzufügen",
+        "heading": "Neue Aktivität",
+        "lead": "Setzen Sie eine Aktivität auf das Programm. Zeiten werden in Objektzeit gespeichert.",
+        "title": "Titel",
+        "category": "Kategorie",
+        "description": "Beschreibung",
+        "startsAt": "Beginn",
+        "endsAt": "Ende",
+        "submit": "Hinzufügen",
+        "submitting": "Wird hinzugefügt …",
+        "cancel": "Abbrechen",
+        "titleRequired": "Geben Sie der Aktivität einen kurzen Titel.",
+        "timesRequired": "Geben Sie Beginn und Ende an.",
+        "endBeforeStart": "Das Ende muss nach dem Beginn liegen.",
+        "failed": "Die Aktivität wurde nicht gespeichert. Es wurde nichts hinzugefügt."
+      }
     },
     "calendar": {
       "title": "Kalender",

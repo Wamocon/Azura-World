@@ -1787,7 +1787,24 @@
         "totalPlaces": "Toplam {capacity} yer"
       },
       "noValue": "Belirtilmemiş",
-      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
+      "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil.",
+      "create": {
+        "trigger": "Programa etkinlik ekle",
+        "heading": "Yeni etkinlik",
+        "lead": "Site programına bir etkinlik ekleyin. Saatler site saatiyle kaydedilir.",
+        "title": "Başlık",
+        "category": "Kategori",
+        "description": "Açıklama",
+        "startsAt": "Başlangıç",
+        "endsAt": "Bitiş",
+        "submit": "Programa ekle",
+        "submitting": "Ekleniyor …",
+        "cancel": "Vazgeç",
+        "titleRequired": "Etkinliğe kısa bir başlık verin.",
+        "timesRequired": "Başlangıç ve bitiş saatlerini girin.",
+        "endBeforeStart": "Bitiş, başlangıçtan sonra olmalı.",
+        "failed": "Etkinlik kaydedilemedi. Hiçbir şey programa eklenmedi."
+      }
     },
     "calendar": {
       "title": "Takvim",

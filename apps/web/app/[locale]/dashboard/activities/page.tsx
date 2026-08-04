@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import { Link } from "@/app/navigation"
 import { CapacityMeter } from "@/components/operations/capacity-meter"
 import { activityStatusLabels } from "@/components/operations/labels"
+import { NewActivityForm } from "@/components/operations/new-activity-form"
 import { zonedTimeLabel } from "@/components/operations/calendar-views"
 import { Badge } from "@/components/ui/badge"
 import { getUserProfile } from "@/lib/auth"
@@ -191,6 +192,46 @@ export default async function ActivitiesPage({
         >
           {t("seedNotice")}
         </p>
+      ) : null}
+
+      {/* The capability that existed and could not be reached.
+
+          `POST /api/site-management/activities` was built, granted,
+          permissioned, rate-limited, audited and published in the OpenAPI
+          document, and no screen in the product called it. An endpoint nobody
+          can reach is a feature that does not exist.
+
+          Gated on `activities:create`, which now matches
+          `activities_manager_write` exactly — admin and manager. It used to be
+          held by staff, owner, tenant and service_provider as well, all of whom
+          Postgres refuses, so this control would have 403'd for four roles. */}
+      {hasPermission(profile.role, "activities:create") ? (
+        <NewActivityForm
+          categories={activityCategories}
+          labels={{
+            trigger: t("create.trigger"),
+            heading: t("create.heading"),
+            lead: t("create.lead"),
+            title: t("create.title"),
+            category: t("create.category"),
+            description: t("create.description"),
+            startsAt: t("create.startsAt"),
+            endsAt: t("create.endsAt"),
+            submit: t("create.submit"),
+            submitting: t("create.submitting"),
+            cancel: t("create.cancel"),
+            titleRequired: t("create.titleRequired"),
+            timesRequired: t("create.timesRequired"),
+            endBeforeStart: t("create.endBeforeStart"),
+            failed: t("create.failed"),
+            categories: Object.fromEntries(
+              activityCategories.map((value) => [
+                value,
+                t(`category.${value}` as "category.social"),
+              ])
+            ),
+          }}
+        />
       ) : null}
 
       {/* The single most important sentence on this page. Stated once, at the
