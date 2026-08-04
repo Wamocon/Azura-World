@@ -19,8 +19,26 @@
 
 An evidence-backed property-management ERP and sales showcase for **Azura World Residence &
 Hotel** (Türkler / Alanya / Antalya, developer Cebeci Group), built under Jira **INTERNAL-107**.
-It is competitor intelligence: do not publish it, do not push it to a public remote, do not mix
-it with client data in `D:\Real Estate CRM\Cati`.
+
+**Publication status, decided 2026-08-04 by Maanik Garg (Wamocon).** This repository is
+**public** at `github.com/Wamocon/Azura-World`, and the Vercel deployment is reachable by
+anyone with the link. That was a deliberate choice, made after the conflict below was put in
+front of the owner, and it replaces the earlier rule.
+
+The earlier rule read: *"It is competitor intelligence: do not publish it, do not push it to a
+public remote."* It is recorded rather than deleted because the reasoning behind it has not
+gone away — the dataset contains harvested portal listings and asking prices from named
+competitors (Haspo Realty, Alanya-Home, Seaside Alanya and others), and the findings name
+those competitors and dispute their published figures. Anyone editing this repository should
+know that what they add is public the moment it is pushed.
+
+**What still holds:**
+
+- **No credentials, ever.** `.env`, `.env.local` and `.vercel/` are gitignored and have never
+  been committed; `.env.example` carries placeholders only. Verified before the 2026-08-04
+  push by scanning all 178 changed files for JWTs, connection strings, the Supabase project
+  ref and the seed password — zero hits. Re-run that check before any future push.
+- **Do not mix it with client data in `D:\Real Estate CRM\Cati`.** Unchanged.
 
 What makes it unusual: **every fact shown to a user carries its source URL.** That is not a
 convention you can forget — it is a type. `SourcedFact<T>` (CONTRACTS.md §1, implemented in

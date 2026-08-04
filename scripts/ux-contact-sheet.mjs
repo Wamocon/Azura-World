@@ -23,7 +23,7 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]$/, "")
-const BASE = process.env.AZURA_BASE_URL ?? "http://localhost:3200"
+const BASE = process.env.AZURA_BASE_URL ?? "http://localhost:3201"
 const LOCALE = process.env.AZURA_LOCALE ?? "en"
 const OUT = `${root}/quality/ux`
 
