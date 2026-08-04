@@ -115,31 +115,21 @@ export const GET = createManifestHandler("getProfiles", {
  * built against the published document deserves an answer that explains itself
  * rather than Next's bare "method not allowed".
  */
-function withdrawn(instead: string): Response {
-  return Response.json(
-    {
-      ok: false,
-      error: {
-        code: "method_not_allowed",
-        message: instead,
-        retryable: false,
-      },
-    },
-    { status: 405, headers: { allow: "GET, PATCH" } }
-  )
-}
-
-export function POST(): Response {
-  return withdrawn(
-    "Accounts are not created through this API. A sign-in account is created in Supabase Auth; this endpoint could only ever have written a profile row nobody could sign in as."
-  )
-}
-
-export function DELETE(): Response {
-  return withdrawn(
-    "Accounts are blocked, never deleted — the history has to survive. Use PATCH with isActive: false."
-  )
-}
+/*
+ * There is no `POST` and no `DELETE` here, and that absence is the point.
+ *
+ * They were briefly replaced with hand-rolled 405 handlers that named the
+ * reason, which read well and was wrong twice over — `validate-openapi.mjs`
+ * caught both. A route file exporting a method the manifest does not declare is
+ * a **shadow endpoint**: reachable, undocumented, and outside the gate that
+ * checks every route goes through the auth, rate-limit and audit sequence. The
+ * courtesy of an explanatory message is not worth standing outside that.
+ *
+ * Next answers 405 by itself for a method this file does not export, which is
+ * the correct status with no bespoke code to review. The reasoning lives above,
+ * in `docs/api/openapi.yaml`'s absence of those operations, and in migration
+ * 26 §4 — all three places a person would actually look.
+ */
 
 export const PATCH = createManifestHandler("updateProfileRole", {
   schema: updateProfileRoleSchema,

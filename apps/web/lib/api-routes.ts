@@ -1273,6 +1273,25 @@ export const apiRoutes: readonly RouteEntry[] = [
       },
     ],
   },
+  {
+    path: "/api/evidence/snapshot/{hash}",
+    dir: "evidence/snapshot/[hash]",
+    pathParams: ["hash"],
+    operations: [
+      {
+        method: "GET",
+        operationId: "getEvidenceSnapshot",
+        summary: "Get the stored copy of a harvested source page.",
+        description:
+          "Returns the bytes captured from a source at harvest time, addressed by their own SHA-256. The evidence cockpit links here from every citation: this is what makes the product's central claim redeemable, because a figure can be re-checked against the page it came from after that page changes or disappears. The hash is a lookup key against `source_snapshots`, never a filesystem path, and the file is re-hashed before it is served — a copy that no longer matches the id it is filed under answers 409 rather than being passed off as the original. Served as `text/plain` under a `sandbox` CSP: these are third-party HTML pages, and serving them as `text/html` from this origin would run their scripts with this application's cookies.",
+        tag: "Evidence",
+        permission: "evidence:view",
+        rateLimit: { windowMs: 60_000, max: 60 },
+        responses: [200, 404, 409],
+      },
+    ],
+  },
+
   // -- Externally owned, declared so they are not shadow endpoints ----------
   {
     path: "/api/access-profile",

@@ -2,8 +2,9 @@ import { createHash } from "node:crypto"
 import { readFile } from "node:fs/promises"
 import { join, normalize, sep } from "node:path"
 
-import { getUserProfile } from "@/lib/auth"
-import { hasPermission } from "@/lib/rbac"
+import { conflict, notFound } from "@/lib/api-errors"
+import { createManifestHandler } from "@/lib/api-handler"
+import { RepositoryError } from "@/lib/repository-base"
 import { createServiceRoleClient } from "@/lib/supabase/server"
 
 /**
@@ -27,6 +28,18 @@ import { createServiceRoleClient } from "@/lib/supabase/server"
  * files are on disk under `sources/raw/<host>/<timestamp>__<slug>.html`. Only
  * the route was missing.
  *
+ * ## It goes through `createManifestHandler`, and the first version did not
+ *
+ * The first version exported a hand-rolled `GET`. `scripts/validate-openapi.mjs`
+ * caught it twice over — once as a shadow endpoint (reachable, undocumented)
+ * and once under "SECURITY — every route is built by createManifestHandler",
+ * whose whole point is that no route quietly skips the auth, rate-limit and
+ * audit sequence. It was right: the hand-rolled version did its own permission
+ * check and had no rate limit at all, on an endpoint that reads files off disk.
+ *
+ * `serialize` is how a non-JSON body goes through that sequence — the same seam
+ * the iCalendar feed uses.
+ *
  * ## The hash is a lookup key, not a path
  *
  * The URL segment is never joined to a filesystem path. It is matched against
@@ -46,17 +59,20 @@ import { createServiceRoleClient } from "@/lib/supabase/server"
  * a document they believe is the original and is not. So a mismatch is a 409
  * that says so, not a silent success.
  *
+ * The hash is taken over the **bytes**, before any decoding, because that is
+ * what was hashed at harvest time. Decoding first and hashing the string would
+ * compare a different thing and pass files that had been re-encoded.
+ *
  * ## Who may read it
  *
- * `evidence:view`. The snapshots are copies of pages that were public when they
- * were fetched, but they are also this project's working material — the harvest,
- * with its timestamps and its coverage gaps — and the evidence module is gated,
- * so its artefacts are gated the same way. An unauthenticated caller gets 404
- * rather than 403: whether a given hash exists is itself information.
+ * `evidence:view`, declared in the manifest and enforced by the handler. The
+ * snapshots are copies of pages that were public when they were fetched, but
+ * they are also this project's working material — the harvest, with its
+ * timestamps and its coverage gaps — and the evidence module is gated, so its
+ * artefacts are gated the same way.
  *
  * The read uses the service client because `source_snapshots` is not granted to
- * `authenticated`; the permission check above is the gate, deliberately, and it
- * happens first.
+ * `authenticated`; the manifest's permission check runs first.
  */
 
 /** 64 lowercase hex characters, and nothing else, ever. */
@@ -65,140 +81,114 @@ const SHA256 = /^[0-9a-f]{64}$/u
 /** Everything served from here lives under this directory, and only this one. */
 const ARCHIVE_ROOT = "sources"
 
-/** Serve it, do not run it. */
-const CONTENT_TYPE = "text/plain; charset=utf-8"
-
-function notFound(): Response {
-  return Response.json(
-    {
-      ok: false,
-      error: {
-        code: "not_found",
-        message: "No stored copy is available.",
-        retryable: false,
-      },
-    },
-    { status: 404 }
-  )
+/**
+ * One answer for every "no such snapshot" case.
+ *
+ * A malformed segment, an unknown hash and an unreadable row are one outcome to
+ * the caller on purpose: whether a given hash exists is itself information, and
+ * distinguishing them would let somebody probe the archive's contents.
+ */
+function noSnapshot(): RepositoryError {
+  return new RepositoryError(notFound("No stored copy is available."))
 }
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ hash: string }> }
-): Promise<Response> {
-  const { hash } = await context.params
+export const GET = createManifestHandler("getEvidenceSnapshot", {
+  handler: async ({ params }) => {
+    const hash = params.hash ?? ""
 
-  // Shape first, so a malformed segment never becomes a query.
-  if (!SHA256.test(hash)) return notFound()
+    // Shape first, so a malformed segment never becomes a query.
+    if (!SHA256.test(hash)) throw noSnapshot()
 
-  const profile = await getUserProfile()
-  if (!profile.authenticated || !hasPermission(profile.role, "evidence:view")) {
-    return notFound()
-  }
+    const client = createServiceRoleClient()
+    if (client === null) throw noSnapshot()
 
-  const client = createServiceRoleClient()
-  if (client === null) return notFound()
+    // `source_snapshots` is a harvest table and is not in the generated
+    // database types, so the row arrives as `never` and is read through
+    // `unknown` rather than cast into a shape TypeScript cannot check. Two
+    // fields are used and both are validated below.
+    const { data, error } = await client
+      .from("source_snapshots")
+      .select("snapshot_path, snapshot_sha256, sources(publisher)")
+      .eq("snapshot_sha256", hash)
+      .limit(1)
+      .maybeSingle()
 
-  // `source_snapshots` is a harvest table and is not in the generated database
-  // types, so the row arrives as `never` and is read through `unknown` rather
-  // than cast into a shape TypeScript cannot check. Two fields are used and both
-  // are validated below.
-  const { data, error } = await client
-    .from("source_snapshots")
-    .select("snapshot_path, snapshot_sha256, sources(publisher)")
-    .eq("snapshot_sha256", hash)
-    .limit(1)
-    .maybeSingle()
+    if (error !== null || data === null) throw noSnapshot()
 
-  if (error !== null || data === null) return notFound()
+    const row = data as unknown as {
+      snapshot_path?: unknown
+      sources?: unknown
+    }
 
-  const row = data as unknown as {
-    snapshot_path?: unknown
-    sources?: unknown
-  }
+    const storedPath =
+      typeof row.snapshot_path === "string" ? row.snapshot_path : ""
+    if (storedPath === "") throw noSnapshot()
 
-  const storedPath =
-    typeof row.snapshot_path === "string" ? row.snapshot_path : ""
-  if (storedPath === "") return notFound()
+    // The stored path is repository-relative. Containment is checked on the
+    // NORMALISED path, because `sources/../../etc/passwd` starts with `sources`
+    // as a string and does not live under it as a path.
+    const relative = normalize(storedPath)
+    if (
+      !relative.startsWith(`${ARCHIVE_ROOT}${sep}`) &&
+      !relative.startsWith(`${ARCHIVE_ROOT}/`)
+    ) {
+      throw noSnapshot()
+    }
 
-  // The stored path is repository-relative. Containment is checked on the
-  // NORMALISED path, because `sources/../../etc/passwd` starts with `sources`
-  // as a string and does not live under it as a path.
-  const relative = normalize(storedPath)
-  if (
-    !relative.startsWith(`${ARCHIVE_ROOT}${sep}`) &&
-    !relative.startsWith(`${ARCHIVE_ROOT}/`)
-  ) {
-    return notFound()
-  }
+    // `process.cwd()` is `apps/web` when Next runs; the archive is at the
+    // repository root, one level up from the workspace.
+    const absolute = join(process.cwd(), "..", "..", relative)
 
-  // `process.cwd()` is `apps/web` when Next runs; the archive is at the
-  // repository root, one level up from the workspace.
-  const absolute = join(process.cwd(), "..", "..", relative)
+    let bytes: Buffer
+    try {
+      bytes = await readFile(absolute)
+    } catch {
+      // The row exists and the file does not — a real state, since the archive
+      // is not deployed with the application. Reported as the same "no stored
+      // copy" so the endpoint still does not confirm which hashes exist.
+      throw noSnapshot()
+    }
 
-  let bytes: Buffer
-  try {
-    bytes = await readFile(absolute)
-  } catch {
-    // The row exists and the file does not. That is a real state — the archive
-    // is not deployed with the application — and it is worth distinguishing
-    // from "no such snapshot", because one is a missing artefact and the other
-    // is a bad link.
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "not_found",
-          message:
-            "This snapshot is recorded but its stored copy is not on this server.",
-          retryable: false,
-        },
-      },
-      { status: 404 }
-    )
-  }
+    // Over the bytes, before decoding. See the header.
+    if (createHash("sha256").update(bytes).digest("hex") !== hash) {
+      throw new RepositoryError(
+        conflict(
+          "The stored copy no longer matches the hash it is filed under, so it cannot be shown as the original."
+        )
+      )
+    }
 
-  const actual = createHash("sha256").update(bytes).digest("hex")
-  if (actual !== hash) {
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "conflict",
-          message:
-            "The stored copy no longer matches the hash it is filed under, so it cannot be shown as the original.",
-          retryable: false,
-        },
-      },
-      { status: 409 }
-    )
-  }
+    // PostgREST returns an embedded one-to-one as an object and a one-to-many
+    // as an array, and which one it picks depends on the foreign key it
+    // inferred. Both are handled rather than assumed.
+    const joined = Array.isArray(row.sources) ? row.sources[0] : row.sources
+    const publisherValue = (joined as { publisher?: unknown } | null | undefined)
+      ?.publisher
+    const publisher =
+      typeof publisherValue === "string" && publisherValue !== ""
+        ? publisherValue
+        : "source"
 
-  // PostgREST returns an embedded one-to-one as an object and a one-to-many as
-  // an array, and which one it picks depends on the foreign key it inferred.
-  // Both are handled rather than assumed.
-  const joined = Array.isArray(row.sources) ? row.sources[0] : row.sources
-  const publisherValue = (joined as { publisher?: unknown } | null | undefined)
-    ?.publisher
-  const publisher =
-    typeof publisherValue === "string" && publisherValue !== ""
-      ? publisherValue
-      : "source"
+    return {
+      data: { text: bytes.toString("utf8"), publisher, hash },
+      source: "supabase" as const,
+    }
+  },
 
-  return new Response(new Uint8Array(bytes), {
-    status: 200,
+  serialize: ({ text, publisher, hash }) => ({
+    body: text,
+    // **Never** the document's own type. These are captured third-party HTML
+    // pages, and serving them as `text/html` from this origin would execute
+    // whatever script they contain with this application's cookies. Served as
+    // plain text they are readable, diffable, and inert.
+    contentType: "text/plain; charset=utf-8",
     headers: {
-      // **Never** the document's own type. These are captured third-party HTML
-      // pages, and serving them as `text/html` from this origin would execute
-      // whatever script they contain with this application's cookies. Served as
-      // plain text they are readable, diffable, and inert.
-      "content-type": CONTENT_TYPE,
-      "content-disposition": `inline; filename="${publisher.replace(/[^\w.-]+/gu, "-")}-${hash.slice(0, 12)}.html.txt"`,
-      "content-security-policy": "sandbox; default-src 'none'",
-      "x-content-type-options": "nosniff",
+      "Content-Disposition": `inline; filename="${publisher.replace(/[^\w.-]+/gu, "-")}-${hash.slice(0, 12)}.html.txt"`,
+      "Content-Security-Policy": "sandbox; default-src 'none'",
+      "X-Content-Type-Options": "nosniff",
       // Addressed by the hash of its own content, so it can never change.
-      "cache-control": "private, max-age=3600, immutable",
-      "x-robots-tag": "noindex, nofollow",
+      "Cache-Control": "private, max-age=3600, immutable",
+      "X-Robots-Tag": "noindex, nofollow",
     },
-  })
-}
+  }),
+})
