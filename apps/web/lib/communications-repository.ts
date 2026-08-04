@@ -601,10 +601,20 @@ export async function getThread(
  * A thread's messages in transcript order, oldest first.
  *
  * **Internal notes are dropped for every caller below staff level 40**, and for
- * a caller who supplies no role at all. RLS does not filter
- * `messages.is_internal_note` — migration 09 says so explicitly — so this filter
- * is not defence in depth, it is the only defence. Removing it exposes staff
- * annotations to the residents they are written about.
+ * a caller who supplies no role at all.
+ *
+ * This is now defence in depth, and the comment used to say the opposite. It
+ * read "RLS does not filter `messages.is_internal_note` — migration 09 says so
+ * explicitly — so this filter is not defence in depth, it is the only defence."
+ * That was true of migration 09 and stopped being true at **migration 22**,
+ * which moved the boundary into the SELECT policy and says so in its own header.
+ * The live policy carries the predicate.
+ *
+ * Both layers stay. The application filter is the narrower gate and runs first;
+ * RLS is the boundary. What changed is that a bug here is no longer the only
+ * thing standing between a resident and a staff annotation written about them —
+ * and a comment claiming otherwise makes the next reader afraid to touch a file
+ * they should be able to reason about normally.
  *
  * Thread visibility itself is not re-derived here: `messages`' SELECT policy
  * already routes through `current_user_can_access_thread()`, and a second copy

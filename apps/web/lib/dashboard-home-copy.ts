@@ -340,7 +340,10 @@ const ru: DashboardShellCopy = {
     "Вы вошли в систему, но вашей роли пока не назначен ни один раздел. Обратитесь к администратору за правами.",
 
   homeGreeting: "Добрый день",
-  homeSubtitleByRole: "Ваш вид как {role}",
+  // "Ваш вид как {role}" was not grammatical Russian — a word-for-word calque
+  // of the German "Ihre Ansicht als". "как" needs a comparison, not a role; the
+  // idiomatic form names the role in the genitive-free nominative after "роль".
+  homeSubtitleByRole: "Вы вошли как {role}",
   panelRestricted: "Недоступно",
   panelRestrictedHint:
     "Этот показатель относится к разделу, к которому у вас нет доступа.",

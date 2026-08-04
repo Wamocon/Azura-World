@@ -87,8 +87,42 @@ const VISIBLE_PROPS = new Set([
 const TOKEN = /^[a-z0-9_\-.:/#@[\]{}()$*+?^|\\%,;=&!~<>"' ]*$/i;
 const HAS_LETTERS = /\p{L}{2,}/u;
 
-/** Vocabulary the brief replaces, and why. Checked against message VALUES. */
+/**
+ * Vocabulary the brief replaces, and why. Checked against message VALUES.
+ *
+ * ## Coverage, stated rather than implied
+ *
+ * Every rule below targets **German or English**. Turkish and Russian are
+ * checked for the structural rules this script also runs — placeholder arity,
+ * token-vs-prose, sentence length — but their vocabulary is not covered, and
+ * this file used to be silent about that. A gate that passes four languages
+ * while examining two reads as four-language coverage.
+ *
+ * The Turkish entries below are the first of that coverage, taken from the
+ * defects the 4 August audit actually found rather than invented: German
+ * property-management nouns that survived translation, and "Block" — not a
+ * Turkish word — which the inventory printed in every locale.
+ *
+ * Russian remains structurally checked and lexically uncovered. Adding rules
+ * for it requires a native reader, and inventing plausible ones would put a
+ * green tick on work nobody has done.
+ */
 const BANNED_VOCAB = [
+  {
+    locales: ["tr", "ru"],
+    re: /\bBlock \d/i,
+    why: '"Block" is not a Turkish word and this is a Turkish site. The catalogue already carries "Blok" as dashboard.units.matrix.blockLabel — compose that with the code instead of storing a name.',
+  },
+  {
+    locales: ["tr", "en", "ru"],
+    re: /\b(Nebenkosten|Hausgeld|Kaution|Übergabeprotokoll|Zahlungseingang)\b/i,
+    why: "German property-management vocabulary outside the German catalogue. The trade's own Turkish is aidat, depozito, teslim tutanağı, ödeme girişi.",
+  },
+  {
+    locales: ["tr"],
+    re: /\bKonu iletişim\b/i,
+    why: 'A calque of a mistranslation: German "Objekt" (the property) became English "subject", which became Turkish "konu" (topic). Use "Proje iletişim bilgileri".',
+  },
   {
     re: /nicht belegt/i,
     why: '"belegt" reads as OCCUPIED to a property manager. Use "Keine Angabe".',
@@ -287,7 +321,14 @@ async function checkMessages() {
           value,
         );
       }
-      for (const { re, why } of BANNED_VOCAB) {
+      for (const { re, why, locales } of BANNED_VOCAB) {
+        // `locales` scopes a rule to the catalogues it is about. Without it the
+        // Turkish rules added on 2026-08-04 fired on `de.json`, where
+        // "Nebenkosten" and "Kaution" are simply the correct German words —
+        // four false positives that would have taught the next person to
+        // distrust this gate. A rule with no `locales` applies everywhere, so
+        // every pre-existing rule is unchanged.
+        if (locales !== undefined && !locales.includes(locale)) continue;
         if (re.test(value))
           add("vocabulary", file, lineNo, `${keyPath}: ${why}`, value);
       }

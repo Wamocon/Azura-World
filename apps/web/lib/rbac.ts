@@ -412,32 +412,62 @@ const SERVICE_PROVIDER = [
 ] as const satisfies readonly StaffPermission[]
 
 /** Guardian-supervised minor on an owner account. Strict subset of `owner`. */
+  /**
+   * **`child_owner` and `child_tenant` hold the same set, on purpose.**
+   *
+   * What separates them is their guardian's tenure — one owns the flat, the
+   * other rents it — and that is a fact about the guardian, not about what a
+   * minor living in the flat may look at. Neither may see finance, the title
+   * deed or the tenancy agreement, so there is nothing left for the difference
+   * to express. The role label carries it instead ("Malik (alt hesap)" /
+   * "Kiracı (alt hesap)"), which is where it belongs: in what the account is,
+   * not in an invented asymmetry of what it may read.
+   *
+   * Two permissions were removed from both on 2026-08-04 because neither could
+   * be exercised: `activities:create` (no interface in this product creates an
+   * activity) and `reports:view` (both built reports require
+   * `evidence:export`). A permission that unlocks nothing is not a capability;
+   * on a supervised minor it reads as an authority granted deliberately.
+   */
 const CHILD_OWNER = [
   "dashboard:view",
   "units:view",
   "activities:view",
-  "activities:create",
   "calendar:view",
   // wallet:view removed 2026-08-04: a sub-account holds no wallet of its own
   // (0 rows) and cannot read its guardian's, so the page could only ever be
   // empty. An empty page reached from a nav entry reads as a fault.
   "communications:view",
-  "reports:view",
   "hotel:view",
   "reviews:view",
 ] as const satisfies readonly OwnerPermission[]
 
 /** Guardian-supervised minor on a tenant account. Strict subset of `tenant`. */
+  /**
+   * **`child_owner` and `child_tenant` hold the same set, on purpose.**
+   *
+   * What separates them is their guardian's tenure — one owns the flat, the
+   * other rents it — and that is a fact about the guardian, not about what a
+   * minor living in the flat may look at. Neither may see finance, the title
+   * deed or the tenancy agreement, so there is nothing left for the difference
+   * to express. The role label carries it instead ("Malik (alt hesap)" /
+   * "Kiracı (alt hesap)"), which is where it belongs: in what the account is,
+   * not in an invented asymmetry of what it may read.
+   *
+   * Two permissions were removed from both on 2026-08-04 because neither could
+   * be exercised: `activities:create` (no interface in this product creates an
+   * activity) and `reports:view` (both built reports require
+   * `evidence:export`). A permission that unlocks nothing is not a capability;
+   * on a supervised minor it reads as an authority granted deliberately.
+   */
 const CHILD_TENANT = [
   "dashboard:view",
   "units:view",
   "activities:view",
-  "activities:create",
   "calendar:view",
   // wallet:view removed 2026-08-04 — same as CHILD_OWNER: no wallet exists for
   // this role and none is readable, so the entry led nowhere.
   "communications:view",
-  "reports:view",
   "hotel:view",
   "reviews:view",
 ] as const satisfies readonly TenantPermission[]

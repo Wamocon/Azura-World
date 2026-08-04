@@ -138,7 +138,17 @@ const KPIS_BY_ROLE: Record<Role, readonly KpiId[]> = {
   // the resident's own, which reads as "I have 23 apartments". Giving a resident
   // their own unit needs a scoped query, and that is the next build rather than
   // a number guessed at here.
-  owner: ["openTickets", "ledgerEntries"],
+  // `ledgerEntries` removed 2026-08-04. `dashboard-repository.ts:171` gates that
+  // figure on `canViewInternalFinance`, which is admin, manager and accountant —
+  // so an owner's second tile permanently rendered the "outside your role"
+  // refusal. That is the same defect the comment above describes and removes for
+  // the other residents, left in place on the one role it also applied to.
+  //
+  // An owner is not given a substitute count. The honest resident figures are
+  // their own unit, their own balance and their own open work, and only the
+  // last of those is a scoped query that exists today. One true tile beats two
+  // where one is greyed out.
+  owner: ["openTickets"],
   tenant: ["openTickets"],
   // Assigned work and what has run late on it. `service_provider ⊆ staff`, so
   // never more than staff. `hotelRooms` is gone: a contractor fixing a lift has

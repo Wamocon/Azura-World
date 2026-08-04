@@ -1911,7 +1911,8 @@
           "message": "Nachricht",
           "announcement": "Ankündigung"
         }
-      }
+      },
+      "emptyHint": "Gespräche hier eröffnet die Verwaltung. Sobald eines an Sie gerichtet ist, erscheint es hier und Sie können antworten."
     },
     "documents": {
       "title": "Dokumente",

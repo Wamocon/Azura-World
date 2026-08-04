@@ -281,9 +281,20 @@ export default async function CommunicationsPage({
           </p>
         </div>
       ) : threads.length === 0 ? (
-        <p className="rounded-lg border border-border bg-background/50 p-6 text-sm text-muted-foreground">
-          {t("empty")}
-        </p>
+        /* Says what would fill the page, not only that it is empty.
+
+           "No messages." was the entire page for guest, child_guest and
+           service_provider — true, and it reads as a fault: did the load fail,
+           am I missing a permission, is a filter on? The real answer is that a
+           thread here is opened by site management and none has been addressed
+           to this account, which is a different sentence and the one worth
+           printing. Same rule the documents register already follows. */
+        <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-background/50 p-6">
+          <p className="text-sm font-medium text-foreground">{t("empty")}</p>
+          <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+            {t("emptyHint")}
+          </p>
+        </div>
       ) : (
         <ul className="flex flex-col gap-2">
           {threads.map((thread) => (

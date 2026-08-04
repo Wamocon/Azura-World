@@ -1911,7 +1911,8 @@
           "message": "Mesaj",
           "announcement": "Duyuru"
         }
-      }
+      },
+      "emptyHint": "Buradaki yazışmaları site yönetimi başlatır. Size yönlendirilmiş bir konu olduğunda burada görünür ve yanıtlayabilirsiniz."
     },
     "documents": {
       "title": "Belgeler",

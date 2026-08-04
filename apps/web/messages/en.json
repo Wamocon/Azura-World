@@ -1911,7 +1911,8 @@
           "message": "Message",
           "announcement": "Announcement"
         }
-      }
+      },
+      "emptyHint": "Conversations here are opened by site management. When one is addressed to you it appears here and you can reply to it."
     },
     "documents": {
       "title": "Documents",
