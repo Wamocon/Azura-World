@@ -632,3 +632,29 @@ export function isReadOnlyRole(role: Role): boolean {
   }
   return true
 }
+
+/**
+ * True for the four roles whose horizon is their own holdings.
+ *
+ * `owner`, `tenant` and their two sub-accounts hold a `unit_residents` edge and
+ * see the apartments on it — not the inventory. `guest` and `service_provider`
+ * are deliberately excluded: neither holds such an edge, so neither has "their"
+ * apartment to be scoped to (`guest` reads the publicly listed set;
+ * `service_provider`'s scope is its assignments, which the operations
+ * repository owns, not this one).
+ *
+ * It lives HERE rather than in `inventory-repository.ts`, where it started,
+ * because the navigation needs it too and that repository is `server-only`:
+ * importing it from `lib/dashboard-routing.ts` pulled a service-role client into
+ * the sidebar's client bundle and the build refused it, correctly. Two copies of
+ * a role list is how a role gets added to one and not the other, so there is
+ * one, in the module both the server and the client already depend on.
+ */
+export function isResidentRole(role: Role): boolean {
+  return (
+    role === "owner" ||
+    role === "tenant" ||
+    role === "child_owner" ||
+    role === "child_tenant"
+  )
+}

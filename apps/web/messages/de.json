@@ -827,6 +827,12 @@
         "noDocumentsLead": "Verträge, Abnahmen und Berichte sammeln sich hier nach dem Hochladen.",
         "openDocuments": "Dokumente öffnen",
         "open": "Wohnung öffnen"
+      },
+      "mine": {
+        "title": "Meine Wohnung",
+        "lead": "Die Wohnungen zu diesem Konto. Eine öffnen: offene Vorgänge, Konto und Dokumente an einer Stelle.",
+        "empty": "Diesem Konto ist keine Wohnung zugeordnet",
+        "emptyLead": "Sobald eine Zuordnung besteht, steht sie hier. Die Zuordnung nimmt die Verwaltung vor."
       }
     },
     "listings": {

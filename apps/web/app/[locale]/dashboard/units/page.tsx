@@ -1,6 +1,11 @@
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
+import { Home } from "lucide-react"
+
+import { Link, redirect } from "@/app/navigation"
+import { DashboardPageHeader } from "@/components/dashboard/section"
+import { EmptyState } from "@/components/ui/empty-state"
 import { InventorySplitSummary } from "@/components/inventory/inventory-split-summary"
 import type { UnitProvenanceLabels } from "@/components/inventory/unit-provenance-badge"
 import {
@@ -12,6 +17,7 @@ import {
 import { getUserProfile } from "@/lib/auth"
 import { getGlossary } from "@/lib/glossary"
 import { hasPermission } from "@/lib/rbac"
+import { scopeKindForRole } from "@/lib/inventory-repository"
 import type { Locale } from "@/lib/contracts"
 import {
   getAvailabilityRollup,
@@ -121,6 +127,65 @@ export default async function UnitsPage({
         <p role="alert" className="max-w-prose text-sm text-muted-foreground">
           {tCommon("errors.forbidden")}
         </p>
+      </div>
+    )
+  }
+
+  /**
+   * A resident opening "Units" wants their apartment, not the sales matrix.
+   *
+   * Measured on 2026-08-04: a `tenant` on this page saw the 656-unit inventory
+   * screen shrunk to a single cell — an availability legend, a provenance
+   * filter, and the sentence "1 of the 1 apartments come from a real listing on
+   * a property portal" — about their own home. Every one of those controls
+   * answers a question a seller asks. None answers one a resident has.
+   *
+   * So for a resident-scoped caller the route goes to the apartment itself.
+   * With exactly one holding that is a redirect, and their nav item lands on
+   * the page that shows what is open on their flat, what it owes and what
+   * paperwork is on file. With several — an owner with more than one — it is a
+   * list of them, below. Staff and above are unaffected and still get the
+   * matrix; `scopeKindForRole` is the same function the repository uses to
+   * decide what to return, so the two cannot disagree.
+   */
+  const residentScoped = scopeKindForRole(profile.role) === "resident"
+  if (residentScoped) {
+    const own = await fetchAllUnits(scope)
+    if (own.units.length === 1 && own.units[0] !== undefined) {
+      redirect({ href: `/dashboard/units/${own.units[0].id}`, locale })
+    }
+    return (
+      <div className="flex min-w-0 flex-col gap-6">
+        <DashboardPageHeader
+          title={t("mine.title")}
+          description={t("mine.lead")}
+        />
+        {own.units.length === 0 ? (
+          <EmptyState
+            icon={Home}
+            title={t("mine.empty")}
+            description={t("mine.emptyLead")}
+          />
+        ) : (
+          <ul className="grid [grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-3">
+            {own.units.map((unit) => (
+              <li key={unit.id}>
+                <Link
+                  href={`/dashboard/units/${unit.id}`}
+                  locale={locale}
+                  className="flex min-w-0 flex-col gap-1 rounded-lg border border-input px-4 py-3 transition-colors duration-150 ease-[var(--ease-out)] hover:border-foreground/25 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <span className="font-mono text-sm tabular-nums">
+                    {unit.id}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {unit.layout} · {unit.blockName ?? unit.blockCode}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     )
   }

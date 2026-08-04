@@ -827,6 +827,12 @@
         "noDocumentsLead": "Contracts, handover records and reports collect here once uploaded.",
         "openDocuments": "Open documents",
         "open": "Open apartment"
+      },
+      "mine": {
+        "title": "My apartment",
+        "lead": "The apartments linked to this account. Open one for its open requests, its account and its documents in one place.",
+        "empty": "No apartment is linked to this account",
+        "emptyLead": "Once you are linked to an apartment it appears here. Site management makes the link."
       }
     },
     "listings": {

@@ -30,7 +30,7 @@
  */
 
 import type { Permission, Resource, Role } from "./contracts"
-import { hasPermission } from "./rbac"
+import { hasPermission, isResidentRole } from "./rbac"
 
 /**
  * Cookie holding the sidebar collapse state.
@@ -105,6 +105,16 @@ export interface DashboardRoute {
    * throwing and taking the whole nav down.
    */
   labelKey: string
+  /**
+   * The same route, named for somebody who owns one of the things in it.
+   *
+   * "Units" is the inventory of 656 apartments, which is what a member of staff
+   * opens this route for. A resident opening it reaches exactly one apartment —
+   * theirs — and the page redirects them into it. Calling that "Units" in their
+   * navigation names a catalogue they are not looking at. Optional: a route
+   * with no resident reading keeps one label for everybody.
+   */
+  residentLabelKey?: string
   /** lucide-react export name. Resolved in `dashboard-sidebar.tsx`. */
   icon: string
   /** The permission that reveals this entry. */
@@ -162,6 +172,7 @@ export const dashboardRoutes: readonly DashboardRoute[] = Object.freeze([
   {
     href: "/dashboard/units",
     labelKey: "dashboard.units.title",
+    residentLabelKey: "dashboard.units.mine.title",
     icon: "Building2",
     permission: "units:view",
     group: "inventory",
@@ -348,9 +359,18 @@ export interface DashboardNavGroup {
  * for the session lifetime is the bug that edge case describes.
  */
 export function routesForRole(role: Role): readonly DashboardRoute[] {
-  return dashboardRoutes.filter((route) =>
-    hasPermission(role, route.permission)
-  )
+  // A resident's scope is their own holdings, and a route can read differently
+  // from inside it — see `residentLabelKey`. `isResidentRole` is the same
+  // predicate the inventory repository scopes by, so the label and the data it
+  // names are decided by one rule rather than by two lists that drift.
+  const resident = isResidentRole(role)
+  return dashboardRoutes
+    .filter((route) => hasPermission(role, route.permission))
+    .map((route) =>
+      resident && route.residentLabelKey !== undefined
+        ? { ...route, labelKey: route.residentLabelKey }
+        : route
+    )
 }
 
 /**

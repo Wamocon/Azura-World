@@ -827,6 +827,12 @@
         "noDocumentsLead": "Yüklenen sözleşme, tutanak ve raporlar burada toplanır.",
         "openDocuments": "Belgeler sayfasını aç",
         "open": "Daireyi aç"
+      },
+      "mine": {
+        "title": "Dairem",
+        "lead": "Bu adrese bağlı daireler. Birini açın: açık talepleri, hesap durumu ve belgeleri bir arada.",
+        "empty": "Bu hesaba bağlı daire yok",
+        "emptyLead": "Bir daireye bağlandığınızda burada görünür. Bağlantıyı site yönetimi kurar."
       }
     },
     "listings": {

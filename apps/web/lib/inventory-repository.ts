@@ -71,6 +71,7 @@ import type {
   UnitLayout,
 } from "@/lib/contracts"
 import { roleLevel } from "@/lib/contracts"
+import { isResidentRole } from "@/lib/rbac"
 import type {
   CurrencyCode,
   ResidentRelation,
@@ -728,15 +729,6 @@ export type InventoryScope =
 /** `staff` (40) and above see the whole inventory. */
 const STAFF_LEVEL = roleLevel.staff
 
-function isResidentRole(role: Role): boolean {
-  return (
-    role === "owner" ||
-    role === "tenant" ||
-    role === "child_owner" ||
-    role === "child_tenant"
-  )
-}
-
 function isChildRole(role: Role): boolean {
   return (
     role === "child_owner" || role === "child_tenant" || role === "child_guest"
@@ -753,8 +745,14 @@ function relationForRole(role: Role): ResidentRelation {
  * `service_provider` (30) lands on `public` here: it is below `staff`, holds no
  * `unit_residents` edge, and its assignment scope lives in the operations
  * repository, not this one.
+ *
+ * Exported because the units PAGE has to make the same distinction and must not
+ * re-derive it. A resident opening "Units" wants their own apartment; a member
+ * of staff wants the 656-unit sales matrix. Deciding that from a second, local
+ * role list would put two answers to one question in the tree, and the one on
+ * the page would be the one that drifted.
  */
-function scopeKindForRole(
+export function scopeKindForRole(
   role: Role | undefined
 ): "all" | "public" | "resident" {
   if (role === undefined) return "public"
