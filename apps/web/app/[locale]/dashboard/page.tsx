@@ -8,6 +8,7 @@ import { getDashboardSnapshot } from "@/lib/dashboard-repository"
 import type { DashboardSnapshot } from "@/lib/dashboard-data"
 import { fill, shellCopy } from "@/lib/dashboard-home-copy"
 import { AttentionList } from "@/components/dashboard/attention-list"
+import { LiveRefresh } from "@/components/dashboard/live-refresh"
 import { getAttentionItems } from "@/lib/attention-repository"
 import { navGroupsForRole, routesForRole } from "@/lib/dashboard-routing"
 import { WelcomePanel } from "@/components/dashboard/welcome-panel"
@@ -261,6 +262,21 @@ export default async function DashboardHomePage({
           {/* First, above the numbers. The counts below say how big things are;
               this says what to do about them, which is what somebody actually
               opens their home page for. See `lib/attention-repository.ts`. */}
+          <LiveRefresh
+            name="dashboard-attention"
+            channels={[
+              { table: "service_tickets" },
+              ...(profile.id === null
+                ? []
+                : [{ table: "notifications" as const, filter: `profile_id=eq.${profile.id}` }]),
+            ]}
+            enabled={!attention.degraded}
+            labels={{
+              updated: t("live.updated"),
+              offline: t("live.offline"),
+            }}
+            className="self-start"
+          />
           <AttentionList
             rows={attention.items.map((item) => ({
               key: item.key,

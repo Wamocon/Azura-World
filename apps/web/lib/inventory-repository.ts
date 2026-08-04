@@ -85,6 +85,7 @@ import {
   seedBlockRows,
   seedFloorRows,
   seedGuardianshipRows,
+  seedCompanyRow,
   seedSiteRow,
   seedSourceRegister,
   seedUnitFactRows,
@@ -114,6 +115,25 @@ import {
 // ---------------------------------------------------------------------------
 
 /** The `sites` row. One row exists: `AZW-TRK`. */
+/**
+ * The developer behind the site — `public.companies`.
+ *
+ * Read so that a screen can name an organisation instead of printing its
+ * primary key. `legalName`, `foundedYear` and `website` are nullable in the
+ * schema and stay nullable here: a company that has not stated its founding
+ * year must render as a stated gap, not as a plausible year.
+ */
+export interface CompanyRecord {
+  id: string
+  slug: string
+  name: string
+  legalName: string | null
+  country: string
+  defaultCurrency: string
+  foundedYear: number | null
+  website: string | null
+}
+
 export interface SiteRecord {
   id: string
   companyId: string
@@ -564,6 +584,19 @@ function indexCompetingPrices(
 // Row mappers
 // ---------------------------------------------------------------------------
 
+function mapCompany(row: Record<string, unknown>): CompanyRecord {
+  return {
+    id: asString(row["id"]),
+    slug: asString(row["slug"]),
+    name: asString(row["name"]),
+    legalName: asNullableString(row["legal_name"]),
+    country: asString(row["country"]),
+    defaultCurrency: asString(row["default_currency"]),
+    foundedYear: asNullableNumber(row["founded_year"]),
+    website: asNullableString(row["website"]),
+  }
+}
+
 function mapSite(row: Record<string, unknown>): SiteRecord {
   const buildStatus = asNullableString(row["build_status"])
   return {
@@ -1001,6 +1034,37 @@ export async function getSite(): Promise<RepositoryResult<SiteRecord | null>> {
     },
     () => mapSite(seedSiteRow()),
     "inventory.getSite"
+  )
+}
+
+/**
+ * One company by id — the caller's own, in practice.
+ *
+ * `companies_select_all` makes this readable by anyone including `anon`, which
+ * is correct: the developer's name, country and website are on the public
+ * landing page already. Nothing private lives in this table.
+ */
+export async function getCompany(
+  companyId: string
+): Promise<RepositoryResult<CompanyRecord | null>> {
+  return withRepository(
+    async (client) => {
+      const { data, error } = await client
+        .from("companies")
+        .select(
+          "id, slug, name, legal_name, country, default_currency, founded_year, website"
+        )
+        .eq("id", companyId)
+        .limit(1)
+      if (error) throw error
+      const first = rowsOf(data)[0]
+      return first === undefined ? null : mapCompany(first)
+    },
+    () => {
+      const seed = seedCompanyRow()
+      return seed.id === companyId ? mapCompany(seed) : null
+    },
+    "inventory.getCompany"
   )
 }
 

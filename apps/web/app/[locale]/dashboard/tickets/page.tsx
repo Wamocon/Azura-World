@@ -44,6 +44,7 @@ import {
   type TicketSeverity,
   type TicketStatus,
 } from "@/lib/operations-data"
+import { LiveRefresh } from "@/components/dashboard/live-refresh"
 import { encodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 import { assessSla, closedOutStatuses } from "@/lib/ticket-workflow"
@@ -128,6 +129,7 @@ export default async function TicketsPage({
 
   const t = await getTranslations({ locale, namespace: "dashboard.tickets" })
   const tCommon = await getTranslations({ locale, namespace: "common" })
+  const tLive = await getTranslations({ locale, namespace: "dashboard.live" })
   const profile = await getUserProfile()
 
   // Re-checked here even though the nav hides the entry and the shell guard has
@@ -240,6 +242,12 @@ export default async function TicketsPage({
             {t("lead")}
           </p>
         </div>
+        <LiveRefresh
+          name="tickets-queue"
+          channels={[{ table: "service_tickets" }, { table: "ticket_events" }]}
+          enabled={!degraded}
+          labels={{ updated: tLive("updated"), offline: tLive("offline") }}
+        />
         {canCreate ? (
           <NewRequestForm
             unitIds={ownUnitIds}

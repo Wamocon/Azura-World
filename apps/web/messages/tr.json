@@ -758,13 +758,15 @@
         "area": "Alan",
         "price": "Fiyat",
         "status": "Durum",
-        "view": "Cephe"
+        "view": "Cephe",
+        "outdoor": "Dış alan"
       },
       "status": {
         "available": "Müsait",
         "reserved": "Rezerve",
         "sold": "Satıldı",
-        "blocked": "Bloke"
+        "blocked": "Bloke",
+        "notStated": "Belirtilmemiş"
       },
       "filters": {
         "block": "Blok",
@@ -799,7 +801,32 @@
         "availableCount": "{available} uygun",
         "detailLead": "Daire detayı",
         "blockLabel": "Blok",
-        "hint": "Ayrıntı için bir hücreye tıklayın."
+        "hint": "Ayrıntı için bir hücreye tıklayın.",
+        "openUnit": "Daireyi aç"
+      },
+      "detail": {
+        "lead": "{block} bloğunda {layout} daire.",
+        "facts": "Daire bilgileri",
+        "notStated": "Belirtilmemiş",
+        "requests": "Açık talepler",
+        "requestsLead": "Bu daire için bildirilen işler.",
+        "openRequests": "Açık",
+        "allRequests": "Toplam",
+        "noRequests": "Bu daire için bildirilen bir iş yok",
+        "noRequestsLead": "Bir arıza bildirildiğinde burada görünür ve doğrudan açılabilir.",
+        "money": "Hesap durumu",
+        "moneyLead": "Bu daireye işlenmiş borç ve alacaklar, para birimine göre ayrı.",
+        "outstandingIn": "Bakiye ({currency})",
+        "moneyNote": "{count} muhasebe kaydından hesaplandı. Para birimleri hiçbir zaman toplanmaz.",
+        "noMoney": "Bu daireye işlenmiş kayıt yok",
+        "noMoneyLead": "Bir borç veya ödeme işlendiğinde bakiye burada oluşur.",
+        "openFinance": "Finans sayfasını aç",
+        "documents": "Belgeler",
+        "documentsLead": "Bu daireye bağlı dosyalar.",
+        "noDocuments": "Bu daireye bağlı belge yok",
+        "noDocumentsLead": "Yüklenen sözleşme, tutanak ve raporlar burada toplanır.",
+        "openDocuments": "Belgeler sayfasını aç",
+        "open": "Daireyi aç"
       }
     },
     "listings": {
@@ -1478,7 +1505,10 @@
         "noNotes": "Not girilmemiş",
         "version": "Kayıt sürümü",
         "created": "Oluşturuldu",
-        "updated": "Güncellendi"
+        "updated": "Güncellendi",
+        "job": "İlgili iş",
+        "noJob": "Bildirilen bir işten gelmiyor. Düzenli sözleşme hizmetleri — bahçe, havuz, temizlik, güvenlik, asansör bakımı — kimse bildirmese de ödenir.",
+        "openJob": "İşi aç"
       }
     },
     "tickets": {
@@ -1651,7 +1681,27 @@
         "afterNote": "Talep «açık» olarak kaydedilir ve ekip üstlenene kadar kimseye atanmaz. Buradan takip edebilir, yorum ekleyebilirsiniz."
       },
       "openTicket": "{ticketNo} numaralı talebi aç: {title}",
-      "severityLabel": "Önem"
+      "severityLabel": "Önem",
+      "cost": {
+        "heading": "Bu işin maliyeti",
+        "empty": "Bu iş için henüz fatura kaydedilmedi. Bir tedarikçi fatura kestiyse buraya ekleyin; tutar o andan itibaren işin kendisinde görünür.",
+        "emptyReadOnly": "Bu iş için fatura kaydedilmedi. Çoğu iş, dışarıdan bir firmaya masraf çıkarmaz.",
+        "openInvoices": "Faturalar",
+        "outstanding": "Kalan:",
+        "settled": "Ödendi",
+        "record": "Fatura ekle",
+        "recordHeading": "Bu iş için fatura",
+        "recordLead": "Fatura tam tutarıyla borç olarak kaydedilir. Ödemesi Tedarikçi faturaları sayfasından işlenir.",
+        "vendorLabel": "Tedarikçi",
+        "vendorPlaceholder": "Seçin",
+        "referenceLabel": "Fatura numarası",
+        "referencePlaceholder": "Tedarikçinin kendi numarası",
+        "amountLabel": "Tutar",
+        "dueLabel": "Vade",
+        "submit": "Kaydet",
+        "saving": "Kaydediliyor…",
+        "failed": "Fatura kaydedilemedi. Hiçbir şey değişmedi."
+      }
     },
     "activities": {
       "title": "Etkinlikler",
@@ -2450,18 +2500,25 @@
       "appearanceLead": "Tüm uygulama için geçerlidir.",
       "themeFixedNotice": "Açık tasarım herkes için sabit. Buradaki bir seçim hiçbir şey yapmazdı, bu yüzden yok.",
       "notificationsLead": "Bu sistemin sizinle ne zaman iletişim kuracağı.",
-      "notificationsUnavailable": "Bildirimler henüz mümkün değil.",
+      "notificationsUnavailable": "Bildirimler uygulama içinde İletişim sayfasında toplanır. E-posta veya telefon bildirimi yoktur ve hangi olayın bildirileceği ayarlanamaz — bunun için henüz bir gönderim yolu tanımlı değil.",
       "organisation": "Kuruluş",
       "organisationLead": "Yalnızca yöneticiler.",
-      "companyId": "Tanımlayıcı",
-      "noCompany": "Belirtilmemiş",
+      "noCompany": "Bu hesap bir şirkete bağlı değil. Gösterilecek kurum bilgisi yok.",
       "organisationReadOnly": "Bu bilgiler burada yalnızca okunabilir. Düzenleme henüz yok.",
       "openAdmin": "Yönetime git",
       "forbidden": {
         "title": "Ayarlara erişim yok",
         "message": "Rolünüz bu sayfayı göremez. Adres geçerli kalır.",
         "permissionLabel": "Gereken yetki:"
-      }
+      },
+      "companyName": "Şirket",
+      "companyLegalName": "Ticari unvan",
+      "companyCountry": "Ülke",
+      "companyCurrency": "Varsayılan para birimi",
+      "companyFounded": "Kuruluş yılı",
+      "companyWebsite": "İnternet sitesi",
+      "notStated": "Belirtilmemiş",
+      "openNotifications": "İletişim sayfasını aç"
     },
     "hotel": {
       "title": "Otel operasyonu",
@@ -2691,6 +2748,10 @@
         "openThreads": "{count, plural, one {# görüşme hâlâ açık.} other {# görüşme hâlâ açık.}}",
         "upcomingActivities": "Bu hafta {count, plural, one {# etkinlik} other {# etkinlik}} var — ilki: {next}."
       }
+    },
+    "live": {
+      "updated": "Az önce güncellendi",
+      "offline": "Canlı bağlantı koptu; yenileyin"
     }
   },
   "hotel": {

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
+import { LiveRefresh } from "@/components/dashboard/live-refresh"
 import { NotificationList } from "@/components/communications/notification-list"
 import { DeliveryNotice } from "@/components/operations/delivery-notice"
 import { Badge } from "@/components/ui/badge"
@@ -99,6 +100,7 @@ export default async function CommunicationsPage({
     namespace: "dashboard.communications",
   })
   const tCommon = await getTranslations({ locale, namespace: "common" })
+  const tLive = await getTranslations({ locale, namespace: "dashboard.live" })
   const profile = await getUserProfile()
 
   if (!hasPermission(profile.role, "communications:view")) {
@@ -185,6 +187,19 @@ export default async function CommunicationsPage({
         </h1>
         <p className="max-w-prose text-sm text-muted-foreground">{t("lead")}</p>
       </header>
+
+      <LiveRefresh
+        name="communications-inbox"
+        channels={[
+          { table: "threads" },
+          { table: "messages" },
+          ...(profile.id === null
+            ? []
+            : [{ table: "notifications" as const, filter: `profile_id=eq.${profile.id}` }]),
+        ]}
+        enabled={!degraded}
+        labels={{ updated: tLive("updated"), offline: tLive("offline") }}
+      />
 
       <DeliveryNotice
         title={t("deliveryNotice.title")}

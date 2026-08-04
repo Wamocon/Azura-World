@@ -642,6 +642,17 @@ export interface TicketQuery extends OperationsAccess, PageOptions {
   assigneeProfileId?: string
   requesterProfileId?: string
   requiresFinanceApproval?: boolean
+  /**
+   * Exactly these tickets, by internal id.
+   *
+   * Added so a page holding foreign keys — the supplier-invoice list, which
+   * carries a `ticket_id` per row — can resolve them all in one read instead of
+   * one round trip per row. It narrows and never widens: RLS and the caller's
+   * scope still decide which of the named ids come back, and an id the caller
+   * may not read is simply absent from the result rather than an error, which
+   * keeps this from being an existence oracle.
+   */
+  ids?: readonly string[]
   /** Only tickets whose `sla_due_at` has passed and which are not terminal. */
   slaBreachedOnly?: boolean
   /** Reference instant for `slaBreachedOnly`. Defaults to the repository clock. */
@@ -670,6 +681,9 @@ function seedTicketsFiltered(
     )
     .filter(
       (ticket) => query.unitId === undefined || ticket.unitId === query.unitId
+    )
+    .filter(
+      (ticket) => query.ids === undefined || query.ids.includes(ticket.id)
     )
     .filter(
       (ticket) => query.status === undefined || ticket.status === query.status
@@ -750,6 +764,12 @@ async function fetchTicketRows(
     builder = builder.eq("severity", query.severity)
   if (query.category !== undefined)
     builder = builder.eq("category", query.category)
+  if (query.ids !== undefined) {
+    // An empty list means "none", and `.in()` with an empty array is the query
+    // that returns nothing — which is right. The caller that would otherwise
+    // have to special-case it is the one that had no ids to resolve.
+    builder = builder.in("id", [...query.ids])
+  }
   if (query.assigneeProfileId !== undefined) {
     builder = builder.eq("assignee_profile_id", query.assigneeProfileId)
   }

@@ -9,6 +9,22 @@
  * already has one" that CONVENTIONS forbids — hence the deliberately narrow
  * scope here and the request in HANDOFF/W1-D.md.
  *
+ * ## The locale is a URL segment and must be treated as one
+ *
+ * The three formatters below take `locale: string` and used to hand it straight
+ * to an `Intl` constructor. That constructor throws `RangeError` on anything
+ * that is not a structurally valid BCP-47 tag, and this value arrives from
+ * `params.locale` — so every request for `/favicon.ico`, `/robots.txt` or
+ * `/index.php` threw inside whichever landing section rendered a fact. Measured
+ * in the dev log on 2026-08-04: hundreds of
+ * `RangeError: Incorrect locale information provided` at `formatNumber`,
+ * reached through `components/azura/inventory-value.tsx`.
+ *
+ * `intlLocaleTag()` in `lib/format.ts` is the existing guard for exactly this:
+ * it resolves the four known locales, degrades anything else to the default,
+ * and re-verifies the resulting tag. It was written for the same defect on the
+ * landing page; this module was simply missed.
+ *
  * CURRENCY IS NEVER CONVERTED. `Money` carries its currency and is rendered in
  * it. Portals quote the same unit in EUR and USD (F-002), and converting would
  * require a rate and a rate date that no source provides. A silently converted
@@ -16,6 +32,7 @@
  */
 
 import type { Money } from "@/lib/contracts"
+import { intlLocaleTag } from "@/lib/format"
 
 /**
  * Substitutes `{name}` placeholders in a label.
@@ -80,7 +97,7 @@ function isMoney(value: unknown): value is Money {
  * "€ 112.000,00" is noise; the cents were never in the source.
  */
 export function formatMoney(money: Money, locale: string): string {
-  return new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat(intlLocaleTag(locale), {
     style: "currency",
     currency: money.currency,
     maximumFractionDigits: 0,
@@ -92,7 +109,9 @@ function formatNumber(
   locale: string,
   maximumFractionDigits = 0
 ): string {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits }).format(value)
+  return new Intl.NumberFormat(intlLocaleTag(locale), {
+    maximumFractionDigits,
+  }).format(value)
 }
 
 /**
@@ -145,7 +164,7 @@ export function formatFactValue(
 
     case "percent":
       return typeof value === "number"
-        ? new Intl.NumberFormat(locale, {
+        ? new Intl.NumberFormat(intlLocaleTag(locale), {
             style: "percent",
             maximumFractionDigits: 1,
           }).format(value / 100)

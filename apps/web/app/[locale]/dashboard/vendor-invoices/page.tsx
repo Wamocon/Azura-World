@@ -26,6 +26,9 @@ import {
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
 import { vendorInvoiceStatuses } from "@/lib/finance-data"
+import { getTickets } from "@/lib/operations-repository"
+import { encodePublicId } from "@/lib/public-id"
+import { hasPermission } from "@/lib/rbac"
 import {
   currencyCodes,
   getVendorInvoices,
@@ -289,6 +292,41 @@ export default async function VendorInvoicesPage({
     void: t("status.void"),
   }
 
+  /**
+   * The jobs these invoices came from, resolved in one read.
+   *
+   * Only for a caller who may read tickets at all: an accountant holds
+   * `tickets:view`, an outside contractor reading their own invoices does not,
+   * and for them the job block states its absence rather than naming a job they
+   * cannot open. The read is scoped, so an id whose ticket is outside the
+   * caller's scope simply does not come back and reads the same way.
+   *
+   * `ticketNo` is what a person recognises; the link carries the opaque token.
+   * The ticket's primary key never reaches the browser.
+   */
+  const ticketIds = [
+    ...new Set(
+      invoices
+        .map((invoice) => invoice.ticketId)
+        .filter((id): id is string => id !== null)
+    ),
+  ]
+  const jobs = new Map<string, { ticketNo: string; ref: string }>()
+  if (ticketIds.length > 0 && hasPermission(scope.role, "tickets:view")) {
+    const jobResult = await getTickets({
+      role: scope.role,
+      ...(scope.profileId === null ? {} : { profileId: scope.profileId }),
+      ids: ticketIds,
+      limit: ticketIds.length,
+    })
+    for (const job of jobResult.data) {
+      jobs.set(job.id, {
+        ticketNo: job.ticketNo,
+        ref: encodePublicId("ticket", job.id),
+      })
+    }
+  }
+
   // The decimal → integer boundary, crossed once for the whole page, exactly
   // where `components/finance/money.ts` says it belongs. Nothing downstream of
   // this map sees a `number` that is money.
@@ -342,6 +380,14 @@ export default async function VendorInvoicesPage({
         vendor: invoice.vendorName,
         invoiceNo: invoice.invoiceNo,
       }),
+      ticketNo:
+        invoice.ticketId === null
+          ? null
+          : (jobs.get(invoice.ticketId)?.ticketNo ?? null),
+      ticketRef:
+        invoice.ticketId === null
+          ? null
+          : (jobs.get(invoice.ticketId)?.ref ?? null),
     }
   })
 
@@ -351,6 +397,9 @@ export default async function VendorInvoicesPage({
       to: invoices.length,
       total: allInvoices.length,
     }),
+    job: t("detail.job"),
+    noJob: t("detail.noJob"),
+    openJob: t("detail.openJob"),
     columns: {
       vendor: t("columns.vendor"),
       invoiceNo: t("columns.invoiceNo"),

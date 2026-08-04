@@ -30,6 +30,7 @@ import {
   getComplianceChecks,
   getProfiles,
 } from "@/lib/governance-repository"
+import { getSite } from "@/lib/inventory-repository"
 import { hasPermission } from "@/lib/rbac"
 
 import {
@@ -196,6 +197,21 @@ export default async function CompliancePage({
   // than per row, and only when the reader may see the directory at all —
   // `getProfiles` refuses anyone who may not, and an id that does not resolve
   // renders as the stated "not recorded" rather than falling back to a uuid.
+  const site = await getSite()
+  /**
+   * A subject a reader recognises. Never a uuid.
+   *
+   * `unit` ids are the building's own designations and are left alone. A
+   * `site` resolves to its name — there is one site and it is already read for
+   * the header. Everything else is shortened to `#` plus eight characters,
+   * which is the reference form the finance module already uses for ledger ids.
+   */
+  const subjectLabel = (kind: string, id: string): string => {
+    if (kind === "unit") return id
+    if (kind === "site") return site.data?.name ?? `#${id.slice(0, 8)}`
+    return `#${id.slice(0, 8)}`
+  }
+
   const directory = hasPermission(profile.role, "users:view")
     ? await getProfiles({ role: profile.role, isActive: true, limit: 200 })
     : null
@@ -278,7 +294,16 @@ export default async function CompliancePage({
       state: row.state,
       checkType,
       subjectType: row.check.subjectType,
-      subjectId: row.check.subjectId,
+      // What the check is ABOUT, in words a person recognises.
+      //
+      // This printed `subject_id` verbatim, which for a site-scoped check is a
+      // uuid — measured on the contact sheet reaching admin, manager and
+      // accountant on every compliance row. A unit's id is already a human
+      // designation (`AZW-B01-0003`) and stays; a site resolves to its name;
+      // anything else becomes a short reference rather than 36 characters of
+      // key. The full id is still in the popup's identifier block, which is
+      // where a reader goes when they need to look the row up.
+      subjectId: subjectLabel(row.check.subjectType, row.check.subjectId),
       stateLabel,
       stateVariant: STATE_VARIANT[row.state],
       // The legend under the table already explains every state in plain

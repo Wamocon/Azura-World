@@ -173,6 +173,7 @@ export default async function UnitsPage({
       status: t("columns.status"),
     },
     legend: t("matrix.legend"),
+    openUnit: t("matrix.openUnit"),
     close: t("matrix.close"),
     floor: t("matrix.floor"),
     outdoor: t("matrix.outdoor"),

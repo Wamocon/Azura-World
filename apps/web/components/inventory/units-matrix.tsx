@@ -1,6 +1,9 @@
 "use client"
 
+import { ArrowRight } from "lucide-react"
 import { useMemo, useState, type ReactNode } from "react"
+
+import { Link } from "@/app/navigation"
 
 import {
   Dialog,
@@ -79,6 +82,8 @@ export interface UnitsMatrixLabels {
     status: string
   }
   legend: string
+  /** "Open apartment" — the way out of this popup, into the unit's own page. */
+  openUnit: string
   close: string
   floor: string
   outdoor: string
@@ -371,6 +376,26 @@ export function UnitsMatrix({
                 muted={selected.dataQuality === "modelled"}
               />
             </dl>
+
+            {/* The way out.
+
+                This popup shows the apartment's own columns and nothing else,
+                which is the whole catalogue and none of the operation. What a
+                reader actually wants next — is anything open on it, what does
+                it owe, what paperwork is on file — is three other modules, and
+                until this link existed there was no way to ask any of them
+                about one apartment. `/dashboard/units/<code>` reads all three,
+                each behind its own permission. */}
+            <div>
+              <Link
+                href={`/dashboard/units/${selected.id}`}
+                locale={locale}
+                className="inline-flex w-fit items-center gap-1.5 rounded text-sm font-medium underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                <ArrowRight aria-hidden="true" className="size-3.5" />
+                {labels.openUnit}
+              </Link>
+            </div>
           </DialogContent>
         ) : null}
       </Dialog>

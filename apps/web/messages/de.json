@@ -758,13 +758,15 @@
         "area": "Fläche",
         "price": "Preis",
         "status": "Status",
-        "view": "Ausrichtung"
+        "view": "Ausrichtung",
+        "outdoor": "Außenfläche"
       },
       "status": {
         "available": "Verfügbar",
         "reserved": "Reserviert",
         "sold": "Verkauft",
-        "blocked": "Gesperrt"
+        "blocked": "Gesperrt",
+        "notStated": "Keine Angabe"
       },
       "filters": {
         "block": "Block",
@@ -799,7 +801,32 @@
         "availableCount": "{available} verfügbar",
         "detailLead": "Wohnungsdetail",
         "blockLabel": "Block",
-        "hint": "Zelle anklicken für Details."
+        "hint": "Zelle anklicken für Details.",
+        "openUnit": "Wohnung öffnen"
+      },
+      "detail": {
+        "lead": "{layout}-Wohnung in Block {block}.",
+        "facts": "Die Wohnung",
+        "notStated": "Keine Angabe",
+        "requests": "Vorgänge",
+        "requestsLead": "Gemeldete Arbeiten zu dieser Wohnung.",
+        "openRequests": "Offen",
+        "allRequests": "Insgesamt",
+        "noRequests": "Zu dieser Wohnung wurde nichts gemeldet",
+        "noRequestsLead": "Sobald etwas gemeldet wird, steht es hier und lässt sich direkt öffnen.",
+        "money": "Konto",
+        "moneyLead": "Was dieser Wohnung berechnet und auf sie gezahlt wurde, nach Währung getrennt.",
+        "outstandingIn": "Saldo ({currency})",
+        "moneyNote": "Aus {count} Buchungen ermittelt. Währungen werden nie addiert.",
+        "noMoney": "Auf diese Wohnung wurde nichts gebucht",
+        "noMoneyLead": "Ein Saldo entsteht hier, sobald eine Forderung oder Zahlung gebucht ist.",
+        "openFinance": "Finanzen öffnen",
+        "documents": "Dokumente",
+        "documentsLead": "Dateien zu dieser Wohnung.",
+        "noDocuments": "Zu dieser Wohnung liegen keine Dokumente",
+        "noDocumentsLead": "Verträge, Abnahmen und Berichte sammeln sich hier nach dem Hochladen.",
+        "openDocuments": "Dokumente öffnen",
+        "open": "Wohnung öffnen"
       }
     },
     "listings": {
@@ -1478,7 +1505,10 @@
         "noNotes": "Keine Notiz erfasst",
         "version": "Satzversion",
         "created": "Erstellt",
-        "updated": "Geändert"
+        "updated": "Geändert",
+        "job": "Vorgang",
+        "noJob": "Stammt aus keinem gemeldeten Vorgang. Wiederkehrende Vertragsleistungen — Außenanlage, Pool, Reinigung, Sicherheit, Aufzugswartung — sind unabhängig von Meldungen fällig.",
+        "openJob": "Vorgang öffnen"
       }
     },
     "tickets": {
@@ -1651,7 +1681,27 @@
         "afterNote": "Die Anfrage wird als „offen“ gespeichert und bleibt ohne Zuständige:n, bis jemand aus dem Team sie übernimmt. Sie können sie hier verfolgen und kommentieren."
       },
       "openTicket": "Ticket {ticketNo} öffnen: {title}",
-      "severityLabel": "Schweregrad"
+      "severityLabel": "Schweregrad",
+      "cost": {
+        "heading": "Kosten des Vorgangs",
+        "empty": "Für diesen Vorgang wurde noch nichts abgerechnet. Liegt eine Rechnung vor, tragen Sie sie hier ein — der Betrag steht dann am Vorgang selbst.",
+        "emptyReadOnly": "Für diesen Vorgang wurde nichts abgerechnet. Die meisten Vorgänge kosten keine Fremdleistung.",
+        "openInvoices": "Rechnungen",
+        "outstanding": "Offen:",
+        "settled": "Bezahlt",
+        "record": "Rechnung erfassen",
+        "recordHeading": "Rechnung zu diesem Vorgang",
+        "recordLead": "Die Rechnung wird in voller Höhe als offen erfasst. Bezahlt wird sie auf der Seite Lieferantenrechnungen.",
+        "vendorLabel": "Lieferant",
+        "vendorPlaceholder": "Auswählen",
+        "referenceLabel": "Rechnungsnummer",
+        "referencePlaceholder": "Die Nummer des Lieferanten",
+        "amountLabel": "Betrag",
+        "dueLabel": "Fällig",
+        "submit": "Speichern",
+        "saving": "Wird gespeichert…",
+        "failed": "Die Rechnung konnte nicht gespeichert werden. Es wurde nichts geändert."
+      }
     },
     "activities": {
       "title": "Aktivitäten",
@@ -2450,18 +2500,25 @@
       "appearanceLead": "Gilt für die ganze Anwendung.",
       "themeFixedNotice": "Das helle Design ist für alle fest eingestellt. Eine Auswahl hier würde nichts bewirken, deshalb gibt es keine.",
       "notificationsLead": "Wann dieses System Sie ansprechen soll.",
-      "notificationsUnavailable": "Benachrichtigungen sind noch nicht möglich.",
+      "notificationsUnavailable": "Benachrichtigungen sammeln sich in der App, auf der Seite Kommunikation. Eine Zustellung per E-Mail oder Telefon gibt es nicht, und welche Ereignisse benachrichtigen, lässt sich nicht wählen — dafür ist noch kein Zustellweg eingerichtet.",
       "organisation": "Organisation",
       "organisationLead": "Nur für Administratoren.",
-      "companyId": "Kennung",
-      "noCompany": "Keine Angabe",
+      "noCompany": "Dieses Konto gehört zu keinem Unternehmen. Es gibt keine Angaben zu zeigen.",
       "organisationReadOnly": "Diese Angaben lassen sich hier nur lesen. Eine Bearbeitung gibt es noch nicht.",
       "openAdmin": "Zur Administration",
       "forbidden": {
         "title": "Einstellungen gesperrt",
         "message": "Ihre Rolle darf diese Seite nicht sehen. Die Adresse bleibt gültig.",
         "permissionLabel": "Benötigtes Recht:"
-      }
+      },
+      "companyName": "Unternehmen",
+      "companyLegalName": "Firmenname",
+      "companyCountry": "Land",
+      "companyCurrency": "Standardwährung",
+      "companyFounded": "Gegründet",
+      "companyWebsite": "Website",
+      "notStated": "Keine Angabe",
+      "openNotifications": "Kommunikation öffnen"
     },
     "hotel": {
       "title": "Hotelbetrieb",
@@ -2691,6 +2748,10 @@
         "openThreads": "{count, plural, one {# Gespräch ist noch offen.} other {# Gespräche sind noch offen.}}",
         "upcomingActivities": "Diese Woche {count, plural, one {steht # Termin} other {stehen # Termine}} an — zuerst {next}."
       }
+    },
+    "live": {
+      "updated": "Gerade aktualisiert",
+      "offline": "Verbindung getrennt — neu laden"
     }
   },
   "hotel": {

@@ -1,8 +1,9 @@
 "use client"
 
-import { AlertTriangle, Clock } from "lucide-react"
+import { AlertTriangle, Clock, Wrench } from "lucide-react"
 import { useState, type ReactNode } from "react"
 
+import { Link } from "@/app/navigation"
 import { MoneyCell } from "@/components/finance/currency-total-list"
 import type { Minor } from "@/components/finance/money"
 import {
@@ -137,6 +138,16 @@ export interface VendorInvoiceRow {
   notes: string | null
   documentPath: string | null
   ledgerEntryId: string | null
+  /**
+   * The reported job this invoice bills, when it came from one.
+   *
+   * Two fields rather than an id: `ticketNo` is what a person recognises, and
+   * `ticketRef` is the opaque URL token — the ticket's primary key never
+   * reaches the wire, here or anywhere else. Both null together, and that pair
+   * is the ordinary case: recurring contract work points at no job.
+   */
+  ticketNo: string | null
+  ticketRef: string | null
   // siteId and vendorProfileId are GONE from the wire, not merely unrendered —
   // this object is serialised into the RSC payload, so keeping them here for
   // the page's object literal kept sending them to an outside contractor.
@@ -178,6 +189,10 @@ export interface VendorInvoiceTableLabels {
     updated: string
     notes: string
   }
+  /** The reported job, and the sentence for an invoice that came from none. */
+  job: string
+  noJob: string
+  openJob: string
   /** Stated labels for the absences. None of these may render as blank. */
   notStated: string
   notLinked: string
@@ -464,6 +479,36 @@ export function VendorInvoiceTable({
                 value={formatDateTime(selected.updatedAt, locale)}
               />
             </dl>
+
+            {/* Where this invoice came from.
+                
+                Given its own block rather than a cell in the identifier grid
+                because it is not an identifier: it is the answer to "what was
+                this for", it is the only navigation out of this popup, and for
+                an invoice that came from a reported job it is the most useful
+                thing on the screen. An invoice with no job says so in a
+                sentence — most of what a residence pays for is recurring
+                contract work that nobody reported. */}
+            <div className="flex flex-col gap-1 border-t border-border pt-4">
+              <span className="azura-label text-muted-foreground">
+                {labels.job}
+              </span>
+              {selected.ticketRef === null || selected.ticketNo === null ? (
+                <p className="text-sm text-muted-foreground">{labels.noJob}</p>
+              ) : (
+                <Link
+                  href={`/dashboard/tickets/${selected.ticketRef}`}
+                  locale={locale}
+                  aria-label={`${labels.openJob} ${selected.ticketNo}`}
+                  className="inline-flex w-fit items-center gap-1.5 rounded text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <Wrench aria-hidden="true" className="size-3.5" />
+                  <span className="font-mono tabular-nums">
+                    {selected.ticketNo}
+                  </span>
+                </Link>
+              )}
+            </div>
 
             {/* The note is free text a person typed, so it keeps its own line
                 breaks and is never truncated here — this popup is the only place

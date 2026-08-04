@@ -296,6 +296,15 @@ export interface VendorInvoice {
   issuedOn: string
   dueOn: string | null
   ledgerEntryId: string | null
+  /**
+   * The reported job this invoice bills, when there is one.
+   *
+   * Null is the ordinary case and is not a missing value: garden care, pool
+   * chemistry, cleaning, security and the lift service contract are owed on a
+   * schedule whether or not anybody reports a fault. Render it as "not from a
+   * reported job", never as an incomplete record.
+   */
+  ticketId: string | null
   documentPath: string | null
   notes: string | null
   version: number
@@ -808,6 +817,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-47),
       dueOn: seedDate(-17),
       ledgerEntryId: "a1000000-0000-4000-8000-000000000004",
+      ticketId: null,
       documentPath: "vendor-invoices/2026/AZW-VI-2026-0001.pdf",
       notes: "Teilzahlung nach Abnahme der Umwälzpumpe.",
       version: 4,
@@ -829,6 +839,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-7),
       dueOn: seedDate(23),
       ledgerEntryId: null,
+      ticketId: null,
       documentPath: "vendor-invoices/2026/AZW-VI-2026-0002.pdf",
       notes: null,
       version: 1,
@@ -850,6 +861,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-116),
       dueOn: seedDate(-86),
       ledgerEntryId: null,
+      ticketId: null,
       documentPath: null,
       notes: null,
       version: 3,
@@ -871,6 +883,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-148),
       dueOn: seedDate(-118),
       ledgerEntryId: null,
+      ticketId: null,
       documentPath: null,
       notes: "Wartungsvertrag Q1 — Zahlung strittig beim Betreiber.",
       version: 2,
@@ -892,6 +905,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-72),
       dueOn: seedDate(-42),
       ledgerEntryId: null,
+      ticketId: null,
       documentPath: null,
       notes: "Menge weicht vom Lieferschein ab — in Klärung.",
       version: 2,
@@ -913,6 +927,7 @@ export function seedVendorInvoices(): VendorInvoice[] {
       issuedOn: seedDate(-1),
       dueOn: null,
       ledgerEntryId: null,
+      ticketId: null,
       documentPath: null,
       notes: null,
       version: 1,

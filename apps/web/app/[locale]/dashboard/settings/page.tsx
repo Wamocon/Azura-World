@@ -1,4 +1,4 @@
-import { ShieldCheck } from "lucide-react"
+import { Bell, ShieldCheck } from "lucide-react"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { getUserProfile } from "@/lib/auth"
 import { locales, type Locale } from "@/lib/contracts"
+import { getCompany } from "@/lib/inventory-repository"
 import { hasPermission } from "@/lib/rbac"
 
 import { savePreferences } from "./actions"
@@ -91,6 +92,22 @@ export default async function SettingsPage({
 
   const mayAdminister = hasPermission(profile.role, "settings:manage")
 
+  // Job titles for the eleven role slugs. Held in the users module because that
+  // is where roles are assigned; read here rather than duplicated, so a wording
+  // change lands in both places at once.
+  const tRoles = await getTranslations({
+    locale,
+    namespace: "dashboard.users.roles",
+  })
+
+  // Only read for the section that shows it. `companies` is world-readable —
+  // the developer's name is on the landing page — but a read nobody displays is
+  // still a round trip.
+  const company =
+    mayAdminister && profile.companyId !== null
+      ? ((await getCompany(profile.companyId)).data ?? null)
+      : null
+
   const localeNames: Record<Locale, string> = {
     de: t("locales.de"),
     en: t("locales.en"),
@@ -111,7 +128,9 @@ export default async function SettingsPage({
       <DashboardSection title={t("account")} description={t("accountLead")}>
         <dl className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-3">
           <Fact label={t("email")} value={profile.email ?? t("noEmail")} />
-          <Fact label={t("role")} value={profile.role} mono />
+          {/* The stored value is `service_provider`; the person reading it is
+              a service provider. Show the second one. */}
+          <Fact label={t("role")} value={tRoles(profile.role)} />
           <Fact
             label={t("sessionSource")}
             value={t(`sessionSources.${profile.source}`)}
@@ -170,9 +189,26 @@ export default async function SettingsPage({
         title={t("notifications")}
         description={t("notificationsLead")}
       >
-        <GovernanceNotice tone="warning">
+        {/* This said "Notifications are not possible yet" long after they
+            became possible: they are written, delivered, linked and marked
+            read on the communications page. What is genuinely absent is
+            delivery OUTSIDE the app and per-event control, so that is what it
+            says now — and it points at the place they do arrive rather than
+            leaving a reader to find it. */}
+        <GovernanceNotice tone="info">
           {t("notificationsUnavailable")}
         </GovernanceNotice>
+
+        <div>
+          <Button
+            size="sm"
+            variant="outline"
+            render={<Link href="/dashboard/communications" locale={locale} />}
+          >
+            <Bell aria-hidden="true" />
+            {t("openNotifications")}
+          </Button>
+        </div>
       </DashboardSection>
 
       {mayAdminister ? (
@@ -180,13 +216,37 @@ export default async function SettingsPage({
           title={t("organisation")}
           description={t("organisationLead")}
         >
-          <dl className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-3">
-            <Fact
-              label={t("companyId")}
-              value={profile.companyId ?? t("noCompany")}
-              mono
-            />
-          </dl>
+          {company === null ? (
+            <GovernanceNotice tone="warning">
+              {t("noCompany")}
+            </GovernanceNotice>
+          ) : (
+            <dl className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-3">
+              <Fact label={t("companyName")} value={company.name} />
+              <Fact
+                label={t("companyLegalName")}
+                value={company.legalName ?? t("notStated")}
+              />
+              <Fact label={t("companyCountry")} value={company.country} />
+              <Fact
+                label={t("companyCurrency")}
+                value={company.defaultCurrency}
+              />
+              <Fact
+                label={t("companyFounded")}
+                value={
+                  company.foundedYear === null
+                    ? t("notStated")
+                    : String(company.foundedYear)
+                }
+              />
+              <Fact
+                label={t("companyWebsite")}
+                value={company.website ?? t("notStated")}
+                href={company.website}
+              />
+            </dl>
+          )}
 
           <GovernanceNotice tone="info">
             {t("organisationReadOnly")}
@@ -211,10 +271,13 @@ function Fact({
   label,
   value,
   mono = false,
+  href = null,
 }: {
   label: string
   value: string
   mono?: boolean
+  /** When the value is somewhere you can go, make it go there. */
+  href?: string | null
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-input px-3 py-2.5">
@@ -228,7 +291,18 @@ function Fact({
             : "min-w-0 truncate text-sm"
         }
       >
-        {value}
+        {href === null ? (
+          value
+        ) : (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+          >
+            {value}
+          </a>
+        )}
       </dd>
     </div>
   )

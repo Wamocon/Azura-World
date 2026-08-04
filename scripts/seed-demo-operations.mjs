@@ -144,7 +144,7 @@ const WIPE_FILTER = {
   wallets: "id=like.23000001*",
   finance_ledger_entries: "metadata->>demo=eq.true",
   payment_transactions: "id=like.22000001*",
-  vendor_invoices: "id=like.24000001*",
+  vendor_invoices: "id=like.240000*",
   threads: "id=like.31000001*",
   messages: "id=like.32000001*",
   notifications: "id=like.33000001*",
@@ -738,6 +738,117 @@ function wallets() {
   ]
 }
 
+/**
+ * Which trade a reported problem sends out, and therefore who invoices for it.
+ *
+ * Only five of the nine ticket categories cost money to an outside firm.
+ * `concierge`, `complaint`, `inspection` and `billing` are handled in-house, so
+ * a ticket in one of those produces no invoice — and that absence is the point:
+ * the invoice page must be able to say "not from a reported job" truthfully,
+ * which it can only do if some jobs genuinely produce no invoice.
+ */
+const TRADE_FOR_CATEGORY = {
+  maintenance: ["Alanya Teknik Servis", "Instandsetzung"],
+  technical: ["Enerji Bakım", "Technischer Einsatz"],
+  security: ["Güvenlik 24", "Sicherheitstechnik"],
+  cleaning: ["Akdeniz Temizlik", "Sonderreinigung"],
+  amenity: ["Peyzaj Bahçe", "Außenanlage"],
+}
+
+/**
+ * The invoices that came out of a reported job — the chain's missing middle.
+ *
+ * Eighteen recurring contract invoices already exist below and none of them has
+ * a ticket, correctly: garden care and the lift service contract are owed
+ * whether or not anybody reports anything. What did not exist was the other
+ * kind — a resident reports a fault, a contractor fixes it, and an invoice
+ * arrives for that specific job. Without one, "what did this repair cost?" has
+ * no answer anywhere in the product, and the ticket page and the invoice page
+ * have nothing to say to each other.
+ *
+ * Deliberately partial: six jobs, of the roughly twenty resolved ones that could
+ * have produced an invoice. A fixture where every closed ticket has an invoice
+ * would teach the reader a rule that is false.
+ */
+function ticketInvoices(ticketRows) {
+  const r = rng(8809)
+  const billable = ticketRows
+    .filter(
+      (t) =>
+        (t.status === "resolved" || t.status === "closed") &&
+        TRADE_FOR_CATEGORY[t.category] !== undefined
+    )
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)))
+    .slice(0, 6)
+
+  return billable.map((ticket, i) => {
+    const [vendor_name, subject] = TRADE_FOR_CATEGORY[ticket.category]
+    // Anchored to the job: an invoice cannot be issued before the work is done.
+    const issuedOn = String(ticket.resolved_at ?? ticket.reported_at).slice(0, 10)
+    const dueOn = new Date(Date.parse(`${issuedOn}T00:00:00Z`) + 30 * 86400000)
+      .toISOString()
+      .slice(0, 10)
+    const total = between(r, 2, 34) * 50
+    const status = pick(r, ["paid", "paid", "open", "partially_paid"])
+    return {
+      id: uid("24000002", i + 1),
+      company_id: COMPANY,
+      site_id: SITE,
+      vendor_profile_id: P.vendor,
+      vendor_name,
+      invoice_no: `RE-2026-${String(430 + i)}`,
+      status,
+      total_amount: total,
+      tax_amount: Math.round(total * 0.2 * 100) / 100,
+      paid_amount:
+        status === "paid"
+          ? total
+          : status === "partially_paid"
+            ? Math.round(total * 0.5)
+            : 0,
+      currency: "EUR",
+      issued_on: issuedOn,
+      due_on: dueOn,
+      ticket_id: ticket.id,
+      notes: `${subject}: ${ticket.title} · Beispieldaten`,
+    }
+  })
+}
+
+/**
+ * Paying a vendor invoice, so the last link is walkable too.
+ *
+ * The ninety seeded payments are all `inbound` — residents paying charges — and
+ * none of them references a vendor invoice, which is correct for what they are.
+ * The money going the OTHER way had no representation at all, so an invoice
+ * marked `paid` was paid by nobody, on no date, from no account.
+ */
+function vendorPayments(invoiceRows) {
+  return invoiceRows
+    .filter((invoice) => invoice.ticket_id !== null && invoice.paid_amount > 0)
+    .map((invoice, i) => ({
+      id: uid("24000003", i + 1),
+      company_id: COMPANY,
+      ledger_entry_id: null,
+      vendor_invoice_id: invoice.id,
+      wallet_id: null,
+      unit_id: null,
+      resident_id: null,
+      provider: "bank_transfer",
+      provider_reference: `SEPA-${invoice.invoice_no}`,
+      direction: "outbound",
+      status: "captured",
+      amount: invoice.paid_amount,
+      currency: invoice.currency,
+      // `payment_transactions_captured_has_time`: captured demands a timestamp.
+      paid_at: `${invoice.due_on}T10:00:00.000Z`,
+      failure_reason: null,
+      idempotency_key: null,
+      provider_payload: { ...DEMO },
+      created_by: P.accountant,
+    }))
+}
+
 function vendorInvoices() {
   const r = rng(8808)
   const vendors = [
@@ -767,6 +878,11 @@ function vendorInvoices() {
       currency: "EUR",
       issued_on: dateAt(issued),
       due_on: dateAt(issued + 30),
+      // Recurring contract work. It is owed on a schedule, not because somebody
+      // reported something, so there is no job to point at — see
+      // `ticketInvoices`. Explicit rather than omitted: PostgREST rejects a bulk
+      // insert whose objects differ in shape.
+      ticket_id: null,
       // No `metadata` column on this table, so the demo marker cannot live in
       // one. The id prefix is the marker instead — see WIPE_FILTER.
       notes: `${subject} · Beispieldaten`,
@@ -847,21 +963,36 @@ function notifications() {
   const r = rng(1010)
   // `category` is a CHECK over seven values. "ticket", "lead" and "wallet" are
   // not among them — service, announcement and finance are the right buckets.
+  //
+  // ## Two things migrations 19 and 20 changed, which this had not followed
+  //
+  // **Links carry no locale.** `notifications_link_has_no_locale` rejects
+  // `^/(tr|en|ru|de)(/|$)`. Every link here was `/de/dashboard/…`, so a German
+  // path was stored for a Turkish reader and the whole table became unseedable
+  // the moment the constraint landed — `pnpm seed:demo` reported
+  // `FAIL notifications` and carried on. The prefix is added at render time from
+  // the reader's own locale.
+  //
+  // **The title and body are a fallback, not the message.** Migration 20 put a
+  // `template` key in `payload` so the UI can render each event in the reader's
+  // language; the German literals stay as the last resort for a row whose
+  // template the UI does not know. Seeding without the template meant six roles'
+  // notification lists were German regardless of the language they had chosen.
   const set = [
-    ["service", "info", "Neue Meldung zugewiesen", "Ein Vorgang wurde Ihnen zugewiesen.", "/de/dashboard/tickets"],
-    ["finance", "warning", "Offener Posten fällig", "Eine Position ist seit mehr als 14 Tagen offen.", "/de/dashboard/finance"],
-    ["compliance", "critical", "Prüfung überfällig", "Eine Pflichtprüfung hat die Frist überschritten.", "/de/dashboard/compliance"],
-    ["document", "info", "Dokument freigegeben", "Ein Dokument wurde geprüft und freigegeben.", "/de/dashboard/documents"],
-    ["announcement", "info", "Neue Anfrage", "Über das Portal ist eine Anfrage eingegangen.", "/de/dashboard/leads"],
-    ["service", "warning", "Frist überschritten", "Ein Vorgang hat seine Bearbeitungsfrist überschritten.", "/de/dashboard/tickets"],
-    ["message", "info", "Neue Nachricht", "Ein Bewohner hat auf einen Vorgang geantwortet.", "/de/dashboard/communications"],
-    ["finance", "warning", "Guthaben niedrig", "Ein Wallet liegt unter der Warnschwelle.", "/de/dashboard/wallet"],
+    ["service", "info", "service.ticketAssigned", "Neue Meldung zugewiesen", "Ein Vorgang wurde Ihnen zugewiesen.", "/dashboard/tickets"],
+    ["finance", "warning", "finance.itemOverdue", "Offener Posten fällig", "Eine Position ist seit mehr als 14 Tagen offen.", "/dashboard/finance"],
+    ["compliance", "critical", "compliance.checkOverdue", "Prüfung überfällig", "Eine Pflichtprüfung hat die Frist überschritten.", "/dashboard/compliance"],
+    ["document", "info", "document.approved", "Dokument freigegeben", "Ein Dokument wurde geprüft und freigegeben.", "/dashboard/documents"],
+    ["announcement", "info", "lead.received", "Neue Anfrage", "Über das Portal ist eine Anfrage eingegangen.", "/dashboard/leads"],
+    ["service", "warning", "service.slaBreached", "Frist überschritten", "Ein Vorgang hat seine Bearbeitungsfrist überschritten.", "/dashboard/tickets"],
+    ["message", "info", "message.residentReplied", "Neue Nachricht", "Ein Bewohner hat auf einen Vorgang geantwortet.", "/dashboard/communications"],
+    ["finance", "warning", "finance.walletLow", "Guthaben niedrig", "Ein Wallet liegt unter der Warnschwelle.", "/dashboard/wallet"],
   ]
   const targets = [P.admin, P.manager, P.accountant, P.staff, P.owner, P.tenant]
   const rows = []
   let n = 0
   for (const profile of targets) {
-    for (const [category, severity, title, body, link] of set) {
+    for (const [category, severity, template, title, body, link] of set) {
       n += 1
       if (n % 3 === 0 && profile !== P.admin && profile !== P.manager) continue
       const read = r() > 0.6
@@ -874,7 +1005,7 @@ function notifications() {
         severity,
         title,
         body,
-        payload: { ...DEMO },
+        payload: { ...DEMO, template },
         link,
         locale: "de",
         // `notifications_read_at_consistent`: read and read_at are a pair. A
@@ -922,6 +1053,9 @@ const { ledger, payments } = finance()
 const { threadRows, messageRows } = messaging()
 
 // Order matters: parents before children, every time.
+// Built before the plan so the payments can reference the invoices they pay.
+const invoiceRows = [...vendorInvoices(), ...ticketInvoices(ticketRows)]
+
 const plan = [
   ["hotel_rooms", hotelRooms()],
   ["service_tickets", ticketRows],
@@ -935,7 +1069,8 @@ const plan = [
   ["wallets", wallets()],
   ["finance_ledger_entries", ledger],
   ["payment_transactions", payments],
-  ["vendor_invoices", vendorInvoices()],
+  ["vendor_invoices", invoiceRows],
+  ["payment_transactions", vendorPayments(invoiceRows)],
   ["threads", threadRows],
   ["messages", messageRows],
   ["notifications", notifications()],

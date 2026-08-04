@@ -758,13 +758,15 @@
         "area": "Area",
         "price": "Price",
         "status": "Status",
-        "view": "Aspect"
+        "view": "Aspect",
+        "outdoor": "Outdoor area"
       },
       "status": {
         "available": "Available",
         "reserved": "Reserved",
         "sold": "Sold",
-        "blocked": "Blocked"
+        "blocked": "Blocked",
+        "notStated": "Not stated"
       },
       "filters": {
         "block": "Block",
@@ -799,7 +801,32 @@
         "availableCount": "{available} available",
         "detailLead": "Unit detail",
         "blockLabel": "Block",
-        "hint": "Click a cell for details."
+        "hint": "Click a cell for details.",
+        "openUnit": "Open apartment"
+      },
+      "detail": {
+        "lead": "A {layout} apartment in {block}.",
+        "facts": "The apartment",
+        "notStated": "Not stated",
+        "requests": "Requests",
+        "requestsLead": "Work reported for this apartment.",
+        "openRequests": "Open",
+        "allRequests": "In total",
+        "noRequests": "Nothing has been reported for this apartment",
+        "noRequestsLead": "When a fault is reported it appears here and opens directly.",
+        "money": "Account",
+        "moneyLead": "What has been charged to and paid on this apartment, kept apart by currency.",
+        "outstandingIn": "Balance ({currency})",
+        "moneyNote": "Derived from {count} bookkeeping entries. Currencies are never added together.",
+        "noMoney": "Nothing has been posted to this apartment",
+        "noMoneyLead": "A balance appears here once a charge or a payment is recorded.",
+        "openFinance": "Open finance",
+        "documents": "Documents",
+        "documentsLead": "Files attached to this apartment.",
+        "noDocuments": "No documents are attached to this apartment",
+        "noDocumentsLead": "Contracts, handover records and reports collect here once uploaded.",
+        "openDocuments": "Open documents",
+        "open": "Open apartment"
       }
     },
     "listings": {
@@ -1478,7 +1505,10 @@
         "noNotes": "No note recorded",
         "version": "Record version",
         "created": "Created",
-        "updated": "Updated"
+        "updated": "Updated",
+        "job": "Job",
+        "noJob": "Not from a reported job. Recurring contract work — grounds, pool, cleaning, security, the lift agreement — is owed whether or not anybody reports anything.",
+        "openJob": "Open job"
       }
     },
     "tickets": {
@@ -1651,7 +1681,27 @@
         "afterNote": "The request is filed as “open” and stays unassigned until someone on the team picks it up. You can follow it here and add comments."
       },
       "openTicket": "Open ticket {ticketNo}: {title}",
-      "severityLabel": "Severity"
+      "severityLabel": "Severity",
+      "cost": {
+        "heading": "What this job cost",
+        "empty": "Nothing has been billed for this job yet. If a supplier has invoiced for it, record it here and the amount appears on the job itself.",
+        "emptyReadOnly": "Nothing has been billed for this job. Most jobs cost nothing to an outside firm.",
+        "openInvoices": "Invoices",
+        "outstanding": "Still owed:",
+        "settled": "Settled",
+        "record": "Record an invoice",
+        "recordHeading": "Invoice for this job",
+        "recordLead": "The invoice is registered owing its full value. Paying it is done on the Supplier invoices page.",
+        "vendorLabel": "Supplier",
+        "vendorPlaceholder": "Choose",
+        "referenceLabel": "Invoice number",
+        "referencePlaceholder": "The supplier's own number",
+        "amountLabel": "Amount",
+        "dueLabel": "Due",
+        "submit": "Save",
+        "saving": "Saving…",
+        "failed": "The invoice could not be saved. Nothing was changed."
+      }
     },
     "activities": {
       "title": "Activities",
@@ -2450,18 +2500,25 @@
       "appearanceLead": "Applies to the whole application.",
       "themeFixedNotice": "The light design is fixed for everyone. A choice here would do nothing, so there is none.",
       "notificationsLead": "When this system should get in touch with you.",
-      "notificationsUnavailable": "Notifications are not possible yet.",
+      "notificationsUnavailable": "Notifications collect in the app, on the Communications page. There is no email or phone delivery, and which events notify you cannot be chosen — no delivery route is configured for that yet.",
       "organisation": "Organisation",
       "organisationLead": "Administrators only.",
-      "companyId": "Identifier",
-      "noCompany": "Not stated",
+      "noCompany": "This account belongs to no company. There are no organisation details to show.",
       "organisationReadOnly": "These details can only be read here. There is no editing yet.",
       "openAdmin": "Go to administration",
       "forbidden": {
         "title": "No access to settings",
         "message": "Your role may not see this page. The address stays valid.",
         "permissionLabel": "Permission needed:"
-      }
+      },
+      "companyName": "Company",
+      "companyLegalName": "Legal name",
+      "companyCountry": "Country",
+      "companyCurrency": "Default currency",
+      "companyFounded": "Founded",
+      "companyWebsite": "Website",
+      "notStated": "Not stated",
+      "openNotifications": "Open communications"
     },
     "hotel": {
       "title": "Hotel operations",
@@ -2691,6 +2748,10 @@
         "openThreads": "{count, plural, one {# conversation is still open.} other {# conversations are still open.}}",
         "upcomingActivities": "{count, plural, one {# thing is} other {# things are}} happening this week, starting with {next}."
       }
+    },
+    "live": {
+      "updated": "Just updated",
+      "offline": "Live connection lost — reload to be sure"
     }
   },
   "hotel": {

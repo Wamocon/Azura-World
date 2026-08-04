@@ -125,7 +125,7 @@ const WALLET_COLUMNS =
   "id, company_id, owner_profile_id, kind, currency, balance_amount, allows_overdraft, overdraft_limit_amount, low_balance_threshold_amount, status, version, created_at, updated_at"
 
 const VENDOR_INVOICE_COLUMNS =
-  "id, company_id, site_id, vendor_profile_id, vendor_name, invoice_no, status, total_amount, tax_amount, paid_amount, currency, issued_on, due_on, ledger_entry_id, document_path, notes, version, created_at, updated_at"
+  "id, company_id, site_id, vendor_profile_id, vendor_name, invoice_no, status, total_amount, tax_amount, paid_amount, currency, issued_on, due_on, ledger_entry_id, ticket_id, document_path, notes, version, created_at, updated_at"
 
 const PAYMENT_COLUMNS =
   "id, company_id, ledger_entry_id, vendor_invoice_id, wallet_id, unit_id, resident_id, provider, provider_reference, direction, status, amount, currency, paid_at, failure_reason, idempotency_key, provider_payload, created_by, created_at, updated_at"
@@ -334,6 +334,7 @@ function mapVendorInvoice(value: unknown): VendorInvoice {
     issuedOn: asString(row["issued_on"]),
     dueOn: asNullableString(row["due_on"]),
     ledgerEntryId: asNullableString(row["ledger_entry_id"]),
+    ticketId: asNullableString(row["ticket_id"]),
     documentPath: asNullableString(row["document_path"]),
     notes: asNullableString(row["notes"]),
     version: asNullableNumber(row["version"]) ?? 1,
@@ -616,6 +617,14 @@ export interface VendorInvoiceQuery extends FinanceAccess, PageOptions {
   vendorProfileId?: string
   status?: VendorInvoiceStatus
   currency?: CurrencyCode
+  /**
+   * Only invoices billing this reported job.
+   *
+   * The ticket page asks "what did this cost?" and gets its answer here. No
+   * separate permission is needed: the caller's finance scope already decides
+   * which invoices they may read, and a ticket filter can only narrow that set.
+   */
+  ticketId?: string
   /**
    * Derived, not stored: invoices with a remaining balance and a `due_on` in the
    * past relative to `asOf`. There is no `overdue` status to filter on.
@@ -1147,6 +1156,10 @@ function seedVendorInvoicesFiltered(
         invoice.vendorProfileId === query.vendorProfileId
     )
     .filter(
+      (invoice) =>
+        query.ticketId === undefined || invoice.ticketId === query.ticketId
+    )
+    .filter(
       (invoice) => query.status === undefined || invoice.status === query.status
     )
     .filter(
@@ -1185,6 +1198,9 @@ async function fetchVendorInvoiceRows(
   if (query.siteId !== undefined) builder = builder.eq("site_id", query.siteId)
   if (query.vendorProfileId !== undefined) {
     builder = builder.eq("vendor_profile_id", query.vendorProfileId)
+  }
+  if (query.ticketId !== undefined) {
+    builder = builder.eq("ticket_id", query.ticketId)
   }
   if (query.status !== undefined) builder = builder.eq("status", query.status)
   if (query.currency !== undefined)
@@ -1933,6 +1949,18 @@ export interface CreateVendorInvoiceInput extends FinanceAccess {
   /** The vendor's own invoice number. Stored as `invoice_no`. */
   reference: string
   description?: string
+  /**
+   * The reported job this invoice bills, when it came from one.
+   *
+   * Optional, and legitimately absent: recurring contract work — cleaning,
+   * grounds, the lift service agreement — is owed on a schedule and points at no
+   * ticket. Supplying it is what lets a manager answer "what did that repair
+   * cost?" from the ticket itself, which nothing in this product could do
+   * before. Not validated against the caller's ticket scope here: RLS on
+   * `service_tickets` decides what they may reference, and a caller who cannot
+   * read the ticket cannot have obtained its id.
+   */
+  ticketId?: string
 }
 
 /**
@@ -2022,6 +2050,7 @@ export async function createVendorInvoice(
           //   paid_amount  -> 0
           //   tax_amount   -> 0
           ...(input.siteId === undefined ? {} : { site_id: input.siteId }),
+          ...(input.ticketId === undefined ? {} : { ticket_id: input.ticketId }),
           ...(input.description === undefined ||
           input.description.trim() === ""
             ? {}
@@ -2068,6 +2097,7 @@ export async function createVendorInvoice(
         issuedOn: input.issuedOn,
         dueOn: input.dueOn,
         ledgerEntryId: null,
+        ticketId: input.ticketId ?? null,
         documentPath: null,
         notes: input.description ?? null,
         version: 1,

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
+import { LiveRefresh } from "@/components/dashboard/live-refresh"
 import { MessageComposer } from "@/components/communications/message-composer"
 import {
   DeliveryBadge,
@@ -97,6 +98,7 @@ export default async function ThreadPage({
     namespace: "dashboard.communications",
   })
   const tCommon = await getTranslations({ locale, namespace: "common" })
+  const tLive = await getTranslations({ locale, namespace: "dashboard.live" })
   const profile = await getUserProfile()
 
   if (!hasPermission(profile.role, "communications:view")) {
@@ -166,6 +168,13 @@ export default async function ThreadPage({
           {tCommon("actions.back")}
         </Link>
       </nav>
+
+      <LiveRefresh
+        name={`thread-${ref}`}
+        channels={[{ table: "messages", filter: `thread_id=eq.${threadId}` }]}
+        enabled={threadResult.source === "supabase"}
+        labels={{ updated: tLive("updated"), offline: tLive("offline") }}
+      />
 
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">

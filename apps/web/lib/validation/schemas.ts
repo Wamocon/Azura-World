@@ -144,6 +144,17 @@ export const createVendorInvoiceSchema = z
     dueOn: isoInstant,
     reference: shortText("Invoice reference"),
     description: longText("Description").optional(),
+    /**
+     * The reported job this invoice bills, when it came from one.
+     *
+     * The internal id, not the opaque URL token: this travels in a request body
+     * rather than in a path, and the body is not a place ids leak from — it is
+     * not logged in a referrer, not pasted into chat, not in browser history.
+     * The opaque token exists for the URL, and converting here would mean the
+     * server decoding a value the client just encoded from a value the server
+     * gave it.
+     */
+    ticketId: identifier.optional(),
   })
   .refine((value) => Date.parse(value.dueOn) >= Date.parse(value.issuedOn), {
     message: "An invoice cannot fall due before it was issued.",

@@ -200,4 +200,33 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withNextIntl(nextConfig)
+/**
+ * `next build` and `next dev` must not share an output directory.
+ *
+ * They do by default, and the consequence is not a warning: a build run while a
+ * dev server is up rewrites `.next/` underneath it, the browser then asks for a
+ * chunk hash that no longer exists, and every page in the running session dies
+ * with `ChunkLoadError` — including pages that were open and working a second
+ * earlier. It reads exactly like a code defect and is not one.
+ *
+ * Split by phase rather than by an environment variable in the npm script: a
+ * `VAR=x cmd` prefix is POSIX syntax and this repository's scripts also run
+ * under Windows `cmd.exe`, where it silently does something else. The phase is
+ * passed by Next itself and is correct everywhere.
+ *
+ * **Dev is the one that moves**, not the build. `next build` rewrites
+ * `tsconfig.json` to include its own `<distDir>/types/**`, and those generated
+ * route types are what `pnpm typecheck` and `pnpm lint` read; pointing the build
+ * somewhere new left two sets of them in the include list, disagreeing, for 71
+ * lint errors and a failing typecheck in files nobody wrote. So `.next` stays
+ * exactly where every tool already expects it and dev writes to `.next-dev`,
+ * which is excluded from both. `next start` reads `.next` as before.
+ * `.next-*` is already in `.gitignore`.
+ */
+export default function config(phase: string) {
+  const isDev = phase === "phase-development-server"
+  return withNextIntl({
+    ...nextConfig,
+    distDir: isDev ? ".next-dev" : ".next",
+  })
+}

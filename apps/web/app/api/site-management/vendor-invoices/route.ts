@@ -64,6 +64,7 @@ export const POST = createManifestHandler("createVendorInvoice", {
       dueOn: body.dueOn,
       reference: body.reference,
       ...(body.siteId === undefined ? {} : { siteId: body.siteId }),
+      ...(body.ticketId === undefined ? {} : { ticketId: body.ticketId }),
       ...(body.description === undefined
         ? {}
         : { description: body.description }),

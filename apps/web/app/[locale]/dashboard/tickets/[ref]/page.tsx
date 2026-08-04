@@ -22,6 +22,7 @@ import {
   TicketStatusBadge,
 } from "@/components/operations/ticket-status-badge"
 import { TicketCommentForm } from "@/components/operations/ticket-comment-form"
+import { TicketCost } from "@/components/operations/ticket-cost"
 import { TicketTimeline } from "@/components/operations/ticket-timeline"
 import { TicketTransitions } from "@/components/operations/ticket-transitions"
 import { Badge } from "@/components/ui/badge"
@@ -35,6 +36,8 @@ import {
   getTicketEvents,
 } from "@/lib/operations-repository"
 import { getProfiles } from "@/lib/governance-repository"
+import { getVendorInvoices } from "@/lib/finance-repository"
+import { LiveRefresh } from "@/components/dashboard/live-refresh"
 import { decodePublicId } from "@/lib/public-id"
 import { hasPermission } from "@/lib/rbac"
 import { routeTicket } from "@/lib/ticket-routing"
@@ -93,6 +96,14 @@ export default async function TicketDetailPage({
   const t = await getTranslations({ locale, namespace: "dashboard.tickets" })
   const tUnits = await getTranslations({ locale, namespace: "dashboard.units" })
   const tCommon = await getTranslations({ locale, namespace: "common" })
+  const tLive = await getTranslations({ locale, namespace: "dashboard.live" })
+  // Invoice statuses are named once, in the vendor-invoices catalogue. Read
+  // from there rather than duplicated here so the two pages cannot disagree
+  // about what `partially_paid` is called.
+  const tInvoices = await getTranslations({
+    locale,
+    namespace: "dashboard.vendorInvoices",
+  })
   const profile = await getUserProfile()
 
   if (!hasPermission(profile.role, "tickets:view")) {
@@ -117,8 +128,13 @@ export default async function TicketDetailPage({
   const ticket = ticketResult.data
   if (ticket === null) notFound()
 
-  const [eventsResult, reportsResult, unitResult, assigneeResult] =
-    await Promise.all([
+  const [
+    eventsResult,
+    reportsResult,
+    unitResult,
+    assigneeResult,
+    invoiceResult,
+  ] = await Promise.all([
       getTicketEvents(id, scope, { limit: 200 }),
       getMediaReports({ ...scope, ticketId: id, limit: 50 }),
       ticket.unitId === null
@@ -130,6 +146,18 @@ export default async function TicketDetailPage({
       // than offer an empty menu.
       hasPermission(profile.role, "tickets:assign")
         ? getProfiles({ role: profile.role, isActive: true, limit: 200 })
+        : Promise.resolve(null),
+      // What this job cost. Read only for a caller who may see supplier
+      // invoices at all — a tenant reading their own leak report has no
+      // business knowing what the plumber charged, and `vendor_invoices:view`
+      // is the gate the vendor-invoices page itself uses.
+      hasPermission(profile.role, "vendor_invoices:view")
+        ? getVendorInvoices({
+            role: profile.role,
+            ...(profile.id === null ? {} : { profileId: profile.id }),
+            ticketId: id,
+            limit: 20,
+          })
         : Promise.resolve(null),
     ])
 
@@ -174,6 +202,53 @@ export default async function TicketDetailPage({
     siteId: ticket.siteId,
   })
 
+  /**
+   * The cost side of this job, prepared on the server.
+   *
+   * Money is formatted here rather than in the client island for the reason
+   * `lib/format.ts` gives: the currency lives on the row and the locale lives on
+   * the request, and a component that received a bare number would have to guess
+   * one of them. The status label is resolved here too, from the same catalogue
+   * the vendor-invoices page uses, so the two pages cannot name the same status
+   * differently.
+   */
+  const invoices = (invoiceResult?.data ?? []).map((invoice) => ({
+    id: invoice.id,
+    invoiceNo: invoice.invoiceNo,
+    vendorName: invoice.vendorName,
+    total:
+      invoice.totalAmount === null || invoice.currency === null
+        ? t("noValue")
+        : formatMoney(
+            { amount: invoice.totalAmount, currency: invoice.currency },
+            locale
+          ),
+    outstanding:
+      invoice.outstandingAmount === null ||
+      invoice.outstandingAmount <= 0 ||
+      invoice.currency === null
+        ? null
+        : formatMoney(
+            { amount: invoice.outstandingAmount, currency: invoice.currency },
+            locale
+          ),
+    status: invoice.status,
+    statusLabel: tInvoices(`status.${invoice.status}`),
+    issuedOn: invoice.issuedOn,
+  }))
+
+  /**
+   * Who can be billed against. Contractors only — `service_provider` is the
+   * role that issues invoices, and offering a resident or a colleague in this
+   * menu would create a supplier row for somebody who is not one.
+   */
+  const vendors = (assigneeResult?.data ?? [])
+    .filter((person) => person.role === "service_provider")
+    .map((person) => ({
+      id: person.id,
+      name: person.fullName ?? person.email ?? person.id,
+    }))
+
   const unit = unitResult?.data ?? null
   const unitLabels: UnitProvenanceLabels = {
     portal_listing: tUnits("provenance.portal_listing"),
@@ -192,6 +267,16 @@ export default async function TicketDetailPage({
           {tCommon("actions.back")}
         </Link>
       </nav>
+
+      <LiveRefresh
+        name={`ticket-${ref}`}
+        channels={[
+          { table: "service_tickets", filter: `id=eq.${id}` },
+          { table: "ticket_events", filter: `ticket_id=eq.${id}` },
+        ]}
+        enabled={ticketResult.source === "supabase"}
+        labels={{ updated: tLive("updated"), offline: tLive("offline") }}
+      />
 
       <header className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
@@ -286,6 +371,45 @@ export default async function TicketDetailPage({
         ) : null}
         <p className="text-xs text-muted-foreground">{t("routing.advisory")}</p>
       </section>
+
+      {/* Absent entirely for a caller who may not read supplier invoices — a
+          tenant reading their own leak report does not learn what the plumber
+          charged. `invoiceResult` is null in exactly that case, and the read
+          never happened either. */}
+      {invoiceResult === null ? null : (
+        <TicketCost
+          ticketId={ticket.id}
+          invoices={invoices}
+          vendors={vendors}
+                    // The job's own currency when it has an estimate, otherwise the
+          // company default. Never a currency picker: an invoice raised in a
+          // currency the ticket was not costed in is a reconciliation problem
+          // dressed up as a choice.
+          currency={ticket.estimatedCost?.currency ?? "EUR"}
+          mayRecord={hasPermission(profile.role, "vendor_invoices:create")}
+          labels={{
+            heading: t("cost.heading"),
+            empty: t("cost.empty"),
+            emptyReadOnly: t("cost.emptyReadOnly"),
+            openInvoices: t("cost.openInvoices"),
+            outstanding: t("cost.outstanding"),
+            settled: t("cost.settled"),
+            record: t("cost.record"),
+            recordHeading: t("cost.recordHeading"),
+            recordLead: t("cost.recordLead"),
+            vendorLabel: t("cost.vendorLabel"),
+            vendorPlaceholder: t("cost.vendorPlaceholder"),
+            referenceLabel: t("cost.referenceLabel"),
+            referencePlaceholder: t("cost.referencePlaceholder"),
+            amountLabel: t("cost.amountLabel"),
+            dueLabel: t("cost.dueLabel"),
+            submit: t("cost.submit"),
+            cancel: tCommon("actions.cancel"),
+            saving: t("cost.saving"),
+            failed: t("cost.failed"),
+          }}
+        />
+      )}
 
       {hasPermission(profile.role, "tickets:update") ||
       hasPermission(profile.role, "tickets:approve") ||
