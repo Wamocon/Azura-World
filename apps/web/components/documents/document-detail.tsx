@@ -136,10 +136,16 @@ export interface DocumentRow {
   mimeType: string | null
   sizeBytes: number | null
   checksumSha256: string | null
-  /** A `profiles.id`. Resolved through `actorNames`; never rendered raw. */
-  uploadedBy: string | null
-  /** A `profiles.id`. Resolved through `actorNames`; never rendered raw. */
-  reviewedBy: string | null
+  /**
+   * The uploader **as a label**, resolved server-side. Never an id: this used
+   * to be a `profiles.id` that the component refused to render and still
+   * received, which put staff uuids in the RSC payload of every resident's
+   * documents page. `resolved` is false when the reader may not look the
+   * person up, which is what greys the value.
+   */
+  uploadedBy: { text: string; resolved: boolean }
+  /** The reviewer, same shape and same reason. */
+  reviewedBy: { text: string; resolved: boolean }
   reviewedAt: string | null
   /** `AZW-B01-0003` — the building's own designation, not a uuid. */
   unitId: string | null
@@ -250,22 +256,11 @@ export function DocumentRegister({
   locale,
   action,
   storageSource,
-  actorNames,
 }: {
   rows: readonly DocumentRow[]
   labels: DocumentRegisterLabels
   locale: Locale
   action: SignedUrlAction
-  /**
-   * `profiles.id` → the person's name, resolved server-side by whatever the
-   * caller is allowed to read.
-   *
-   * Optional, and absent means "nothing was resolved", never "resolve it here":
-   * a client component cannot ask the directory, and `getProfiles` refuses a
-   * residency role anyway. An id with no entry renders as a stated gap, so the
-   * default when the page supplies nothing is the safe one.
-   */
-  actorNames?: Readonly<Record<string, string>>
   /**
    * Where the rows came from. In `local-seed` there is no storage behind them at
    * all — `getSignedDocumentUrl`'s fallback is literally `() => null` — so the
@@ -281,26 +276,17 @@ export function DocumentRegister({
       ? labels.sizeUnknown
       : `${formatNumber(Math.ceil(bytes / 1024), locale)} kB`
 
-  /**
-   * A person, or a stated gap — never the id.
+  /*
+   * `actorText` lived here and is gone. It resolved a `profiles.id` against an
+   * `actorNames` map, both of which the server had to send for it to work — so
+   * a component that correctly refused to RENDER a uuid still received one on
+   * every row, for every reader, in the RSC payload. A tenant opening their own
+   * tenancy agreement got the site manager's profile id in the flight data.
    *
-   * `notStated` is the honest reading of the unresolved case: the field's value
-   * is a name, and this record does not state one. Falling back to the uuid
-   * would be answering "who" with "which row", which is the thing this popup
-   * stopped doing.
+   * Resolution moved to the page, which is where the directory permission is
+   * checked anyway. `uploadedBy` and `reviewedBy` now arrive as
+   * `{ text, resolved }` and there is no id on the wire to leak.
    */
-  const actorText = (profileId: string | null, absent: string): string => {
-    // Three different facts, three different sentences. Collapsing the last two
-    // into `notStated` — which is what this did — makes the popup assert that
-    // no person is recorded on a document that names one, for every reader,
-    // including the staff who can see the directory. A present value rendered
-    // as a stated gap is the inverse of the project's rule and worse than the
-    // uuid it replaced, because the uuid was at least true.
-    if (profileId === null) return absent
-    const name = actorNames?.[profileId]
-    if (name !== undefined) return name
-    return labels.fields.actorNotVisible
-  }
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -445,19 +431,13 @@ export function DocumentRegister({
                   the monospace was only ever there to make a uuid legible. */}
               <Field
                 label={labels.fields.uploadedBy}
-                value={actorText(selected.uploadedBy, labels.notStated)}
-                muted={
-                  selected.uploadedBy === null ||
-                  actorNames?.[selected.uploadedBy] === undefined
-                }
+                value={selected.uploadedBy.text}
+                muted={!selected.uploadedBy.resolved}
               />
               <Field
                 label={labels.fields.reviewedBy}
-                value={actorText(selected.reviewedBy, labels.noReviewer)}
-                muted={
-                  selected.reviewedBy === null ||
-                  actorNames?.[selected.reviewedBy] === undefined
-                }
+                value={selected.reviewedBy.text}
+                muted={!selected.reviewedBy.resolved}
               />
               <Field
                 label={labels.fields.reviewedAt}

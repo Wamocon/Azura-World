@@ -138,12 +138,36 @@ export default async function DocumentsPage({
   const directory = hasPermission(profile.role, "users:view")
     ? await getProfiles({ role: profile.role, isActive: true, limit: 200 })
     : null
-  const actorNames = Object.fromEntries(
+  const actorNames = new Map(
     (directory?.data ?? []).map((person) => [
       person.id,
       person.fullName ?? person.email ?? person.id,
     ])
   )
+
+  /**
+   * A person, or a stated absence. **Never an id, and never on the wire.**
+   *
+   * The popup already refused to render a uuid. It could not refuse to receive
+   * one: `uploadedBy` and `reviewedBy` were serialised raw into the RSC
+   * payload on every row, so a tenant reading their own tenancy agreement got
+   * the site manager's `profiles.id` in the flight data — the exact identifier
+   * `getProfiles` refuses them the directory to obtain.
+   *
+   * This page had already learned the rule for `siteId` two fields down: "A
+   * field a role must not have is a field the server must not send." Resolving
+   * here rather than in the component applies it to the other two.
+   */
+  const actorLabel = (
+    profileId: string | null,
+    absent: string
+  ): { text: string; resolved: boolean } => {
+    if (profileId === null) return { text: absent, resolved: false }
+    const name = actorNames.get(profileId)
+    return name === undefined
+      ? { text: t("detail.actorNotVisible"), resolved: false }
+      : { text: name, resolved: true }
+  }
 
   const rows: DocumentRow[] = documents.data.map((document) => ({
     id: document.id,
@@ -158,8 +182,8 @@ export default async function DocumentsPage({
     mimeType: document.mimeType,
     sizeBytes: document.sizeBytes,
     checksumSha256: document.checksumSha256,
-    uploadedBy: document.uploadedBy,
-    reviewedBy: document.reviewedBy,
+    uploadedBy: actorLabel(document.uploadedBy, t("detail.notStated")),
+    reviewedBy: actorLabel(document.reviewedBy, t("detail.noReviewer")),
     reviewedAt: document.reviewedAt,
     unitId: document.unitId,
     // `siteId` is deliberately absent from the wire, not merely unrendered.
@@ -216,7 +240,6 @@ export default async function DocumentsPage({
           <GovernanceTableFrame>
             <DocumentRegister
               rows={rows}
-              actorNames={actorNames}
               locale={locale}
               action={requestSignedUrl}
               // `local-seed` is the one state in which a signed URL is
