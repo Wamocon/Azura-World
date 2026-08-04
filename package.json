@@ -34,7 +34,9 @@
     "typecheck": "turbo run typecheck",
     "verify:supabase": "node scripts/verify-supabase.mjs",
     "qa:grants": "node scripts/write-grants-probe.mjs",
-    "qa:reads": "node scripts/read-boundary-probe.mjs"
+    "qa:reads": "node scripts/read-boundary-probe.mjs",
+    "qa:audit": "node scripts/audit-trail-probe.mjs",
+    "qa:ux": "node scripts/ux-contact-sheet.mjs"
   },
   "devDependencies": {
     "pg": "^8.13.1",

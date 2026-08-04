@@ -572,6 +572,12 @@ export default async function FinancePage({
             entries={entries}
             locale={locale}
             labels={ledgerLabels}
+            // The unit designation travels as itself, not as an opaque token.
+            // `encodePublicId` takes uuids and `units.id` is not one — it is
+            // the building's own `AZW-B01-0003`, printed in the column this
+            // link sits in and again in the destination's heading. The route
+            // now rejects anything that is not that shape; the reasoning for
+            // keeping it legible is in the statement page's own header comment.
             statementHrefFor={(unitId) =>
               `/dashboard/finance/statement/${encodeURIComponent(unitId)}`
             }

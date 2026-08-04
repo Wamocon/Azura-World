@@ -1401,7 +1401,8 @@
         "companyHint": "Yönetimin tuttuğu tüm bakiyeleri görürsünüz."
       },
       "noHolder": "Belirli bir sahibi yok",
-      "emptyHint": "Hesabınız için henüz bir bakiye yok."
+      "emptyHint": "Hesabınız için henüz bir bakiye yok.",
+      "holderNotVisible": "Sahibi bu hesapla görüntülenemiyor"
     },
     "vendorInvoices": {
       "title": "Tedarikçi faturaları",
@@ -1917,7 +1918,9 @@
           "reviewedAt": "İnceleme tarihi",
           "retention": "Saklama sınıfı",
           "unit": "Daire",
-          "site": "Site"
+          "site": "Site",
+          "actorNotVisible": "Kayıtlı, ancak bu hesapla görüntülenemiyor",
+          "storagePathWithheld": "Dosya konumu bu rolde gösterilmiyor"
         },
         "visibility": {
           "private": "Özel",
@@ -2672,6 +2675,21 @@
         "communications": "Sizinle ilgili yazışmalar. Buradan okuyabilirsiniz; bu hesapla yanıt yazılamaz.",
         "reports": "İndirilebilir özetler — her rakamın nereden geldiği yazılı.",
         "wallet": "Hesaba bağlı bakiye ve hareketler."
+      }
+    },
+    "attention": {
+      "heading": "Şu anda sizi bekleyenler",
+      "empty": "Şu anda bekleyen bir şey yok.",
+      "emptyHint": "Süresi geçen bir iş, atanmamış bir talep veya okunmamış bir mesaj olduğunda burada görünür.",
+      "degraded": "Örnek veriden okundu",
+      "open": "Aç",
+      "items": {
+        "slaBreached": "{reference} — {title}: söz verilen süre {days} gün önce doldu.",
+        "unassigned": "{count, plural, one {# talep henüz kimseye atanmadı.} other {# talep henüz kimseye atanmadı.}}",
+        "ownTickets": "{count, plural, one {Üzerinizde açık # iş var.} other {Üzerinizde açık # iş var.}}",
+        "unreadNotifications": "{count, plural, one {Okunmamış # bildiriminiz var.} other {Okunmamış # bildiriminiz var.}}",
+        "openThreads": "{count, plural, one {# görüşme hâlâ açık.} other {# görüşme hâlâ açık.}}",
+        "upcomingActivities": "Bu hafta {count, plural, one {# etkinlik} other {# etkinlik}} var — ilki: {next}."
       }
     }
   },

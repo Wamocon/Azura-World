@@ -131,6 +131,85 @@ const PAYMENT_COLUMNS =
   "id, company_id, ledger_entry_id, vendor_invoice_id, wallet_id, unit_id, resident_id, provider, provider_reference, direction, status, amount, currency, paid_at, failure_reason, idempotency_key, provider_payload, created_by, created_at, updated_at"
 
 // ---------------------------------------------------------------------------
+// The resident projection
+//
+// RLS is row-level: a policy decides whether an owner may read a payment row,
+// never which of its columns they get. `payment_transactions_select_own_unit`
+// therefore hands an owner the WHOLE row, `provider_payload` included — and
+// `createPayment()` writes the operator's own note into that column. Measured on
+// 2026-08-03 against the live database: owner@azura.local received 29 payment
+// rows, all 29 carrying a non-empty `provider_payload`, plus 65 ledger rows all
+// carrying non-empty `metadata`. Nothing in the product renders any of those
+// columns; they simply travelled.
+//
+// So the projection is narrowed HERE, by role. An accountant reconciling a
+// gateway response legitimately needs the payload, the idempotency key and the
+// clerk who entered the row; a resident reading their own statement needs the
+// amount, the currency, the date and what it was for. `scope.companyWide` is
+// already the accountant-and-above gate, so it is the gate used.
+//
+// The narrowing is a SECOND lock, not the only one. RLS still decides which
+// rows exist for this caller; this decides how much of each row leaves the
+// repository.
+// ---------------------------------------------------------------------------
+
+/** Ledger columns minus the three a resident statement has no use for. */
+const LEDGER_COLUMNS_SCOPED =
+  "id, company_id, site_id, unit_id, resident_id, transaction_group_id, entry_type, status, period, due_date, posted_at, debit_amount, credit_amount, currency, signed_amount, description, reference, reversal_of, created_at, updated_at"
+
+/**
+ * Payment columns minus the gateway payload and two internal ids.
+ *
+ * **`ledger_entry_id` stays, and removing it was a real regression** caught in
+ * review. `reconcilePayments()` in `components/finance/ledger-analysis.ts` reads
+ * it to decide whether a payment is matched to a ledger entry, and the finance
+ * page renders the unmatched set as a red list under "belonging to no ledger
+ * entry and no invoice". Withholding the column does not hide the link — it
+ * makes the application blind to a link that exists, so every one of an owner's
+ * 29 settled payments moved into that red list. A fabricated finding shown to a
+ * real user is the exact failure this project's honesty rule exists to prevent,
+ * and it is worse than the disclosure it was meant to fix.
+ *
+ * It discloses nothing in any case: it is a foreign key to `finance_ledger_entries`
+ * rows the same caller is already granted by that table's own RLS.
+ *
+ * What is genuinely withheld from a resident-scoped caller is the gateway's raw
+ * `provider_payload`, the `idempotency_key` and `created_by` — see
+ * `withheldPaymentFields`.
+ */
+const PAYMENT_COLUMNS_SCOPED =
+  "id, company_id, ledger_entry_id, vendor_invoice_id, wallet_id, unit_id, resident_id, provider, provider_reference, direction, status, amount, currency, paid_at, failure_reason, created_at, updated_at"
+
+/**
+ * The fields a narrowed projection withholds. Exported so a surface can state
+ * "withheld" rather than rendering the `null` this repository substitutes — the
+ * two are different facts and CONVENTIONS §5 forbids conflating them.
+ */
+export const withheldLedgerFields = [
+  "idempotencyKey",
+  "createdBy",
+  "metadata",
+] as const
+
+export const withheldPaymentFields = [
+  "idempotencyKey",
+  "providerPayload",
+  "createdBy",
+] as const
+
+/**
+ * True when this caller's ledger and payment rows arrive narrowed, i.e. when
+ * `withheldLedgerFields` / `withheldPaymentFields` are `null` because they were
+ * withheld and NOT because the column was empty.
+ *
+ * Mirrors `canReadCompanyFinance()` so a caller can ask the question without
+ * constructing a scope.
+ */
+export function financeProjectionIsNarrowed(role: Role | undefined): boolean {
+  return !(role !== undefined && canReadCompanyFinance(role))
+}
+
+// ---------------------------------------------------------------------------
 // Coercion local to this file
 // ---------------------------------------------------------------------------
 
@@ -377,6 +456,53 @@ function financeScope(
     isVendor: role === "service_provider",
     denied: false,
   }
+}
+
+// ---------------------------------------------------------------------------
+// Applying the narrowed projection
+//
+// Two halves that must agree: the column list sent to PostgREST, and the
+// blanking applied to seed rows (where there is no SQL to narrow). A row that
+// arrived without the column already maps to `null` / `{}`; blanking the seed
+// twin is what keeps the two modes indistinguishable to a caller.
+// ---------------------------------------------------------------------------
+
+function ledgerColumnsFor(scope: FinanceScope): string {
+  return scope.companyWide ? LEDGER_COLUMNS : LEDGER_COLUMNS_SCOPED
+}
+
+function paymentColumnsFor(scope: FinanceScope): string {
+  return scope.companyWide ? PAYMENT_COLUMNS : PAYMENT_COLUMNS_SCOPED
+}
+
+/** `null` here means WITHHELD. `financeProjectionIsNarrowed()` tells them apart. */
+function narrowLedgerEntry(entry: LedgerEntry): LedgerEntry {
+  return { ...entry, idempotencyKey: null, createdBy: null, metadata: {} }
+}
+
+function narrowPayment(payment: PaymentTransaction): PaymentTransaction {
+  return {
+    ...payment,
+    idempotencyKey: null,
+    providerPayload: {},
+    createdBy: null,
+  }
+}
+
+function applyLedgerProjection(
+  entries: readonly LedgerEntry[],
+  scope: FinanceScope
+): LedgerEntry[] {
+  if (scope.companyWide) return [...entries]
+  return entries.map(narrowLedgerEntry)
+}
+
+function applyPaymentProjection(
+  payments: readonly PaymentTransaction[],
+  scope: FinanceScope
+): PaymentTransaction[] {
+  if (scope.companyWide) return [...payments]
+  return payments.map(narrowPayment)
 }
 
 /**
@@ -759,7 +885,7 @@ function seedLedgerFiltered(
         compareDesc(a.postedAt, b.postedAt) ||
         compareDesc(a.createdAt, b.createdAt)
     )
-  return paginate(rows, query)
+  return applyLedgerProjection(paginate(rows, query), scope)
 }
 
 async function fetchLedgerRows(
@@ -774,7 +900,9 @@ async function fetchLedgerRows(
   // scope, never a reason to substitute seed data.
   if (!scope.companyWide && scope.unitIds.length === 0) return []
 
-  let builder = client.from(T_LEDGER).select(LEDGER_COLUMNS)
+  // Narrowed for anyone below accountant: the withheld columns are not selected
+  // at all, so they never cross the wire and never reach a log or a cache.
+  let builder = client.from(T_LEDGER).select(ledgerColumnsFor(scope))
 
   if (!scope.companyWide) builder = builder.in("unit_id", [...scope.unitIds])
   if (query.companyId !== undefined)
@@ -850,19 +978,21 @@ export async function getLedgerEntry(
       if (scope.denied) return null
       const response = await client
         .from(T_LEDGER)
-        .select(LEDGER_COLUMNS)
+        .select(ledgerColumnsFor(scope))
         .eq("id", id)
         .maybeSingle()
       const row = unwrap<unknown>(response, null)
       if (row === null) return null
       const entry = mapLedgerEntry(row)
-      return ledgerVisible(entry, scope) ? entry : null
+      if (!ledgerVisible(entry, scope)) return null
+      return applyLedgerProjection([entry], scope)[0] ?? null
     },
     () => {
       const scope = financeScope(access, seedScopeUnits(access))
       const entry = seedLedgerEntries().find((candidate) => candidate.id === id)
       if (entry === undefined) return null
-      return ledgerVisible(entry, scope) ? entry : null
+      if (!ledgerVisible(entry, scope)) return null
+      return applyLedgerProjection([entry], scope)[0] ?? null
     },
     "finance.getLedgerEntry"
   )
@@ -1207,7 +1337,7 @@ function seedPaymentsFiltered(
       (a, b) =>
         compareDesc(a.paidAt, b.paidAt) || compareDesc(a.createdAt, b.createdAt)
     )
-  return paginate(rows, query)
+  return applyPaymentProjection(paginate(rows, query), scope)
 }
 
 async function fetchPaymentRows(
@@ -1218,7 +1348,10 @@ async function fetchPaymentRows(
 ): Promise<PaymentTransaction[]> {
   if (scope.denied) return []
 
-  let builder = client.from(T_PAYMENTS).select(PAYMENT_COLUMNS)
+  // Narrowed for anyone below accountant. `provider_payload` is the column that
+  // matters here: `createPayment()` writes the operator's own note into it, and
+  // a gateway integration would write its raw response there.
+  let builder = client.from(T_PAYMENTS).select(paymentColumnsFor(scope))
 
   if (!scope.companyWide) {
     const ownWalletIds = await fetchOwnWalletIds(client, scope)
@@ -1260,7 +1393,10 @@ async function fetchPaymentRows(
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1)
 
-  return unwrap<unknown[]>(response, []).map(mapPaymentTransaction)
+  return applyPaymentProjection(
+    unwrap<unknown[]>(response, []).map(mapPaymentTransaction),
+    scope
+  )
 }
 
 export async function getPaymentTransactions(
@@ -1666,8 +1802,15 @@ export async function reverseLedgerEntry(
         .from(T_LEDGER)
         .insert(rows.map(ledgerInsertPayload))
         .select(LEDGER_COLUMNS)
+      // The READ above deliberately keeps every column — a reversal copies the
+      // original's metadata onto the correction row, so it cannot be built from
+      // a narrowed row. What LEAVES the function is narrowed like every other
+      // read, so this path is not a way around the resident projection.
       return {
-        entries: unwrap<unknown[]>(inserted, []).map(mapLedgerEntry),
+        entries: applyLedgerProjection(
+          unwrap<unknown[]>(inserted, []).map(mapLedgerEntry),
+          scope
+        ),
         reversedEntryId: original.id,
       }
     },
@@ -1686,7 +1829,10 @@ export async function reverseLedgerEntry(
       // Seed mode SIMULATES: the rows are returned but nothing is stored, because
       // the seed builders are pure functions and must stay deterministic.
       return {
-        entries: reversalRowsFor(original, input, nowIsoValue),
+        entries: applyLedgerProjection(
+          reversalRowsFor(original, input, nowIsoValue),
+          scope
+        ),
         reversedEntryId: original.id,
       }
     },

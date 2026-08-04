@@ -78,6 +78,38 @@ import { formatDate, formatDateTime, formatNumber } from "@/lib/format"
  * signed URL as text. The URL carries an access token in its query string
  * (`lib/document-repository.ts`), so it exists only as an `href` on one anchor
  * for the length of its TTL.
+ *
+ * ## Who is actually reading this popup
+ *
+ * `documents:view` is held by `owner`, `tenant`, `guest` and
+ * `service_provider`, not only by internal staff. That is the fact the record
+ * block was written without, and three fields were wrong because of it.
+ *
+ * 1. **`uploadedBy` and `reviewedBy` were profile uuids under "Uploaded by" and
+ *    "Reviewed by".** The old comment defended them — `getDocuments()` never
+ *    joins `profiles`, so a name here would be an invention — and it was right
+ *    about the invention and wrong about the conclusion. The compliance popup
+ *    hit the same wall and answered it properly: the page resolves the ids
+ *    through `getProfiles`, which refuses a caller who may not read the
+ *    directory, and an unresolvable id falls back to a stated gap rather than
+ *    to the uuid. This component now takes the same resolved names through
+ *    `actorNames` and **never renders the id**. Until the register supplies the
+ *    map the two fields read as a stated gap, which is true — the name is not
+ *    something this record states — and it is the correct default, because a
+ *    tenant cannot obtain a staff `profiles.id` by any other route.
+ * 2. **`storagePath` was printed whole.** `storagePathFor` builds
+ *    `company/<companyId>/<category>/<uuid>-<name>.<ext>`, so the second
+ *    segment is the tenancy uuid every RLS policy in the schema partitions on,
+ *    and it was being handed to guests. The segment is elided; the rest of the
+ *    key stays, because reconciling a disputed object is what the block is for
+ *    and the category, object id and filename are what locate it.
+ * 3. **`siteId` was a uuid under "Site".** It named a row this component never
+ *    reads, so it could not be recognised by anybody, and it is gone.
+ *
+ * The document's own id stays, in the reference block, in full: it already
+ * crosses to the browser as `DownloadControl`'s argument — the signed-URL
+ * request is keyed by it — so printing it discloses nothing that withholding it
+ * would prevent, and it is the reference a support conversation runs on.
  */
 
 // ---------------------------------------------------------------------------
@@ -104,11 +136,20 @@ export interface DocumentRow {
   mimeType: string | null
   sizeBytes: number | null
   checksumSha256: string | null
+  /** A `profiles.id`. Resolved through `actorNames`; never rendered raw. */
   uploadedBy: string | null
+  /** A `profiles.id`. Resolved through `actorNames`; never rendered raw. */
   reviewedBy: string | null
   reviewedAt: string | null
+  /** `AZW-B01-0003` — the building's own designation, not a uuid. */
   unitId: string | null
-  siteId: string | null
+  // `siteId` is GONE, not merely unrendered. It was kept here "for the owning
+  // page's row literal", and the cost of that convenience was that the page
+  // kept sending it: this object is serialised into the RSC payload, so a
+  // tenant reading view-source still received the uuid on every document long
+  // after the popup stopped painting it. A field a role must not have is a
+  // field the server must not send, which makes the type the right place to
+  // remove it.
   expiresAt: string | null
   createdAt: string
 }
@@ -143,6 +184,22 @@ export interface DocumentRegisterLabels {
     reviewedAt: string
     retention: string
     unit: string
+    /**
+     * The document names a person and this reader may not look them up.
+     *
+     * Distinct from `notStated`, which means the record names nobody. The
+     * component can tell the two apart — `profileId === null` versus a miss in
+     * `actorNames` — and so must the reader, or the popup reports an absence
+     * that is not there.
+     */
+    actorNotVisible: string
+    /**
+     * The object key exists and is withheld from this role, as opposed to a
+     * document that has none. Rendered instead of the empty string the
+     * repository substitutes, which printed as a blank cell.
+     */
+    storagePathWithheld: string
+    /** Retained for the owning page's object literal; nothing renders it. */
     site: string
   }
   /** The explicit stated label for every absent value. Never blank, never 0. */
@@ -193,11 +250,22 @@ export function DocumentRegister({
   locale,
   action,
   storageSource,
+  actorNames,
 }: {
   rows: readonly DocumentRow[]
   labels: DocumentRegisterLabels
   locale: Locale
   action: SignedUrlAction
+  /**
+   * `profiles.id` → the person's name, resolved server-side by whatever the
+   * caller is allowed to read.
+   *
+   * Optional, and absent means "nothing was resolved", never "resolve it here":
+   * a client component cannot ask the directory, and `getProfiles` refuses a
+   * residency role anyway. An id with no entry renders as a stated gap, so the
+   * default when the page supplies nothing is the safe one.
+   */
+  actorNames?: Readonly<Record<string, string>>
   /**
    * Where the rows came from. In `local-seed` there is no storage behind them at
    * all — `getSignedDocumentUrl`'s fallback is literally `() => null` — so the
@@ -212,6 +280,27 @@ export function DocumentRegister({
     bytes === null
       ? labels.sizeUnknown
       : `${formatNumber(Math.ceil(bytes / 1024), locale)} kB`
+
+  /**
+   * A person, or a stated gap — never the id.
+   *
+   * `notStated` is the honest reading of the unresolved case: the field's value
+   * is a name, and this record does not state one. Falling back to the uuid
+   * would be answering "who" with "which row", which is the thing this popup
+   * stopped doing.
+   */
+  const actorText = (profileId: string | null, absent: string): string => {
+    // Three different facts, three different sentences. Collapsing the last two
+    // into `notStated` — which is what this did — makes the popup assert that
+    // no person is recorded on a document that names one, for every reader,
+    // including the staff who can see the directory. A present value rendered
+    // as a stated gap is the inverse of the project's rule and worse than the
+    // uuid it replaced, because the uuid was at least true.
+    if (profileId === null) return absent
+    const name = actorNames?.[profileId]
+    if (name !== undefined) return name
+    return labels.fields.actorNotVisible
+  }
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -345,30 +434,30 @@ export function DocumentRegister({
                   selected.retentionClass
                 }
               />
+              {/* `AZW-B01-0003`, a designation the reader can recognise —
+                  which is exactly why it is here and `siteId` is not. */}
               <Field
                 label={labels.fields.unit}
                 value={selected.unitId ?? labels.notStated}
                 muted={selected.unitId === null}
               />
-              <Field
-                label={labels.fields.site}
-                value={selected.siteId ?? labels.notStated}
-                muted={selected.siteId === null}
-              />
-              {/* Profile ids, not names: `getDocuments()` reads `documents`
-                  alone and never joins `profiles`, so a name here would be an
-                  invention. The id is what the record actually holds. */}
+              {/* People, resolved by the page. Not `mono`: a name is prose, and
+                  the monospace was only ever there to make a uuid legible. */}
               <Field
                 label={labels.fields.uploadedBy}
-                value={selected.uploadedBy ?? labels.notStated}
-                muted={selected.uploadedBy === null}
-                mono
+                value={actorText(selected.uploadedBy, labels.notStated)}
+                muted={
+                  selected.uploadedBy === null ||
+                  actorNames?.[selected.uploadedBy] === undefined
+                }
               />
               <Field
                 label={labels.fields.reviewedBy}
-                value={selected.reviewedBy ?? labels.noReviewer}
-                muted={selected.reviewedBy === null}
-                mono
+                value={actorText(selected.reviewedBy, labels.noReviewer)}
+                muted={
+                  selected.reviewedBy === null ||
+                  actorNames?.[selected.reviewedBy] === undefined
+                }
               />
               <Field
                 label={labels.fields.reviewedAt}
@@ -392,7 +481,8 @@ export function DocumentRegister({
                 rendered as TEXT and never as an href: both buckets are private
                 and no URL may be constructed from a storage key
                 (`lib/document-repository.ts`). It is here because it is the key
-                an operator reconciles a disputed object by. */}
+                an operator reconciles a disputed object by — minus the tenancy
+                segment, which no reader reconciles anything by. */}
             <section className="flex min-w-0 flex-col gap-3 rounded-lg border border-border p-3">
               <h3 className="azura-label text-muted-foreground">
                 {labels.fileSection}
@@ -403,9 +493,19 @@ export function DocumentRegister({
                   label={labels.fields.bucket}
                   value={selected.storageBucket}
                 />
+                {/* The repository substitutes an empty string when it withholds
+                    the object key from a non-internal role. Rendered raw, that
+                    printed a blank cell — which reads as "this document has no
+                    key" rather than "you may not see it", and is the worse of
+                    the two failures the narrowing was meant to fix. */}
                 <WideField
                   label={labels.fields.storagePath}
-                  value={selected.storagePath}
+                  value={
+                    selected.storagePath === ""
+                      ? labels.fields.storagePathWithheld
+                      : withoutTenancySegment(selected.storagePath)
+                  }
+                  muted={selected.storagePath === ""}
                 />
                 <WideField
                   label={labels.fields.checksum}
@@ -642,6 +742,34 @@ function DownloadControl({
 // ---------------------------------------------------------------------------
 // Local helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * The storage key with the company uuid taken out of it.
+ *
+ * `storagePathFor` writes `company/<companyId>/<category>/<uuid>-<name>.<ext>`,
+ * and that second segment is the value every RLS policy in the schema
+ * partitions on. This popup is reachable by `owner`, `tenant`, `guest` and
+ * `service_provider`, so printing it handed the tenancy key to people whose
+ * whole containment is that they cannot see across it.
+ *
+ * The segment is replaced rather than dropped, so the key is visibly redacted
+ * instead of quietly wrong — an operator copying `company/…/legal/9f3c…pdf` can
+ * see that one part was withheld, which is the difference between a redaction
+ * and a broken value. Everything that locates the object within the company
+ * prefix survives.
+ *
+ * Any other shape is left alone: this rewrites the one format we write, and
+ * inventing structure for a path we did not produce would be guessing. Within
+ * that shape it redacts unconditionally rather than only when the segment looks
+ * like a uuid — so the local seed, whose second segment is the literal `azura`,
+ * loses a harmless word. That is the right way round: a tenancy key that were
+ * ever written in some other shape would still be covered.
+ */
+function withoutTenancySegment(path: string): string {
+  const segments = path.split("/")
+  if (segments.length < 2 || segments[0] !== "company") return path
+  return [segments[0], "…", ...segments.slice(2)].join("/")
+}
 
 function Explanation({
   tone,

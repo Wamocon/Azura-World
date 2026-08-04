@@ -355,17 +355,30 @@ async function writeAudit(input: {
 }): Promise<void> {
   try {
     const client: AuditWriter | null = createServiceRoleClient()
-    if (client === null) return
-    await client.from("audit_events").insert({
+    if (client === null) {
+      console.warn(
+        "azura.api.audit-skipped",
+        JSON.stringify({ requestId: input.requestId, reason: "no-service-role" })
+      )
+      return
+    }
+    const { error } = await client.from("audit_events").insert({
       actor_profile_id: input.profile.id,
       company_id: input.profile.companyId,
       action: input.audit.action,
       entity_table: input.audit.entity,
+      // A real column since migration 23. It was not one before, so every
+      // insert from here failed on an undefined column and the trail held
+      // zero rows for the life of the project — see that migration.
+      //
+      // `request_id` is its own column and is used as one; it is the value a
+      // user quotes in a support request, and burying it in jsonb would make
+      // the one lookup anybody actually performs a full scan.
+      request_id: input.requestId,
       // No request body, no query string, no headers. An audit row records
       // WHAT was attempted and BY WHOM, and putting the payload here would
       // recreate the PII surface the rest of this module avoids.
       metadata: {
-        requestId: input.requestId,
         method: input.method,
         path: input.path,
         outcome: input.outcome,
@@ -373,12 +386,37 @@ async function writeAudit(input: {
         role: input.profile.role,
       },
     })
-  } catch {
-    // An audit failure must not turn a successful mutation into an error the
-    // caller retries — that would double-apply the write. It is logged instead.
+
+    // PostgREST RETURNS an error; it does not throw one. So the `catch` below
+    // never saw a database failure, and neither did anybody else: the insert
+    // was discarded in silence, including the warning that was supposed to
+    // announce it. This branch is the one that actually fires.
+    if (error !== null && error !== undefined) {
+      console.warn(
+        "azura.api.audit-failed",
+        JSON.stringify({
+          requestId: input.requestId,
+          action: input.audit.action,
+          // The database's own message names the table, the constraint and
+          // sometimes the failing value. It goes to the server log, which is
+          // where an operator can act on it, and never to a response.
+          reason: String(
+            (error as { message?: unknown }).message ?? "unknown"
+          ).slice(0, 200),
+        })
+      )
+    }
+  } catch (thrown) {
+    // Kept for a transport-level failure — the client throwing before it ever
+    // gets a response. An audit failure must not turn a successful mutation
+    // into an error the caller retries, because that would double-apply the
+    // write; so it is logged and swallowed, deliberately, and never silently.
     console.warn(
-      "azura.api.audit-failed",
-      JSON.stringify({ requestId: input.requestId })
+      "azura.api.audit-threw",
+      JSON.stringify({
+        requestId: input.requestId,
+        reason: String(thrown).slice(0, 200),
+      })
     )
   }
 }

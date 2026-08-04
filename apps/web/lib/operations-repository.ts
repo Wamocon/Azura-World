@@ -134,6 +134,46 @@ const WORKFORCE_TASK_COLUMNS =
 const MEDIA_REPORT_COLUMNS =
   "id, company_id, site_id, unit_id, ticket_id, reporter_profile_id, reporter_name, reporter_email, reporter_phone, description, media_paths, status, is_public_intake, triaged_by_profile_id, triaged_at, metadata, created_at, updated_at"
 
+/**
+ * The same list without the reporter's name, e-mail and phone.
+ *
+ * `media_reports` has a PUBLIC intake path: `media_reports_insert_intake` lets a
+ * `guest` file a row, and the CHECK on the table requires a way to reach them,
+ * so a passer-by's contact details are exactly what those three columns hold.
+ * `media_reports_select_own_unit` then hands the WHOLE row to every resident of
+ * the unit the report names, because RLS is row-level and cannot withhold a
+ * column.
+ *
+ * Measured on 2026-08-03: the live table was empty, so the leak was latent. A
+ * probe inside a rolled-back transaction seeded one public-intake report against
+ * tenant@azura.local's unit and read it back through RLS as that tenant — the
+ * row came back with "Passer-by Ahmet", their e-mail and their phone number, all
+ * three unredacted. A resident being told the gate is broken does not need the
+ * phone number of the stranger who noticed.
+ *
+ * Staff (40) and above keep the columns: triaging a report means calling the
+ * person back. `scope.staffWide` is already that gate.
+ */
+const MEDIA_REPORT_COLUMNS_SCOPED =
+  "id, company_id, site_id, unit_id, ticket_id, reporter_profile_id, description, media_paths, status, is_public_intake, triaged_by_profile_id, triaged_at, metadata, created_at, updated_at"
+
+/**
+ * The fields a narrowed report withholds. `null` on one of these means WITHHELD
+ * for a non-staff caller and "never recorded" for a staff one; the two are
+ * different facts, so a surface that renders them must ask
+ * `reporterContactIsWithheld()` first rather than printing a blank.
+ */
+export const withheldReporterFields = [
+  "reporterName",
+  "reporterEmail",
+  "reporterPhone",
+] as const
+
+/** True when this role's media reports arrive without the reporter's contact. */
+export function reporterContactIsWithheld(role: Role | undefined): boolean {
+  return role === undefined || !isStaffOrAbove(role)
+}
+
 // ---------------------------------------------------------------------------
 // Coercion
 // ---------------------------------------------------------------------------
@@ -490,6 +530,32 @@ function workforceTaskVisible(
     return true
   }
   return task.unitId !== null && scope.unitIds.includes(task.unitId)
+}
+
+function mediaReportColumnsFor(scope: OperationsScope): string {
+  return scope.staffWide ? MEDIA_REPORT_COLUMNS : MEDIA_REPORT_COLUMNS_SCOPED
+}
+
+/**
+ * Blank the reporter's contact on a row a non-staff caller is about to receive.
+ * The seed twin of not selecting the columns, so the two modes are
+ * indistinguishable to a caller.
+ */
+function narrowMediaReport(report: MediaReport): MediaReport {
+  return {
+    ...report,
+    reporterName: null,
+    reporterEmail: null,
+    reporterPhone: null,
+  }
+}
+
+function applyMediaReportProjection(
+  reports: readonly MediaReport[],
+  scope: OperationsScope
+): MediaReport[] {
+  if (scope.staffWide) return [...reports]
+  return reports.map(narrowMediaReport)
 }
 
 function mediaReportVisible(
@@ -1096,7 +1162,7 @@ function seedMediaReportsFiltered(
     )
     .filter((report) => query.untriagedOnly !== true || report.status === "new")
     .sort((a, b) => compareDesc(a.createdAt, b.createdAt))
-  return paginate(rows, query)
+  return applyMediaReportProjection(paginate(rows, query), scope)
 }
 
 async function fetchMediaReportRows(
@@ -1107,7 +1173,9 @@ async function fetchMediaReportRows(
 ): Promise<MediaReport[]> {
   if (scope.denied) return []
 
-  let builder = client.from(T_MEDIA_REPORTS).select(MEDIA_REPORT_COLUMNS)
+  // Narrowed for anyone below staff: the reporter's contact details are not
+  // selected at all, so they never cross the wire to a resident.
+  let builder = client.from(T_MEDIA_REPORTS).select(mediaReportColumnsFor(scope))
   if (!scope.staffWide) {
     const clauses: string[] = []
     if (scope.unitIds.length > 0)
@@ -1139,7 +1207,10 @@ async function fetchMediaReportRows(
   const response = await builder
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1)
-  return unwrap<unknown[]>(response, []).map(mapMediaReport)
+  return applyMediaReportProjection(
+    unwrap<unknown[]>(response, []).map(mapMediaReport),
+    scope
+  )
 }
 
 export async function getMediaReports(

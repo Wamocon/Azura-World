@@ -11,9 +11,9 @@
  * Three layers, in increasing severity:
  *
  *  1. `accessProfilesEnabledForEnvironment()` — the runtime gate. Returns
- *     `false` for any production runtime or production deployment **before it
- *     consults a single flag**, so no combination of environment values can turn
- *     a production build into an unauthenticated role switcher.
+ *     `false` unless the process can **prove** it is a development or test
+ *     runtime, so no combination of environment values — and no *absence* of
+ *     them — can turn a deployed build into an unauthenticated role switcher.
  *
  *  2. `assertAccessProfileSafety()` — the build-time guard. If a production
  *     process starts with `ENABLE_ACCESS_PROFILES=true` and cannot *prove* it is
@@ -81,6 +81,57 @@ export function isProductionEnvironment(
 }
 
 /**
+ * `NODE_ENV` values that Next itself treats as non-deployed. `next dev` sets
+ * `development`; `next build` and `next start` set `production`; `test` is what
+ * the probe scripts and Playwright's own runner use.
+ */
+const DEVELOPMENT_NODE_ENVS: readonly string[] = ["development", "test"]
+
+/**
+ * True only when the process can **prove** it is a local development or test
+ * runtime. This is the inverse of `isProductionEnvironment()`, and the
+ * difference between the two is the whole point.
+ *
+ * `isProductionEnvironment()` is an allowlist of danger markers, so an
+ * environment that carries none of them — `NODE_ENV` unset, or set to something
+ * unrecognised — reads as "not production". That is the wrong default for a
+ * gate that opens an unauthenticated role picker: it means the *absence* of
+ * configuration is what unlocks it. `next start` does set `NODE_ENV=production`
+ * (see `next/dist/bin/next`, which assigns it before any command runs), so the
+ * supported deployment path was never actually exposed — but a custom server, a
+ * process manager that scrubs the environment, or a container that drops
+ * `NODE_ENV` all produce a real production runtime that the allowlist cannot
+ * see, and the seed-fallback clause below would then hand out a role picker
+ * whose role comes from a client-supplied cookie.
+ *
+ * So the polarity is inverted here: unknown is closed, not open. A deployment
+ * marker disqualifies even when `NODE_ENV` says development, because a
+ * preview deployment is still a deployment on a public URL.
+ */
+export function isDevelopmentEnvironment(
+  environment: EnvironmentRecord
+): boolean {
+  if (isProductionEnvironment(environment)) return false
+
+  const nodeEnv = environment["NODE_ENV"]
+  if (nodeEnv === undefined || !DEVELOPMENT_NODE_ENVS.includes(nodeEnv)) {
+    return false
+  }
+
+  // `VERCEL_ENV` is only ever set by a Vercel deployment. `development` is what
+  // `vercel dev` sets locally; `preview` is a deployed, publicly reachable URL.
+  const vercelEnv = environment["VERCEL_ENV"]
+  if (vercelEnv !== undefined && vercelEnv !== "development") return false
+
+  const azuraEnv = environment["AZURA_ENV"]
+  if (azuraEnv !== undefined && !DEVELOPMENT_NODE_ENVS.includes(azuraEnv)) {
+    return false
+  }
+
+  return true
+}
+
+/**
  * True when *anything* points at a Supabase data plane. Deliberately generous:
  * the question this answers is "could this process reach real data?", and the
  * safe answer to an ambiguous case is yes.
@@ -128,6 +179,14 @@ export class AccessProfileSafetyError extends Error {
  * production deploy fails at boot rather than at the first request that happens
  * to hit the login page. Exported so it can be exercised against synthetic
  * environments without spawning eleven processes.
+ *
+ * This still keys on `isProductionEnvironment()` — the danger-marker allowlist —
+ * rather than on `!isDevelopmentEnvironment()`, and deliberately. Layer 1 now
+ * fails closed on an environment it cannot classify, so an ambiguous one is
+ * already safe and does not need to be fatal; making it fatal would kill every
+ * script and one-off `node` process that imports an auth module without setting
+ * `NODE_ENV`. The throw is reserved for the case that is unambiguously wrong:
+ * a process that *declares* itself production and *asks* for the role picker.
  */
 export function assertAccessProfileSafety(
   environment: EnvironmentRecord
@@ -159,8 +218,10 @@ export function assertAccessProfileSafety(
 /**
  * Layer 1 — the runtime gate.
  *
- * Production is checked first and is authoritative. Below production the rule is
- * the one in the W1-B brief:
+ * A **positive** proof of a development or test runtime is checked first and is
+ * authoritative: anything this process cannot prove is local gets `false`,
+ * including an environment record that is simply empty. Inside a proven
+ * development runtime the rule is the one in the W1-B brief:
  *
  *   - Supabase unconfigured ⟹ enabled. This is the supported seed-fallback mode
  *     (CONVENTIONS §2): with no data plane there is nothing to authenticate
@@ -168,13 +229,21 @@ export function assertAccessProfileSafety(
  *   - Supabase configured ⟹ all three QA flags must be true. Real auth exists,
  *     so bypassing it needs an explicit, deliberate opt-in.
  *
+ * The seed-fallback clause is the one place where an *absent* value rather than
+ * a present flag opens the picker, and it is why the first check has to be a
+ * proof rather than a check for danger markers. `NODE_ENV=development` — which
+ * only `next dev` and the probe scripts set — is that clause's explicit opt-in.
+ * The failure it prevents: a deployed build whose `NODE_ENV` never got set,
+ * serving `/login` with a role picker whose chosen role arrives in a
+ * client-controlled cookie and may be `admin`.
+ *
  * None of the three flags is `NEXT_PUBLIC_*`, because the decision is
  * server-side; a public flag could be flipped by anyone reading the bundle.
  */
 export function accessProfilesEnabledForEnvironment(
   environment: EnvironmentRecord = process.env
 ): boolean {
-  if (isProductionEnvironment(environment)) return false
+  if (!isDevelopmentEnvironment(environment)) return false
 
   const supabaseConfigured = Boolean(
     environment["NEXT_PUBLIC_SUPABASE_URL"] &&

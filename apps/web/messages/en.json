@@ -1401,7 +1401,8 @@
         "companyHint": "You see every balance held by the management team."
       },
       "noHolder": "No named holder",
-      "emptyHint": "There is no balance for your account yet."
+      "emptyHint": "There is no balance for your account yet.",
+      "holderNotVisible": "Holder not visible to you"
     },
     "vendorInvoices": {
       "title": "Vendor invoices",
@@ -1917,7 +1918,9 @@
           "reviewedAt": "Reviewed on",
           "retention": "Retention class",
           "unit": "Unit",
-          "site": "Site"
+          "site": "Site",
+          "actorNotVisible": "Recorded, but not visible to you",
+          "storagePathWithheld": "The file location is not shown for your role"
         },
         "visibility": {
           "private": "Private",
@@ -2672,6 +2675,21 @@
         "communications": "Conversations about you and your stay. You can read them here; this account cannot reply.",
         "reports": "Summaries you can download, each one saying where its figures came from.",
         "wallet": "The balance on the account, and what has moved through it."
+      }
+    },
+    "attention": {
+      "heading": "Needs you now",
+      "empty": "Nothing needs you right now.",
+      "emptyHint": "Late work, unassigned requests and unread messages appear here as they arrive.",
+      "degraded": "Read from sample data",
+      "open": "Open",
+      "items": {
+        "slaBreached": "{reference} — {title}: the promised time ran out {days} days ago.",
+        "unassigned": "{count, plural, one {# request has nobody on it yet.} other {# requests have nobody on them yet.}}",
+        "ownTickets": "{count, plural, one {You have # job still open.} other {You have # jobs still open.}}",
+        "unreadNotifications": "{count, plural, one {# unread notification.} other {# unread notifications.}}",
+        "openThreads": "{count, plural, one {# conversation is still open.} other {# conversations are still open.}}",
+        "upcomingActivities": "{count, plural, one {# thing is} other {# things are}} happening this week, starting with {next}."
       }
     }
   },

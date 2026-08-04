@@ -21,6 +21,7 @@ import {
 } from "@/lib/document-data"
 import { getDocuments } from "@/lib/document-repository"
 import { DEFAULT_SIGNED_URL_TTL_SECONDS } from "@/lib/document-repository"
+import { getProfiles } from "@/lib/governance-repository"
 import { DOCUMENT_BUCKET, MAX_UPLOAD_BYTES } from "@/lib/document-storage"
 import { isSupabaseConfigured } from "@/lib/env"
 import { hasPermission } from "@/lib/rbac"
@@ -124,6 +125,25 @@ export default async function DocumentsPage({
    * nullable, so the island renders an explicit stated label rather than a zero
    * or a blank.
    */
+  // Who uploaded and who reviewed, by name.
+  //
+  // The popup stopped rendering `uploaded_by` and `reviewed_by` as uuids, which
+  // was right, and then had nothing to put in their place — so every document
+  // that names an uploader reported "Not stated", to staff as much as to a
+  // tenant. Same shape as the compliance register: read once for the page, only
+  // for a reader who may see the directory at all, and let an unresolvable id
+  // fall through to a label that says the record names somebody this reader
+  // cannot look up. Never back to the uuid.
+  const directory = hasPermission(profile.role, "users:view")
+    ? await getProfiles({ role: profile.role, isActive: true, limit: 200 })
+    : null
+  const actorNames = Object.fromEntries(
+    (directory?.data ?? []).map((person) => [
+      person.id,
+      person.fullName ?? person.email ?? person.id,
+    ])
+  )
+
   const rows: DocumentRow[] = documents.data.map((document) => ({
     id: document.id,
     title: document.title,
@@ -141,7 +161,13 @@ export default async function DocumentsPage({
     reviewedBy: document.reviewedBy,
     reviewedAt: document.reviewedAt,
     unitId: document.unitId,
-    siteId: document.siteId,
+    // `siteId` is deliberately absent from the wire, not merely unrendered.
+    //
+    // The popup stopped painting it, which fixed the display and nothing else:
+    // this object is serialised into the RSC payload, so a `tenant` opening
+    // view-source still received the uuid on every document. Measured on the
+    // running server before this line was removed — 28 uuids in one response.
+    // A field a role must not have is a field the server must not send.
     expiresAt: document.expiresAt,
     createdAt: document.createdAt,
   }))
@@ -168,6 +194,7 @@ export default async function DocumentsPage({
           <GovernanceTableFrame>
             <DocumentRegister
               rows={rows}
+              actorNames={actorNames}
               locale={locale}
               action={requestSignedUrl}
               // `local-seed` is the one state in which a signed URL is
@@ -228,6 +255,8 @@ export default async function DocumentsPage({
                   reviewedAt: t("detail.fields.reviewedAt"),
                   retention: t("detail.fields.retention"),
                   unit: t("detail.fields.unit"),
+                  actorNotVisible: t("detail.fields.actorNotVisible"),
+                  storagePathWithheld: t("detail.fields.storagePathWithheld"),
                   site: t("detail.fields.site"),
                 },
                 notStated: t("detail.notStated"),

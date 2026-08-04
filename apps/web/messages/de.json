@@ -1401,7 +1401,8 @@
         "companyHint": "Sie sehen alle Guthaben der Verwaltung."
       },
       "noHolder": "Ohne festen Inhaber",
-      "emptyHint": "Zu Ihrem Zugang gibt es noch kein Guthaben."
+      "emptyHint": "Zu Ihrem Zugang gibt es noch kein Guthaben.",
+      "holderNotVisible": "Inhaber für Sie nicht sichtbar"
     },
     "vendorInvoices": {
       "title": "Lieferantenrechnungen",
@@ -1917,7 +1918,9 @@
           "reviewedAt": "Geprüft am",
           "retention": "Aufbewahrungsklasse",
           "unit": "Einheit",
-          "site": "Standort"
+          "site": "Standort",
+          "actorNotVisible": "Erfasst, für Sie nicht sichtbar",
+          "storagePathWithheld": "Der Ablageort wird für Ihre Rolle nicht gezeigt"
         },
         "visibility": {
           "private": "Privat",
@@ -2672,6 +2675,21 @@
         "communications": "Gespräche zu Ihnen und Ihrem Aufenthalt. Sie können hier mitlesen; antworten kann dieses Konto nicht.",
         "reports": "Zusammenfassungen zum Herunterladen — jede nennt, woher ihre Zahlen stammen.",
         "wallet": "Das Guthaben des Kontos und die Bewegungen darauf."
+      }
+    },
+    "attention": {
+      "heading": "Braucht Sie jetzt",
+      "empty": "Gerade wartet nichts auf Sie.",
+      "emptyHint": "Überfällige Arbeiten, offene Anfragen und ungelesene Nachrichten erscheinen hier.",
+      "degraded": "Aus Beispieldaten gelesen",
+      "open": "Öffnen",
+      "items": {
+        "slaBreached": "{reference} — {title}: die zugesagte Frist lief vor {days} Tagen ab.",
+        "unassigned": "{count, plural, one {# Anfrage hat noch niemanden.} other {# Anfragen haben noch niemanden.}}",
+        "ownTickets": "{count, plural, one {Sie haben # offenen Auftrag.} other {Sie haben # offene Aufträge.}}",
+        "unreadNotifications": "{count, plural, one {# ungelesene Benachrichtigung.} other {# ungelesene Benachrichtigungen.}}",
+        "openThreads": "{count, plural, one {# Gespräch ist noch offen.} other {# Gespräche sind noch offen.}}",
+        "upcomingActivities": "Diese Woche {count, plural, one {steht # Termin} other {stehen # Termine}} an — zuerst {next}."
       }
     }
   },

@@ -150,6 +150,45 @@ export interface SignedDocumentUrl {
 const DOCUMENT_COLUMNS =
   "id, company_id, site_id, unit_id, resident_id, title, category, storage_bucket, storage_path, original_filename, mime_type, size_bytes, checksum_sha256, visibility, review_status, retention_class, expires_at, uploaded_by, reviewed_by, reviewed_at, metadata, version, created_at, updated_at"
 
+/**
+ * The same list without `storage_path`.
+ *
+ * The object key is not a secret on its own — both buckets are private and the
+ * only read path is a signed URL minted from a document **id** — but it is the
+ * exact string a caller would need to ask storage for, and it survives in every
+ * log, proxy cache and browser history that a list response touches. An operator
+ * reconciling a disputed object needs it; a resident reading their own file does
+ * not, because `getSignedDocumentUrl(id)` never asks them for it.
+ *
+ * Measured on 2026-08-03 against the live database: tenant@azura.local and
+ * owner@azura.local each received 8 document rows, all 8 carrying a storage key.
+ */
+const DOCUMENT_COLUMNS_SCOPED =
+  "id, company_id, site_id, unit_id, resident_id, title, category, storage_bucket, original_filename, mime_type, size_bytes, checksum_sha256, visibility, review_status, retention_class, expires_at, uploaded_by, reviewed_by, reviewed_at, metadata, version, created_at, updated_at"
+
+/**
+ * The value `storagePath` carries when it was withheld rather than absent.
+ *
+ * `documents.storage_path` is `not null check (char_length between 1 and 1024)`,
+ * so a real row can never produce an empty string. Within a `DocumentRecord` the
+ * empty string therefore has exactly one meaning, and
+ * `documentStoragePathIsWithheld()` names it so a surface can render a stated
+ * gap instead of a blank field.
+ */
+export const WITHHELD_STORAGE_PATH = ""
+
+/**
+ * True when this role's document rows arrive without their storage key.
+ *
+ * Mirrors the scope rule below: `staff` (40) and above read company-wide and
+ * keep the key; the residency roles do not.
+ */
+export function documentStoragePathIsWithheld(role: Role | undefined): boolean {
+  if (role === undefined) return false
+  if (!hasPermission(role, "documents:view")) return false
+  return roleLevel[role] < roleLevel.staff
+}
+
 /** CONVENTIONS §4: "Signed URLs for documents, short TTL." */
 export const DEFAULT_SIGNED_URL_TTL_SECONDS = 60
 const MIN_SIGNED_URL_TTL_SECONDS = 15
@@ -265,44 +304,185 @@ function isSafeFilterToken(value: string): boolean {
   return /^[A-Za-z0-9_-]{1,128}$/.test(value)
 }
 
+/**
+ * What a residency caller is actually tied to.
+ *
+ * ## Why this exists
+ *
+ * The resident predicate here used to read `visibility = 'unit'` with **no unit
+ * on it at all** when the caller passed no `unitId`, and `getDocument()` called
+ * the seed twin with a literal `{}`. Both were therefore no-ops: repository-side
+ * they admitted every approved unit-visible document in the company, and RLS was
+ * the only thing standing between a resident and the neighbours' files.
+ *
+ * Measured on 2026-08-03 against the live database, RLS does hold:
+ * tenant@azura.local saw 8 documents, all 8 on their own unit AZW-B01-0003;
+ * owner@azura.local saw 8, all on AZW-B01-0001; staff saw all 24. So this was a
+ * missing second gate rather than an open door. It is still worth having — the
+ * whole point of the duplication in this file is that a mis-written policy must
+ * not be the only thing holding.
+ *
+ * ## Where the binding comes from
+ *
+ * From the database, through the CALLER's own client, and therefore through RLS:
+ * `unit_residents_select_own` returns exactly the units the caller holds and
+ * `residents_select_self` exactly their own resident rows (guardian-resolved for
+ * a `child_*` role, matching `current_user_resident_ids()`). No new argument is
+ * needed at any call site, which is why this is not a request to another window.
+ */
+type ResidentBinding =
+  | { kind: "bound"; unitIds: readonly string[]; residentIds: readonly string[] }
+  /**
+   * Local-seed mode with nothing to bind to: no Postgres, no session, and no
+   * real data. The unbound predicate is the old one, and the result says so.
+   */
+  | { kind: "unbound" }
+
+const UNBOUND: ResidentBinding = { kind: "unbound" }
+
+/** The unbound-binding warning, attached to the result rather than swallowed. */
+const UNBOUND_REASON =
+  "Local-seed mode cannot resolve which unit the caller holds, so the resident document filter is not unit-bound."
+
+async function resolveResidentBinding(
+  client: RepositoryClient
+): Promise<ResidentBinding> {
+  // Two reads, not one join: `documents.resident_id` and `documents.unit_id`
+  // are independent policy paths, and a join would silently drop a caller who
+  // has one without the other.
+  const unitRows = unwrap<unknown[]>(
+    await client
+      .from("unit_residents")
+      .select("unit_id")
+      .is("end_date", null)
+      .limit(500),
+    []
+  )
+  const residentRows = unwrap<unknown[]>(
+    await client.from("residents").select("id").limit(200),
+    []
+  )
+
+  const collect = (rows: readonly unknown[], column: string): string[] => {
+    const values = rows
+      .map((row) => asNullableString(asRecord(row)[column]))
+      .filter((value): value is string => value !== null)
+      // An id that cannot be interpolated safely is dropped rather than
+      // escaped: it cannot name a real row, so dropping it can only narrow.
+      .filter(isSafeFilterToken)
+    return [...new Set(values)]
+  }
+
+  return {
+    kind: "bound",
+    unitIds: collect(unitRows, "unit_id"),
+    residentIds: collect(residentRows, "id"),
+  }
+}
+
+/** Intersect the caller's binding with the filter they asked for. */
+function bindIds(
+  bound: readonly string[],
+  requested: string | undefined
+): readonly string[] {
+  if (requested === undefined) return bound
+  return bound.includes(requested) ? [requested] : []
+}
+
 /** The `.or()` clauses expressing the resident read path, or `null` if unsafe. */
-function residentOrClauses(opts: DocumentQueryOptions): string[] | null {
+function residentOrClauses(
+  opts: DocumentQueryOptions,
+  binding: ResidentBinding
+): string[] | null {
+  if (binding.kind === "unbound") {
+    const clauses: string[] = []
+
+    const unitId = opts.unitId
+    if (unitId === undefined) {
+      clauses.push("visibility.eq.unit")
+    } else {
+      if (!isSafeFilterToken(unitId)) return null
+      clauses.push(`and(visibility.eq.unit,unit_id.eq.${unitId})`)
+    }
+
+    const residentId = opts.residentId
+    if (residentId !== undefined) {
+      if (!isSafeFilterToken(residentId)) return null
+      clauses.push(`resident_id.eq.${residentId}`)
+    }
+
+    return clauses
+  }
+
+  const unitIds = bindIds(binding.unitIds, opts.unitId)
+  const residentIds = bindIds(binding.residentIds, opts.residentId)
+
   const clauses: string[] = []
-
-  const unitId = opts.unitId
-  if (unitId === undefined) {
-    clauses.push("visibility.eq.unit")
-  } else {
-    if (!isSafeFilterToken(unitId)) return null
-    clauses.push(`and(visibility.eq.unit,unit_id.eq.${unitId})`)
+  if (unitIds.length > 0) {
+    clauses.push(`and(visibility.eq.unit,unit_id.in.(${unitIds.join(",")}))`)
   }
-
-  const residentId = opts.residentId
-  if (residentId !== undefined) {
-    if (!isSafeFilterToken(residentId)) return null
-    clauses.push(`resident_id.eq.${residentId}`)
+  if (residentIds.length > 0) {
+    clauses.push(`resident_id.in.(${residentIds.join(",")})`)
   }
-
-  return clauses
+  // Holding no unit and owning no resident row means nothing on either policy
+  // path can match. `null` makes the caller return the empty set WITHOUT
+  // querying, because `.or("")` is a syntax error and an unfiltered query would
+  // lean on RLS alone — the exact thing this binding exists to stop doing.
+  return clauses.length === 0 ? null : clauses
 }
 
 /** The seed-mode twin of `residentOrClauses`. Same predicate, no SQL. */
 function matchesResidentScope(
   document: DocumentRecord,
-  opts: DocumentQueryOptions
+  opts: DocumentQueryOptions,
+  binding: ResidentBinding
 ): boolean {
   if (document.reviewStatus !== "approved") return false
 
-  const unitId = opts.unitId
+  if (binding.kind === "unbound") {
+    const unitId = opts.unitId
+    const byUnit =
+      document.visibility === "unit" &&
+      (unitId === undefined || document.unitId === unitId)
+
+    const residentId = opts.residentId
+    const byResident =
+      residentId !== undefined && document.residentId === residentId
+
+    return byUnit || byResident
+  }
+
+  const unitIds = bindIds(binding.unitIds, opts.unitId)
+  const residentIds = bindIds(binding.residentIds, opts.residentId)
+
   const byUnit =
     document.visibility === "unit" &&
-    (unitId === undefined || document.unitId === unitId)
-
-  const residentId = opts.residentId
+    document.unitId !== null &&
+    unitIds.includes(document.unitId)
   const byResident =
-    residentId !== undefined && document.residentId === residentId
+    document.residentId !== null && residentIds.includes(document.residentId)
 
   return byUnit || byResident
+}
+
+/**
+ * Blank the storage key on a row a residency caller is about to receive.
+ *
+ * `WITHHELD_STORAGE_PATH` rather than a deletion because `DocumentRecord.
+ * storagePath` is a required `string`; the constant documents which of the two
+ * meanings the empty value carries, and `documentStoragePathIsWithheld()` lets a
+ * surface say so out loud.
+ */
+function withholdStoragePath(document: DocumentRecord): DocumentRecord {
+  return { ...document, storagePath: WITHHELD_STORAGE_PATH }
+}
+
+function applyDocumentProjection(
+  documents: readonly DocumentRecord[],
+  scope: DocumentScope
+): DocumentRecord[] {
+  if (scope.kind !== "resident") return [...documents]
+  return documents.map(withholdStoragePath)
 }
 
 // ---------------------------------------------------------------------------
@@ -320,7 +500,8 @@ function requestedCategories(
 function filterSeedDocuments(
   documents: readonly DocumentRecord[],
   opts: DocumentQueryOptions,
-  scope: DocumentScope
+  scope: DocumentScope,
+  binding: ResidentBinding
 ): DocumentRecord[] {
   if (scope.kind === "none") return []
 
@@ -329,7 +510,10 @@ function filterSeedDocuments(
   const offset = clampOffset(opts.offset)
 
   const matched = documents.filter((document) => {
-    if (scope.kind === "resident" && !matchesResidentScope(document, opts)) {
+    if (
+      scope.kind === "resident" &&
+      !matchesResidentScope(document, opts, binding)
+    ) {
       return false
     }
     if (scope.kind === "company") {
@@ -368,7 +552,7 @@ function filterSeedDocuments(
   })
 
   matched.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-  return matched.slice(offset, offset + limit)
+  return applyDocumentProjection(matched.slice(offset, offset + limit), scope)
 }
 
 async function queryDocuments(
@@ -381,12 +565,17 @@ async function queryDocuments(
   const limit = clampLimit(opts.limit)
   const offset = clampOffset(opts.offset)
 
-  let query = client.from("documents").select(DOCUMENT_COLUMNS)
+  let query = client
+    .from("documents")
+    .select(
+      scope.kind === "resident" ? DOCUMENT_COLUMNS_SCOPED : DOCUMENT_COLUMNS
+    )
 
   if (scope.kind === "resident") {
-    const clauses = residentOrClauses(opts)
+    const clauses = residentOrClauses(opts, await resolveResidentBinding(client))
     // A malformed identifier cannot match a real row, so it resolves to the
-    // empty set rather than being interpolated into the filter grammar.
+    // empty set rather than being interpolated into the filter grammar. So does
+    // a caller who holds no unit and owns no resident row.
     if (clauses === null) return []
     query = query.eq("review_status", "approved").or(clauses.join(","))
   } else {
@@ -416,7 +605,9 @@ async function queryDocuments(
       .range(offset, offset + limit - 1),
     []
   )
-  return rows.map(mapDocument)
+  // The column list already omitted `storage_path` for a resident, so this only
+  // pins the value the mapper produced to the documented sentinel.
+  return applyDocumentProjection(rows.map(mapDocument), scope)
 }
 
 // ---------------------------------------------------------------------------
@@ -434,11 +625,27 @@ export async function getDocuments(
   opts: DocumentQueryOptions = {}
 ): Promise<RepositoryResult<DocumentRecord[]>> {
   const scope = documentScopeFor(opts.role)
-  return withRepository(
+  const result = await withRepository(
     (client) => queryDocuments(client, opts, scope),
-    () => filterSeedDocuments(seedDocuments(), opts, scope),
+    () => filterSeedDocuments(seedDocuments(), opts, scope, UNBOUND),
     "documents.list"
   )
+  return unboundIfSeeded(result, scope)
+}
+
+/**
+ * Say so when the resident filter ran without a unit binding.
+ *
+ * Only local-seed mode can reach that state, and only for a residency caller.
+ * Stating it beats letting a list look authoritative when the repository could
+ * not prove whose unit it was reading.
+ */
+function unboundIfSeeded<T>(
+  result: RepositoryResult<T>,
+  scope: DocumentScope
+): RepositoryResult<T> {
+  if (result.source !== "local-seed" || scope.kind !== "resident") return result
+  return degraded(result, UNBOUND_REASON)
 }
 
 /**
@@ -452,13 +659,17 @@ export async function getDocument(
 ): Promise<RepositoryResult<DocumentRecord | null>> {
   const scope = documentScopeFor(opts.role)
 
-  return withRepository<DocumentRecord | null>(
+  const result = await withRepository<DocumentRecord | null>(
     async (client) => {
       if (scope.kind === "none") return null
       const row = unwrap<unknown>(
         await client
           .from("documents")
-          .select(DOCUMENT_COLUMNS)
+          .select(
+            scope.kind === "resident"
+              ? DOCUMENT_COLUMNS_SCOPED
+              : DOCUMENT_COLUMNS
+          )
           .eq("id", id)
           .maybeSingle(),
         null
@@ -466,23 +677,36 @@ export async function getDocument(
       if (row === null) return null
       const document = mapDocument(row)
       // RLS has already refused a row the caller may not read; this repeats the
-      // resident predicate for local-seed parity and defence in depth.
-      if (scope.kind === "resident" && !matchesResidentScope(document, {})) {
+      // resident predicate as defence in depth. It is bound to the caller's own
+      // units and resident rows — the `{}` that used to sit here made the whole
+      // check a no-op, because an absent `unitId` matched every unit.
+      if (
+        scope.kind === "resident" &&
+        !matchesResidentScope(
+          document,
+          {},
+          await resolveResidentBinding(client)
+        )
+      ) {
         return null
       }
-      return document
+      return applyDocumentProjection([document], scope)[0] ?? null
     },
     () => {
       if (scope.kind === "none") return null
       const document = seedDocuments().find((candidate) => candidate.id === id)
       if (document === undefined) return null
-      if (scope.kind === "resident" && !matchesResidentScope(document, {})) {
+      if (
+        scope.kind === "resident" &&
+        !matchesResidentScope(document, {}, UNBOUND)
+      ) {
         return null
       }
-      return document
+      return applyDocumentProjection([document], scope)[0] ?? null
     },
     "documents.get"
   )
+  return unboundIfSeeded(result, scope)
 }
 
 /**
@@ -644,7 +868,7 @@ export async function getComplianceDocuments(
 
   const documentOpts: DocumentQueryOptions = { ...opts, category: categories }
 
-  return withRepository<ComplianceDocument[]>(
+  const result = await withRepository<ComplianceDocument[]>(
     async (client) => {
       if (scope.kind === "none") return []
 
@@ -653,11 +877,16 @@ export async function getComplianceDocuments(
 
       let query = client
         .from("documents")
-        .select(DOCUMENT_COLUMNS)
+        .select(
+          scope.kind === "resident" ? DOCUMENT_COLUMNS_SCOPED : DOCUMENT_COLUMNS
+        )
         .in("category", [...categories])
 
       if (scope.kind === "resident") {
-        const clauses = residentOrClauses(documentOpts)
+        const clauses = residentOrClauses(
+          documentOpts,
+          await resolveResidentBinding(client)
+        )
         if (clauses === null) return []
         query = query.eq("review_status", "approved").or(clauses.join(","))
       } else {
@@ -684,8 +913,9 @@ export async function getComplianceDocuments(
           .range(offset, offset + limit - 1),
         []
       )
-      return rows.map((row) =>
-        classifyExpiry(mapDocument(row), effectiveAsOfMs, expiringSoonDays)
+      return applyDocumentProjection(rows.map(mapDocument), scope).map(
+        (document) =>
+          classifyExpiry(document, effectiveAsOfMs, expiringSoonDays)
       )
     },
     () => {
@@ -699,7 +929,8 @@ export async function getComplianceDocuments(
         // Pagination is applied after the expiry filter below, so the shared
         // filter runs at the ceiling here rather than at the caller's page size.
         { ...documentOpts, limit: MAX_PAGE_SIZE, offset: 0 },
-        scope
+        scope,
+        UNBOUND
       ).filter((document) => {
         if (cutoffIso === null) return true
         return document.expiresAt !== null && document.expiresAt <= cutoffIso
@@ -722,4 +953,5 @@ export async function getComplianceDocuments(
     },
     "documents.compliance"
   )
+  return unboundIfSeeded(result, scope)
 }

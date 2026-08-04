@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server"
+import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
@@ -61,7 +62,65 @@ import { getLedgerEntries } from "@/lib/finance-repository"
  *
  * The refusal is also **logged** as an access event. See
  * `logDeniedFinanceAccess` for what that does today and what it cannot do yet.
+ *
+ * ## Why the unit designation stays in the URL, unencoded
+ *
+ * `lib/public-id.ts` exists because a **database primary key** in an address bar
+ * travels further than the page does — into logs, history, and a pasted support
+ * ticket — and because a v4 uuid there advertises the shape of the schema. The
+ * ticket and thread routes therefore carry an opaque token, and `encodePublicId`
+ * throws on anything that is not a uuid, which is why it is not used here.
+ *
+ * `units.id` is not that kind of identifier, and the difference is not cosmetic:
+ *
+ *   * **It is not a surrogate key.** It is the building's own designation for a
+ *     flat — block and sequence, `AZW-B01-0003` — pinned by a CHECK constraint
+ *     (`units_id_format`, migration 02) and used by the developer, the portal
+ *     ads, and the residents. Encrypting it would hide a name the building
+ *     itself uses, not a database internal.
+ *   * **There is nothing to keep unguessable.** The format is a published
+ *     constraint and the space is 656 strings, all typeable by hand. An opaque
+ *     token would remove no capability an attacker has: RLS is the boundary,
+ *     and this route answers a residency role identically for "not yours" and
+ *     "does not exist" precisely so that guessing yields nothing.
+ *   * **The page prints it anyway.** The heading below the address bar is
+ *     `statement.title`, which is the same code, and every surface that links
+ *     here — the ledger's unit column, the debtors card — prints it too. An
+ *     opaque URL over a page whose `<h1>` is the plaintext protects screenshots
+ *     and screen shares from nothing.
+ *   * `Referrer-Policy: no-referrer` is set for `/:path*` in `next.config.ts`,
+ *     and this route is additionally `no-store` and `noindex`, so the leading
+ *     harm in `public-id.ts` — the id reaching a third party through `Referer` —
+ *     is already closed for every identifier in the product.
+ *
+ * ## What the route did get wrong: it trusted the segment
+ *
+ * The identifier is now checked against the same pattern the database enforces,
+ * and anything else is a 404 before a single query runs. Two real defects close
+ * with it.
+ *
+ * **`decodeURIComponent` was applied to a value Next had already decoded.**
+ * `getRouteMatcher` decodes every dynamic segment before `params` is built, so
+ * this decoded twice: `%2541` arrived as `%41` and became `A`. Worse, `%25` is
+ * a perfectly well-formed URL that Next hands over as a lone `%`, and
+ * `decodeURIComponent("%")` throws `URIError` — so `/statement/%25` turned a
+ * handled condition into an unhandled 500, which CONTRACTS §5 forbids.
+ *
+ * **The segment was echoed into the page.** `statement.title` interpolates it
+ * into the `<h1>`, and the refusal heading too, so any string of any length
+ * rendered as this page's title to whoever followed the link. React escapes it,
+ * so this was never injection — it was a signed-in reader being shown attacker
+ * text in the position the product's own voice occupies. (The denial log was
+ * never at risk: `logDeniedFinanceAccess` puts `target` inside one
+ * `JSON.stringify`, and says why.)
  */
+
+/**
+ * `units_id_format` from migration 02, restated. A route parameter is attacker
+ * controlled and the repository will happily filter on any string; this is the
+ * gate that keeps "the unit id" meaning a unit id all the way down.
+ */
+const UNIT_ID_PATTERN = /^AZW-B[0-9]{2}-[0-9]{4}$/
 
 /**
  * The browser tab, in the reader's language. This was a German literal, so a
@@ -88,8 +147,15 @@ export default async function StatementPage({
 }: {
   params: Promise<{ locale: Locale; unitId: string }>
 }): Promise<ReactNode> {
-  const { locale, unitId: rawUnitId } = await params
-  const unitId = decodeURIComponent(rawUnitId)
+  const { locale, unitId } = await params
+
+  // No `decodeURIComponent` here: `getRouteMatcher` has already decoded the
+  // segment, and decoding it twice turns `%2541` into `A` and `%25` into an
+  // unhandled `URIError`. A segment that is not a unit designation is not a
+  // unit whose access could be granted or refused, so it 404s before auth is
+  // resolved: the pattern is a published CHECK constraint, so answering with it
+  // discloses nothing, and junk never reaches the session lookup or a query.
+  if (!UNIT_ID_PATTERN.test(unitId)) notFound()
 
   const t = await getTranslations({ locale, namespace: "dashboard.finance" })
   const tEvidence = await getTranslations({ locale, namespace: "evidence" })

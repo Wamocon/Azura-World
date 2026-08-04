@@ -42,9 +42,14 @@ const supabaseOrigin = resolveSupabaseOrigin()
 /**
  * Static security headers.
  *
- * `Content-Security-Policy` is deliberately NOT here: it is emitted per-request
- * by `proxy.ts` so that script-src can carry a fresh nonce instead of
- * `'unsafe-inline'` (CONVENTIONS §4). A static header here would override it.
+ * `Content-Security-Policy` is deliberately NOT in this set, which applies to
+ * every path: it is emitted per-request by `proxy.ts` so that script-src can
+ * carry a fresh nonce instead of `'unsafe-inline'` (CONVENTIONS §4), and a
+ * static header on the same response would override or intersect with it.
+ *
+ * There IS a static CSP below, on a source that is the exact complement of the
+ * proxy's matcher — the paths the proxy never runs on and which had no policy at
+ * all. See `PROXY_COMPLEMENT_SOURCE`.
  */
 const securityHeaders = [
   /**
@@ -85,12 +90,102 @@ const privateNoStoreHeaders = [
   { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
 ]
 
+// ---------------------------------------------------------------------------
+// Fallback CSP for the paths `proxy.ts` does not run on
+// ---------------------------------------------------------------------------
+
+/**
+ * `proxy.ts` matches `["/", "/(de|en|tr|ru)/:path*"]` and nothing else, so every
+ * other path was served with **no** Content-Security-Policy at all. That is not
+ * a theoretical set: `/api/*`, `/robots.txt`, `/sitemap.xml`,
+ * `/manifest.webmanifest`, `/media/*`, and — the one that matters — any URL
+ * that resolves to no route, which Next answers with the prerendered
+ * `/_not-found` HTML document. `/_global-error` is the same shape: it replaces
+ * the root layout, cannot inherit its dynamic `headers()` read, and ships as a
+ * static shell (`scripts/csp-probe.mjs` allowlists both facts). An HTML document
+ * with no CSP is the exact gap the per-request policy exists to close.
+ *
+ * ## The conflict, and how it is resolved
+ *
+ * A static header here must NOT reach a path the proxy handles. The proxy's CSP
+ * carries a fresh per-request nonce, Next stamps that nonce onto its own script
+ * tags, and a second `Content-Security-Policy` on the same response would either
+ * replace the nonce policy or be enforced alongside it — and browsers enforce
+ * multiple CSP headers as an *intersection*, so a nonce-less `script-src 'self'`
+ * arriving next to the nonce policy blocks every nonced script. Either outcome
+ * is the S-009 failure described at length in `proxy.ts`: the page renders from
+ * server HTML and runs zero JavaScript.
+ *
+ * Overlap is therefore prevented by construction rather than by precedence,
+ * which is the part that has to be explicit: the `source` below excludes `/` and
+ * excludes any path whose first segment is a locale — exactly the proxy's
+ * matcher, written as its complement. `/design` is *not* excluded (its first
+ * segment is `design`, not `de`), which is correct: the proxy does not match it
+ * either. Change one of the two lists and you must change the other; they are
+ * only correct as a pair.
+ *
+ * `_next/static` and `_next/image` are excluded as well. Nothing there is a
+ * document, so a CSP would be inert, and these are the highest-volume responses
+ * the app serves.
+ */
+const PROXY_COMPLEMENT_SOURCE =
+  "/((?!(?:de|en|tr|ru)(?:/|$)|_next/static|_next/image).+)"
+
+/**
+ * The fallback policy is the proxy's, minus the nonce — there is no request to
+ * mint one against, because these paths never reach the proxy.
+ *
+ * That makes `script-src 'self'` the honest ceiling in production: the static
+ * error and 404 shells keep their stylesheets and their `<a href="/de">`
+ * recovery link, and their inline bootstrap script is blocked. Those shells are
+ * already documented as running without JavaScript under the nonce policy, so
+ * this changes nothing about them except that they are now covered. Do not add
+ * `'unsafe-inline'` to buy back their hydration; a policy that permits inline
+ * script on the 404 page permits it on every reflected path that reaches it.
+ *
+ * Development mirrors `proxy.ts`: React Refresh compiles modules at runtime
+ * (`'unsafe-eval'`) and the HMR client injects inline bootstrap
+ * (`'unsafe-inline'`). Without them the dev 404 page loads blank and reports
+ * only violations.
+ */
+const isDevelopment = process.env.NODE_ENV !== "production"
+
+const fallbackContentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self'${isDevelopment ? " 'unsafe-eval' 'unsafe-inline'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob:${supabaseOrigin === null ? "" : ` ${supabaseOrigin}`}`,
+  "font-src 'self' data:",
+  `connect-src 'self'${isDevelopment ? " http://127.0.0.1:* ws://127.0.0.1:*" : ""}${
+    supabaseOrigin === null
+      ? ""
+      : ` ${supabaseOrigin} ${supabaseOrigin.replace(/^https:/, "wss:")}`
+  }`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+].join("; ")
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   devIndicators: false,
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      {
+        // Read `PROXY_COMPLEMENT_SOURCE` before touching this entry: it is the
+        // complement of the proxy's matcher and must stay that way.
+        source: PROXY_COMPLEMENT_SOURCE,
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: fallbackContentSecurityPolicy,
+          },
+        ],
+      },
       { source: "/api/:path*", headers: privateNoStoreHeaders },
       { source: "/:locale/dashboard/:path*", headers: privateNoStoreHeaders },
       { source: "/:locale/login/:path*", headers: privateNoStoreHeaders },

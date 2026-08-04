@@ -21,6 +21,7 @@
 import { createServerClient } from "@supabase/ssr"
 import type { NextRequest, NextResponse } from "next/server"
 import { isSupabaseConfigured, publicEnv } from "../env"
+import { hardenedCookieOptions } from "./cookie-options"
 
 /** What the proxy needs back: the response to keep, and whether there is a user. */
 export interface SessionRefreshResult {
@@ -66,7 +67,10 @@ export async function updateSession(
         for (const { name, value, options } of cookiesToSet) {
           // Both, deliberately. See the module header.
           request.cookies.set(name, value)
-          response.cookies.set(name, value, options)
+          // `secure` in production and a rolling seven-day life, rather than
+          // the library's defaults of neither and 400 days. See
+          // `./cookie-options.ts` — including why `httpOnly` is NOT set here.
+          response.cookies.set(name, value, hardenedCookieOptions(options))
         }
       },
     },

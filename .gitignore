@@ -54,6 +54,9 @@ sources/media/*
 # wrote and a reader is meant to read, not output a script emitted.
 quality/results/
 quality/layout/
+# Full-page screenshots from `pnpm qa:ux` — hundreds of PNGs, regenerated on
+# demand and never a source of truth.
+quality/ux/
 quality/manual/
 quality/browser-audit/
 quality/e2e/

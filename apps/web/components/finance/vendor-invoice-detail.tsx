@@ -61,6 +61,36 @@ import { formatDate, formatDateTime } from "@/lib/format"
  *   is the identifier a reader can act on, and a UUID beside it is noise that
  *   makes the useful fields harder to find.
  *
+ * ## Which identifiers reach the reader, and which no longer do
+ *
+ * The same argument that kept `id` and `companyId` out was not applied to four
+ * other columns, which were rendered in full under labels that read like facts
+ * about the invoice. `vendor_invoices:view` is held by `service_provider` — an
+ * outside contractor — so "internal" was never the audience here.
+ *
+ * - **`site_id` and `vendor_profile_id` are gone.** Both are uuids naming rows
+ *   in tables this popup never reads, so neither could ever render as anything
+ *   but 36 characters of noise: `site_id` under "Project site" named no site a
+ *   reader could recognise, and `vendor_profile_id` under "Vendor record" sat
+ *   directly beneath the vendor's actual name in the dialog title. Removing
+ *   them costs the reader nothing, because they told the reader nothing — and
+ *   `profiles.id` in particular is a key a residency or vendor role cannot
+ *   otherwise obtain, since `getProfiles` refuses them the directory.
+ * - **`ledger_entry_id` is a short reference**, `#` plus eight characters, in
+ *   the trailing block with the other bookkeeping. Whether the invoice posted
+ *   is a real fact about it and the reference is how somebody finds the entry;
+ *   the module already prints ledger ids this way (`balanceCheck.group`, and
+ *   `reversalOf` in `ledger-table`), so this is the house form, not a new one.
+ * - **`document_path` renders as the file's name, never the key.** The column
+ *   is unconstrained text pointing into private storage, and a storage key is
+ *   an object's address, not a document's identity. "Is a document attached,
+ *   and which one" is answered by the last path segment; the directories above
+ *   it are storage layout, which is ours and not the contractor's.
+ *
+ * `labels.fields.site` and `labels.fields.vendorProfile` stay in the interface
+ * although nothing renders them: the page that supplies them is owned by
+ * another window, and narrowing the type would break its object literal.
+ *
  * ## Nulls
  *
  * Every one of these columns is nullable and every null is rendered as a stated
@@ -107,8 +137,9 @@ export interface VendorInvoiceRow {
   notes: string | null
   documentPath: string | null
   ledgerEntryId: string | null
-  siteId: string | null
-  vendorProfileId: string | null
+  // siteId and vendorProfileId are GONE from the wire, not merely unrendered —
+  // this object is serialised into the RSC payload, so keeping them here for
+  // the page's object literal kept sending them to an outside contractor.
   version: number
   createdAt: string
   updatedAt: string
@@ -136,7 +167,9 @@ export interface VendorInvoiceTableLabels {
     currency: string
   }
   fields: {
+    /** Retained for the owning page's object literal; nothing renders it. */
     site: string
+    /** Retained for the owning page's object literal; nothing renders it. */
     vendorProfile: string
     ledgerEntry: string
     document: string
@@ -181,7 +214,9 @@ export function VendorInvoiceTable({
               <TableHead className="text-right">
                 {labels.columns.total}
               </TableHead>
-              <TableHead className="text-right">{labels.columns.paid}</TableHead>
+              <TableHead className="text-right">
+                {labels.columns.paid}
+              </TableHead>
               <TableHead className="text-right">
                 {labels.columns.outstanding}
               </TableHead>
@@ -218,7 +253,7 @@ export function VendorInvoiceTable({
                       aria-label={row.openLabel}
                       className={cn(
                         "flex min-w-0 items-center gap-2 rounded-md text-left font-medium",
-                        "underline decoration-dotted underline-offset-4 decoration-transparent",
+                        "underline decoration-transparent decoration-dotted underline-offset-4",
                         "transition-colors duration-[var(--duration-instant)]",
                         "hover:text-primary hover:decoration-current",
                         "outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -337,9 +372,7 @@ export function VendorInvoiceTable({
                   {labels.duplicate}
                 </Pill>
               ) : null}
-              <Pill mono>
-                {selected.currency ?? labels.notStated}
-              </Pill>
+              <Pill mono>{selected.currency ?? labels.notStated}</Pill>
             </div>
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -389,29 +422,38 @@ export function VendorInvoiceTable({
                 muted={selected.dueOn === null}
               />
 
-              <Field
-                label={labels.fields.site}
-                value={selected.siteId ?? labels.notStated}
-                muted={selected.siteId === null}
-              />
-              <Field
-                label={labels.fields.vendorProfile}
-                value={selected.vendorProfileId ?? labels.notStated}
-                muted={selected.vendorProfileId === null}
-              />
-              <Field
-                label={labels.fields.ledgerEntry}
-                value={selected.ledgerEntryId ?? labels.notLinked}
-                muted={selected.ledgerEntryId === null}
-              />
+              {/* The attached file, by name. `documentPath` is a key into
+                  private storage and is never printed: the reader cannot fetch
+                  it from here anyway, and the directories above the filename
+                  describe how we store objects, not what this invoice is. */}
               <Field
                 label={labels.fields.document}
-                value={selected.documentPath ?? labels.noDocument}
-                muted={selected.documentPath === null}
+                value={fileNameOf(selected.documentPath) ?? labels.noDocument}
+                // Keyed off the resolved name, not off the column, so the
+                // stated absence and the muted styling cannot disagree: a
+                // `document_path` that is nothing but separators names no file
+                // and reads as the absence it amounts to.
+                muted={fileNameOf(selected.documentPath) === null}
               />
               <Field
                 label={labels.fields.version}
                 value={String(selected.version)}
+              />
+            </dl>
+
+            {/* The bookkeeping, last and smaller, in the shape the compliance
+                popup settled on: identifiers are what somebody needs when they
+                have to go and look at the row itself, and never the first thing
+                a reader wants. Only the invoice's OWN links live here — a uuid
+                naming a row this popup does not read is not a reference, it is
+                a leak wearing a label. */}
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-4 text-xs">
+              <Field
+                label={labels.fields.ledgerEntry}
+                value={
+                  shortReference(selected.ledgerEntryId) ?? labels.notLinked
+                }
+                muted={selected.ledgerEntryId === null}
               />
               <Field
                 label={labels.fields.created}
@@ -443,6 +485,34 @@ export function VendorInvoiceTable({
       </Dialog>
     </>
   )
+}
+
+/**
+ * The last segment of a storage key — the part that names the file rather than
+ * the part that says where we keep it.
+ *
+ * `null` in, `null` out, so the caller keeps deciding what an absence reads as.
+ * A key that is all separators, or ends in one, has no filename to show and is
+ * treated as an absence too: printing a bare `/` would be worse than saying
+ * nothing, and `document_path` carries no CHECK constraint to rule that out.
+ */
+function fileNameOf(path: string | null): string | null {
+  if (path === null) return null
+  const segments = path.split(/[/\\]/u).filter((part) => part.trim() !== "")
+  return segments.length === 0 ? null : (segments[segments.length - 1] ?? null)
+}
+
+/**
+ * A uuid shortened to something a person can read out and search on.
+ *
+ * Eight hex characters is what the rest of this module already prints for a
+ * ledger identifier — `reversalOf` in `ledger-table`, `balanceCheck.group` on
+ * the finance page — so a reader who has seen one recognises this one. It is
+ * deliberately not the whole key: enough to find the entry, not enough to hand
+ * somebody a primary key they had no other route to.
+ */
+function shortReference(id: string | null): string | null {
+  return id === null ? null : `#${id.replace(/-/gu, "").slice(0, 8)}`
 }
 
 /**

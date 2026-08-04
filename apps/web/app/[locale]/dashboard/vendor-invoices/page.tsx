@@ -79,10 +79,18 @@ import {
  * the boundary. No rich domain object and no function prop goes over.
  *
  * The nine columns are unchanged; the popup is where `taxAmount`, `notes`,
- * `siteId`, `vendorProfileId`, `ledgerEntryId`, `documentPath`, `version` and
- * the two timestamps become readable for the first time. Widening the table
- * instead was the alternative and it is worse: at nine columns this list already
- * scrolls sideways on a phone.
+ * `ledgerEntryId`, `version` and the two timestamps become readable for the
+ * first time. Widening the table instead was the alternative and it is worse:
+ * at nine columns this list already scrolls sideways on a phone.
+ *
+ * `siteId` and `vendorProfileId` are **not** in that list and are not sent at
+ * all. `vendor_invoices:view` is held by `service_provider` — an outside
+ * contractor — and both are uuids naming rows this surface never reads, so
+ * neither could render as anything but noise. Removing them from the popup
+ * alone would have changed nothing that matters: the row object is serialised
+ * into the RSC payload, so they were still in the response. `documentPath` is
+ * reduced to its last segment for the same reason — the directories above the
+ * file are our storage layout, and the second of them is the tenancy uuid.
  */
 
 /**
@@ -300,10 +308,22 @@ export default async function VendorInvoicesPage({
       outstandingMinor: toMinor(invoice.outstandingAmount),
       currency: invoice.currency,
       notes: invoice.notes,
-      documentPath: invoice.documentPath,
+      // Only the filename crosses. `document_path` is a key into private
+      // storage and the directories above the file are our storage layout, not
+      // the contractor's business — and this object is serialised into the RSC
+      // payload, so trimming it in the popup would have left the whole key on
+      // the wire.
+      documentPath: lastPathSegment(invoice.documentPath),
       ledgerEntryId: invoice.ledgerEntryId,
-      siteId: invoice.siteId,
-      vendorProfileId: invoice.vendorProfileId,
+      // `siteId` and `vendorProfileId` are GONE, not merely unrendered.
+      //
+      // The popup stopped painting them and its own comment said they "are
+      // gone" — true of the DOM and false of the response. Measured on the
+      // running server as `service_provider@azura.local`, an outside
+      // contractor: `/tr/dashboard/vendor-invoices` still returned
+      // `vendorProfileId":"b0000000-…-000000000008"` and the site uuid in the
+      // payload. `profiles.id` is precisely the key that role cannot obtain any
+      // other way, since `getProfiles` refuses it the directory.
       version: invoice.version,
       createdAt: invoice.createdAt,
       updatedAt: invoice.updatedAt,
@@ -570,4 +590,19 @@ function FilterChip({
       {children}
     </Link>
   )
+}
+
+/**
+ * The file name out of a private storage key.
+ *
+ * `document_path` is `company/<uuid>/<category>/<id>-<name>.<ext>` — the
+ * directories above the file are our storage layout and the second segment is
+ * the tenancy uuid every RLS policy partitions on. "Is a document attached and
+ * which one" is answered by the last segment alone, and it is the only part
+ * that leaves the server.
+ */
+function lastPathSegment(path: string | null): string | null {
+  if (path === null) return null
+  const parts = path.split("/").filter(Boolean)
+  return parts.at(-1) ?? null
 }

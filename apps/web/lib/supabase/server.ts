@@ -15,27 +15,37 @@
  * ## The client-bundle guarantee
  *
  * SYSTEM-PROMPT §2.7: the service-role key never reaches the browser bundle.
- * Three mechanisms enforce that, and the first two are live today:
+ * Three mechanisms enforce that, and all three are live today:
  *
- *  1. `serverEnv` (lib/env.ts) is a Proxy that **throws** on any property read
+ *  1. `import "server-only"` on the first line below. This is the only one of
+ *    the three that fails at **build** time: the package's browser entry point
+ *    throws on import, so if any client module ever reaches this file — directly
+ *    or through a chain of re-exports — `next build` stops with the offending
+ *    import chain printed. The other two mechanisms can only report the mistake
+ *    once a browser has already been served the code.
+ *
+ *    The former TODO here said the package was not installed. It does not need
+ *    to be: Next aliases the `server-only` specifier to its own
+ *    `next/dist/compiled/server-only`, which is why `lib/api-handler.ts` has
+ *    imported it since W2-B without a `package.json` entry. Do not "fix" a
+ *    resolution error by adding a dependency; a resolution error here means the
+ *    alias is gone and the guarantee needs re-establishing, not restoring.
+ *  2. `serverEnv` (lib/env.ts) is a Proxy that **throws** on any property read
  *    when `typeof window !== "undefined"`. The key is unreadable in a browser
  *    even if this module were somehow bundled — it cannot return `undefined` and
  *    let a bug propagate silently.
- *  2. The module-load guard below throws the moment this file is *evaluated* in
+ *  3. The module-load guard below throws the moment this file is *evaluated* in
  *    a browser, so the failure names this import rather than surfacing three
- *    layers away.
- *  3. TODO(W0-A): `import "server-only"` at the top of this file, which turns
- *    the runtime failure into a **build** failure. The package is not in
- *    `apps/web/package.json` and W0-A owns dependency installation — adding it
- *    here would break the build for every other window tonight. Requested in
- *    HANDOFF/W1-B.md. The seam is exactly this line, in this position:
- *
- *        import "server-only"
+ *    layers away. Kept even though mechanism 1 subsumes it at build time: it is
+ *    what catches a module evaluated in a browser by a path the bundler never
+ *    analysed, and it is the one that names *this* file in its message.
  *
  * `apps/web/eslint.config.mjs` additionally bans importing `lib/supabase/admin`
  * and `lib/supabase/service-role`; this file is deliberately named neither, per
  * the W1-B brief which places `createServiceRoleClient` in `server.ts`.
  */
+
+import "server-only"
 
 import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"

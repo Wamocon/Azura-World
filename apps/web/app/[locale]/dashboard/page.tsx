@@ -7,6 +7,8 @@ import type { Locale, Role } from "@/lib/contracts"
 import { getDashboardSnapshot } from "@/lib/dashboard-repository"
 import type { DashboardSnapshot } from "@/lib/dashboard-data"
 import { fill, shellCopy } from "@/lib/dashboard-home-copy"
+import { AttentionList } from "@/components/dashboard/attention-list"
+import { getAttentionItems } from "@/lib/attention-repository"
 import { navGroupsForRole, routesForRole } from "@/lib/dashboard-routing"
 import { WelcomePanel } from "@/components/dashboard/welcome-panel"
 
@@ -179,6 +181,13 @@ export default async function DashboardHomePage({
     retry: copy.retry,
   }
 
+  // What needs this person now. Read under the caller's own scope, so an item
+  // can never appear here that its own page would refuse to show.
+  const attention = await getAttentionItems({
+    role: profile.role,
+    id: profile.id,
+  })
+
   const cards = KPIS_BY_ROLE[profile.role]
   const groups = navGroupsForRole(profile.role)
 
@@ -249,6 +258,29 @@ export default async function DashboardHomePage({
         />
       ) : (
         <div className="flex min-w-0 flex-col gap-8">
+          {/* First, above the numbers. The counts below say how big things are;
+              this says what to do about them, which is what somebody actually
+              opens their home page for. See `lib/attention-repository.ts`. */}
+          <AttentionList
+            rows={attention.items.map((item) => ({
+              key: item.key,
+              tone: item.tone,
+              message: t(
+                `attention.items.${item.messageKey}` as "attention.items.slaBreached",
+                item.values
+              ),
+              href: item.href,
+              linkLabel: t("attention.open"),
+            }))}
+            labels={{
+              heading: t("attention.heading"),
+              empty: t("attention.empty"),
+              emptyHint: t("attention.emptyHint"),
+              degraded: t("attention.degraded"),
+            }}
+            degraded={attention.degraded}
+          />
+
           <DashboardSection title={t("kpi.title")}>
             <DashboardKpiGrid>
               {cards.map((id) => (

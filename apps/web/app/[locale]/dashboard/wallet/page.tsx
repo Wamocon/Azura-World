@@ -29,6 +29,8 @@ import {
 import { cn } from "@/lib/cn"
 import type { Locale } from "@/lib/contracts"
 import { formatDate } from "@/lib/format"
+import { getProfiles } from "@/lib/governance-repository"
+import { hasPermission } from "@/lib/rbac"
 import {
   getPaymentTransactions,
   getWallets,
@@ -145,6 +147,31 @@ export default async function WalletPage({
       { ...reads, target: "payment_transactions" }
     ),
   ])
+
+  // Whose wallet, by name.
+  //
+  // Both render sites printed `owningProfileId` — a raw `profiles.id` — as the
+  // wallet's heading. Measured on the contact sheet: it reached admin, manager,
+  // accountant, owner AND tenant, so a resident could read a staff profile key
+  // off their own wallet page, which is exactly the identifier `getProfiles`
+  // refuses them the directory to obtain. Same shape as the compliance and
+  // document registers: resolved once for the page, only for a reader who may
+  // see the directory, and an id that does not resolve falls through to a
+  // stated label rather than back to the uuid.
+  const directory = hasPermission(scope.role, "users:view")
+    ? await getProfiles({ role: scope.role, isActive: true, limit: 200 })
+    : null
+  const holderNames = new Map(
+    (directory?.data ?? []).map((person) => [
+      person.id,
+      person.fullName ?? person.email ?? person.id,
+    ])
+  )
+  /** A person, a stated "not visible", or a stated "no holder". Never an id. */
+  const holderLabel = (profileId: string | null): string =>
+    profileId === null
+      ? t("noHolder")
+      : (holderNames.get(profileId) ?? t("holderNotVisible"))
 
   if (anyRefused([walletsRead, paymentsRead])) {
     // The RBAC gate admitted this caller and the data plane refused them. The
@@ -354,6 +381,7 @@ export default async function WalletPage({
                     gapLabel={gapLabel}
                     labels={{
                       noHolder: t("noHolder"),
+                      holder: holderLabel,
                       kind: {
                         resident: t("kind.resident"),
                         vendor: t("kind.vendor"),
@@ -399,7 +427,7 @@ export default async function WalletPage({
               .map((wallet) => (
                 <div key={wallet.id} className="flex flex-col gap-2">
                   <h3 className="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                    {wallet.owningProfileId ?? t("noHolder")}
+                    {holderLabel(wallet.owningProfileId)}
                     {" · "}
                     {wallet.currency ?? gapLabel}
                   </h3>
@@ -487,6 +515,12 @@ type PaymentStatusKey =
 
 interface WalletRowLabels {
   noHolder: string
+  /**
+   * Resolves an owning profile id to a person, a stated "not visible" or a
+   * stated "no holder". Passed as a resolver rather than a pre-rendered string
+   * so the row component never receives the uuid at all.
+   */
+  holder: (profileId: string | null) => string
   kind: Record<Wallet["kind"], string>
   status: Record<Wallet["status"], string>
   overdraftAllowed: (limit: string) => string
@@ -525,7 +559,7 @@ function WalletRow({
       )}
     >
       <TableCell className="max-w-[16rem] truncate font-mono text-xs">
-        {wallet.owningProfileId ?? labels.noHolder}
+        {labels.holder(wallet.owningProfileId)}
       </TableCell>
       <TableCell>{labels.kind[wallet.kind]}</TableCell>
       <TableCell className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase">

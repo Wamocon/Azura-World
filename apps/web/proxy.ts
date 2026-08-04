@@ -10,10 +10,14 @@
  *   3. route guard              — TODO seam, filled by W1-B
  *
  * This file also emits the per-request Content-Security-Policy. `next.config.ts`
- * deliberately does not set a static CSP header so that this one, which carries
- * a fresh nonce, wins. The other security headers (Referrer-Policy,
- * X-Frame-Options, Permissions-Policy, …) are static in `next.config.ts` and are
- * NOT repeated here.
+ * sets no static CSP on any path this file runs on, so that this one, which
+ * carries a fresh nonce, is the only policy on the response. It does set a
+ * nonce-less fallback CSP on the **complement** of the matcher below — the
+ * paths this file never sees — because those had no policy at all. The two
+ * sources are written as exact complements and are only correct as a pair; see
+ * `PROXY_COMPLEMENT_SOURCE` in `next.config.ts`. The other security headers
+ * (Referrer-Policy, X-Frame-Options, Permissions-Policy, …) are static in
+ * `next.config.ts` and are NOT repeated here.
  */
 
 import createIntlMiddleware from "next-intl/middleware"
@@ -355,6 +359,32 @@ export default async function proxy(
   const nonce = createNonce()
   const csp = buildContentSecurityPolicy(nonce)
 
+  // 0. A path Next cannot decode is 404, not 500.
+  //
+  // `/en/dashboard/tickets/%25` — a bare, unpaired percent — returned **500 on
+  // every dynamic route in the app**: statement, tickets and communications all
+  // did, while `/en/dashboard/units/%25` correctly 404'd because `units` has no
+  // dynamic segment. Measured on a clean build.
+  //
+  // No page guard can catch it. Next decodes the segment inside its own route
+  // matcher, before the component runs, so `notFound()` in the page is never
+  // reached and nothing appears in the server log — the request simply becomes
+  // an unhandled 500 with no explanation for whoever is reading the logs.
+  //
+  // This is the only place in the request lifecycle that sees the raw pathname
+  // before routing. A malformed URL is a client mistake, and the honest answer
+  // to "this address is not a valid address" is the same as the answer to "this
+  // address names nothing" — not "the server broke".
+  try {
+    decodeURIComponent(request.nextUrl.pathname)
+  } catch {
+    const notFound = NextResponse.rewrite(new URL("/_not-found", request.url), {
+      status: 404,
+    })
+    applySecurityHeaders(notFound, csp)
+    return notFound
+  }
+
   // 1. Intl routing (locale prefix, redirects, rewrites).
   const intlResponse = intlMiddleware(request)
 
@@ -424,5 +454,14 @@ export const config = {
   // check inside each route handler, next to the Zod validation and the RBAC
   // call, where it can return a typed `ApiError` instead of a bare 403 and
   // where it cannot be silently skipped by a matcher edit.
+  //
+  // Everything this list does NOT cover — `/api/*`, `/robots.txt`,
+  // `/sitemap.xml`, `/media/*`, and any unrouted path, which Next answers with
+  // the prerendered `/_not-found` document — receives a static, nonce-less CSP
+  // from `next.config.ts` instead. That source is written as the complement of
+  // this array. Editing this matcher without editing `PROXY_COMPLEMENT_SOURCE`
+  // either reopens the gap (a path leaves this list and gains no policy) or
+  // collides (a path joins this list and receives two policies, whose
+  // intersection blocks every nonced script).
   matcher: ["/", "/(de|en|tr|ru)/:path*"],
 } satisfies ProxyConfig
