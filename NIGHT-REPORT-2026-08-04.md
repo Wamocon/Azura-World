@@ -1,6 +1,6 @@
 # Overnight — 3/4 August 2026
 
-Four commits on `main`. Everything below was verified in a browser against a
+Five commits on `main`. Everything below was verified in a browser against a
 production build, signed in as the actual role — not inferred from a green
 typecheck. Where a claim carries a number, the number was measured tonight.
 
@@ -95,7 +95,21 @@ no inventory furniture; staff, manager and guest still get the inventory.
 
 ---
 
-## 4. The dashboard answers a click
+## 4. The apartment and its statement know about each other
+
+`5b53d6e`
+
+Two pages about one flat with no way between them. The unit hub's Account
+section linked to the company-wide ledger, where a reader had to find their own
+row again; the statement knew exactly which apartment it was about and offered
+no way to open it. Now both directions, with the apartment beside the back link
+so the way out is where the way in already is.
+
+Verified: apartment → its own statement → back to the apartment, 4 assertions.
+
+---
+
+## 5. The dashboard answers a click
 
 `036679f`
 
@@ -189,6 +203,7 @@ Browser probes, all against the production build, in the session scratchpad:
 | `unit-hub-probe.mjs` — the unit page across roles, and its 404s | 10 pass |
 | `units-route-probe.mjs` — one route, two products, six roles | 15 pass |
 | `motion-probe.mjs` — streamed skeleton, entrance, reduced motion | 7 pass |
+| `loop-probe.mjs` — apartment ↔ statement, both ways | 4 pass |
 
 Two of those probes were wrong before they were right, and both corrections are
 worth keeping:
