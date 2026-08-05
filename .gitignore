@@ -79,6 +79,13 @@ qa_output/
 
 # --- temp ---
 .tmp/
+# Root-level scratch from agent runs — `.tmp-assets.json`, `.tmp-geo.json` and
+# five siblings, 238 kB of asset inventories, constraint analysis and tech
+# notes that nothing in the tree reads. `.tmp/` above covers the directory and
+# never covered these, so a single `git add -A` would have swept them in.
+# NIGHT-REPORT.md flagged them on 29 July — "Not mine. Probably the concurrent
+# process. Worth checking before they get committed." — and nothing closed it.
+.tmp-*.json
 .turbo/
 *.log
 
