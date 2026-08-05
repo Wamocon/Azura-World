@@ -421,19 +421,27 @@ function workforceTasks(ticketRows) {
 
 function activities() {
   const r = rng(3303)
+  // Titles AND locations in Turkish.
+  //
+  // Half of this list survived the 2026-08-04 translation pass because the check
+  // that verified it used a case-sensitive pattern — "Abend" did not match
+  // "Willkommensabend", so six German titles were reported as clean and went on
+  // showing on the calendar. Every location was German too, and "Bahçeanlage"
+  // was worse than either: a half-translated hybrid the fragment replacement
+  // produced out of "Gartenanlage". The check was wrong, not the data.
   const set = [
-    ["wellness", "Havuz başında yoga", "Havuzterrasse", 20],
-    ["wellness", "Su jimnastiği", "Hauptpool", 16],
-    ["sports", "Tennisturnier", "Tennisplatz", 16],
-    ["sports", "Beachvolleyball", "Strandbereich", 12],
-    ["kids", "Kinderclub Basteln", "Kinderclub", 24],
-    ["kids", "Bahçede hazine avı", "Bahçeanlage", 30],
-    ["social", "Willkommensabend", "Lobby-Bar", 60],
+    ["wellness", "Havuz başında yoga", "Havuz terası", 20],
+    ["wellness", "Su jimnastiği", "Ana havuz", 16],
+    ["sports", "Tenis turnuvası", "Tenis kortu", 16],
+    ["sports", "Plaj voleybolu", "Plaj alanı", 12],
+    ["kids", "Çocuk kulübü atölyesi", "Çocuk kulübü", 24],
+    ["kids", "Bahçede hazine avı", "Bahçe alanı", 30],
+    ["social", "Hoş geldiniz akşamı", "Lobi bar", 60],
     ["social", "Akşam canlı müzik", "Havuz bar", 80],
-    ["dining", "Türk gecesi", "Hauptrestaurant", 120],
-    ["dining", "Grillabend am Strand", "Strandbereich", 70],
-    ["excursion", "Ausflug Alanya-Burg", "Treffpunkt Lobby", 25],
-    ["maintenance_window", "Havuz pompası bakımı", "Teknikraum", null],
+    ["dining", "Türk gecesi", "Ana restoran", 120],
+    ["dining", "Plajda mangal akşamı", "Plaj alanı", 70],
+    ["excursion", "Alanya Kalesi gezisi", "Buluşma: Lobi", 25],
+    ["maintenance_window", "Havuz pompası bakımı", "Teknik oda", null],
   ]
   const rows = []
   for (let i = 0; i < 30; i++) {

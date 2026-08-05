@@ -480,8 +480,17 @@ export interface SlaAssessment {
   state: SlaState
   /** Negative once breached. `null` when there is no clock. */
   msRemaining: number | null
-  /** Whole hours the ticket has been open. `null` if `reportedAt` is unusable. */
+  /**
+   * Whole hours from report to *now* for a live ticket, and from report to the
+   * moment it finished for a closed one. `null` if `reportedAt` is unusable.
+   *
+   * The distinction is the point. This used to be `now − reportedAt` for every
+   * ticket regardless of status, so a ticket closed six weeks ago reported
+   * "open for 55 days" and the figure went up every night. It was not open.
+   */
   ageHours: number | null
+  /** True when `ageHours` is a finished duration rather than a running one. */
+  ageIsFinal: boolean
 }
 
 /**
@@ -494,33 +503,57 @@ export interface SlaAssessment {
 export function assessSla(
   ticket: Pick<
     ServiceTicket,
-    "slaDueAt" | "status" | "priority" | "reportedAt"
+    | "slaDueAt"
+    | "status"
+    | "priority"
+    | "reportedAt"
+    | "resolvedAt"
+    | "closedAt"
   >,
   asOf: string
 ): SlaAssessment {
   const now = new Date(asOf).getTime()
   const reported = new Date(ticket.reportedAt).getTime()
+
+  /**
+   * The clock stops when the work does.
+   *
+   * A finished ticket is measured to the moment it finished — `closedAt`, or
+   * `resolvedAt` when it was resolved and never formally closed. A live one is
+   * measured to now. Falling back to `now` for a terminal ticket with neither
+   * timestamp is deliberate: that row's own history is incomplete, and a
+   * running number is a visible symptom of that rather than a quiet lie.
+   */
+  const finishedAt = terminalTicketStatuses.includes(ticket.status)
+    ? (ticket.closedAt ?? ticket.resolvedAt)
+    : null
+  const finished =
+    finishedAt === null ? Number.NaN : new Date(finishedAt).getTime()
+  const measuredTo = Number.isNaN(finished) ? now : finished
+  const ageIsFinal = !Number.isNaN(finished)
+
   const ageHours = Number.isNaN(reported)
     ? null
-    : Math.max(0, Math.floor((now - reported) / 3_600_000))
+    : Math.max(0, Math.floor((measuredTo - reported) / 3_600_000))
 
   if (
     ticket.slaDueAt === null ||
     terminalTicketStatuses.includes(ticket.status)
   ) {
-    return { state: "none", msRemaining: null, ageHours }
+    return { state: "none", msRemaining: null, ageHours, ageIsFinal }
   }
 
   const due = new Date(ticket.slaDueAt).getTime()
   if (Number.isNaN(due) || Number.isNaN(now)) {
-    return { state: "none", msRemaining: null, ageHours }
+    return { state: "none", msRemaining: null, ageHours, ageIsFinal }
   }
 
   const msRemaining = due - now
-  if (msRemaining < 0) return { state: "breached", msRemaining, ageHours }
+  if (msRemaining < 0)
+    return { state: "breached", msRemaining, ageHours, ageIsFinal }
 
   const windowMs = slaHoursByPriority[ticket.priority] * 3_600_000
   const state: SlaState =
     msRemaining <= windowMs * 0.25 ? "due_soon" : "on_track"
-  return { state, msRemaining, ageHours }
+  return { state, msRemaining, ageHours, ageIsFinal }
 }

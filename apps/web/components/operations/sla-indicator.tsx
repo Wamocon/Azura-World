@@ -46,23 +46,39 @@ export function SlaIndicator({
   assessment,
   labels,
   ageLabel,
+  tookLabel,
   hourUnit,
   dayUnit,
 }: {
   assessment: SlaAssessment
   labels: SlaLabels
-  /** e.g. "seit {age} offen", already localised by the caller. */
+  /** "open for {age}" — for a ticket that is still running. */
   ageLabel: (age: string) => string
+  /**
+   * "took {age}" — for a ticket that has finished.
+   *
+   * Without this the row said "open for 55 days" on a ticket closed six weeks
+   * ago, and the number went up every night. It was not open. A finished
+   * ticket's meaningful figure is how long it took, measured to the moment it
+   * closed, and `assessment.ageIsFinal` is how the assessment says which of the
+   * two numbers it just handed over.
+   *
+   * Optional so a caller that has not supplied the second string keeps the old
+   * wording rather than rendering nothing.
+   */
+  tookLabel?: (age: string) => string
   hourUnit: string
   dayUnit: string
 }) {
   const { variant, emphasis } = treatment[assessment.state]
+  const label =
+    assessment.ageIsFinal && tookLabel !== undefined ? tookLabel : ageLabel
   return (
     <span className="inline-flex items-center gap-2">
       <Badge variant={variant}>{labels[assessment.state]}</Badge>
       {assessment.ageHours === null ? null : (
         <span className={cn("text-xs tabular-nums", emphasis)}>
-          {ageLabel(humaniseHours(assessment.ageHours, hourUnit, dayUnit))}
+          {label(humaniseHours(assessment.ageHours, hourUnit, dayUnit))}
         </span>
       )}
     </span>

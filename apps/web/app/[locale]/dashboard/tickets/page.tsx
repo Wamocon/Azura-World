@@ -6,6 +6,7 @@ import {
   TicketPriorityBadge,
   TicketStatusBadge,
 } from "@/components/operations/ticket-status-badge"
+import { Explain } from "@/components/ui/explain"
 import { SlaIndicator } from "@/components/operations/sla-indicator"
 import {
   slaLabels,
@@ -368,10 +369,28 @@ export default async function TicketsPage({
                 <TableHead>{t("columns.subject")}</TableHead>
                 <TableHead>{t("columns.category")}</TableHead>
                 <TableHead>{t("columns.unit")}</TableHead>
-                <TableHead>{t("columns.priority")}</TableHead>
-                <TableHead>{t("severityLabel")}</TableHead>
+                {/* The two columns a reader cannot tell apart unaided.
+
+                    Severity is how bad the problem is; priority is how soon we
+                    get to it. In the seeded data they happen to move together —
+                    every "high" is "major" — which makes the pair look like one
+                    column printed twice, so the distinction has to be stated
+                    rather than inferred. The glossary already carried the
+                    priority entry and was never attached to this table. */}
+                <TableHead>
+                  <Explain labels={glossary.priority}>
+                    {t("columns.priority")}
+                  </Explain>
+                </TableHead>
+                <TableHead>
+                  <Explain labels={glossary.severity}>
+                    {t("severityLabel")}
+                  </Explain>
+                </TableHead>
                 <TableHead>{t("columns.status")}</TableHead>
-                <TableHead>{t("columns.sla")}</TableHead>
+                <TableHead>
+                  <Explain labels={glossary.sla}>{t("columns.sla")}</Explain>
+                </TableHead>
                 <TableHead>{t("columns.reportedAt")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -393,6 +412,7 @@ export default async function TicketsPage({
                     t("openTicket", { ticketNo, title })
                   }
                   ageLabel={(age) => t("age", { age })}
+                  tookLabel={(age) => t("tookLabel", { age })}
                   hourUnit={t("hourUnit")}
                   dayUnit={t("dayUnit")}
                 />
@@ -462,6 +482,7 @@ function TicketRow({
   noValue,
   openLabel,
   ageLabel,
+  tookLabel,
   hourUnit,
   dayUnit,
 }: {
@@ -479,6 +500,8 @@ function TicketRow({
   /** Accessible name of the row link, e.g. "Open ticket TCK-1042: …". */
   openLabel: (ticketNo: string, title: string) => string
   ageLabel: (age: string) => string
+  /** "took {age}" — used instead of ageLabel once the ticket has finished. */
+  tookLabel: (age: string) => string
   hourUnit: string
   dayUnit: string
 }) {
@@ -598,6 +621,7 @@ function TicketRow({
           assessment={assessment}
           labels={slaLabelSet}
           ageLabel={ageLabel}
+          tookLabel={tookLabel}
           hourUnit={hourUnit}
           dayUnit={dayUnit}
         />

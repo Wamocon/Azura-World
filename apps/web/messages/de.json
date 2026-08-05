@@ -1737,7 +1737,9 @@
         "submit": "Speichern",
         "saving": "Wird gespeichert…",
         "failed": "Die Rechnung konnte nicht gespeichert werden. Es wurde nichts geändert."
-      }
+      },
+      "tableIntro": "Jede Zeile ist ein Vorgang. Schweregrad sagt, wie schlimm das Problem ist; Priorität, wo es in der Warteschlange steht — das ist nicht dasselbe. Ziel zeigt den Stand gegenüber der zugesagten Zeit. Die (?) in den Überschriften erklären jede Spalte.",
+      "tookLabel": "dauerte {age}"
     },
     "activities": {
       "title": "Aktivitäten",
@@ -1831,12 +1833,16 @@
         "ticket_due": "Ticket-Frist"
       },
       "feed": {
-        "heading": "Kalender abonnieren",
-        "explanation": "Sie können diesen Kalender in Outlook, Apple Kalender oder Google Kalender abonnieren. Die Termine werden mit absoluter Zeit übertragen, deshalb zeigt Ihr Kalender sie in Ihrer eigenen Zeitzone an, im Winter wie im Sommer korrekt.",
+        "heading": "Diesen Kalender aufs Telefon holen",
+        "explanation": "Kopieren Sie die Adresse unten und fügen Sie sie in Outlook, Apple Kalender oder Google Kalender unter „Kalender hinzufügen“ ein. Die Termine erscheinen dann in Ihrem eigenen Kalender und aktualisieren sich von selbst. Die Zeiten stimmen immer für Ihren Aufenthaltsort.",
         "siteWideWarning": "Wichtig: Es gibt derzeit einen einzigen Zugang für die ganze Anlage, nicht einen je Person. Wer den Link hat, sieht dieselbe Terminliste wie die Verwaltung.",
         "askAdmin": "Den Link gibt die Verwaltung aus.",
         "notConfigured": "Das Abonnement ist nicht eingerichtet. Ohne hinterlegten Zugangsschlüssel liefert der Kalender nichts.",
-        "revocation": "Der Zugang lässt sich zurückziehen, indem die Verwaltung den Schlüssel wechselt. Danach liefert der alte Link nichts mehr."
+        "revocation": "Wenn die Adresse weitergegeben wurde, sagen Sie der Verwaltung Bescheid. Sie kann eine neue ausgeben, die alte funktioniert dann nicht mehr.",
+        "caution": "Behandeln Sie diese Adresse wie einen Türschlüssel: wer sie hat, sieht das gesamte Programm der Anlage. Sie ist nicht persönlich — alle sehen dieselbe Liste. Veröffentlichen Sie sie nirgends.",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "copiedAnnouncement": "Kalenderadresse in die Zwischenablage kopiert."
       },
       "noValue": "Keine Angabe",
       "seedNotice": "Diese Seite zeigt hinterlegte Beispieldaten. Die Datenbank ist nicht verbunden."
@@ -3290,6 +3296,10 @@
     "priority": {
       "term": "Priorität",
       "body": "Legt fest, an welcher Stelle der Auftrag in der Warteschlange steht. „Dringend“ nur für Dinge, die nicht warten können — Wasserschaden, Sicherheitsrisiko. Eine höhere Stufe lässt niemanden früher kommen, sie ändert nur die Reihenfolge."
+    },
+    "severity": {
+      "term": "Schweregrad",
+      "body": "Wie schlimm das Problem selbst ist — nicht wie schnell es bearbeitet wird. Ein kleines Leck ist „gering“, über einem Sicherungskasten wird seine Priorität aber „dringend“. Zwei Spalten, weil es zwei verschiedene Fragen sind."
     }
   }
 }

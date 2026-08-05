@@ -29,6 +29,9 @@ export const GLOSSARY_TERMS = [
   // am I", and then feel cheated when `urgent` does not summon anyone faster.
   // The entry says what each level actually commits the building to.
   "priority",
+  // Added with the ticket-table explanation. Priority and severity read as
+  // the same column twice — the entry exists to say what the difference is.
+  "severity",
   "provenance",
   "dataQuality",
   "available",

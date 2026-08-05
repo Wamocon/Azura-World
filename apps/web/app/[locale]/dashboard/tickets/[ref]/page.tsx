@@ -302,6 +302,7 @@ export default async function TicketDetailPage({
           assessment={assessment}
           labels={sla}
           ageLabel={(age) => t("age", { age })}
+                  tookLabel={(age) => t("tookLabel", { age })}
           hourUnit={t("hourUnit")}
           dayUnit={t("dayUnit")}
         />

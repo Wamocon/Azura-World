@@ -1737,7 +1737,9 @@
         "submit": "Save",
         "saving": "Saving…",
         "failed": "The invoice could not be saved. Nothing was changed."
-      }
+      },
+      "tableIntro": "Each row is one job. Severity says how bad the problem is; priority says where it sits in the queue — those are different things. Target shows how it stands against the time promised. The (?) marks in the headings explain each column.",
+      "tookLabel": "took {age}"
     },
     "activities": {
       "title": "Activities",
@@ -1831,12 +1833,16 @@
         "ticket_due": "Ticket deadline"
       },
       "feed": {
-        "heading": "Subscribe to this calendar",
-        "explanation": "You can subscribe in Outlook, Apple Calendar or Google Calendar. Appointments are sent as absolute times, so your calendar shows them in your own time zone, correctly in winter and in summer.",
+        "heading": "Add this calendar to your phone",
+        "explanation": "Copy the address below and paste it into “add calendar” in Outlook, Apple Calendar or Google Calendar. Site events then appear in your own diary and update by themselves when the programme changes here. The times always show correctly for wherever you are.",
         "siteWideWarning": "Important: there is currently one single feed for the whole site, not one per person. Anyone holding the link sees the same list of appointments as management.",
         "askAdmin": "Ask management for the link.",
         "notConfigured": "The subscription is not set up. Without a stored access key the calendar returns nothing.",
-        "revocation": "Access is withdrawn by having management change the key. The old link then returns nothing."
+        "revocation": "If you think the address has been shared, tell site management. They can issue a new one, and the old one stops working.",
+        "caution": "Treat this address like a door key: anyone who has it can see the whole site programme. It is not personal to you — it shows everybody the same list. Do not post it anywhere public.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copiedAnnouncement": "Calendar address copied to the clipboard."
       },
       "noValue": "Not stated",
       "seedNotice": "This page shows stored sample data. The database is not connected."
@@ -3290,6 +3296,10 @@
     "priority": {
       "term": "Priority",
       "body": "This sets where the job sits in the queue. Choose “Urgent” only for things like a flood or a safety risk that cannot wait. Picking a higher level does not make anyone arrive sooner — it only changes the order."
+    },
+    "severity": {
+      "term": "Severity",
+      "body": "How bad the problem itself is — not how fast we are dealing with it. A small leak is “minor”, but if it is over an electrical box its priority becomes “urgent”. They are two columns because they answer two different questions."
     }
   }
 }

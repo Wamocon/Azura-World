@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { Link } from "@/app/navigation"
+import { CalendarSubscribe } from "@/components/operations/calendar-subscribe"
 import {
   CalendarAgenda,
   CalendarMonth,
@@ -325,41 +326,40 @@ export default async function CalendarPage({
         />
       )}
 
-      <section className="flex flex-col gap-2 rounded-lg border border-border p-4">
-        <h2 className="text-base font-semibold text-foreground">
-          {t("feed.heading")}
-        </h2>
-        {!feedConfigured ? (
-          // No secret means the route 404s for every token. Printing a URL that
-          // cannot work would be worse than saying the feature is off.
+      {!feedConfigured ? (
+        // No secret means the route 404s for every token. Printing an address
+        // that cannot work would be worse than saying the feature is off.
+        <section className="flex flex-col gap-2 rounded-lg border border-border p-4">
+          <h2 className="text-base font-semibold text-foreground">
+            {t("feed.heading")}
+          </h2>
           <p className="max-w-prose text-sm text-muted-foreground">
             {t("feed.notConfigured")}
           </p>
-        ) : (
-          <>
-            <p className="max-w-prose text-sm text-muted-foreground">
-              {t("feed.explanation")}
-            </p>
-            {/* Stated plainly because it diverges from what a reader would
-                assume: this is one feed for the site, not one per person. */}
-            <p className="max-w-prose text-sm text-foreground">
-              {t("feed.siteWideWarning")}
-            </p>
-            {maySeeFeedUrl && secret !== undefined ? (
-              <code className="overflow-x-auto rounded-md border border-border bg-muted/40 px-3 py-2 text-xs break-all text-foreground">
-                {`/api/calendar/ics/${feedToken(secret)}`}
-              </code>
-            ) : (
-              <p className="max-w-prose text-sm text-muted-foreground">
-                {t("feed.askAdmin")}
-              </p>
-            )}
-            <p className="max-w-prose text-xs text-muted-foreground">
-              {t("feed.revocation")}
-            </p>
-          </>
-        )}
-      </section>
+        </section>
+      ) : maySeeFeedUrl && secret !== undefined ? (
+        <CalendarSubscribe
+          path={`/api/calendar/ics/${feedToken(secret)}`}
+          labels={{
+            heading: t("feed.heading"),
+            explanation: t("feed.explanation"),
+            caution: t("feed.caution"),
+            revocation: t("feed.revocation"),
+            copy: t("feed.copy"),
+            copied: t("feed.copied"),
+            copiedAnnouncement: t("feed.copiedAnnouncement"),
+          }}
+        />
+      ) : (
+        <section className="flex flex-col gap-2 rounded-lg border border-border p-4">
+          <h2 className="text-base font-semibold text-foreground">
+            {t("feed.heading")}
+          </h2>
+          <p className="max-w-prose text-sm text-muted-foreground">
+            {t("feed.askAdmin")}
+          </p>
+        </section>
+      )}
 
       <p className="text-xs text-muted-foreground">
         <Link

@@ -1737,7 +1737,9 @@
         "submit": "Kaydet",
         "saving": "Kaydediliyor…",
         "failed": "Fatura kaydedilemedi. Hiçbir şey değişmedi."
-      }
+      },
+      "tableIntro": "Her satır bir iş kaydı. Önem sorunun ne kadar kötü olduğunu, öncelik ise sıraya nereye girdiğini söyler — bunlar farklı şeylerdir. Hedef söz verilen süreye göre durumu gösterir. Başlıklardaki (?) işaretleri açıklama verir.",
+      "tookLabel": "{age} sürdü"
     },
     "activities": {
       "title": "Etkinlikler",
@@ -1831,12 +1833,16 @@
         "ticket_due": "Kayıt süresi"
       },
       "feed": {
-        "heading": "Takvime abone ol",
-        "explanation": "Outlook, Apple Takvim veya Google Takvim ile abone olabilirsiniz. Randevular mutlak saatle gönderilir, bu yüzden takviminiz onları kendi saat diliminizde, kışın da yazın da doğru gösterir.",
+        "heading": "Bu takvimi telefonunuza ekleyin",
+        "explanation": "Aşağıdaki adresi kopyalayın ve Outlook, Apple Takvim veya Google Takvim’de “takvim ekle” bölümüne yapıştırın. Site etkinlikleri kendi takviminizde görünür ve buradaki program değiştiğinde otomatik güncellenir. Saatler her zaman sizin bulunduğunuz saat diliminde doğru görünür.",
         "siteWideWarning": "Önemli: Şu anda kişi başına değil, tüm tesis için tek bir bağlantı var. Bağlantıya sahip olan, yönetimle aynı randevu listesini görür.",
         "askAdmin": "Bağlantıyı yönetimden alabilirsiniz.",
         "notConfigured": "Abonelik kurulmamış. Kayıtlı bir erişim anahtarı olmadan takvim hiçbir şey döndürmez.",
-        "revocation": "Erişim, yönetimin anahtarı değiştirmesiyle geri alınır. Bundan sonra eski bağlantı bir şey döndürmez."
+        "revocation": "Adresin paylaşıldığını düşünüyorsanız site yönetimine haber verin; yeni bir adres oluşturabilirler, eskisi çalışmaz olur.",
+        "caution": "Bu adresi bir kapı anahtarı gibi düşünün: eline geçen herkes sitenin tüm etkinlik programını görebilir. Kişiye özel değildir — herkese aynı listeyi gösterir. Herkese açık bir yerde paylaşmayın.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "copiedAnnouncement": "Takvim adresi panoya kopyalandı."
       },
       "noValue": "Belirtilmemiş",
       "seedNotice": "Bu sayfa kayıtlı örnek verileri gösteriyor. Veritabanı bağlı değil."
@@ -3290,6 +3296,10 @@
     "priority": {
       "term": "Öncelik",
       "body": "Bu işin sıraya nereye gireceğini belirler. «Acil», su baskını veya güvenlik gibi hemen müdahale gerektiren durumlar içindir. Yüksek öncelik seçmek ekibi daha hızlı getirmez; yalnızca sıralamayı değiştirir."
+    },
+    "severity": {
+      "term": "Önem",
+      "body": "Sorunun kendisi ne kadar kötü — ne kadar acele edildiği değil. Küçük bir sızıntı “hafif” olabilir ama elektrik panosunun üstündeyse önceliği “acil” olur. İkisi ayrı sütun çünkü ayrı sorular."
     }
   }
 }
