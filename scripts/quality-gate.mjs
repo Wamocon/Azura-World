@@ -54,6 +54,29 @@ const OUT =
 /** Per-gate ceiling. A gate that hangs is a failure, not a wait. */
 const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
 
+/**
+ * How long the whole run may take, against the CI job's own ceiling.
+ *
+ * GitHub kills the `Full gate` job at 60 minutes and the step's output does not
+ * survive it, so a run that reaches the ceiling produces an hour of compute and
+ * no information — which is what happened on 2026-08-05. Fifty minutes leaves
+ * ten for checkout, install, the Chromium download and the artifact upload, and
+ * means the runner stops itself and REPORTS rather than being killed mid-gate.
+ *
+ * Overridable for a local run that genuinely wants to sit through everything:
+ *   AZURA_GATE_BUDGET_MIN=180 node scripts/quality-gate.mjs
+ */
+const BUDGET_MS =
+  Number(process.env.AZURA_GATE_BUDGET_MIN ?? 50) * 60 * 1000;
+
+/** Wall clock for the run, started at import so setup time counts against it. */
+const RUN_STARTED_AT = Date.now();
+
+/** Milliseconds left in the budget. Never negative. */
+function budgetRemainingMs() {
+  return Math.max(0, BUDGET_MS - (Date.now() - RUN_STARTED_AT));
+}
+
 const PASS = "PASS";
 const FAIL = "FAIL";
 const NOT_RUN = "NOT RUN";
@@ -675,13 +698,45 @@ for (const gate of selected) {
         output: "",
       };
     } else {
-      const r = run(gate.cmd, { timeout: gate.timeout ?? DEFAULT_TIMEOUT_MS });
+      /*
+       * Clamp this gate to what is left of the run's budget.
+       *
+       * Without this the runner is a set of individually patient gates with no
+       * idea the job is about to be killed. The sum of the per-gate timeouts is
+       * over four hours; the job ceiling is one. So the last thing a slow run
+       * produces is nothing at all.
+       */
+      const remaining = budgetRemainingMs();
+      const own = gate.timeout ?? DEFAULT_TIMEOUT_MS;
+
+      if (remaining <= 0) {
+        result = {
+          ...gate,
+          state: NOT_RUN,
+          reason: `the run's ${Math.round(BUDGET_MS / 60000)}-minute budget was spent before this gate started`,
+          metric: null,
+          durationMs: 0,
+          exitCode: null,
+          command: gate.cmd,
+          output: "",
+        };
+        results.push(result);
+        if (!AS_JSON) {
+          console.log(`[--/--] ${gate.name}  NOT RUN — out of time`);
+        }
+        continue;
+      }
+
+      const budgeted = Math.min(own, remaining);
+      const r = run(gate.cmd, { timeout: budgeted });
       const state = r.timedOut ? FAIL : r.status === 0 ? PASS : FAIL;
       result = {
         ...gate,
         state,
         reason: r.timedOut
-          ? `TIMED OUT after ${Math.round((gate.timeout ?? DEFAULT_TIMEOUT_MS) / 1000)}s — a hang is a failure, not a wait`
+          ? budgeted < own
+            ? `STOPPED after ${Math.round(budgeted / 1000)}s — the run's ${Math.round(BUDGET_MS / 60000)}-minute budget ran out here. This gate normally gets ${Math.round(own / 1000)}s; it is the gate that was running when the clock stopped, which is not the same as the gate that is broken.`
+            : `TIMED OUT after ${Math.round(own / 1000)}s — a hang is a failure, not a wait`
           : r.spawnError,
         metric: gate.metric ? gate.metric(r.combined, r) : null,
         durationMs: r.durationMs,
