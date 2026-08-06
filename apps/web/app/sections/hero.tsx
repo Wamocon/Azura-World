@@ -120,11 +120,23 @@ export async function HeroSection({
         {/* Copy ground. The floor gradient alone left the headline sitting on
             open sky at 1440px, where the frame is brightest and the type is
             largest — the eyebrow measured under 3:1 against it. This is a
-            left-weighted wash under the copy column only, so the right two
-            thirds of the photograph stay open. It is unconditional, not a
-            scroll effect: a re-cast hero must not be able to break the
-            headline's contrast. */}
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(5,13,19,0.82)_0%,rgba(5,13,19,0.6)_34%,rgba(5,13,19,0.18)_62%,transparent_86%)]" />
+            left-weighted wash under the copy column only, so the right of the
+            photograph stays open. It is unconditional, not a scroll effect: a
+            re-cast hero must not be able to break the headline's contrast.
+
+            The stops were re-derived on 2026-08-06 by rasterising the hero,
+            hiding the `h1`, and reading the real pixels behind it. The previous
+            ramp faded to 0.18 by 62% and to nothing by 86% — but the copy
+            column is `max-w-[52rem]`, so at 1440px the headline runs to 70% of
+            the frame. Its last two words sat past the useful part of the wash,
+            on lit sky between the palms, and measured **1.88:1** — under even
+            the 3:1 large-text floor, on the first thing anybody sees.
+            "Left-weighted" was right; the weight just stopped too early.
+
+            So the ramp now holds past where the text actually ends and falls
+            away after it. The right fifth of the frame is still essentially
+            clear, which is where the palms and the sky are worth looking at. */}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(5,13,19,0.88)_0%,rgba(5,13,19,0.8)_44%,rgba(5,13,19,0.62)_68%,rgba(5,13,19,0.24)_82%,transparent_96%)]" />
         {/* Departure veil. Static at 0 without JS, driven to 1 on the way out. */}
         <div
           data-cine-hero-veil
@@ -247,9 +259,23 @@ export async function HeroSection({
                   <dt className="azura-label text-muted-foreground">
                     {figure.label}
                   </dt>
+                  {/* `whitespace-nowrap`, and a max that the LONGEST value
+                      fits rather than the shortest.
+
+                      Three of these four are two or three characters — 7, 656,
+                      188 — and one is "76,000 m²". At the old 2.75rem the long
+                      one needed more than its 255px column at every width from
+                      1024 up, so it wrapped, and the second line fell outside
+                      the band and was cut in half. Measured, not guessed: the
+                      box and the content were both 255px because the wrap had
+                      already happened.
+
+                      Sizing to the longest value costs the short ones a little
+                      presence and buys a row that cannot break. A clipped
+                      headline figure on the first screen is a worse trade. */}
                   <dd
                     data-numeric
-                    className="font-display text-[clamp(1.75rem,4.2vw,2.75rem)] leading-none tracking-[-0.03em] text-foreground"
+                    className="font-display text-[clamp(1.5rem,3.4vw,2.25rem)] leading-none tracking-[-0.03em] whitespace-nowrap text-foreground"
                   >
                     <InventoryValue
                       fact={figure.fact}

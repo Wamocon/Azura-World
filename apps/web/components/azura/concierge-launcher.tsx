@@ -74,15 +74,32 @@ export function ConciergeLauncher({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="azura-concierge-panel"
-        className="fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--primary)_55%,transparent)] bg-[color-mix(in_srgb,var(--background)_92%,var(--primary))] px-4 py-3 text-[0.875rem] font-medium text-foreground shadow-lg backdrop-blur transition-colors duration-[var(--duration-fast)] hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] sm:right-6 sm:bottom-6"
+        /*
+         * A circle, not a pill.
+         *
+         * As a labelled pill this sat roughly 160px wide in the bottom-right
+         * corner of every section, and the page puts content there on purpose:
+         * it covered "DISTANCE TO THE SEA · 300 m" in the location sequence and
+         * crowded "HOTEL ROOMS · 188" under the hero. A floating control that
+         * hides the page's own figures is worse than one that says less.
+         *
+         * The label is not lost, it moves: `aria-label` gives screen readers
+         * the full name, and `title` shows it on hover for everyone else. A
+         * message circle bottom-right is a convention people already read, and
+         * 48px clears the 24px tap-target floor comfortably.
+         *
+         * It does not animate open. The motion rule here is transform and
+         * opacity only, and expanding a width is exactly what that forbids.
+         */
+        aria-label={open ? closeLabel : openLabel}
+        title={open ? closeLabel : openLabel}
+        className="fixed right-4 bottom-4 z-50 inline-flex size-12 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--primary)_55%,transparent)] bg-[color-mix(in_srgb,var(--background)_92%,var(--primary))] text-foreground shadow-lg backdrop-blur transition-colors duration-[var(--duration-fast)] hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] sm:right-6 sm:bottom-6"
       >
         {open ? (
-          <X aria-hidden className="size-4" />
+          <X aria-hidden className="size-5" />
         ) : (
-          <MessageCircle aria-hidden className="size-4 text-primary" />
+          <MessageCircle aria-hidden className="size-5 text-primary" />
         )}
-        <span className="hidden sm:inline">{open ? closeLabel : openLabel}</span>
-        <span className="sr-only sm:hidden">{open ? closeLabel : openLabel}</span>
       </button>
 
       {open ? (
