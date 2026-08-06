@@ -597,6 +597,38 @@
           "due": "Fri"
         }
       }
+    },
+    "ledger": {
+      "designation": "EVIDENCE",
+      "title": "When the sources disagree",
+      "lead": "Different portals publish different prices for the same apartment. The system does not pick one, and does not average them.",
+      "body": "When a portal publishes a price, the system records it as a reading and keeps the source beside it. At that point there is one reading, and it looks settled.",
+      "bodyTwo": "When a second portal publishes a different price, the first reading is not deleted. It is struck through, and the disagreement itself is recorded in its place. The old reading stays visible, because what was once believed is also part of the record.",
+      "pull": "Averaging them would invent a number that nobody published. That is the one thing this product will not do.",
+      "recorded": "RECORDED",
+      "stages": {
+        "first": {
+          "source": "HASPO REALTY",
+          "claim": "1+1 apartment, 80 to 89 m², from 112,000 EUR.",
+          "fact": "Entry price for a 1+1: 112,000 EUR"
+        },
+        "second": {
+          "source": "CAPITAL ESTATE",
+          "claim": "The same project, 1+1 apartment, 230,000 to 310,000 EUR.",
+          "facts": {
+            "disagree": "The sources disagree about the 1+1 entry price",
+            "range": "19 observations from 6 publishers, 112,000 to 310,000 in EUR",
+            "factor": "A factor of 2.8 within a single currency",
+            "currency": "The USD listings are kept apart, not converted"
+          }
+        }
+      },
+      "finding": {
+        "tag": "FINDING F-002",
+        "severity": "CRITICAL",
+        "message": "The 1+1 entry price is unresolved. Alanya-Home, Capital Estate, Haspo Realty, Housearch, Seaside Alanya and TERRA Real Estate publish different figures.",
+        "resolution": "Deliberately left unresolved. Where the sources do not agree, neither does the system."
+      }
     }
   },
   "dashboard": {

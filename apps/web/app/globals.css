@@ -484,7 +484,22 @@
   button,
   label {
     overflow-wrap: break-word;
-    hyphens: auto;
+    /* `manual`, not `auto`.
+     *
+     * `auto` was breaking ordinary prose mid-word on a 1440px screen with room
+     * to spare: "These are the key fig-ures as the system holds them." Two
+     * components had already reached for `hyphens-none` to escape it locally,
+     * which is the signal that the global default was wrong rather than that
+     * those two were special.
+     *
+     * `manual` still honours a soft hyphen where somebody has deliberately
+     * placed one, so a genuinely unbreakable German compound can still be
+     * helped by hand. It just stops the browser inventing break points in
+     * English and Turkish copy that does not need them.
+     *
+     * `overflow-wrap: break-word` above is what actually protects the layout
+     * from a long unbroken string, and it is unchanged. */
+    hyphens: manual;
   }
 
   /* Tabular figures wherever numbers are compared down a column — prices,

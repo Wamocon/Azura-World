@@ -65,6 +65,7 @@ import {
   WhySection,
 } from "@/app/sections/body"
 import { CinemaSection } from "@/app/sections/cinema"
+import { LedgerSection } from "@/app/sections/ledger"
 import { SystemSection } from "@/app/sections/system"
 import { SystemFlowSection } from "@/app/sections/system-flow"
 import { ResidencesSection } from "@/app/sections/residences-section"
@@ -264,6 +265,20 @@ export default async function LandingPage({
                   evidence band, and the three closers that framed the page as a
                   research report. */}
               <SystemSection locale={locale} />
+              {/* The claim, performed rather than asserted.
+
+                  Everything above this point is the complex: photography, the
+                  site plan, the layouts, the grounds. Everything below is the
+                  system. This sits on the seam and is where the register
+                  actually turns, because it is the first time the page shows
+                  its working instead of describing it: a real portal reading,
+                  then a second one that contradicts it, and the first struck
+                  through in place while the disagreement is recorded.
+
+                  Placed before SystemFlow deliberately. The counted figures
+                  there mean more once a reader has watched one of them refuse
+                  to settle. */}
+              <LedgerSection locale={locale} />
               {/* The system shown working: counted figures, then the ticket
                   lifecycle as one track. The 1Çatı-style operating showcase. */}
               <SystemFlowSection locale={locale} />

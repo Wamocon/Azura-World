@@ -597,6 +597,38 @@
           "due": "Fr"
         }
       }
+    },
+    "ledger": {
+      "designation": "NACHWEIS",
+      "title": "Wenn die Quellen sich widersprechen",
+      "lead": "Verschiedene Portale nennen für dieselbe Wohnung verschiedene Preise. Das System wählt keinen aus und bildet keinen Mittelwert.",
+      "body": "Wenn ein Portal einen Preis veröffentlicht, hält das System ihn als Angabe fest und bewahrt die Quelle daneben auf. In diesem Moment gibt es eine Angabe, und sie wirkt gesichert.",
+      "bodyTwo": "Wenn ein zweites Portal einen anderen Preis nennt, wird die erste Angabe nicht gelöscht. Sie wird durchgestrichen, und an ihrer Stelle wird der Widerspruch selbst festgehalten. Die alte Angabe bleibt sichtbar, denn was einmal galt, gehört ebenfalls zum Bestand.",
+      "pull": "Ein Mittelwert wäre eine Zahl, die niemand veröffentlicht hat. Das ist das Einzige, was dieses Produkt nicht tut.",
+      "recorded": "FESTGEHALTEN",
+      "stages": {
+        "first": {
+          "source": "HASPO REALTY",
+          "claim": "Wohnung 1+1, 80 bis 89 m², ab 112.000 EUR.",
+          "fact": "Einstiegspreis für 1+1: 112.000 EUR"
+        },
+        "second": {
+          "source": "CAPITAL ESTATE",
+          "claim": "Dasselbe Projekt, Wohnung 1+1, 230.000 bis 310.000 EUR.",
+          "facts": {
+            "disagree": "Die Quellen sind sich über den Einstiegspreis für 1+1 uneinig",
+            "range": "19 Beobachtungen von 6 Anbietern, 112.000 bis 310.000 in EUR",
+            "factor": "Ein Faktor von 2,8 innerhalb einer Währung",
+            "currency": "Die USD-Angebote bleiben getrennt und werden nicht umgerechnet"
+          }
+        }
+      },
+      "finding": {
+        "tag": "BEFUND F-002",
+        "severity": "KRITISCH",
+        "message": "Der Einstiegspreis für 1+1 ist ungeklärt. Alanya-Home, Capital Estate, Haspo Realty, Housearch, Seaside Alanya und TERRA Real Estate nennen unterschiedliche Zahlen.",
+        "resolution": "Bewusst ungeklärt gelassen. Wo die Quellen sich nicht einig sind, ist es das System auch nicht."
+      }
     }
   },
   "dashboard": {

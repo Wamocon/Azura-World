@@ -597,6 +597,38 @@
           "due": "Cu"
         }
       }
+    },
+    "ledger": {
+      "designation": "KANIT",
+      "title": "Kaynaklar birbirini tutmadığında",
+      "lead": "Aynı daire için farklı portallar farklı fiyat yazıyor. Sistem birini seçmiyor, ortalama da almıyor.",
+      "body": "Bir portal bir fiyat yayımladığında sistem bunu bir kayıt olarak alır ve kaynağını yanına yazar. O noktada tek bir okuma vardır ve kesin görünür.",
+      "bodyTwo": "İkinci bir portal başka bir fiyat yayımladığında ilk kayıt silinmez. Üzeri çizilir ve yerine anlaşmazlığın kendisi yazılır. Eski okuma görünür kalır, çünkü bir zamanlar doğru sanılan şey de kayıttır.",
+      "pull": "Ortalama almak, hiçbir yerde yayımlanmamış bir sayı uydurmak olurdu. Bu ürünün yapmayacağı tek şey budur.",
+      "recorded": "KAYDEDİLEN",
+      "stages": {
+        "first": {
+          "source": "HASPO REALTY",
+          "claim": "1+1 daire, 80 ila 89 m², 112.000 EUR'dan başlayan fiyatlarla.",
+          "fact": "1+1 giriş fiyatı: 112.000 EUR"
+        },
+        "second": {
+          "source": "CAPITAL ESTATE",
+          "claim": "Aynı proje, 1+1 daire, 230.000 ila 310.000 EUR.",
+          "facts": {
+            "disagree": "1+1 giriş fiyatı konusunda kaynaklar ayrışıyor",
+            "range": "6 yayıncıdan 19 gözlem, EUR olarak 112.000 ile 310.000 arasında",
+            "factor": "Tek para biriminde 2,8 katlık fark",
+            "currency": "USD ilanları ayrı tutuluyor, çevrilmiyor"
+          }
+        }
+      },
+      "finding": {
+        "tag": "BULGU F-002",
+        "severity": "KRİTİK",
+        "message": "1+1 giriş fiyatı çözülmedi. Alanya-Home, Capital Estate, Haspo Realty, Housearch, Seaside Alanya ve TERRA Real Estate farklı rakamlar yayımlıyor.",
+        "resolution": "Bilerek çözülmeden bırakıldı. Kaynakların hemfikir olmadığı yerde sistem de olmuyor."
+      }
     }
   },
   "dashboard": {

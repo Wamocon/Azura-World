@@ -305,10 +305,67 @@ export function LandingChoreography(): ReactNode {
           }
         )
       }
+
+      // ----------------------------------------------------------------
+      // 8. The ledger. A fact being retracted, in the order it happened.
+      // ----------------------------------------------------------------
+      //
+      // `app/sections/ledger.tsx` renders every stage and every strike-through
+      // in its FINAL state, on the server. This does not build the section, it
+      // rewinds it and plays it forward.
+      //
+      // That ordering is deliberate and is the opposite of the usual one.
+      // Animating up from a hidden initial state means a reader with no
+      // JavaScript, or a crawler, or anyone who hits the `reduced` return
+      // above, gets an empty column where the argument should be. Starting
+      // from the finished state means the worst case is a page that does not
+      // move, which azura-ui-ux §5.1 asks for in as many words.
+      //
+      // So every `set` below is a rewind, and every tween returns the element
+      // to where the server already put it.
+      const ledger = document.querySelector("[data-cine-ledger]")
+      if (ledger !== null) {
+        const stages = ledger.querySelectorAll("[data-cine-ledger-stage]")
+        // The first stage is the premise and stays put. Rewinding it would
+        // leave the column empty on arrival, with nothing to explain the gap.
+        for (const stage of Array.from(stages).slice(1)) {
+          gsap.set(stage, { opacity: 0, y: 26 })
+          gsap.to(stage, {
+            opacity: 1,
+            y: 0,
+            duration: duration.slow,
+            ease: ease.out,
+            scrollTrigger: { trigger: stage, start: "top 82%", once: true },
+          })
+        }
+
+        // The retraction itself. A hairline scaling from its left edge, so it
+        // reads as a pen drawn across the line rather than a style toggling.
+        // Transform only: §4 forbids animating a width, and a text decoration
+        // cannot be animated at all, which is why this is a separate element.
+        for (const strike of ledger.querySelectorAll(
+          "[data-cine-ledger-strike]"
+        )) {
+          gsap.set(strike, { scaleX: 0 })
+          gsap.to(strike, {
+            scaleX: 1,
+            duration: duration.slow,
+            ease: ease.out,
+            // Late enough that the superseded line has been read before it is
+            // struck. A retraction nobody saw arrive is just a grey line.
+            delay: 0.45,
+            scrollTrigger: {
+              trigger: strike.closest("[data-cine-ledger-stage]") ?? strike,
+              start: "top 72%",
+              once: true,
+            },
+          })
+        }
+      }
     })
 
     // ------------------------------------------------------------------
-    // 8. Pointer-tracked sheen. Outside the context: it is a listener, not a
+    // 9. Pointer-tracked sheen. Outside the context: it is a listener, not a
     //    tween, and `ctx.revert()` does not know about it.
     // ------------------------------------------------------------------
     //
