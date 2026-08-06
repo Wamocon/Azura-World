@@ -3061,7 +3061,6 @@
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
-      "forgot": "Forgotten your password?",
       "noAccount": "No account?",
       "requestAccess": "Request access",
       "invalid": "Email or password is incorrect.",

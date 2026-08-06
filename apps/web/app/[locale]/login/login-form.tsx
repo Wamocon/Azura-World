@@ -5,7 +5,10 @@ import { useActionState, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Field, Input, fieldDescriptionId } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
-import { Link } from "@/app/navigation"
+// `Link` is gone with the "Forgotten your password?" control it carried. That
+// link pointed at `/login` — the page it was already on — and there is no reset
+// flow for it to point at instead; the screen now names who to ask, which is
+// the true answer since site management creates every account.
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/cn"
 import { signIn } from "./actions"
@@ -53,7 +56,9 @@ export interface LoginLabels {
   submitting: string
   showPassword: string
   hidePassword: string
-  forgot: string
+  // `forgot` removed: `forgotHelp` carries the whole sentence, question and
+  // answer together, and a prop nothing renders is the same dead weight this
+  // screen was just cleared of.
   /** Who to ask, since there is no self-serve reset. */
   forgotHelp: string
   /** Suffix on a control that is not switched on. */
@@ -251,22 +256,12 @@ function EmailPanel({
       </Field>
 
       <div className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between gap-2">
-          <label
-            htmlFor="password"
-            className="text-sm leading-none font-medium text-foreground"
-          >
-            {labels.password}
-          </label>
-          {/* Was a `<Link href="/login">` — a link to the page you are already
-              on, styled as an action, doing nothing. There is no self-serve
-              reset in this product and no route to build one against, so the
-              honest replacement is who to ask. That is also the true answer:
-              site management creates every account here in the first place. */}
-          <span className="text-xs text-muted-foreground">
-            {labels.forgotHelp}
-          </span>
-        </div>
+        <label
+          htmlFor="password"
+          className="text-sm leading-none font-medium text-foreground"
+        >
+          {labels.password}
+        </label>
         <PasswordInput
           id="password"
           name="password"
@@ -276,7 +271,26 @@ function EmailPanel({
           showLabel={labels.showPassword}
           hideLabel={labels.hidePassword}
           aria-invalid={hasError ? true : undefined}
+          aria-describedby="password-help"
         />
+        {/* Under the field, not beside the label.
+
+            This was a `<Link href="/login">` — a link to the page you are
+            already on, styled as an action, doing nothing. There is no
+            self-serve reset in this product and no route to build one against,
+            so the honest replacement is who to ask; site management creates
+            every account here in the first place.
+
+            Placed under the input rather than opposite the label, where it
+            was sharing a `justify-between` row with "Password". A full
+            sentence beside a one-word label wraps to two lines and crowds it,
+            and it gets worse the narrower the screen. Help text belongs under
+            the thing it helps with — and `aria-describedby` now ties it to the
+            field, so a screen reader reads it as part of the field rather than
+            as loose text somewhere on the page. */}
+        <p id="password-help" className="text-xs leading-relaxed text-muted-foreground">
+          {labels.forgotHelp}
+        </p>
       </div>
 
       {hasError ? (

@@ -116,7 +116,6 @@ export default async function LoginPage({
           submitting: t("submitting"),
           showPassword: t("showPassword"),
           hidePassword: t("hidePassword"),
-          forgot: t("forgot"),
           methodEmail: t("methodEmail"),
           methodPhone: t("methodPhone"),
           orContinue: t("orContinue"),

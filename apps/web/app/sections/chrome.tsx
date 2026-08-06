@@ -72,7 +72,6 @@ export async function Navbar({
       submitting: tAuth("submitting"),
       showPassword: tAuth("showPassword"),
       hidePassword: tAuth("hidePassword"),
-      forgot: tAuth("forgot"),
       methodEmail: tAuth("methodEmail"),
       methodPhone: tAuth("methodPhone"),
       orContinue: tAuth("orContinue"),
