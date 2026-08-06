@@ -13,6 +13,18 @@
  * it. The layout says what the copy says: every group reads and writes the same
  * record. Six separate cards said six separate products.
  *
+ * ## The shape assembles, because a still layout cannot say what came first
+ *
+ * Hub-and-spoke drawn all at once is six cards that happen to sit around a
+ * seventh. `landing-choreography.tsx` lands the core first and then moves each
+ * card outward away from it, alternating sides, so the order of arrival says
+ * what the layout can only imply: the groups come out of the record, not the
+ * other way round.
+ *
+ * As with the ledger and the lifecycle track, the server renders the assembled
+ * hub and the choreography rewinds it. No-JS and reduced-motion readers get the
+ * core and all six cards; the worst case is a hub that does not move.
+ *
  * ## Six groups, because six is what the roles already are
  *
  * Each maps to modules that exist and to roles in `lib/rbac.ts`:
@@ -74,7 +86,7 @@ function GroupCard({
 }): ReactNode {
   const Icon = group.icon
   return (
-    <div className="flex min-w-0 items-start gap-4 rounded-[var(--radius-xl)] border border-[color-mix(in_srgb,var(--foreground)_10%,transparent)] bg-[var(--card)] p-5 transition-transform duration-200 motion-safe:hover:-translate-y-0.5">
+    <div className="flex h-full min-w-0 items-start gap-4 rounded-[var(--radius-xl)] border border-[color-mix(in_srgb,var(--foreground)_10%,transparent)] bg-[var(--card)] p-5 transition-transform duration-200 motion-safe:hover:-translate-y-0.5">
       <span
         aria-hidden="true"
         className="grid size-11 shrink-0 place-items-center rounded-xl"
@@ -116,22 +128,36 @@ export async function SystemSection({
       lead={t("system.lead")}
     >
       <Container className="flex flex-col gap-8 px-0 sm:px-0">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)_minmax(0,1fr)] lg:items-center">
+        <div
+          data-cine-hub
+          className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)_minmax(0,1fr)] lg:items-center"
+        >
           {/* Left three. On mobile they follow the core; on lg they sit beside
               it, so the whole reads as a hub with spokes. */}
           <div className="order-2 grid gap-4 sm:grid-cols-2 lg:order-1 lg:grid-cols-1">
             {left.map((group) => (
-              <GroupCard
+              // The marker sits on a wrapper, not on the card. The card already
+              // owns a `transition-transform` for its hover lift, and GSAP
+              // writing a transform to that same element every frame would be
+              // eased a second time by the CSS transition and arrive late.
+              // Two animations, two elements.
+              <div
                 key={group.key}
-                group={group}
-                title={t(`system.groups.${group.key}.title`)}
-                body={t(`system.groups.${group.key}.body`)}
-              />
+                data-cine-hub-spoke
+                data-cine-hub-side="left"
+                className="h-full"
+              >
+                <GroupCard
+                  group={group}
+                  title={t(`system.groups.${group.key}.title`)}
+                  body={t(`system.groups.${group.key}.body`)}
+                />
+              </div>
             ))}
           </div>
 
           {/* The core: the shared record, with the client's real inventory. */}
-          <div className="order-1 lg:order-2">
+          <div data-cine-hub-core className="order-1 lg:order-2">
             <div className="relative flex flex-col items-center gap-5 overflow-hidden rounded-[var(--radius-2xl)] border border-[color-mix(in_srgb,var(--primary)_22%,transparent)] bg-[var(--card)] p-7 text-center sm:p-8">
               {/* A soft azure wash behind the core, so it reads as the source the
                   spokes draw from rather than a seventh card. Decorative. */}
@@ -190,12 +216,18 @@ export async function SystemSection({
           {/* Right three. */}
           <div className="order-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             {right.map((group) => (
-              <GroupCard
+              <div
                 key={group.key}
-                group={group}
-                title={t(`system.groups.${group.key}.title`)}
-                body={t(`system.groups.${group.key}.body`)}
-              />
+                data-cine-hub-spoke
+                data-cine-hub-side="right"
+                className="h-full"
+              >
+                <GroupCard
+                  group={group}
+                  title={t(`system.groups.${group.key}.title`)}
+                  body={t(`system.groups.${group.key}.body`)}
+                />
+              </div>
             ))}
           </div>
         </div>

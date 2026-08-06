@@ -362,10 +362,117 @@ export function LandingChoreography(): ReactNode {
           })
         }
       }
+
+      // ----------------------------------------------------------------
+      // 9. The ticket lifecycle. A case travelling its track.
+      // ----------------------------------------------------------------
+      //
+      // Same contract as the ledger above: `app/sections/system-flow.tsx`
+      // renders the finished track, and this rewinds it and plays it forward.
+      //
+      // ONE trigger on the track, not one per node. From `lg` the five nodes
+      // are a horizontal row, so they all cross any given scroll line in the
+      // same frame; five individual triggers would fire together and the
+      // sequence would collapse into a flash. The stagger is what carries the
+      // order, so the order has to come from a timeline rather than from
+      // geometry.
+      //
+      // Nodes and arrows are interleaved into one timeline so each arrow
+      // arrives between the two nodes it joins. An arrow that lands before its
+      // destination points at nothing.
+      const flow = document.querySelector("[data-cine-flow]")
+      if (flow !== null) {
+        const nodes = Array.from(flow.querySelectorAll("[data-cine-flow-node]"))
+        const links = Array.from(flow.querySelectorAll("[data-cine-flow-link]"))
+
+        // Rewind. Transform and opacity only, per azura-ui-ux §4.
+        gsap.set(nodes, { opacity: 0, y: 18 })
+        gsap.set(links, { opacity: 0, scale: 0.55 })
+
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: flow, start: "top 78%", once: true },
+        })
+        // Step, arrow, step, arrow … The arrow overlaps the node it follows so
+        // the track feels continuous rather than metronomic.
+        for (const [i, node] of nodes.entries()) {
+          tl.to(
+            node,
+            { opacity: 1, y: 0, duration: duration.base, ease: ease.out },
+            i === 0 ? 0 : "<0.28"
+          )
+          const link = links[i]
+          if (link !== undefined) {
+            tl.to(
+              link,
+              { opacity: 1, scale: 1, duration: duration.fast, ease: ease.out },
+              "<0.16"
+            )
+          }
+        }
+      }
+
+      // ----------------------------------------------------------------
+      // 10. The hub. Six capabilities drawn out of one shared record.
+      // ----------------------------------------------------------------
+      //
+      // `app/sections/system.tsx` calls the centre panel "the source the
+      // spokes draw from rather than a seventh card". On a static page that is
+      // an assertion made by layout alone, and layout alone does not say which
+      // came first. So the core arrives, and only then do the six cards move
+      // outward away from it, alternating sides.
+      //
+      // The direction carries the meaning and is therefore signed off the
+      // card's own side: a left card starts to its RIGHT (nearer the core) and
+      // travels out to rest, a right card starts to its left. Everything
+      // radiates from the centre because everything comes from the record.
+      //
+      // Same contract as 8 and 9: the server renders the assembled hub, this
+      // rewinds it. A reader who never runs it sees all six cards and the core.
+      const hub = document.querySelector("[data-cine-hub]")
+      if (hub !== null) {
+        const core = hub.querySelector("[data-cine-hub-core]")
+        const spokes = Array.from(hub.querySelectorAll("[data-cine-hub-spoke]"))
+
+        if (core !== null) gsap.set(core, { opacity: 0, scale: 0.965 })
+        for (const spoke of spokes) {
+          const fromCore =
+            spoke.getAttribute("data-cine-hub-side") === "left" ? 26 : -26
+          gsap.set(spoke, { opacity: 0, x: fromCore })
+        }
+
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: hub, start: "top 72%", once: true },
+        })
+        if (core !== null) {
+          tl.to(core, {
+            opacity: 1,
+            scale: 1,
+            duration: duration.slow,
+            ease: ease.out,
+          })
+        }
+        // Alternating sides rather than left-then-right, so the hub grows
+        // evenly instead of listing to one side and catching up.
+        const ordered = [
+          ...spokes.filter((s) => s.getAttribute("data-cine-hub-side") === "left"),
+        ].flatMap((left, i) => {
+          const right = spokes.filter(
+            (s) => s.getAttribute("data-cine-hub-side") === "right"
+          )[i]
+          return right === undefined ? [left] : [left, right]
+        })
+        for (const [i, spoke] of ordered.entries()) {
+          tl.to(
+            spoke,
+            { opacity: 1, x: 0, duration: duration.base, ease: ease.out },
+            i === 0 ? "-=0.18" : "<0.11"
+          )
+        }
+      }
     })
 
     // ------------------------------------------------------------------
-    // 9. Pointer-tracked sheen. Outside the context: it is a listener, not a
+    // 11. Pointer-tracked sheen. Outside the context: it is a listener, not a
     //    tween, and `ctx.revert()` does not know about it.
     // ------------------------------------------------------------------
     //

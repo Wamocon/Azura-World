@@ -177,14 +177,32 @@ export function Panel({
   children,
   className,
   sheen = true,
+  marker,
 }: {
   children: ReactNode
   className?: string
   sheen?: boolean
+  /**
+   * A bare `data-*` attribute to stamp on the panel's own box, for the scroll
+   * choreography to select on.
+   *
+   * It exists because the alternatives are worse. A caller cannot wrap the
+   * panel in a marked `div` where the panel is a flex child (the wrapper
+   * becomes the flex child instead and the layout changes), and it cannot mark
+   * the `li` in a `display: contents` list, because such an element generates
+   * no box and so cannot be transformed at all. The remaining option is for
+   * the choreography to select on `.azura-pane`, which would couple motion to
+   * a styling class.
+   *
+   * Attribute name, not a boolean, so the choreography keeps naming what it
+   * animates rather than this component growing a flag per section.
+   */
+  marker?: string
 }): ReactNode {
   return (
     <div
       {...(sheen ? { "data-sheen": "" } : {})}
+      {...(marker === undefined ? {} : { [marker]: "" })}
       className={cn(
         "azura-pane relative overflow-hidden",
         sheen && "azura-sheen",

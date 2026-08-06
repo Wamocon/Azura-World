@@ -57,6 +57,25 @@ import { intlLocaleTag } from "@/lib/format"
  * open -> assigned -> in_progress -> resolved, plus the finance-ledger entry).
  * It is drawn as a track rather than claimed in prose because a workflow is a
  * shape, and the shape is the argument.
+ *
+ * ## The track builds itself, and the built track is what is in the HTML
+ *
+ * `landing-choreography.tsx` reveals the five nodes in order, with each arrow
+ * arriving between the two nodes it joins, so a reader watches a case travel
+ * the track instead of meeting five cards that were always there. A sequence
+ * that appears all at once is a list; a sequence that arrives in order is a
+ * process, and this section's whole claim is that the process is real.
+ *
+ * As with the ledger, the server renders the FINISHED track and the
+ * choreography rewinds it. No-JS, reduced-motion and crawlers get all five
+ * steps and every arrow. The worst case is a track that does not move, never
+ * a track that is missing.
+ *
+ * Note the layout constraint that shapes the animation: from `lg` the nodes
+ * sit side by side, so they all cross into view in the same frame. Per-node
+ * triggers would therefore fire simultaneously and produce no sequence at all.
+ * One trigger on the track driving a stagger is what makes it read as an
+ * order rather than a flash.
  */
 
 const STEP_ICONS: Record<string, LucideIcon> = {
@@ -277,12 +296,23 @@ export async function SystemFlowSection({
               rotate to point down when stacked so the reading order stays a
               sequence. Each `li` is `contents`, so the node and its arrow are
               direct flex children of the track. */}
-          <ol className="flex list-none flex-col gap-2 p-0 lg:flex-row lg:items-stretch lg:gap-1">
+          {/* `data-cine-flow` hands the track to `landing-choreography`, which
+              builds it one node at a time. See the note on the section below:
+              this markup is the FINISHED track, and the choreography rewinds
+              it. Nothing here depends on JavaScript to be readable. */}
+          <ol
+            data-cine-flow
+            className="flex list-none flex-col gap-2 p-0 lg:flex-row lg:items-stretch lg:gap-1"
+          >
             {STEPS.map((step, index) => {
               const Icon = STEP_ICONS[step] ?? MessageSquarePlus
               return (
                 <li key={step} className="contents">
-                  <Panel className="h-full p-5 lg:flex-1" sheen={false}>
+                  <Panel
+                    marker="data-cine-flow-node"
+                    className="h-full p-5 lg:flex-1"
+                    sheen={false}
+                  >
                     <div className="flex h-full flex-col gap-3">
                       <div className="flex items-center gap-3">
                         <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--primary)_16%,transparent)] text-primary">
@@ -308,6 +338,7 @@ export async function SystemFlowSection({
                       point down in the stacked layout. Decorative, so aria-hidden. */}
                   {index < STEPS.length - 1 ? (
                     <span
+                      data-cine-flow-link
                       aria-hidden="true"
                       className="flex items-center justify-center py-1 text-muted-foreground/50 lg:px-1 lg:py-0"
                     >
