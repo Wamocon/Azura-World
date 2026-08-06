@@ -3092,7 +3092,11 @@
       "unavailable": "Signing in is not possible right now.",
       "notConfigured": "Signing in is not set up here.",
       "close": "Close",
-      "throttled": "Too many sign-in attempts. Please wait a minute and try again."
+      "throttled": "Too many sign-in attempts. Please wait a minute and try again.",
+      "forgotHelp": "Forgotten your password? Ask site management — they reset it for you.",
+      "notYetAvailable": "Not available yet",
+      "phoneNotReady": "Signing in by SMS is not switched on yet. Please use your email and password.",
+      "googleNotReady": "Google sign-in is not switched on yet. Please use your email and password."
     },
     "signup": {
       "title": "Request access",

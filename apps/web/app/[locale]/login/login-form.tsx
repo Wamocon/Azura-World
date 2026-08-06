@@ -54,6 +54,12 @@ export interface LoginLabels {
   showPassword: string
   hidePassword: string
   forgot: string
+  /** Who to ask, since there is no self-serve reset. */
+  forgotHelp: string
+  /** Suffix on a control that is not switched on. */
+  notYetAvailable: string
+  phoneNotReady: string
+  googleNotReady: string
   methodEmail: string
   methodPhone: string
   orContinue: string
@@ -115,24 +121,49 @@ export function LoginForm({
         aria-label={labels.methodEmail + " / " + labels.methodPhone}
         className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-secondary/50 p-1"
       >
-        {(["email", "phone"] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            role="tab"
-            aria-selected={method === m}
-            onClick={() => setMethod(m)}
-            className={cn(
-              "azura-tap-compact rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-[var(--duration-fast)]",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
-              method === m
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {m === "email" ? labels.methodEmail : labels.methodPhone}
-          </button>
-        ))}
+        {(["email", "phone"] as const).map((m) => {
+          /*
+           * A method that is not switched on is disabled here, with the reason
+           * on it, rather than accepting a phone number and refusing afterwards.
+           *
+           * The old tab looked identical to the working one. You chose it, were
+           * given a field and a "Send code" button, typed your number, pressed
+           * it — and only then were told SMS sign-in is not enabled. That is the
+           * pattern the damage-report and access-request pages were fixed out of
+           * on 4 August; this screen was never checked, and it is the first one
+           * anybody sees.
+           */
+          const unavailable = m === "phone" && !phoneLive
+          return (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={method === m}
+              disabled={unavailable}
+              title={unavailable ? labels.phoneNotReady : undefined}
+              onClick={() => {
+                if (!unavailable) setMethod(m)
+              }}
+              className={cn(
+                "azura-tap-compact rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-[var(--duration-fast)]",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
+                unavailable
+                  ? "cursor-not-allowed text-muted-foreground/60"
+                  : method === m
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {m === "email" ? labels.methodEmail : labels.methodPhone}
+              {unavailable ? (
+                <span className="ml-1.5 text-[0.6875rem] font-normal">
+                  ({labels.notYetAvailable})
+                </span>
+              ) : null}
+            </button>
+          )
+        })}
       </div>
 
       {method === "email" ? (
@@ -146,21 +177,34 @@ export function LoginForm({
         />
       )}
 
-      {/* Divider */}
-      <div className="flex items-center gap-3" aria-hidden="true">
-        <span className="h-px flex-1 bg-border" />
-        <span className="text-xs tracking-[0.08em] text-muted-foreground uppercase">
-          {labels.orContinue}
-        </span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
+      {/* "OR" only when there is a second option to introduce. */}
+      {googleLive ? (
+        <div className="flex items-center gap-3" aria-hidden="true">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-xs tracking-[0.08em] text-muted-foreground uppercase">
+            {labels.orContinue}
+          </span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+      ) : null}
 
-      <GoogleButton
-        locale={locale}
-        next={next}
-        labels={labels}
-        live={googleLive}
-      />
+      {/* The provider buttons only appear when the provider is actually
+          connected. A branded full-width "Sign in with Google" that answers
+          "not switched on yet" when pressed is a third route in that does not
+          exist, shown at the same weight as the one that does. When it is off,
+          the divider goes with it and one line says why. */}
+      {googleLive ? (
+        <GoogleButton
+          locale={locale}
+          next={next}
+          labels={labels}
+          live={googleLive}
+        />
+      ) : (
+        <p className="text-center text-xs leading-relaxed text-muted-foreground">
+          {labels.googleNotReady}
+        </p>
+      )}
     </div>
   )
 }
@@ -214,12 +258,14 @@ function EmailPanel({
           >
             {labels.password}
           </label>
-          <Link
-            href="/login"
-            className="azura-tap-compact text-xs font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
-          >
-            {labels.forgot}
-          </Link>
+          {/* Was a `<Link href="/login">` — a link to the page you are already
+              on, styled as an action, doing nothing. There is no self-serve
+              reset in this product and no route to build one against, so the
+              honest replacement is who to ask. That is also the true answer:
+              site management creates every account here in the first place. */}
+          <span className="text-xs text-muted-foreground">
+            {labels.forgotHelp}
+          </span>
         </div>
         <PasswordInput
           id="password"

@@ -3092,7 +3092,11 @@
       "unavailable": "Die Anmeldung ist derzeit nicht möglich.",
       "notConfigured": "Die Anmeldung ist hier nicht eingerichtet.",
       "close": "Schließen",
-      "throttled": "Zu viele Anmeldeversuche. Bitte eine Minute warten."
+      "throttled": "Zu viele Anmeldeversuche. Bitte eine Minute warten.",
+      "forgotHelp": "Passwort vergessen? Wenden Sie sich an die Verwaltung — sie setzt es zurück.",
+      "notYetAvailable": "Noch nicht verfügbar",
+      "phoneNotReady": "Die Anmeldung per SMS ist noch nicht aktiv. Bitte nutzen Sie E-Mail und Passwort.",
+      "googleNotReady": "Die Google-Anmeldung ist noch nicht aktiv. Bitte nutzen Sie E-Mail und Passwort."
     },
     "signup": {
       "title": "Zugang anfragen",

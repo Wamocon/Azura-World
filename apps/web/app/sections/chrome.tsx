@@ -80,6 +80,12 @@ export async function Navbar({
       phoneNumber: tAuth("phoneNumber"),
       phonePlaceholder: tAuth("phonePlaceholder"),
       sendCode: tAuth("sendCode"),
+      // Same four labels as /login — the dialog renders the same form, so it
+      // carried the same dead controls.
+      forgotHelp: tAuth("forgotHelp"),
+      notYetAvailable: tAuth("notYetAvailable"),
+      phoneNotReady: tAuth("phoneNotReady"),
+      googleNotReady: tAuth("googleNotReady"),
       sendingCode: tAuth("sendingCode"),
       code: tAuth("code"),
       codePlaceholder: tAuth("codePlaceholder"),

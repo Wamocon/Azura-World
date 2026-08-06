@@ -3092,7 +3092,11 @@
       "unavailable": "Şu anda giriş yapılamıyor.",
       "notConfigured": "Giriş burada kurulu değil.",
       "close": "Kapat",
-      "throttled": "Çok fazla giriş denemesi yapıldı. Lütfen bir dakika bekleyip tekrar deneyin."
+      "throttled": "Çok fazla giriş denemesi yapıldı. Lütfen bir dakika bekleyip tekrar deneyin.",
+      "forgotHelp": "Şifrenizi mi unuttunuz? Site yönetimine başvurun; şifrenizi onlar sıfırlar.",
+      "notYetAvailable": "Henüz kullanılamıyor",
+      "phoneNotReady": "SMS ile giriş henüz açık değil. E-posta ve şifrenizle giriş yapın.",
+      "googleNotReady": "Google ile giriş henüz açık değil. E-posta ve şifrenizle giriş yapın."
     },
     "signup": {
       "title": "Erişim talebi",
