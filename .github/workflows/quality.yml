@@ -75,7 +75,7 @@ jobs:
             console.log(`### Quality gate — ${g.mode}\n\n${g.verdict}\n\n| # | Gate | State | Exit | Evidence |\n|---|---|---|---|---|\n${rows}\n`);
           ' >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-gate-fast
@@ -137,7 +137,7 @@ jobs:
             console.log(out);
           ' >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-gate-full
